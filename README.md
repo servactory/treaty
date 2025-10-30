@@ -100,6 +100,7 @@ end
 class Users::CreateTreaty < ApplicationTreaty
   version :v1 do
     summary "The first version of the contract for creating a user"
+    
     strategy :direct
 
     # Present: first_name, last_name. Missing: middle_name.
@@ -108,6 +109,7 @@ class Users::CreateTreaty < ApplicationTreaty
 
   version :v2 do
     summary "Added middle name to expand user data"
+    
     strategy :adapter
 
     # There is no space for domain and HTTP code.
@@ -162,6 +164,7 @@ end
 class Users::CreateTreaty < ApplicationTreaty
   version :v1 do
     summary "The first version of the contract for creating a user"
+    
     strategy :direct
 
     deprecated do
@@ -178,6 +181,7 @@ class Users::CreateTreaty < ApplicationTreaty
 
   version :v2 do
     summary "Added middle name to expand user data"
+    
     strategy :adapter
 
     # accepts :user do
@@ -200,6 +204,7 @@ class Users::CreateTreaty < ApplicationTreaty
 
   version :v3 do
     summary "Added address and socials to expand user data"
+    
     strategy :adapter
 
     # accepts :user do

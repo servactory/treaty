@@ -8,11 +8,55 @@
 ### General part
 
 ```ruby
+# config/initializers/treaty.rb
+Treaty::Engine.configure do |config|
+  config.version = lambda do |context|
+    accept = context.request.headers["Accept"]
+    return if accept.blank?
+
+    match = accept.match(/application\/vnd\.myapp\.v(\d+)/)
+    return if match.blank?
+
+    match[1].to_i
+  end
+
+  config.error_handler = lambda do |exception|
+    Sentry.capture_exception(exception)
+  end
+
+  config.error_response = lambda do |exception|
+    {
+      error: {
+        message: exception.message
+      }
+    }
+  end
+end
+```
+
+```ruby
 # app/controllers/users_controller.rb
 class UsersController < ApplicationController
-  action :index
+  treaty :index
   
-  action :create
+  treaty :create
+
+  # Equivalent to:
+  # def create
+  #   treaty = Users::CreateTreaty.call!(context: self, params:)
+  #
+  #   render json: treaty.data, status: treaty.status
+  # rescue Treaty::Exceptions::Validation => e
+  #   Treaty::Engine.config.treaty.error_handler.call(e)
+  #
+  #   render json: Treaty::Engine.config.treaty.error_response.call(e),
+  #          status: :unprocessable_entity
+  # rescue Treaty::Exceptions::Service => e
+  #   Treaty::Engine.config.treaty.error_handler.call(e)
+  #  
+  #   render json: Treaty::Engine.config.treaty.error_response.call(e),
+  #          status: :bad_request
+  # end
 end
 ```
 

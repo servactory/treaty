@@ -37,6 +37,7 @@ class Users::IndexTreaty < ApplicationTreaty
   version :v2 do
     strategy :adapter
 
+    # There is no space for domain and HTTP code.
     response :id,
              :first_name,
              :middle_name,
@@ -60,10 +61,12 @@ class Users::CreateTreaty < ApplicationTreaty
   version :v2, "Added middle name to expand user data" do
     strategy :adapter
 
+    # There is no space for domain and HTTP code.
     request :first_name,
             :middle_name,
             :last_name
 
+    # There is no space for domain and HTTP code.
     response :id,
              :first_name,
              :middle_name,
@@ -82,6 +85,8 @@ class Users::IndexTreaty < ApplicationTreaty
   version :v1 do
     strategy :service_chain
 
+    response :users, 200
+
     # Present: first_name, last_name. Missing: middle_name.
     use Users::V1::IndexService
   end
@@ -89,12 +94,13 @@ class Users::IndexTreaty < ApplicationTreaty
   version :v2 do
     strategy :adapter
 
-    response do
+    response :users, 200 do
       string! :id
       string! :first_name
       string? :middle_name
       string! :last_name
     end
+
     use Users::Stable::IndexService
   end
 end
@@ -106,20 +112,23 @@ class Users::CreateTreaty < ApplicationTreaty
   version :v1, "The first version of the contract for creating a user" do
     strategy :service_chain
 
+    request :user
+    response :user, 201
+
     # Present: first_name, last_name. Missing: middle_name.
     use Users::V1::CreateService
   end
 
   version :v2, "Added middle name to expand user data" do
     strategy :adapter
-    
-    request do
+
+    request :user do
       string! :first_name
       string? :middle_name
       string! :last_name
     end
 
-    response do
+    response :user, 201 do
       string! :id
       string! :first_name
       string? :middle_name

@@ -146,10 +146,10 @@ class Users::IndexTreaty < ApplicationTreaty
     strategy :adapter
 
     response :users, 200 do
-      string! :id
-      string! :first_name
-      string? :middle_name
-      string! :last_name
+      string :id
+      string :first_name
+      string :middle_name
+      string :last_name
     end
 
     delegate_to Users::Stable::IndexService
@@ -246,4 +246,6 @@ end
 
 ### Problems
 
+- How to implement work with path and query?
+- How to implement filtering from query for IndexTreaty?
 - How to share a dataset between treaties (controller actions)?

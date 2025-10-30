@@ -72,10 +72,10 @@ end
 # app/treaties/users/index_treaty.rb
 class Users::IndexTreaty < ApplicationTreaty
   version :v1 do
-    strategy :service_chain
+    strategy :direct
 
     # Present: first_name, last_name. Missing: middle_name.
-    use Users::V1::IndexService
+    delegate_to Users::V1::IndexService
   end
 
   version :v2 do
@@ -87,7 +87,7 @@ class Users::IndexTreaty < ApplicationTreaty
              :middle_name,
              :last_name
 
-    use Users::Stable::IndexService
+    delegate_to Users::Stable::IndexService
   end
 end
 ```
@@ -95,14 +95,16 @@ end
 ```ruby
 # app/treaties/users/create_treaty.rb
 class Users::CreateTreaty < ApplicationTreaty
-  version :v1, "The first version of the contract for creating a user" do
-    strategy :service_chain
+  version :v1 do
+    summary "The first version of the contract for creating a user"
+    strategy :direct
 
     # Present: first_name, last_name. Missing: middle_name.
-    use Users::V1::CreateService
+    delegate_to Users::V1::CreateService
   end
 
-  version :v2, "Added middle name to expand user data" do
+  version :v2 do
+    summary "Added middle name to expand user data"
     strategy :adapter
 
     # There is no space for domain and HTTP code.
@@ -116,7 +118,7 @@ class Users::CreateTreaty < ApplicationTreaty
              :middle_name,
              :last_name
 
-    use Users::Stable::CreateService
+    delegate_to Users::Stable::CreateService
   end
 end
 ```
@@ -127,12 +129,12 @@ end
 # app/treaties/users/index_treaty.rb
 class Users::IndexTreaty < ApplicationTreaty
   version :v1 do
-    strategy :service_chain
+    strategy :direct
 
     response :users, 200
 
     # Present: first_name, last_name. Missing: middle_name.
-    use Users::V1::IndexService
+    delegate_to Users::V1::IndexService
   end
 
   version :v2 do
@@ -145,7 +147,7 @@ class Users::IndexTreaty < ApplicationTreaty
       string! :last_name
     end
 
-    use Users::Stable::IndexService
+    delegate_to Users::Stable::IndexService
   end
 end
 ```
@@ -153,68 +155,86 @@ end
 ```ruby
 # app/treaties/users/create_treaty.rb
 class Users::CreateTreaty < ApplicationTreaty
-  version :v1, "The first version of the contract for creating a user" do
-    strategy :service_chain
+  version :v1 do
+    summary "The first version of the contract for creating a user"
+    strategy :direct
+
+    deprecated do
+      Gem::Version.new(ENV.fetch("RELEASE_VERSION", nil)) >= 
+        Gem::Version.new("17.0.0")
+    end
 
     request :user
     response :user, 201
 
     # Present: first_name, last_name. Missing: middle_name.
-    use Users::V1::CreateService
+    delegate_to Users::V1::CreateService
   end
 
-  version :v2, "Added middle name to expand user data" do
+  version :v2 do
+    summary "Added middle name to expand user data"
     strategy :adapter
 
+    # accepts :user do
     request :user do
-      string! :first_name
-      string? :middle_name
-      string! :last_name
+      required :first_name, :string
+      optional :middle_name, :string
+      required :last_name, :string
     end
 
+    # provides :user, 201 do
     response :user, 201 do
-      string! :id
-      string! :first_name
-      string? :middle_name
-      string! :last_name
+      string :id
+      string :first_name
+      string :middle_name
+      string :last_name
     end
 
-    use Users::Stable::CreateService
+    delegate_to Users::Stable::CreateService
   end
 
-  version :v3, "Added user address information" do
+  version :v3 do
+    summary "Added address and socials to expand user data"
     strategy :adapter
 
+    # accepts :user do
     request :user do
-      string! :first_name
-      string? :middle_name
-      string! :last_name
-      one! :address do
-        string! :street
-        string! :city
-        string! :state
-        string! :zipcode
+      required :first_name, :string
+      optional :middle_name, :string
+      required :last_name, :string
+
+      required :address do
+        required :street, :string
+        required :city, :string
+        required :state, :string
+        required :zipcode, :string
       end
-      many? :socials do
-        string! :provider
-        string! :value
+
+      optional :socials, :array do
+        required :provider, :string, in: %w[twitter linkedin github]
+        required :handle, :string, as: :value
       end
     end
 
+    # provides :user, 201 do
     response :user, 201 do
-      string! :id
-      string! :first_name
-      string? :middle_name
-      string! :last_name
-      one! :address do
-        string! :street
-        string! :city
-        string! :state
-        string! :zipcode
+      string :id
+      string :first_name
+      string :middle_name
+      string :last_name
+
+      object :address do
+        string :street
+        string :city
+        string :state
+        string :zipcode
       end
+
+      datetime :created_at
+      datetime :updated_at
     end
 
-    use Users::Stable::CreateService
+    delegate_to Users::Stable::CreateService
   end
 end
 ```

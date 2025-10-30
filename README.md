@@ -68,60 +68,65 @@ end
 
 ### Closest version
 
-```ruby
-# app/treaties/users/index_treaty.rb
-class Users::IndexTreaty < ApplicationTreaty
-  version :v1 do
-    strategy :direct
+<details>
+    <summary>This version cannot be implemented due to too many functional requirements</summary>
 
-    # Present: first_name, last_name. Missing: middle_name.
-    delegate_to Users::V1::IndexService
-  end
+    ```ruby
+    # app/treaties/users/index_treaty.rb
+    class Users::IndexTreaty < ApplicationTreaty
+      version :v1 do
+        strategy :direct
+    
+        # Present: first_name, last_name. Missing: middle_name.
+        delegate_to Users::V1::IndexService
+      end
+    
+      version :v2 do
+        strategy :adapter
+    
+        # There is no space for domain and HTTP code.
+        response :id,
+                 :first_name,
+                 :middle_name,
+                 :last_name
+    
+        delegate_to Users::Stable::IndexService
+      end
+    end
+    ```
+    
+    ```ruby
+    # app/treaties/users/create_treaty.rb
+    class Users::CreateTreaty < ApplicationTreaty
+      version :v1 do
+        summary "The first version of the contract for creating a user"
+        strategy :direct
+    
+        # Present: first_name, last_name. Missing: middle_name.
+        delegate_to Users::V1::CreateService
+      end
+    
+      version :v2 do
+        summary "Added middle name to expand user data"
+        strategy :adapter
+    
+        # There is no space for domain and HTTP code.
+        request :first_name,
+                :middle_name,
+                :last_name
+    
+        # There is no space for domain and HTTP code.
+        response :id,
+                 :first_name,
+                 :middle_name,
+                 :last_name
+    
+        delegate_to Users::Stable::CreateService
+      end
+    end
+    ```
 
-  version :v2 do
-    strategy :adapter
-
-    # There is no space for domain and HTTP code.
-    response :id,
-             :first_name,
-             :middle_name,
-             :last_name
-
-    delegate_to Users::Stable::IndexService
-  end
-end
-```
-
-```ruby
-# app/treaties/users/create_treaty.rb
-class Users::CreateTreaty < ApplicationTreaty
-  version :v1 do
-    summary "The first version of the contract for creating a user"
-    strategy :direct
-
-    # Present: first_name, last_name. Missing: middle_name.
-    delegate_to Users::V1::CreateService
-  end
-
-  version :v2 do
-    summary "Added middle name to expand user data"
-    strategy :adapter
-
-    # There is no space for domain and HTTP code.
-    request :first_name,
-            :middle_name,
-            :last_name
-
-    # There is no space for domain and HTTP code.
-    response :id,
-             :first_name,
-             :middle_name,
-             :last_name
-
-    delegate_to Users::Stable::CreateService
-  end
-end
-```
+</details>
 
 ### Desired result
 
@@ -177,9 +182,9 @@ class Users::CreateTreaty < ApplicationTreaty
 
     # accepts :user do
     request :user do
-      required :first_name, :string
-      optional :middle_name, :string
-      required :last_name, :string
+      string :first_name, :string, :required
+      string :middle_name, :string, :optional
+      string :last_name, :string, :required
     end
 
     # provides :user, 201 do
@@ -199,20 +204,20 @@ class Users::CreateTreaty < ApplicationTreaty
 
     # accepts :user do
     request :user do
-      required :first_name, :string
-      optional :middle_name, :string
-      required :last_name, :string
+      string :first_name, :required
+      string :middle_name, :optional
+      string :last_name, :required
 
-      required :address do
-        required :street, :string
-        required :city, :string
-        required :state, :string
-        required :zipcode, :string
+      object :address, :required do
+        string :street, :required
+        string :city, :required
+        string :state, :required
+        string :zipcode, :required
       end
 
-      optional :socials, :array do
-        required :provider, :string, in: %w[twitter linkedin github]
-        required :handle, :string, as: :value
+      array :socials, :optional do
+        string :provider, :required, in: %w[twitter linkedin github]
+        string :handle, :required, as: :value
       end
     end
 

@@ -181,6 +181,41 @@ class Users::CreateTreaty < ApplicationTreaty
 
     use Users::Stable::CreateService
   end
+
+  version :v3, "Added user address information" do
+    strategy :adapter
+
+    request :user do
+      string! :first_name
+      string? :middle_name
+      string! :last_name
+      one! :address do
+        string! :street
+        string! :city
+        string! :state
+        string! :zipcode
+      end
+      many? :socials do
+        string! :provider
+        string! :value
+      end
+    end
+
+    response :user, 201 do
+      string! :id
+      string! :first_name
+      string? :middle_name
+      string! :last_name
+      one! :address do
+        string! :street
+        string! :city
+        string! :state
+        string! :zipcode
+      end
+    end
+
+    use Users::Stable::CreateService
+  end
 end
 ```
 

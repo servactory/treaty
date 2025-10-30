@@ -71,60 +71,60 @@ end
 <details>
     <summary>This version cannot be implemented due to too many functional requirements</summary>
 
-    ```ruby
-    # app/treaties/users/index_treaty.rb
-    class Users::IndexTreaty < ApplicationTreaty
-      version :v1 do
-        strategy :direct
-    
-        # Present: first_name, last_name. Missing: middle_name.
-        delegate_to Users::V1::IndexService
-      end
-    
-      version :v2 do
-        strategy :adapter
-    
-        # There is no space for domain and HTTP code.
-        response :id,
-                 :first_name,
-                 :middle_name,
-                 :last_name
-    
-        delegate_to Users::Stable::IndexService
-      end
-    end
-    ```
-    
-    ```ruby
-    # app/treaties/users/create_treaty.rb
-    class Users::CreateTreaty < ApplicationTreaty
-      version :v1 do
-        summary "The first version of the contract for creating a user"
-        strategy :direct
-    
-        # Present: first_name, last_name. Missing: middle_name.
-        delegate_to Users::V1::CreateService
-      end
-    
-      version :v2 do
-        summary "Added middle name to expand user data"
-        strategy :adapter
-    
-        # There is no space for domain and HTTP code.
-        request :first_name,
-                :middle_name,
-                :last_name
-    
-        # There is no space for domain and HTTP code.
-        response :id,
-                 :first_name,
-                 :middle_name,
-                 :last_name
-    
-        delegate_to Users::Stable::CreateService
-      end
-    end
-    ```
+```ruby
+# app/treaties/users/index_treaty.rb
+class Users::IndexTreaty < ApplicationTreaty
+  version :v1 do
+    strategy :direct
+
+    # Present: first_name, last_name. Missing: middle_name.
+    delegate_to Users::V1::IndexService
+  end
+
+  version :v2 do
+    strategy :adapter
+
+    # There is no space for domain and HTTP code.
+    response :id,
+             :first_name,
+             :middle_name,
+             :last_name
+
+    delegate_to Users::Stable::IndexService
+  end
+end
+```
+
+```ruby
+# app/treaties/users/create_treaty.rb
+class Users::CreateTreaty < ApplicationTreaty
+  version :v1 do
+    summary "The first version of the contract for creating a user"
+    strategy :direct
+
+    # Present: first_name, last_name. Missing: middle_name.
+    delegate_to Users::V1::CreateService
+  end
+
+  version :v2 do
+    summary "Added middle name to expand user data"
+    strategy :adapter
+
+    # There is no space for domain and HTTP code.
+    request :first_name,
+            :middle_name,
+            :last_name
+
+    # There is no space for domain and HTTP code.
+    response :id,
+             :first_name,
+             :middle_name,
+             :last_name
+
+    delegate_to Users::Stable::CreateService
+  end
+end
+```
 
 </details>
 

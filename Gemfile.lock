@@ -325,12 +325,12 @@ PLATFORMS
 DEPENDENCIES
   aasm (>= 5.5)
   appraisal (>= 2.5)
-  treaty!
   rake (>= 13.2)
   rspec (>= 3.13)
   rspec-rails (>= 7.0)
   servactory-rubocop (>= 0.9)
   sqlite3 (>= 2.1)
+  treaty!
 
 BUNDLED WITH
    2.7.2

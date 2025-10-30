@@ -6,7 +6,7 @@ lib_dir = File.expand_path("../..", __dir__)
 
 loader = Zeitwerk::Loader.new
 
-loader.tag = "pactory"
+loader.tag = "treaty"
 
 loader.inflector = Zeitwerk::GemInflector.new(
   File.expand_path("web.rb", lib_dir)

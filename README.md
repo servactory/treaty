@@ -1,4 +1,4 @@
-# Pactory
+# Treaty
 
 ## Draft
 
@@ -17,16 +17,16 @@ end
 ```
 
 ```ruby
-# app/pacts/application_pact.rb
-class ApplicationPact < Pactory::Base
+# app/treaties/application_treaty.rb
+class ApplicationTreaty < Treaty::Base
 end
 ```
 
 ### Closest version
 
 ```ruby
-# app/pacts/users/index_pact.rb
-class Users::IndexPact < ApplicationPact
+# app/treaties/users/index_treaty.rb
+class Users::IndexTreaty < ApplicationTreaty
   version :v1 do
     strategy :service_chain
 
@@ -48,8 +48,8 @@ end
 ```
 
 ```ruby
-# app/pacts/users/create_pact.rb
-class Users::CreatePact < ApplicationPact
+# app/treaties/users/create_treaty.rb
+class Users::CreateTreaty < ApplicationTreaty
   version :v1, "The first version of the contract for creating a user" do
     strategy :service_chain
 
@@ -77,8 +77,8 @@ end
 ### Desired result
 
 ```ruby
-# app/pacts/users/index_pact.rb
-class Users::IndexPact < ApplicationPact
+# app/treaties/users/index_treaty.rb
+class Users::IndexTreaty < ApplicationTreaty
   version :v1 do
     strategy :service_chain
 
@@ -101,8 +101,8 @@ end
 ```
 
 ```ruby
-# app/pacts/users/create_pact.rb
-class Users::CreatePact < ApplicationPact
+# app/treaties/users/create_treaty.rb
+class Users::CreateTreaty < ApplicationTreaty
   version :v1, "The first version of the contract for creating a user" do
     strategy :service_chain
 
@@ -133,4 +133,4 @@ end
 
 ### Problems
 
-- How to share a dataset between pacts (controller actions)?
+- How to share a dataset between treaties (controller actions)?

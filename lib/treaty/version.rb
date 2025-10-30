@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Pactory
+module Treaty
   module VERSION
     MAJOR = 0
     MINOR = 1

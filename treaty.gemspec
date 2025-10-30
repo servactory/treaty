@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-require_relative "lib/pactory/version"
+require_relative "lib/treaty/version"
 
 Gem::Specification.new do |spec|
-  spec.name          = "pactory"
-  spec.version       = Pactory::VERSION::STRING
+  spec.name          = "treaty"
+  spec.version       = Treaty::VERSION::STRING
   spec.platform      = Gem::Platform::RUBY
 
   spec.authors       = ["Anton Sokolov"]
@@ -12,12 +12,12 @@ Gem::Specification.new do |spec|
 
   spec.summary       = "Redis ORM"
   spec.description   = spec.summary
-  spec.homepage      = "https://github.com/servactory/pactory"
+  spec.homepage      = "https://github.com/servactory/treaty"
 
   spec.license       = "MIT"
 
   spec.metadata["homepage_uri"] = spec.homepage
-  # spec.metadata["documentation_uri"] = "https://pactory.servactory.com"
+  # spec.metadata["documentation_uri"] = "https://treaty.servactory.com"
   spec.metadata["source_code_uri"] = spec.homepage
   spec.metadata["bug_tracker_uri"] = "#{spec.homepage}/issues"
   spec.metadata["changelog_uri"] = "#{spec.homepage}/blob/master/CHANGELOG.md"

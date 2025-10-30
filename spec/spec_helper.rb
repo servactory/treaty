@@ -5,7 +5,7 @@ ENV["RAILS_ENV"] = "test"
 
 require_relative "sandbox/config/environment"
 
-require "pactory"
+require "treaty"
 
 require "rspec/rails"
 

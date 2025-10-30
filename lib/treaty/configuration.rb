@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Pactory
+module Treaty
   class Configuration
     include ::ActiveModel::Validations
 

@@ -3,4 +3,33 @@
 class ApplicationController < ActionController::Base
   # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
   # allow_browser versions: :modern
+
+  rescue_from Treaty::Exceptions::Validation, with: :render_validation_error
+  rescue_from Treaty::Exceptions::Execution, with: :render_execution_error
+  rescue_from Treaty::Exceptions::Unexpected, with: :render_unexpected_error
+
+  private
+
+  def render_validation_error(exception)
+    render json: build_error_response_for(exception),
+           status: :unprocessable_entity
+  end
+
+  def render_execution_error(exception)
+    render json: build_error_response_for(exception),
+           status: :bad_request
+  end
+
+  def render_unexpected_error(exception)
+    render json: build_error_response_for(exception),
+           status: :internal_server_error
+  end
+
+  def build_error_response_for(exception)
+    {
+      error: {
+        message: exception.message
+      }
+    }
+  end
 end

@@ -5,7 +5,7 @@ Treaty::Engine.configure do |config|
     accept = context.request.headers["Accept"]
     return if accept.blank?
 
-    match = accept.match(/application\/vnd\.myapp\.v(\d+)/)
+    match = accept.match(%r{application/vnd\.myapp\.v(\d+)})
     return if match.blank?
 
     match[1].to_i

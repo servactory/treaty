@@ -4,8 +4,10 @@ module Treaty
   class Configuration
     include ::ActiveModel::Validations
 
-    # def initialize
-    #   # TODO
-    # end
+    attr_accessor :version
+
+    def initialize
+      @version = ->(context) { context }
+    end
   end
 end

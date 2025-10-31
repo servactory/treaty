@@ -18,5 +18,15 @@ module Treaty
         end
       end
     end
+
+    initializer "treaty.controller_methods" do
+      ActiveSupport.on_load(:action_controller_base) do
+        include Treaty::Controllers::DSL
+      end
+
+      ActiveSupport.on_load(:action_controller_api) do
+        include Treaty::Controllers::DSL
+      end
+    end
   end
 end

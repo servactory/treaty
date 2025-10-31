@@ -3,6 +3,8 @@
 # Configure Rails Environment
 ENV["RAILS_ENV"] = "test"
 
+require "servactory"
+
 require_relative "sandbox/config/environment"
 
 require "treaty"

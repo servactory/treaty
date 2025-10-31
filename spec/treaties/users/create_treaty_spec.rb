@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 RSpec.describe Users::CreateTreaty do
-  subject(:perform) { described_class.call!(context:, params:) }
+  subject(:perform) { described_class.call!(controller:, params:) }
 
-  let(:context) { nil }
+  let(:controller) { nil }
   let(:params) { {} }
 
   context "when required data for work is valid" do

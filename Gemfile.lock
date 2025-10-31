@@ -2,15 +2,12 @@ PATH
   remote: .
   specs:
     treaty (0.1.0)
-      kredis (>= 1.8)
       rails (>= 7.1)
       zeitwerk (>= 2.6)
 
 GEM
   remote: https://rubygems.org/
   specs:
-    aasm (5.5.2)
-      concurrent-ruby (~> 1.0)
     action_text-trix (2.1.15)
       railties
     actioncable (8.1.1)
@@ -111,10 +108,6 @@ GEM
       rdoc (>= 4.0.0)
       reline (>= 0.4.2)
     json (2.15.2)
-    kredis (1.8.0)
-      activemodel (>= 6.0.0)
-      activesupport (>= 6.0.0)
-      redis (>= 4.2, < 6)
     language_server-protocol (3.17.0.5)
     lint_roller (1.1.0)
     logger (1.7.0)
@@ -130,6 +123,7 @@ GEM
     marcel (1.1.0)
     mini_mime (1.1.5)
     minitest (5.26.0)
+    mutex_m (0.3.0)
     net-imap (0.5.12)
       date
       net-protocol
@@ -139,7 +133,7 @@ GEM
       timeout
     net-smtp (0.5.1)
       net-protocol
-    nio4r (2.7.4)
+    nio4r (2.7.5)
     nokogiri (1.18.10-aarch64-linux-gnu)
       racc (~> 1.4)
     nokogiri (1.18.10-aarch64-linux-musl)
@@ -208,14 +202,10 @@ GEM
       zeitwerk (~> 2.6)
     rainbow (3.1.1)
     rake (13.3.1)
-    rdoc (6.15.0)
+    rdoc (6.15.1)
       erb
       psych (>= 4.0.0)
       tsort
-    redis (5.4.1)
-      redis-client (>= 0.22.0)
-    redis-client (0.26.1)
-      connection_pool
     regexp_parser (2.11.3)
     reline (0.6.2)
       io-console (~> 0.5)
@@ -228,7 +218,7 @@ GEM
     rspec-expectations (3.13.5)
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.13.0)
-    rspec-mocks (3.13.6)
+    rspec-mocks (3.13.7)
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.13.0)
     rspec-rails (8.0.2)
@@ -240,7 +230,7 @@ GEM
       rspec-mocks (~> 3.13)
       rspec-support (~> 3.13)
     rspec-support (3.13.6)
-    rubocop (1.81.6)
+    rubocop (1.81.7)
       json (~> 2.3)
       language_server-protocol (~> 3.17.0.2)
       lint_roller (~> 1.1.0)
@@ -279,6 +269,13 @@ GEM
       rubocop-rspec (~> 3.5)
     ruby-progressbar (1.13.0)
     securerandom (0.4.1)
+    servactory (2.16.1)
+      activesupport (>= 5.1)
+      base64 (>= 0.2)
+      bigdecimal (>= 3.1)
+      i18n (>= 1.14)
+      mutex_m (>= 0.3)
+      zeitwerk (>= 2.6)
     servactory-rubocop (0.9.0)
       rubocop (>= 1.73)
       rubocop-factory_bot (>= 2.27)
@@ -304,7 +301,7 @@ GEM
     unicode-display_width (3.2.0)
       unicode-emoji (~> 4.1)
     unicode-emoji (4.1.0)
-    uri (1.0.4)
+    uri (1.1.0)
     useragent (0.16.11)
     websocket-driver (0.8.0)
       base64
@@ -323,11 +320,11 @@ PLATFORMS
   x86_64-linux-musl
 
 DEPENDENCIES
-  aasm (>= 5.5)
   appraisal (>= 2.5)
   rake (>= 13.2)
   rspec (>= 3.13)
   rspec-rails (>= 7.0)
+  servactory (>= 2.16)
   servactory-rubocop (>= 0.9)
   sqlite3 (>= 2.1)
   treaty!

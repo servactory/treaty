@@ -19,12 +19,33 @@ Treaty::Engine.configure do |config|
 
     match[1].to_i
   end
+end
+```
 
-  config.error_handler = lambda do |exception|
-    Sentry.capture_exception(exception)
+```ruby
+class ApplicationController < ActionController::API
+  rescue_from Treaty::Exceptions::Validation, with: :render_validation_error
+  rescue_from Treaty::Exceptions::Execution, with: :render_execution_error
+  rescue_from Treaty::Exceptions::Unexpected, with: :render_unexpected_error
+
+  private
+
+  def render_validation_error(exception)
+    render json: build_error_response_for(exception),
+           status: :unprocessable_entity
   end
 
-  config.error_response = lambda do |exception|
+  def render_execution_error(exception)
+    render json: build_error_response_for(exception),
+           status: :bad_request
+  end
+
+  def render_unexpected_error(exception)
+    render json: build_error_response_for(exception),
+           status: :internal_server_error
+  end
+
+  def build_error_response_for(exception)
     {
       error: {
         message: exception.message
@@ -38,7 +59,7 @@ end
 # app/controllers/users_controller.rb
 class UsersController < ApplicationController
   treaty :index
-  
+
   treaty :create
 
   # Equivalent to:
@@ -46,16 +67,6 @@ class UsersController < ApplicationController
   #   treaty = Users::CreateTreaty.call!(context: self, params:)
   #
   #   render json: treaty.data, status: treaty.status
-  # rescue Treaty::Exceptions::Validation => e
-  #   Treaty::Engine.config.treaty.error_handler.call(e)
-  #
-  #   render json: Treaty::Engine.config.treaty.error_response.call(e),
-  #          status: :unprocessable_entity
-  # rescue Treaty::Exceptions::Service => e
-  #   Treaty::Engine.config.treaty.error_handler.call(e)
-  #  
-  #   render json: Treaty::Engine.config.treaty.error_response.call(e),
-  #          status: :bad_request
   # end
 end
 ```
@@ -100,7 +111,7 @@ end
 class Users::CreateTreaty < ApplicationTreaty
   version :v1 do
     summary "The first version of the contract for creating a user"
-    
+
     strategy :direct
 
     # Present: first_name, last_name. Missing: middle_name.
@@ -109,7 +120,7 @@ class Users::CreateTreaty < ApplicationTreaty
 
   version :v2 do
     summary "Added middle name to expand user data"
-    
+
     strategy :adapter
 
     # There is no space for domain and HTTP code.
@@ -138,6 +149,13 @@ class Users::IndexTreaty < ApplicationTreaty
   version :v1 do
     strategy :direct
 
+    # Query: filters[first_name], filters[middle_name], filters[last_name]
+    request :filters do
+      string :first_name, :string, :optional
+      string :middle_name, :string, :optional
+      string :last_name, :string, :optional
+    end
+
     response :users, 200
 
     # Present: first_name, last_name. Missing: middle_name.
@@ -146,6 +164,13 @@ class Users::IndexTreaty < ApplicationTreaty
 
   version :v2 do
     strategy :adapter
+
+    # Query: filters[first_name], filters[middle_name], filters[last_name]
+    request :filters do
+      string :first_name, :string, :optional
+      string :middle_name, :string, :optional
+      string :last_name, :string, :optional
+    end
 
     response :users, 200 do
       string :id
@@ -164,7 +189,7 @@ end
 class Users::CreateTreaty < ApplicationTreaty
   version :v1 do
     summary "The first version of the contract for creating a user"
-    
+
     strategy :direct
 
     deprecated do
@@ -181,17 +206,15 @@ class Users::CreateTreaty < ApplicationTreaty
 
   version :v2 do
     summary "Added middle name to expand user data"
-    
+
     strategy :adapter
 
-    # accepts :user do
     request :user do
       string :first_name, :string, :required
       string :middle_name, :string, :optional
       string :last_name, :string, :required
     end
 
-    # provides :user, 201 do
     response :user, 201 do
       string :id
       string :first_name
@@ -204,11 +227,14 @@ class Users::CreateTreaty < ApplicationTreaty
 
   version :v3 do
     summary "Added address and socials to expand user data"
-    
+
     strategy :adapter
 
-    # accepts :user do
     request :user do
+      # Query
+      string :signature, :required
+
+      # Body
       string :first_name, :required
       string :middle_name, :optional
       string :last_name, :required
@@ -226,7 +252,6 @@ class Users::CreateTreaty < ApplicationTreaty
       end
     end
 
-    # provides :user, 201 do
     response :user, 201 do
       string :id
       string :first_name

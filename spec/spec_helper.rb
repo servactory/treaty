@@ -11,7 +11,7 @@ require "treaty"
 
 require "rspec/rails"
 
-# Dir[File.join(__dir__, "support", "**", "*.rb")].each { |file| require file }
+Dir[File.join(__dir__, "support", "**", "*.rb")].each { |file| require file }
 
 # I18n.load_path += Dir["#{File.expand_path('config/locales')}/*.yml"]
 

@@ -13,7 +13,14 @@ module Treaty
         def treaty(action_name)
           define_method(action_name) do
             # TODO
-            render json: :ok
+            render json: {
+              user: {
+                id: SecureRandom.uuid,
+                first_name: "John",
+                middle_name: nil,
+                last_name: "Doe"
+              }
+            }
           end
         end
       end

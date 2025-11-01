@@ -4,7 +4,7 @@ module Gate
   module API
     module Users
       class IndexTreaty < ApplicationTreaty
-        version :v1 do
+        version "1" do # Also supported: 1.0, 1.0.0.rc1
           strategy :direct
 
           # Query: filters[first_name], filters[middle_name], filters[last_name]
@@ -20,7 +20,7 @@ module Gate
           delegate_to ::Users::V1::IndexService
         end
 
-        version :v2 do
+        version "2" do # Also supported: 2.0, 2.0.0.rc1
           strategy :adapter
 
           # Query: filters[first_name], filters[middle_name], filters[last_name]

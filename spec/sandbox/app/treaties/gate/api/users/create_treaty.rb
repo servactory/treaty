@@ -4,7 +4,7 @@ module Gate
   module API
     module Users
       class CreateTreaty < ApplicationTreaty
-        version :v1 do
+        version "1" do # Also supported: 1.0, 1.0.0.rc1
           summary "The first version of the contract for creating a user"
 
           strategy :direct
@@ -21,7 +21,7 @@ module Gate
           delegate_to ::Users::V1::CreateService
         end
 
-        version :v2 do
+        version "2" do # Also supported: 2.0, 2.0.0.rc1
           summary "Added middle name to expand user data"
 
           strategy :adapter
@@ -42,7 +42,7 @@ module Gate
           delegate_to ::Users::Stable::CreateService
         end
 
-        version :v3 do
+        version "3" do # Also supported: 3.0, 3.0.0.rc1
           summary "Added address and socials to expand user data"
 
           strategy :adapter

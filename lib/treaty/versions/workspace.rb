@@ -9,8 +9,8 @@ module Treaty
         super
 
         # TODO: Current version
-        # Example: v1
-        # Treaty::Engine.config.treaty.version.call(controller)
+        # Example: 1, 1.0, 1.0.0, 1.0.0.rc1
+        # Treaty::Engine.config.treaty.version.call(controller).segments.inspect
 
         nil # delete me
       end

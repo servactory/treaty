@@ -10,8 +10,11 @@ module Treaty
       module ClassMethods
         private
 
-        def treaty(_action_name)
-          # TODO
+        def treaty(action_name)
+          define_method(action_name) do
+            # TODO
+            render json: :ok
+          end
         end
       end
     end

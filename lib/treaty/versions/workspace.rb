@@ -9,6 +9,7 @@ module Treaty
         super
 
         # TODO: Current version
+        # Example: v1
         # Treaty::Engine.config.treaty.version.call(controller)
 
         nil # delete me

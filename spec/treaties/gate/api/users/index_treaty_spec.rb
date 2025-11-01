@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Users::CreateTreaty do
+RSpec.describe Gate::API::Users::IndexTreaty do
   subject(:perform) { described_class.call!(controller:, params:) }
 
   let(:controller) { nil }

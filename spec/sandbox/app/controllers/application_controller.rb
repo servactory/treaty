@@ -1,11 +1,9 @@
 # frozen_string_literal: true
 
-class ApplicationController < ActionController::Base
-  # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
-  # allow_browser versions: :modern
-
+class ApplicationController < ActionController::API
   rescue_from Treaty::Exceptions::Validation, with: :render_validation_error
   rescue_from Treaty::Exceptions::Execution, with: :render_execution_error
+  rescue_from Treaty::Exceptions::ClassName, with: :render_class_name_error
   rescue_from Treaty::Exceptions::Unexpected, with: :render_unexpected_error
 
   private
@@ -18,6 +16,11 @@ class ApplicationController < ActionController::Base
   def render_execution_error(exception)
     render json: build_error_response_for(exception),
            status: :bad_request
+  end
+
+  def render_class_name_error(exception)
+    render json: build_error_response_for(exception),
+           status: :internal_server_error
   end
 
   def render_unexpected_error(exception)

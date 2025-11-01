@@ -38,6 +38,7 @@ module Treaty
         end
 
         def treaty_class_name
+          # TODO: Need to move `Treaty` to configuration.
           self.class.name.sub(/Controller$/, "::#{action_name.to_s.classify}Treaty")
         end
       end

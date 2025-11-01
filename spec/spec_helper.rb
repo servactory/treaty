@@ -45,4 +45,6 @@ RSpec.configure do |config|
     # doing truncation.
     c.max_formatted_output_length = nil
   end
+
+  config.include RequestHelper, type: :controller
 end

@@ -20,7 +20,7 @@ module Gate
           delegate_to ::Users::V1::IndexService
         end
 
-        version "1.0.0.rc1" do # Just to keep the idea going.
+        version "1.0.0.rc2" do # Just to keep the idea going.
           strategy :direct
 
           # Query: filters[first_name], filters[middle_name], filters[last_name]

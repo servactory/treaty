@@ -35,15 +35,21 @@ RSpec.describe Gate::API::Users::CreateTreaty do
                   versions: [
                     {
                       version: "1",
-                      segments: [1]
+                      segments: [1],
+                      strategy: :direct,
+                      summary: "The first version of the contract for creating a user"
                     },
                     {
                       version: "2",
-                      segments: [2]
+                      segments: [2],
+                      strategy: :adapter,
+                      summary: "Added middle name to expand user data"
                     },
                     {
                       version: "3",
-                      segments: [3]
+                      segments: [3],
+                      strategy: :adapter,
+                      summary: "Added address and socials to expand user data"
                     }
                   ]
 

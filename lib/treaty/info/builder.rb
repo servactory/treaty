@@ -27,10 +27,12 @@ module Treaty
 
       def build_versions_with(collection:)
         @versions = collection.map do |version|
-          version = version.version.version
+          gem_version = version.version.version
           {
-            version: version.version,
-            segments: version.segments
+            version: gem_version.version,
+            segments: gem_version.segments,
+            summary: version.summary_text,
+            strategy: version.strategy_code
           }
         end
       end

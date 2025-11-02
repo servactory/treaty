@@ -35,19 +35,27 @@ RSpec.describe Gate::API::Users::IndexTreaty do
                   versions: [
                     {
                       version: "1.0.0.rc1",
-                      segments: [1, 0, 0, "rc", 1]
+                      segments: [1, 0, 0, "rc", 1],
+                      strategy: :direct,
+                      summary: nil
                     },
                     {
-                      version: "1.0.0.rc1",
-                      segments: [1, 0, 0, "rc", 1]
+                      version: "1.0.0.rc2",
+                      segments: [1, 0, 0, "rc", 2],
+                      strategy: :direct,
+                      summary: nil
                     },
                     {
                       version: "1",
-                      segments: [1]
+                      segments: [1],
+                      strategy: :direct,
+                      summary: nil
                     },
                     {
                       version: "2",
-                      segments: [2]
+                      segments: [2],
+                      strategy: :adapter,
+                      summary: nil
                     }
                   ]
 

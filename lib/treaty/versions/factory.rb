@@ -3,18 +3,20 @@
 module Treaty
   module Versions
     class Factory
-      attr_reader :version
+      attr_reader :version,
+                  :summary_text,
+                  :strategy_code
 
       def initialize(version)
         @version = Semantic.new(version)
       end
 
       def summary(text)
-        text
+        @summary_text = text
       end
 
       def strategy(name)
-        name
+        @strategy_code = name
       end
 
       def deprecated(&_block) # rubocop:disable Naming/PredicateMethod

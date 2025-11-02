@@ -11,8 +11,8 @@ module Treaty
       class << self
         def map(helpers)
           helpers.each_with_object({}) do |helper, result|
-            mapping = HELPER_MAPPINGS[helper]
-            result.merge!(mapping) if mapping
+            mapping = HELPER_MAPPINGS.fetch(helper)
+            result.merge!(mapping) if mapping.present?
           end
         end
 

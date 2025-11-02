@@ -26,7 +26,7 @@ module Treaty
       # Reverse mapping: advanced_key => value_key
       # Used to determine value key when option is already in advanced mode.
       ADVANCED_KEY_TO_VALUE_KEY = OPTION_KEY_MAPPING.each_with_object({}) do |(_, config), result|
-        result[config[:advanced_key]] = config[:value_key]
+        result[config.fetch(:advanced_key)] = config.fetch(:value_key)
       end.freeze
       private_constant :ADVANCED_KEY_TO_VALUE_KEY
 
@@ -44,17 +44,17 @@ module Treaty
         private
 
         def normalize_option(key, value) # rubocop:disable Metrics/MethodLength
-          mapping = OPTION_KEY_MAPPING[key]
+          mapping = OPTION_KEY_MAPPING.fetch(key, nil)
 
           if mapping.present?
             # Special handling for mapped options (e.g., in -> inclusion).
-            advanced_key = mapping[:advanced_key]
-            value_key = mapping[:value_key]
+            advanced_key = mapping.fetch(:advanced_key)
+            value_key = mapping.fetch(:value_key)
             normalized_value = normalize_value(value, value_key)
             [advanced_key, normalized_value]
           else
             # Check if this key is already an advanced mode key.
-            value_key = ADVANCED_KEY_TO_VALUE_KEY[key] || DEFAULT_VALUE_KEY
+            value_key = ADVANCED_KEY_TO_VALUE_KEY.fetch(key, nil) || DEFAULT_VALUE_KEY
             normalized_value = normalize_value(value, value_key)
             [key, normalized_value]
           end
@@ -63,7 +63,7 @@ module Treaty
         def normalize_value(value, value_key)
           if advanced_mode?(value, value_key)
             # Already in advanced mode, ensure it has both keys.
-            { value_key => value[value_key], message: value[:message] }
+            { value_key => value.fetch(value_key), message: value.fetch(:message, nil) }
           else
             # Simple mode, convert to advanced.
             # TODO: It is necessary to implement a translation system (I18n).

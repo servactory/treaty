@@ -38,28 +38,32 @@ RSpec.describe Gate::API::Users::IndexTreaty do
                       segments: [1, 0, 0, "rc", 1],
                       strategy: :direct,
                       summary: nil,
-                      deprecated: true
+                      deprecated: true,
+                      executor: Users::V1::IndexService
                     },
                     {
                       version: "1.0.0.rc2",
                       segments: [1, 0, 0, "rc", 2],
                       strategy: :direct,
                       summary: nil,
-                      deprecated: true
+                      deprecated: true,
+                      executor: Users::V1::IndexService
                     },
                     {
                       version: "1",
                       segments: [1],
                       strategy: :direct,
                       summary: nil,
-                      deprecated: false
+                      deprecated: false,
+                      executor: Users::V1::IndexService
                     },
                     {
                       version: "2",
                       segments: [2],
                       strategy: :adapter,
                       summary: nil,
-                      deprecated: false
+                      deprecated: false,
+                      executor: Users::Stable::IndexService
                     }
                   ]
 

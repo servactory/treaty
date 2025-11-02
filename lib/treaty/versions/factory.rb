@@ -6,13 +6,15 @@ module Treaty
       attr_reader :version,
                   :summary_text,
                   :strategy_code,
-                  :deprecated_result
+                  :deprecated_result,
+                  :executor
 
       def initialize(version)
         @version = Semantic.new(version)
         @summary_text = nil
         @strategy_code = :adapter
         @deprecated_result = false
+        @executor = nil
       end
 
       def summary(text)
@@ -49,7 +51,7 @@ module Treaty
       end
 
       def delegate_to(service_class)
-        service_class
+        @executor = service_class
       end
 
       # def method_missing(name, *helpers, **options)

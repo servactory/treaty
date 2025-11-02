@@ -38,21 +38,24 @@ RSpec.describe Gate::API::Users::CreateTreaty do
                       segments: [1],
                       strategy: :direct,
                       summary: "The first version of the contract for creating a user",
-                      deprecated: false
+                      deprecated: false,
+                      executor: Users::V1::CreateService
                     },
                     {
                       version: "2",
                       segments: [2],
                       strategy: :adapter,
                       summary: "Added middle name to expand user data",
-                      deprecated: false
+                      deprecated: false,
+                      executor: Users::Stable::CreateService
                     },
                     {
                       version: "3",
                       segments: [3],
                       strategy: :adapter,
                       summary: "Added address and socials to expand user data",
-                      deprecated: false
+                      deprecated: false,
+                      executor: Users::Stable::CreateService
                     }
                   ]
 

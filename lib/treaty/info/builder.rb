@@ -25,7 +25,7 @@ module Treaty
         )
       end
 
-      def build_versions_with(collection:)
+      def build_versions_with(collection:) # rubocop:disable Metrics/MethodLength
         @versions = collection.map do |version|
           gem_version = version.version.version
           {
@@ -33,7 +33,8 @@ module Treaty
             segments: gem_version.segments,
             summary: version.summary_text,
             strategy: version.strategy_code,
-            deprecated: version.deprecated_result
+            deprecated: version.deprecated_result,
+            executor: version.executor
           }
         end
       end

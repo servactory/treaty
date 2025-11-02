@@ -4,7 +4,7 @@ module Treaty
   module Versions
     class Factory
       def initialize(version)
-        @version = version
+        @version = Semantic.new(version)
       end
 
       def summary(text)

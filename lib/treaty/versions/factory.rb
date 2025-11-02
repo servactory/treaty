@@ -38,28 +38,47 @@ module Treaty
         @deprecated_result = result
       end
 
-      def request(_domain, &_block)
-        # @request_factory ||= Factory.new(domain)
-        #
-        # @request_factory.instance_eval(&block)
+      def request(domain, &block)
+        @request_factory = Request::Factory.new(domain)
+
+        @request_factory.instance_eval(&block) if block_given?
+
+        collection_of_requests << @request_factory
+
+        @request_factory = nil
       end
 
-      def response(_domain, _status, &_block)
-        # @response_factory ||= Factory.new(domain)
-        #
-        # @response_factory.instance_eval(&block)
+      def response(domain, status, &block)
+        @response_factory = Response::Factory.new(domain, status)
+
+        @response_factory.instance_eval(&block) if block_given?
+
+        collection_of_responses << @response_factory
+
+        @response_factory = nil
       end
 
       def delegate_to(service_class)
         @executor = service_class
       end
 
-      # def method_missing(name, *helpers, **options)
-      # end
+      def collection_of_requests
+        @collection_of_requests ||= Request::Collection.new
+      end
 
-      # def respond_to_missing?(name, *)
-      #   super
-      # end
+      def collection_of_responses
+        @collection_of_responses ||= Response::Collection.new
+      end
+
+      ##########################################################################
+
+      def method_missing(name, *, &_block)
+        raise Treaty::Exceptions::MethodName, "Unknown method: #{name}"
+      end
+
+      def respond_to_missing?(name, *)
+        super
+      end
     end
   end
 end

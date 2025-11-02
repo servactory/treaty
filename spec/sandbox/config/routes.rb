@@ -20,6 +20,7 @@ Rails.application.routes.draw do
         collection do
           get :invalid_class
           get :invalid_strategy
+          get :invalid_version_method
         end
       end
     end

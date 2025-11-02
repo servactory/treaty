@@ -11,11 +11,13 @@ module Treaty
 
     def initialize(code)
       @code = code
+    end
 
-      return if LIST.include?(code)
+    def validate!
+      return self if LIST.include?(@code)
 
       raise Treaty::Exceptions::Strategy,
-            "Unknown strategy: #{code}"
+            "Unknown strategy: #{@code}"
     end
 
     def direct?

@@ -12,7 +12,7 @@ module Treaty
       def initialize(version)
         @version = Semantic.new(version)
         @summary_text = nil
-        @strategy_instance = Strategy.new(Strategy::ADAPTER)
+        @strategy_instance = Strategy.new(Strategy::ADAPTER) # without .validate!
         @deprecated_result = false
         @executor = nil
       end
@@ -22,7 +22,7 @@ module Treaty
       end
 
       def strategy(code)
-        @strategy_instance = Strategy.new(code)
+        @strategy_instance = Strategy.new(code).validate!
       end
 
       def deprecated(condition = nil)

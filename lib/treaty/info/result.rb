@@ -3,8 +3,10 @@
 module Treaty
   module Info
     class Result
-      def initialize
-        # TODO
+      attr_reader :versions
+
+      def initialize(builder)
+        @versions = builder.versions
       end
     end
   end

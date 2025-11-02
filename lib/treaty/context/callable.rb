@@ -15,7 +15,8 @@ module Treaty
         context.send(
           :_call!,
           controller:,
-          params:
+          params:,
+          collection_of_versions:
         )
       end
     end

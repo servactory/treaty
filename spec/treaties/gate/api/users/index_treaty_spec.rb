@@ -31,7 +31,25 @@ RSpec.describe Gate::API::Users::IndexTreaty do
     {}
   end
 
-  it_behaves_like "check class info"
+  it_behaves_like "check class info",
+                  versions: [
+                    {
+                      version: "1.0.0.rc1",
+                      segments: [1, 0, 0, "rc", 1]
+                    },
+                    {
+                      version: "1.0.0.rc1",
+                      segments: [1, 0, 0, "rc", 1]
+                    },
+                    {
+                      version: "1",
+                      segments: [1]
+                    },
+                    {
+                      version: "2",
+                      segments: [2]
+                    }
+                  ]
 
   context "when required data for work is valid" do
     it { expect { perform }.not_to raise_error }

@@ -31,7 +31,21 @@ RSpec.describe Gate::API::Users::CreateTreaty do
     {}
   end
 
-  it_behaves_like "check class info"
+  it_behaves_like "check class info",
+                  versions: [
+                    {
+                      version: "1",
+                      segments: [1]
+                    },
+                    {
+                      version: "2",
+                      segments: [2]
+                    },
+                    {
+                      version: "3",
+                      segments: [3]
+                    }
+                  ]
 
   context "when required data for work is valid" do
     it { expect { perform }.not_to raise_error }

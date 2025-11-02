@@ -9,7 +9,11 @@ module Treaty
 
       module ClassMethods
         def info
-          Result.new
+          builder = Builder.build(
+            collection_of_versions:
+          )
+
+          Result.new(builder)
         end
 
         # API: Treaty Web

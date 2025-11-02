@@ -5,20 +5,23 @@ module Treaty
     module Workspace
       private
 
-      def _call!(controller:, params:)
+      def _call!(
+        controller:,
+        params:,
+        collection_of_versions:
+      )
         call!(
           controller:,
-          params:
-          # collection_of_:,
-          # collection_of_:,
-          # collection_of_:
+          params:,
+          collection_of_versions:
         )
       end
 
-      def call!(**)
-        # @collection_of_ = collection_of_
-        # @collection_of_ = collection_of_
-        # @collection_of_ = collection_of_
+      def call!(
+        collection_of_versions:,
+        **
+      )
+        @collection_of_versions = collection_of_versions
       end
     end
   end

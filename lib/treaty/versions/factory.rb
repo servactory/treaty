@@ -3,6 +3,8 @@
 module Treaty
   module Versions
     class Factory
+      attr_reader :version
+
       def initialize(version)
         @version = Semantic.new(version)
       end

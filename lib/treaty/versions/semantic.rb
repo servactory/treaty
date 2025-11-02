@@ -3,6 +3,8 @@
 module Treaty
   module Versions
     class Semantic
+      attr_reader :version
+
       def initialize(version)
         version =
           if version.is_a?(Array)

@@ -2,6 +2,7 @@
 
 module Treaty
   class Base
+    include Info::DSL
     include Context::DSL
     include Versions::DSL
   end

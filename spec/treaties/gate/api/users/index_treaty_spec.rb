@@ -31,6 +31,8 @@ RSpec.describe Gate::API::Users::IndexTreaty do
     {}
   end
 
+  it_behaves_like "check class info"
+
   context "when required data for work is valid" do
     it { expect { perform }.not_to raise_error }
   end

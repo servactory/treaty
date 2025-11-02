@@ -5,10 +5,14 @@ module Treaty
     class Factory
       attr_reader :version,
                   :summary_text,
-                  :strategy_code
+                  :strategy_code,
+                  :deprecated_result
 
       def initialize(version)
         @version = Semantic.new(version)
+        @summary_text = nil
+        @strategy_code = :adapter
+        @deprecated_result = false
       end
 
       def summary(text)
@@ -19,8 +23,17 @@ module Treaty
         @strategy_code = name
       end
 
-      def deprecated(&_block) # rubocop:disable Naming/PredicateMethod
-        false
+      def deprecated(condition = nil)
+        result =
+          if condition.is_a?(Proc)
+            condition.call
+          elsif condition.is_a?(TrueClass) || condition.is_a?(FalseClass)
+            condition
+          else
+            yield
+          end
+
+        @deprecated_result = result
       end
 
       def request(_domain, &_block)

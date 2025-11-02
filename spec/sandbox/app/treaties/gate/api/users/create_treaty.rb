@@ -9,7 +9,7 @@ module Gate
 
           strategy :direct
 
-          deprecated do
+          deprecated do # as block (proc)
             Gem::Version.new(ENV.fetch("RELEASE_VERSION", nil)) >=
               Gem::Version.new("17.0.0")
           end
@@ -25,6 +25,11 @@ module Gate
           summary "Added middle name to expand user data"
 
           strategy :adapter
+
+          deprecated(lambda do # as lambda (proc)
+            Gem::Version.new(ENV.fetch("RELEASE_VERSION", nil)) >=
+              Gem::Version.new("18.0.0")
+          end)
 
           request :user do
             string :first_name, :string, :required

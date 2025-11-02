@@ -7,6 +7,8 @@ module Gate
         version [1, 0, 0, :rc1] do # Just to keep the idea going.
           strategy :direct
 
+          deprecated true # as boolean
+
           # Query: filters[first_name], filters[middle_name], filters[last_name]
           request :filters do
             string :first_name, :string, :optional
@@ -23,6 +25,8 @@ module Gate
         version "1.0.0.rc2" do # Just to keep the idea going.
           strategy :direct
 
+          deprecated true # as boolean
+
           # Query: filters[first_name], filters[middle_name], filters[last_name]
           request :filters do
             string :first_name, :string, :optional
@@ -38,6 +42,11 @@ module Gate
 
         version 1 do # Also supported: 1.0, 1.0.0.rc1
           strategy :direct
+
+          deprecated( # as boolean
+            Gem::Version.new(ENV.fetch("RELEASE_VERSION", nil)) >=
+              Gem::Version.new("17.0.0")
+          )
 
           # Query: filters[first_name], filters[middle_name], filters[last_name]
           request :filters do

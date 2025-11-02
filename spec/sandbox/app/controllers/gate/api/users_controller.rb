@@ -8,6 +8,8 @@ module Gate
       treaty :create
 
       treaty :invalid_class
+
+      treaty :invalid_strategy
     end
   end
 end

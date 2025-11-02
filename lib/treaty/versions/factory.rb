@@ -5,14 +5,14 @@ module Treaty
     class Factory
       attr_reader :version,
                   :summary_text,
-                  :strategy_code,
+                  :strategy_instance,
                   :deprecated_result,
                   :executor
 
       def initialize(version)
         @version = Semantic.new(version)
         @summary_text = nil
-        @strategy_code = :adapter
+        @strategy_instance = Strategy.new(Strategy::ADAPTER)
         @deprecated_result = false
         @executor = nil
       end
@@ -21,8 +21,8 @@ module Treaty
         @summary_text = text
       end
 
-      def strategy(name)
-        @strategy_code = name
+      def strategy(code)
+        @strategy_instance = Strategy.new(code)
       end
 
       def deprecated(condition = nil)

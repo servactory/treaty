@@ -7,7 +7,7 @@ module Gate
         version 1 do # Also supported: 1.0, 1.0.0.rc1
           summary "The first version of the contract for creating a user"
 
-          strategy :direct
+          strategy Treaty::Strategy::DIRECT
 
           deprecated do # as block (proc)
             Gem::Version.new(ENV.fetch("RELEASE_VERSION", "0.0.0")) >=
@@ -24,7 +24,7 @@ module Gate
         version 2 do # Also supported: 2.0, 2.0.0.rc1
           summary "Added middle name to expand user data"
 
-          strategy :adapter
+          strategy Treaty::Strategy::ADAPTER
 
           deprecated(lambda do # as lambda (proc)
             Gem::Version.new(ENV.fetch("RELEASE_VERSION", "0.0.0")) >=
@@ -50,7 +50,7 @@ module Gate
         version 3 do # Also supported: 3.0, 3.0.0.rc1
           summary "Added address and socials to expand user data"
 
-          strategy :adapter
+          strategy Treaty::Strategy::ADAPTER
 
           request :user do
             # Query

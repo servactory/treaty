@@ -32,7 +32,7 @@ module Treaty
             version: gem_version.version,
             segments: gem_version.segments,
             summary: version.summary_text,
-            strategy: version.strategy_code,
+            strategy: version.strategy_instance.code,
             deprecated: version.deprecated_result,
             executor: version.executor
           }

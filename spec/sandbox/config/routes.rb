@@ -19,6 +19,7 @@ Rails.application.routes.draw do
       resources :users, only: %i[index create] do
         collection do
           get :invalid_class
+          get :invalid_strategy
         end
       end
     end

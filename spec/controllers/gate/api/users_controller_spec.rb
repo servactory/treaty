@@ -30,7 +30,10 @@ RSpec.describe Gate::API::UsersController do
     end
 
     it "renders HTTP 200 OK" do
-      expect(perform).to have_http_status(:ok) & have_json_body(expectation)
+      expect(perform).to(
+        have_http_status(:ok) &
+          have_json_body(expectation)
+      )
     end
   end
 
@@ -58,15 +61,48 @@ RSpec.describe Gate::API::UsersController do
     end
 
     it "renders HTTP 200 OK" do
-      expect(perform).to have_http_status(:ok) & have_json_body(expectation)
+      expect(perform).to(
+        have_http_status(:ok) &
+          have_json_body(expectation)
+      )
     end
   end
 
   describe "#invalid_class" do
     subject(:perform) { get :invalid_class }
 
+    let(:expectation) do
+      {
+        error: {
+          message: "Invalid class name: Gate::API::Users::InvalidClassTreaty"
+        }
+      }
+    end
+
     it "renders HTTP 500 Internal Server Error" do
-      expect(perform).to have_http_status(:internal_server_error)
+      expect(perform).to(
+        have_http_status(:internal_server_error) &
+          have_json_body(expectation)
+      )
+    end
+  end
+
+  describe "#invalid_strategy" do
+    subject(:perform) { get :invalid_strategy }
+
+    let(:expectation) do
+      {
+        error: {
+          message: "Unknown strategy: fake"
+        }
+      }
+    end
+
+    it "renders HTTP 500 Internal Server Error" do
+      expect(perform).to(
+        have_http_status(:internal_server_error) &
+          have_json_body(expectation)
+      )
     end
   end
 end

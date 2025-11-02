@@ -5,7 +5,7 @@ module Gate
     module Users
       class IndexTreaty < ApplicationTreaty
         version [1, 0, 0, :rc1] do # Just to keep the idea going.
-          strategy :direct
+          strategy Treaty::Strategy::DIRECT
 
           deprecated true # as boolean
 
@@ -23,7 +23,7 @@ module Gate
         end
 
         version "1.0.0.rc2" do # Just to keep the idea going.
-          strategy :direct
+          strategy Treaty::Strategy::DIRECT
 
           deprecated true # as boolean
 
@@ -41,7 +41,7 @@ module Gate
         end
 
         version 1 do # Also supported: 1.0, 1.0.0.rc1
-          strategy :direct
+          strategy Treaty::Strategy::DIRECT
 
           deprecated( # as boolean
             Gem::Version.new(ENV.fetch("RELEASE_VERSION", "0.0.0")) >=
@@ -62,7 +62,7 @@ module Gate
         end
 
         version 2 do # Also supported: 2.0, 2.0.0.rc1
-          strategy :adapter
+          strategy Treaty::Strategy::ADAPTER
 
           # Query: filters[first_name], filters[middle_name], filters[last_name]
           request :filters do

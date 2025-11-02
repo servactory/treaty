@@ -21,11 +21,11 @@ module Treaty
 
     initializer "treaty.controller_methods" do
       ActiveSupport.on_load(:action_controller_base) do
-        include Treaty::Controllers::DSL
+        include Treaty::Controller::DSL
       end
 
       ActiveSupport.on_load(:action_controller_api) do
-        include Treaty::Controllers::DSL
+        include Treaty::Controller::DSL
       end
     end
   end

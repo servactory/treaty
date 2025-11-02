@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Treaty
-  module Controllers
+  module Controller
     module DSL
       def self.included(base)
         base.extend(ClassMethods)

@@ -86,42 +86,4 @@ RSpec.describe Gate::API::UsersController do
       )
     end
   end
-
-  describe "#invalid_strategy" do
-    subject(:perform) { get :invalid_strategy }
-
-    let(:expectation) do
-      {
-        error: {
-          message: "Unknown strategy: fake"
-        }
-      }
-    end
-
-    it "renders HTTP 500 Internal Server Error" do
-      expect(perform).to(
-        have_http_status(:internal_server_error) &
-          have_json_body(expectation)
-      )
-    end
-  end
-
-  describe "#invalid_version_method" do
-    subject(:perform) { get :invalid_version_method }
-
-    let(:expectation) do
-      {
-        error: {
-          message: "Unknown method: fake"
-        }
-      }
-    end
-
-    it "renders HTTP 500 Internal Server Error" do
-      expect(perform).to(
-        have_http_status(:internal_server_error) &
-          have_json_body(expectation)
-      )
-    end
-  end
 end

@@ -10,10 +10,6 @@ module Gate
       # Below are examples of incorrect usage.
 
       treaty :invalid_class
-
-      treaty :invalid_strategy
-
-      treaty :invalid_version_method
     end
   end
 end

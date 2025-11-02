@@ -23,7 +23,7 @@ RSpec.describe Gate::API::Users::IndexTreaty do
 
   let(:headers) do
     {
-      "Accept" => "application/vnd.myapp-v1+json"
+      "Accept" => "application/vnd.myapp-v3+json"
     }
   end
 

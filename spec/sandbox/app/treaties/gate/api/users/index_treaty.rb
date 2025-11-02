@@ -44,7 +44,7 @@ module Gate
           strategy :direct
 
           deprecated( # as boolean
-            Gem::Version.new(ENV.fetch("RELEASE_VERSION", nil)) >=
+            Gem::Version.new(ENV.fetch("RELEASE_VERSION", "0.0.0")) >=
               Gem::Version.new("17.0.0")
           )
 

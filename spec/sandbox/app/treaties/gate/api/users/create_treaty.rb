@@ -10,7 +10,7 @@ module Gate
           strategy :direct
 
           deprecated do # as block (proc)
-            Gem::Version.new(ENV.fetch("RELEASE_VERSION", nil)) >=
+            Gem::Version.new(ENV.fetch("RELEASE_VERSION", "0.0.0")) >=
               Gem::Version.new("17.0.0")
           end
 
@@ -27,7 +27,7 @@ module Gate
           strategy :adapter
 
           deprecated(lambda do # as lambda (proc)
-            Gem::Version.new(ENV.fetch("RELEASE_VERSION", nil)) >=
+            Gem::Version.new(ENV.fetch("RELEASE_VERSION", "0.0.0")) >=
               Gem::Version.new("18.0.0")
           end)
 

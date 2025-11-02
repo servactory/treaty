@@ -14,8 +14,8 @@ module Gate
               Gem::Version.new("17.0.0")
           end
 
-          request :user
-          response :user, 201
+          request       { scope :user }
+          response(201) { scope :user }
 
           # Present: first_name, last_name. Missing: middle_name.
           delegate_to ::Users::V1::CreateService
@@ -31,17 +31,21 @@ module Gate
               Gem::Version.new("18.0.0")
           end)
 
-          request :user do
-            string :first_name, :string, :required
-            string :middle_name, :string, :optional
-            string :last_name, :string, :required
+          request do
+            scope :user do
+              string :first_name, :string, :required
+              string :middle_name, :string, :optional
+              string :last_name, :string, :required
+            end
           end
 
-          response :user, 201 do
-            string :id
-            string :first_name
-            string :middle_name
-            string :last_name
+          response 201 do
+            scope :user do
+              string :id
+              string :first_name
+              string :middle_name
+              string :last_name
+            end
           end
 
           delegate_to ::Users::Stable::CreateService
@@ -52,43 +56,51 @@ module Gate
 
           strategy Treaty::Strategy::ADAPTER
 
-          request :user do
+          request do
             # Query
-            string :signature, :required
-
-            # Body
-            string :first_name, :required
-            string :middle_name, :optional
-            string :last_name, :required
-
-            object :address, :required do
-              string :street, :required
-              string :city, :required
-              string :state, :required
-              string :zipcode, :required
-            end
-
-            array :socials, :optional do
-              string :provider, :required, in: %w[twitter linkedin github]
-              string :handle, :required, as: :value
+            scope :self do # should be perceived as root
+              string :signature, :required
             end
           end
 
-          response :user, 201 do
-            string :id
-            string :first_name
-            string :middle_name
-            string :last_name
+          request do
+            # Body
+            scope :user do
+              string :first_name, :required
+              string :middle_name, :optional
+              string :last_name, :required
 
-            object :address do
-              string :street
-              string :city
-              string :state
-              string :zipcode
+              object :address, :required do
+                string :street, :required
+                string :city, :required
+                string :state, :required
+                string :zipcode, :required
+              end
+
+              array :socials, :optional do
+                string :provider, :required, in: %w[twitter linkedin github]
+                string :handle, :required, as: :value
+              end
             end
+          end
 
-            datetime :created_at
-            datetime :updated_at
+          response 201 do
+            scope :user do
+              string :id
+              string :first_name
+              string :middle_name
+              string :last_name
+
+              object :address do
+                string :street
+                string :city
+                string :state
+                string :zipcode
+              end
+
+              datetime :created_at
+              datetime :updated_at
+            end
           end
 
           delegate_to ::Users::Stable::CreateService

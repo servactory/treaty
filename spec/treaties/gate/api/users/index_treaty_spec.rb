@@ -39,7 +39,19 @@ RSpec.describe Gate::API::Users::IndexTreaty do
                       strategy: :direct,
                       summary: nil,
                       deprecated: true,
-                      executor: Users::V1::IndexService
+                      executor: Users::V1::IndexService,
+                      request: {
+                        scopes: {
+                          filters: {}
+                        }
+                      },
+                      response: {
+                        status: 200,
+                        scopes: {
+                          meta: {},
+                          users: {}
+                        }
+                      }
                     },
                     {
                       version: "1.0.0.rc2",
@@ -47,7 +59,19 @@ RSpec.describe Gate::API::Users::IndexTreaty do
                       strategy: :direct,
                       summary: nil,
                       deprecated: true,
-                      executor: Users::V1::IndexService
+                      executor: Users::V1::IndexService,
+                      request: {
+                        scopes: {
+                          filters: {}
+                        }
+                      },
+                      response: {
+                        status: 200,
+                        scopes: {
+                          meta: {},
+                          users: {}
+                        }
+                      }
                     },
                     {
                       version: "1",
@@ -55,7 +79,19 @@ RSpec.describe Gate::API::Users::IndexTreaty do
                       strategy: :direct,
                       summary: nil,
                       deprecated: false,
-                      executor: Users::V1::IndexService
+                      executor: Users::V1::IndexService,
+                      request: {
+                        scopes: {
+                          filters: {}
+                        }
+                      },
+                      response: {
+                        status: 200,
+                        scopes: {
+                          meta: {},
+                          users: {}
+                        }
+                      }
                     },
                     {
                       version: "2",
@@ -63,7 +99,19 @@ RSpec.describe Gate::API::Users::IndexTreaty do
                       strategy: :adapter,
                       summary: nil,
                       deprecated: false,
-                      executor: Users::Stable::IndexService
+                      executor: Users::Stable::IndexService,
+                      request: {
+                        scopes: {
+                          filters: {}
+                        }
+                      },
+                      response: {
+                        status: 200,
+                        scopes: {
+                          meta: {},
+                          users: {}
+                        }
+                      }
                     }
                   ]
 

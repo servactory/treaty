@@ -39,7 +39,18 @@ RSpec.describe Gate::API::Users::CreateTreaty do
                       strategy: :direct,
                       summary: "The first version of the contract for creating a user",
                       deprecated: false,
-                      executor: Users::V1::CreateService
+                      executor: Users::V1::CreateService,
+                      request: {
+                        scopes: {
+                          user: {}
+                        }
+                      },
+                      response: {
+                        status: 201,
+                        scopes: {
+                          user: {}
+                        }
+                      }
                     },
                     {
                       version: "2",
@@ -47,7 +58,18 @@ RSpec.describe Gate::API::Users::CreateTreaty do
                       strategy: :adapter,
                       summary: "Added middle name to expand user data",
                       deprecated: false,
-                      executor: Users::Stable::CreateService
+                      executor: Users::Stable::CreateService,
+                      request: {
+                        scopes: {
+                          user: {}
+                        }
+                      },
+                      response: {
+                        status: 201,
+                        scopes: {
+                          user: {}
+                        }
+                      }
                     },
                     {
                       version: "3",
@@ -55,7 +77,19 @@ RSpec.describe Gate::API::Users::CreateTreaty do
                       strategy: :adapter,
                       summary: "Added address and socials to expand user data",
                       deprecated: false,
-                      executor: Users::Stable::CreateService
+                      executor: Users::Stable::CreateService,
+                      request: {
+                        scopes: {
+                          self: {},
+                          user: {}
+                        }
+                      },
+                      response: {
+                        status: 201,
+                        scopes: {
+                          user: {}
+                        }
+                      }
                     }
                   ]
 

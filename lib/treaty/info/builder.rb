@@ -25,6 +25,8 @@ module Treaty
         )
       end
 
+      ##########################################################################
+
       def build_versions_with(collection:) # rubocop:disable Metrics/MethodLength
         @versions = collection.map do |version|
           gem_version = version.version.version
@@ -34,8 +36,46 @@ module Treaty
             summary: version.summary_text,
             strategy: version.strategy_instance.code,
             deprecated: version.deprecated_result,
-            executor: version.executor
+            executor: version.executor,
+            request: build_request_with(version),
+            response: build_response_with(version)
           }
+        end
+      end
+
+      ##########################################################################
+
+      def build_request_with(version)
+        {
+          scopes: build_request_scopes_with(version.request_factory)
+        }
+      end
+
+      def build_response_with(version)
+        response_factory = version.response_factory
+        {
+          status: response_factory.status,
+          scopes: build_response_scopes_with(response_factory)
+        }
+      end
+
+      ##########################################################################
+
+      def build_request_scopes_with(request_factory)
+        request_factory.collection_of_scopes.to_h do |scope|
+          [
+            scope.name,
+            {}
+          ]
+        end
+      end
+
+      def build_response_scopes_with(response_factory)
+        response_factory.collection_of_scopes.to_h do |scope|
+          [
+            scope.name,
+            {}
+          ]
         end
       end
     end

@@ -7,7 +7,9 @@ module Treaty
                   :summary_text,
                   :strategy_instance,
                   :deprecated_result,
-                  :executor
+                  :executor,
+                  :request_factory,
+                  :response_factory
 
       def initialize(version)
         @version = Semantic.new(version)
@@ -38,36 +40,20 @@ module Treaty
         @deprecated_result = result
       end
 
-      def request(domain, &block)
-        @request_factory = Request::Factory.new(domain)
+      def request(&block)
+        @request_factory ||= Request::Factory.new
 
         @request_factory.instance_eval(&block) if block_given?
-
-        collection_of_requests << @request_factory
-
-        @request_factory = nil
       end
 
-      def response(domain, status, &block)
-        @response_factory = Response::Factory.new(domain, status)
+      def response(status, &block)
+        @response_factory ||= Response::Factory.new(status)
 
         @response_factory.instance_eval(&block) if block_given?
-
-        collection_of_responses << @response_factory
-
-        @response_factory = nil
       end
 
       def delegate_to(service_class)
         @executor = service_class
-      end
-
-      def collection_of_requests
-        @collection_of_requests ||= Request::Collection.new
-      end
-
-      def collection_of_responses
-        @collection_of_responses ||= Response::Collection.new
       end
 
       ##########################################################################

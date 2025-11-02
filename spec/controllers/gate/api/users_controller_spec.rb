@@ -3,7 +3,9 @@
 RSpec.describe Gate::API::UsersController do
   render_views
 
-  before { assign_json_headers }
+  before { assign_json_headers_with(version:) }
+
+  let(:version) { 3 }
 
   describe "#index" do
     subject(:perform) { get :index, params: }

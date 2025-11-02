@@ -42,13 +42,17 @@ RSpec.describe Gate::API::Users::CreateTreaty do
                       executor: Users::V1::CreateService,
                       request: {
                         scopes: {
-                          user: {}
+                          user: {
+                            attributes: {}
+                          }
                         }
                       },
                       response: {
                         status: 201,
                         scopes: {
-                          user: {}
+                          user: {
+                            attributes: {}
+                          }
                         }
                       }
                     },
@@ -61,13 +65,68 @@ RSpec.describe Gate::API::Users::CreateTreaty do
                       executor: Users::Stable::CreateService,
                       request: {
                         scopes: {
-                          user: {}
+                          user: {
+                            attributes: {
+                              first_name: {
+                                type: :string,
+                                options: {
+                                  required: { is: true, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              middle_name: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              last_name: {
+                                type: :string,
+                                options: {
+                                  required: { is: true, message: nil }
+                                },
+                                attributes: {}
+                              }
+                            }
+                          }
                         }
                       },
                       response: {
                         status: 201,
                         scopes: {
-                          user: {}
+                          user: {
+                            attributes: {
+                              id: {
+                                type: :string,
+                                options: {
+                                  required: { is: true, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              first_name: {
+                                type: :string,
+                                options: {
+                                  required: { is: true, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              middle_name: {
+                                type: :string,
+                                options: {
+                                  required: { is: true, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              last_name: {
+                                type: :string,
+                                options: {
+                                  required: { is: true, message: nil }
+                                },
+                                attributes: {}
+                              }
+                            }
+                          }
                         }
                       }
                     },
@@ -80,14 +139,189 @@ RSpec.describe Gate::API::Users::CreateTreaty do
                       executor: Users::Stable::CreateService,
                       request: {
                         scopes: {
-                          self: {},
-                          user: {}
+                          self: {
+                            attributes: {
+                              signature: {
+                                type: :string,
+                                options: {
+                                  required: { is: true, message: nil }
+                                },
+                                attributes: {}
+                              }
+                            }
+                          },
+                          user: {
+                            attributes: {
+                              first_name: {
+                                type: :string,
+                                options: {
+                                  required: { is: true, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              middle_name: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              last_name: {
+                                type: :string,
+                                options: {
+                                  required: { is: true, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              address: {
+                                type: :object,
+                                options: {
+                                  required: { is: true, message: nil }
+                                },
+                                attributes: {
+                                  street: {
+                                    type: :string,
+                                    options: {
+                                      required: { is: true, message: nil }
+                                    },
+                                    attributes: {}
+                                  },
+                                  city: {
+                                    type: :string,
+                                    options: {
+                                      required: { is: true, message: nil }
+                                    },
+                                    attributes: {}
+                                  },
+                                  state: {
+                                    type: :string,
+                                    options: {
+                                      required: { is: true, message: nil }
+                                    },
+                                    attributes: {}
+                                  },
+                                  zipcode: {
+                                    type: :string,
+                                    options: {
+                                      required: { is: true, message: nil }
+                                    },
+                                    attributes: {}
+                                  }
+                                }
+                              },
+                              socials: {
+                                type: :array,
+                                options: {
+                                  required: { is: false, message: nil }
+                                },
+                                attributes: {
+                                  provider: {
+                                    type: :string,
+                                    options: {
+                                      required: { is: true, message: nil },
+                                      inclusion: { in: %w[twitter linkedin github], message: nil }
+                                    },
+                                    attributes: {}
+                                  },
+                                  handle: {
+                                    type: :string,
+                                    options: {
+                                      required: { is: true, message: nil },
+                                      as: { is: :value, message: nil }
+                                    },
+                                    attributes: {}
+                                  }
+                                }
+                              }
+                            }
+                          }
                         }
                       },
                       response: {
                         status: 201,
                         scopes: {
-                          user: {}
+                          user: {
+                            attributes: {
+                              id: {
+                                type: :string,
+                                options: {
+                                  required: { is: true, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              first_name: {
+                                type: :string,
+                                options: {
+                                  required: { is: true, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              middle_name: {
+                                type: :string,
+                                options: {
+                                  required: { is: true, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              last_name: {
+                                type: :string,
+                                options: {
+                                  required: { is: true, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              address: {
+                                type: :object,
+                                options: {
+                                  required: { is: true, message: nil }
+                                },
+                                attributes: {
+                                  street: {
+                                    type: :string,
+                                    options: {
+                                      required: { is: true, message: nil }
+                                    },
+                                    attributes: {}
+                                  },
+                                  city: {
+                                    type: :string,
+                                    options: {
+                                      required: { is: true, message: nil }
+                                    },
+                                    attributes: {}
+                                  },
+                                  state: {
+                                    type: :string,
+                                    options: {
+                                      required: { is: true, message: nil }
+                                    },
+                                    attributes: {}
+                                  },
+                                  zipcode: {
+                                    type: :string,
+                                    options: {
+                                      required: { is: true, message: nil }
+                                    },
+                                    attributes: {}
+                                  }
+                                }
+                              },
+                              created_at: {
+                                type: :datetime,
+                                options: {
+                                  required: { is: true, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              updated_at: {
+                                type: :datetime,
+                                options: {
+                                  required: { is: true, message: nil }
+                                },
+                                attributes: {}
+                              }
+                            }
+                          }
                         }
                       }
                     }

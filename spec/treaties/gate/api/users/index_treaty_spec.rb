@@ -42,14 +42,42 @@ RSpec.describe Gate::API::Users::IndexTreaty do
                       executor: Users::V1::IndexService,
                       request: {
                         scopes: {
-                          filters: {}
+                          filters: {
+                            attributes: {
+                              first_name: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              middle_name: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              last_name: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil }
+                                },
+                                attributes: {}
+                              }
+                            }
+                          }
                         }
                       },
                       response: {
                         status: 200,
                         scopes: {
-                          meta: {},
-                          users: {}
+                          meta: {
+                            attributes: {}
+                          },
+                          users: {
+                            attributes: {}
+                          }
                         }
                       }
                     },
@@ -62,14 +90,42 @@ RSpec.describe Gate::API::Users::IndexTreaty do
                       executor: Users::V1::IndexService,
                       request: {
                         scopes: {
-                          filters: {}
+                          filters: {
+                            attributes: {
+                              first_name: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              middle_name: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              last_name: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil }
+                                },
+                                attributes: {}
+                              }
+                            }
+                          }
                         }
                       },
                       response: {
                         status: 200,
                         scopes: {
-                          meta: {},
-                          users: {}
+                          meta: {
+                            attributes: {}
+                          },
+                          users: {
+                            attributes: {}
+                          }
                         }
                       }
                     },
@@ -82,14 +138,42 @@ RSpec.describe Gate::API::Users::IndexTreaty do
                       executor: Users::V1::IndexService,
                       request: {
                         scopes: {
-                          filters: {}
+                          filters: {
+                            attributes: {
+                              first_name: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              middle_name: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              last_name: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil }
+                                },
+                                attributes: {}
+                              }
+                            }
+                          }
                         }
                       },
                       response: {
                         status: 200,
                         scopes: {
-                          meta: {},
-                          users: {}
+                          meta: {
+                            attributes: {}
+                          },
+                          users: {
+                            attributes: {}
+                          }
                         }
                       }
                     },
@@ -102,14 +186,93 @@ RSpec.describe Gate::API::Users::IndexTreaty do
                       executor: Users::Stable::IndexService,
                       request: {
                         scopes: {
-                          filters: {}
+                          filters: {
+                            attributes: {
+                              first_name: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              middle_name: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              last_name: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil }
+                                },
+                                attributes: {}
+                              }
+                            }
+                          }
                         }
                       },
                       response: {
                         status: 200,
                         scopes: {
-                          meta: {},
-                          users: {}
+                          meta: {
+                            attributes: {
+                              count: {
+                                type: :integer,
+                                options: {
+                                  required: { is: true, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              page: {
+                                type: :integer,
+                                options: {
+                                  required: { is: true, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              limit: {
+                                type: :integer,
+                                options: {
+                                  required: { is: true, message: nil }
+                                },
+                                attributes: {}
+                              }
+                            }
+                          },
+                          users: {
+                            attributes: {
+                              id: {
+                                type: :string,
+                                options: {
+                                  required: { is: true, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              first_name: {
+                                type: :string,
+                                options: {
+                                  required: { is: true, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              middle_name: {
+                                type: :string,
+                                options: {
+                                  required: { is: true, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              last_name: {
+                                type: :string,
+                                options: {
+                                  required: { is: true, message: nil }
+                                },
+                                attributes: {}
+                              }
+                            }
+                          }
                         }
                       }
                     }

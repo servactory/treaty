@@ -5,12 +5,12 @@ module Treaty
     module Option
       module Validators
         class Base
-          attr_reader :attribute_name, :attribute_type, :option_config
+          attr_reader :attribute_name, :attribute_type, :option_schema
 
-          def initialize(attribute_name:, attribute_type:, option_config:)
+          def initialize(attribute_name:, attribute_type:, option_schema:)
             @attribute_name = attribute_name
             @attribute_type = attribute_type
-            @option_config = option_config
+            @option_schema = option_schema
           end
 
           def validate_schema!
@@ -28,10 +28,10 @@ module Treaty
           protected
 
           def option_enabled?
-            return false if option_config.nil?
-            return option_config if option_config.is_a?(TrueClass) || option_config.is_a?(FalseClass)
+            return false if option_schema.nil?
+            return option_schema if option_schema.is_a?(TrueClass) || option_schema.is_a?(FalseClass)
 
-            option_config.fetch(:is, false)
+            option_schema.fetch(:is, false)
           end
         end
       end

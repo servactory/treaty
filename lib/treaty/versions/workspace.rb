@@ -8,6 +8,8 @@ module Treaty
       def call!(controller:, **)
         super
 
+        # TODO: It is necessary to implement global access to the
+        #       current version within the context.
         current_version = current_version_from(controller)
 
         Attribute::Validation::Request.validate!(

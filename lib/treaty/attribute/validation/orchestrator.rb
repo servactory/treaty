@@ -3,7 +3,6 @@
 module Treaty
   module Attribute
     module Validation
-      # Orchestrates validation for a specific version's attributes
       class Orchestrator
         attr_reader :version_factory, :request_data, :scope_type
 
@@ -13,15 +12,11 @@ module Treaty
           @scope_type = scope_type
         end
 
-        # Validates all attributes for the version
         def validate!
-          # Only validate for adapter strategy
           return unless version_factory.strategy_instance.adapter?
 
-          # Validate schemas first (structure and options)
           validate_schemas!
 
-          # Then validate values if request_data is provided
           validate_values! unless request_data.empty?
         end
 
@@ -58,7 +53,7 @@ module Treaty
 
           version_factory.response_factory.collection_of_scopes.each do |scope_factory| # rubocop:disable Lint/UnreachableLoop
             validate_scope_schemas!(scope_factory)
-            break # Only validate first scope for response
+            break # Only validate the first scope for response.
           end
         end
 
@@ -73,7 +68,7 @@ module Treaty
           return unless version_factory.request_factory
 
           version_factory.request_factory.collection_of_scopes.each do |scope_factory|
-            scope_data = extract_scope_data(scope_factory.name)
+            scope_data = scope_data_for(scope_factory.name)
             validate_scope_values!(scope_factory, scope_data)
           end
         end
@@ -83,7 +78,7 @@ module Treaty
 
           version_factory.response_factory.collection_of_scopes.each do |scope_factory| # rubocop:disable Lint/UnreachableLoop
             validate_scope_values!(scope_factory, request_data)
-            break # Only validate first scope for response
+            break # Only validate the first scope for response.
           end
         end
 
@@ -96,12 +91,12 @@ module Treaty
           end
         end
 
-        def extract_scope_data(scope_name)
-          # If scope is :self, it's the root level
-          return request_data if scope_name == :self
+        def scope_data_for(name)
+          # If the scope is :self, it's the root level.
+          return request_data if name == :self
 
-          # Otherwise, get data from the named scope
-          request_data.fetch(scope_name, {})
+          # Otherwise, fetch data from the named scope.
+          request_data.fetch(name, {})
         end
       end
     end

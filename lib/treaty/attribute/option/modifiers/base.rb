@@ -5,12 +5,12 @@ module Treaty
     module Option
       module Modifiers
         class Base
-          attr_reader :attribute_name, :attribute_type, :option_config
+          attr_reader :attribute_name, :attribute_type, :option_schema
 
-          def initialize(attribute_name:, attribute_type:, option_config:)
+          def initialize(attribute_name:, attribute_type:, option_schema:)
             @attribute_name = attribute_name
             @attribute_type = attribute_type
-            @option_config = option_config
+            @option_schema = option_schema
           end
 
           def validate_schema!

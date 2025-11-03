@@ -6,8 +6,8 @@ module Treaty
       module Modifiers
         class AsModifier < Base
           def validate_schema!
-            return if option_config.is_a?(Hash) && option_config[:is].is_a?(Symbol)
-            return if option_config.is_a?(Symbol)
+            return if option_schema.is_a?(Hash) && option_schema[:is].is_a?(Symbol)
+            return if option_schema.is_a?(Symbol)
 
             # TODO: It is necessary to implement a translation system (I18n).
             raise Treaty::Exceptions::Validation,

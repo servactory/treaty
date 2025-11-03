@@ -14,7 +14,7 @@ module Treaty
             return unless required?
             return if present?(value)
 
-            message = option_config.fetch(:message, nil) || default_message
+            message = option_schema.fetch(:message, nil) || default_message
 
             # TODO: It is necessary to implement a translation system (I18n).
             raise Treaty::Exceptions::Validation, message
@@ -23,12 +23,12 @@ module Treaty
           private
 
           def required?
-            return false if option_config.nil?
+            return false if option_schema.nil?
 
-            if option_config.is_a?(Hash)
-              option_config.fetch(:is, false) == true
+            if option_schema.is_a?(Hash)
+              option_schema.fetch(:is, false) == true
             else
-              option_config == true
+              option_schema == true
             end
           end
 
@@ -40,6 +40,7 @@ module Treaty
           end
 
           def default_message
+            # TODO: It is necessary to implement a translation system (I18n).
             "Attribute '#{attribute_name}' is required but was not provided or is empty"
           end
         end

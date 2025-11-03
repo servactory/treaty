@@ -3,7 +3,6 @@
 module Treaty
   module Attribute
     module Validation
-      # Validates a single attribute's options and values
       class AttributeValidator
         KNOWN_OPTIONS = %i[type required as default inclusion].freeze
         VALIDATING_OPTIONS = %i[type required].freeze
@@ -15,7 +14,6 @@ module Treaty
           @attribute = attribute
         end
 
-        # Validates that all options are known
         def validate_options!
           unknown_options = attribute.options.keys - KNOWN_OPTIONS
 
@@ -27,29 +25,17 @@ module Treaty
                 "Known options: #{KNOWN_OPTIONS.join(', ')}"
         end
 
-        # Validates attribute schema (type, option structure)
         def validate_schema!
           validate_options!
 
-          # Validate type
           type_validator.validate_schema!
-
-          # Validate required option structure
           required_validator.validate_schema! if attribute.options.key?(:required)
-
-          # Validate as option structure
           as_modifier.validate_schema! if attribute.options.key?(:as)
         end
 
-        # Validates attribute value against its options
         def validate_value!(value)
-          # First validate required, as it affects whether we check other validations
           required_validator.validate_value!(value) if attribute.options.key?(:required)
-
-          # Only validate type if value is present (required already checked for presence)
           type_validator.validate_value!(value) unless value.nil?
-
-          # Validate nested attributes for object/array types
           validate_nested!(value) if attribute.nested? && !value.nil?
         end
 
@@ -59,7 +45,7 @@ module Treaty
           @type_validator ||= Option::Validators::TypeValidator.new(
             attribute_name: attribute.name,
             attribute_type: attribute.type,
-            option_config: nil
+            option_schema: nil
           )
         end
 
@@ -67,7 +53,7 @@ module Treaty
           @required_validator ||= Option::Validators::RequiredValidator.new(
             attribute_name: attribute.name,
             attribute_type: attribute.type,
-            option_config: attribute.options[:required]
+            option_schema: attribute.options[:required]
           )
         end
 
@@ -75,7 +61,7 @@ module Treaty
           @as_modifier ||= Option::Modifiers::AsModifier.new(
             attribute_name: attribute.name,
             attribute_type: attribute.type,
-            option_config: attribute.options[:as]
+            option_schema: attribute.options[:as]
           )
         end
 
@@ -91,7 +77,6 @@ module Treaty
         def validate_nested_object!(hash)
           return unless hash.is_a?(Hash)
 
-          # Validate each nested attribute
           attribute.collection_of_attributes.each do |nested_attr|
             nested_validator = AttributeValidator.new(nested_attr)
             nested_validator.validate_schema!
@@ -104,7 +89,6 @@ module Treaty
         def validate_nested_array!(array) # rubocop:disable Metrics/MethodLength
           return unless array.is_a?(Array)
 
-          # Validate each array element against nested attribute schema
           array.each_with_index do |element, index|
             attribute.collection_of_attributes.each do |nested_attr|
               nested_validator = AttributeValidator.new(nested_attr)

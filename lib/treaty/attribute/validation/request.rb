@@ -43,12 +43,10 @@ module Treaty
 
           return unless request_attributes_exist?
 
-          orchestrator = Orchestrator.new(
+          Orchestrator::Request.validate!(
             version_factory:,
-            request_data:,
-            scope_type: :request
+            data: request_data
           )
-          orchestrator.validate!
         end
 
         def request_attributes_exist?

@@ -36,12 +36,10 @@ module Treaty
 
           return unless response_attributes_exist?
 
-          orchestrator = Orchestrator.new(
+          Orchestrator::Response.validate!(
             version_factory:,
-            request_data: response_data,
-            scope_type: :response
+            data: response_data
           )
-          orchestrator.validate!
         end
 
         def response_attributes_exist?

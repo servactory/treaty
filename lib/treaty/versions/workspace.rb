@@ -8,23 +8,19 @@ module Treaty
       def call!(controller:, **)
         super
 
-        # TODO: It is necessary to implement global access to the
-        #       current version within the context.
-        current_version = current_version_from(controller)
+        version_factory = Resolver.resolve!(
+          controller:,
+          collection_of_versions: @collection_of_versions
+        )
 
         Attribute::Validation::Request.validate!(
           controller:,
-          current_version:,
-          collection_of_versions: @collection_of_versions
+          version_factory:
         )
 
         # TODO: Call executor service here.
 
         # TODO: Call response service here.
-      end
-
-      def current_version_from(controller)
-        Treaty::Engine.config.treaty.version.call(controller)
       end
     end
   end

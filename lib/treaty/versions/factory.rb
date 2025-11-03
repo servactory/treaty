@@ -59,6 +59,7 @@ module Treaty
       ##########################################################################
 
       def method_missing(name, *, &_block)
+        # TODO: It is necessary to implement a translation system (I18n).
         raise Treaty::Exceptions::MethodName, "Unknown method: #{name}"
       end
 

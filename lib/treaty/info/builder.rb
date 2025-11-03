@@ -47,7 +47,7 @@ module Treaty
 
       def build_request_with(version)
         {
-          scopes: build_request_scopes_with(version.request_factory)
+          scopes: build_scopes_with(version.request_factory)
         }
       end
 
@@ -55,29 +55,57 @@ module Treaty
         response_factory = version.response_factory
         {
           status: response_factory.status,
-          scopes: build_response_scopes_with(response_factory)
+          scopes: build_scopes_with(response_factory)
         }
       end
 
       ##########################################################################
 
-      def build_request_scopes_with(request_factory)
+      def build_scopes_with(request_factory)
         request_factory.collection_of_scopes.to_h do |scope|
           [
             scope.name,
-            {}
+            build_attributes_with(scope.collection_of_attributes)
           ]
         end
       end
 
-      def build_response_scopes_with(response_factory)
-        response_factory.collection_of_scopes.to_h do |scope|
+      ##########################################################################
+
+      def build_attributes_with(collection, current_level = 0)
+        # validate_nesting_level!(current_level)
+
+        {
+          attributes: build_attributes_hash(collection, current_level)
+        }
+      end
+
+      def build_attributes_hash(collection, current_level)
+        collection.to_h do |attribute|
           [
-            scope.name,
-            {}
+            attribute.name,
+            {
+              type: attribute.type,
+              options: attribute.options,
+              attributes: build_nested_attributes(attribute, current_level)
+            }
           ]
         end
       end
+
+      def build_nested_attributes(attribute, current_level)
+        return {} unless attribute.nested?
+
+        build_attributes_hash(attribute.collection_of_attributes, current_level + 1)
+      end
+
+      # def validate_nesting_level!(level)
+      #   return unless level > Treaty::Engine.config.treaty.attribute_nesting_level
+      #
+      #   raise Treaty::Exceptions::NestedAttributes,
+      #         "Nesting level #{level} exceeds maximum allowed level of " \
+      #         "#{Treaty::Engine.config.treaty.attribute_nesting_level}"
+      # end
     end
   end
 end

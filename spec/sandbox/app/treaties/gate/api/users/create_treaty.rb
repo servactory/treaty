@@ -33,9 +33,9 @@ module Gate
 
           request do
             scope :user do
-              string :first_name, :string, :required
-              string :middle_name, :string, :optional
-              string :last_name, :string, :required
+              string :first_name, :required
+              string :middle_name, :optional
+              string :last_name, :required
             end
           end
 

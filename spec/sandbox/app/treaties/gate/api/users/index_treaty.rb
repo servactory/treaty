@@ -12,9 +12,9 @@ module Gate
           request do
             # Query: filters[first_name], filters[middle_name], filters[last_name]
             scope :filters do
-              string :first_name, :string, :optional
-              string :middle_name, :string, :optional
-              string :last_name, :string, :optional
+              string :first_name, :optional
+              string :middle_name, :optional
+              string :last_name, :optional
             end
           end
 
@@ -35,9 +35,9 @@ module Gate
           request do
             # Query: filters[first_name], filters[middle_name], filters[last_name]
             scope :filters do
-              string :first_name, :string, :optional
-              string :middle_name, :string, :optional
-              string :last_name, :string, :optional
+              string :first_name, :optional
+              string :middle_name, :optional
+              string :last_name, :optional
             end
           end
 
@@ -61,9 +61,9 @@ module Gate
           request do
             # Query: filters[first_name], filters[middle_name], filters[last_name]
             scope :filters do
-              string :first_name, :string, :optional
-              string :middle_name, :string, :optional
-              string :last_name, :string, :optional
+              string :first_name, :optional
+              string :middle_name, :optional
+              string :last_name, :optional
             end
           end
 
@@ -89,9 +89,9 @@ module Gate
           request do
             # Query: filters[first_name], filters[middle_name], filters[last_name]
             scope :filters do
-              string :first_name, :string, :optional
-              string :middle_name, :string, :optional
-              string :last_name, :string, :optional
+              string :first_name, :optional
+              string :middle_name, :optional
+              string :last_name, :optional
             end
           end
 

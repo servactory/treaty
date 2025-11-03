@@ -11,6 +11,6 @@ Treaty::Engine.configure do |config|
     match = accept.match(vendor_version_header_regex)
     return if match.blank?
 
-    Gem::Version.new(match[:version])
+    Gem::Version.new(match.fetch(:version))
   end
 end

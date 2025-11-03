@@ -34,6 +34,7 @@ module Treaty
         def treaty_class
           treaty_class_name.constantize
         rescue NameError
+          # TODO: It is necessary to implement a translation system (I18n).
           raise Treaty::Exceptions::ClassName, treaty_class_name
         end
 

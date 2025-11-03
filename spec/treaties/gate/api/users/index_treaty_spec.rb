@@ -23,12 +23,8 @@ RSpec.describe Gate::API::Users::IndexTreaty do
 
   let(:headers) do
     {
-      "Accept" => "application/vnd.myapp-v3+json"
+      "Accept" => "application/vnd.myapp-v#{version}+json"
     }
-  end
-
-  let(:params) do
-    {}
   end
 
   it_behaves_like "check class info",
@@ -135,7 +131,7 @@ RSpec.describe Gate::API::Users::IndexTreaty do
                       strategy: :direct,
                       summary: nil,
                       deprecated: false,
-                      executor: Users::V1::IndexService,
+                      executor: Proc,
                       request: {
                         scopes: {
                           filters: {
@@ -275,10 +271,157 @@ RSpec.describe Gate::API::Users::IndexTreaty do
                           }
                         }
                       }
+                    },
+                    {
+                      version: "3",
+                      segments: [3],
+                      strategy: :adapter,
+                      summary: nil,
+                      deprecated: false,
+                      executor: Users::Stable::IndexService,
+                      request: {
+                        scopes: {
+                          filters: {
+                            attributes: {
+                              first_name: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              middle_name: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              last_name: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil }
+                                },
+                                attributes: {}
+                              }
+                            }
+                          }
+                        }
+                      },
+                      response: {
+                        status: 200,
+                        scopes: {
+                          meta: {
+                            attributes: {
+                              count: {
+                                type: :integer,
+                                options: {
+                                  required: { is: true, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              page: {
+                                type: :integer,
+                                options: {
+                                  required: { is: true, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              limit: {
+                                type: :integer,
+                                options: {
+                                  required: { is: true, message: nil },
+                                  default: { is: 12, message: nil }
+                                },
+                                attributes: {}
+                              }
+                            }
+                          },
+                          users: {
+                            attributes: {
+                              id: {
+                                type: :string,
+                                options: {
+                                  required: { is: true, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              first_name: {
+                                type: :string,
+                                options: {
+                                  required: { is: true, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              middle_name: {
+                                type: :string,
+                                options: {
+                                  required: { is: true, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              last_name: {
+                                type: :string,
+                                options: {
+                                  required: { is: true, message: nil }
+                                },
+                                attributes: {}
+                              }
+                            }
+                          }
+                        }
+                      }
                     }
                   ]
 
   context "when required data for work is valid" do
-    it { expect { perform }.not_to raise_error }
+    context "when version is 1" do
+      let(:version) { 1 }
+
+      let(:params) do
+        {}
+      end
+
+      it { expect { perform }.not_to raise_error }
+    end
+
+    context "when version is 2" do
+      let(:version) { 2 }
+
+      let(:params) do
+        {}
+      end
+
+      it { expect { perform }.not_to raise_error }
+    end
+
+    context "when version is 3" do
+      let(:version) { 3 }
+
+      let(:params) do
+        {}
+      end
+
+      it { expect { perform }.not_to raise_error }
+    end
+  end
+
+  context "when required data for work is invalid" do
+    describe "because version is unknown" do
+      let(:version) { 999 }
+
+      let(:params) do
+        {}
+      end
+
+      it :aggregate_failures do
+        expect { perform }.to(
+          raise_error do |exception|
+            expect(exception).to be_a(Treaty::Exceptions::Validation)
+            expect(exception.message).to eq("Version 999 not found in treaty definition")
+          end
+        )
+      end
+    end
   end
 end

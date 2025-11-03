@@ -3,7 +3,7 @@
 module Gate
   module API
     module Users
-      class IndexTreaty < ApplicationTreaty
+      class IndexTreaty < ApplicationTreaty # rubocop:disable Metrics/ClassLength
         version [1, 0, 0, :rc1] do # Just to keep the idea going.
           strategy Treaty::Strategy::DIRECT
 
@@ -73,7 +73,12 @@ module Gate
           end
 
           # Present: first_name, last_name. Missing: middle_name.
-          delegate_to ::Users::V1::IndexService
+          # delegate_to ::Users::V1::IndexService
+          delegate_to(lambda do |params|
+            # NOTE: To avoid using the service for any reason,
+            #       use Proc to work with params locally.
+            params
+          end)
         end
 
         version 2 do # Also supported: 2.0, 2.0.0.rc1
@@ -107,6 +112,43 @@ module Gate
               integer :count
               integer :page
               integer :limit
+            end
+          end
+
+          delegate_to ::Users::Stable::IndexService
+        end
+
+        version 3 do # Also supported: 2.0, 2.0.0.rc1
+          strategy Treaty::Strategy::ADAPTER
+
+          # TODO: An idea on how to simplify while maintaining power:
+          #       - When one scope:
+          #         - request(:user) { string :first_name }
+          #         - response(:user, 200) { string :first_name }
+          #       - When multiple scopes:
+          #         - requests { scope(:user) { string :first_name } }
+          #         - responses(200) { scope(:user) { string :first_name } }
+          request do
+            # Query: filters[first_name], filters[middle_name], filters[last_name]
+            scope :filters do
+              string :first_name, :optional
+              string :middle_name, :optional
+              string :last_name, :optional
+            end
+          end
+
+          response 200 do
+            scope :users do
+              string :id
+              string :first_name
+              string :middle_name
+              string :last_name
+            end
+
+            scope :meta do
+              integer :count
+              integer :page
+              integer :limit, default: 12
             end
           end
 

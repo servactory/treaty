@@ -17,8 +17,7 @@ module Treaty
       return self if LIST.include?(@code)
 
       # TODO: It is necessary to implement a translation system (I18n).
-      raise Treaty::Exceptions::Strategy,
-            "Unknown strategy: #{@code}"
+      raise Treaty::Exceptions::Strategy, "Unknown strategy: #{@code}"
     end
 
     def direct?

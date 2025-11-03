@@ -30,18 +30,6 @@ module Treaty
         process_nested_attributes(&block) if block_given?
       end
 
-      # TODO: Currently not in use.
-      def validate!(_value) # rubocop:disable Naming/PredicateMethod
-        # TODO: Implement validation logic
-        # This method will be implemented in future iterations.
-        # It should check:
-        # - Type validation
-        # - Required/optional validation
-        # - Custom option validations (in, as, etc.)
-        # - Nested attribute validations
-        true
-      end
-
       def collection_of_attributes
         @collection_of_attributes ||= Collection.new
       end

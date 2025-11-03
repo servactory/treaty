@@ -21,9 +21,9 @@ module Treaty
         end
 
         def validate!
-          raise_current_version_not_found! unless current_version
+          raise_current_version_not_found! if current_version.nil?
 
-          raise_version_not_found! unless version_factory
+          raise_version_not_found! if version_factory.nil?
 
           validate_request_attributes!
         end
@@ -50,7 +50,7 @@ module Treaty
         end
 
         def request_attributes_exist?
-          return false unless version_factory.request_factory&.collection_of_scopes
+          return false if version_factory.request_factory&.collection_of_scopes&.empty?
 
           version_factory.request_factory.collection_of_scopes.exists?
         end

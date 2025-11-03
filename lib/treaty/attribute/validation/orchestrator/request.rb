@@ -7,21 +7,10 @@ module Treaty
         class Request < Base
           private
 
-          def validate_schemas!
-            return unless version_factory.request_factory
+          def collection_of_scopes
+            return Request::Scope::Collection.new if version_factory.request_factory.nil?
 
-            version_factory.request_factory.collection_of_scopes.each do |scope_factory|
-              validate_scope_schemas!(scope_factory)
-            end
-          end
-
-          def validate_values!
-            return unless version_factory.request_factory
-
-            version_factory.request_factory.collection_of_scopes.each do |scope_factory|
-              scope_data = scope_data_for(scope_factory.name)
-              validate_scope_values!(scope_factory, scope_data)
-            end
+            version_factory.request_factory.collection_of_scopes
           end
 
           def scope_data_for(name)

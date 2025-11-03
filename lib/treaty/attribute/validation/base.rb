@@ -29,7 +29,7 @@ module Treaty
         end
 
         def find_version_factory
-          return nil unless current_version
+          return nil if current_version.nil?
 
           collection_of_versions.find do |factory|
             factory.version.version == current_version

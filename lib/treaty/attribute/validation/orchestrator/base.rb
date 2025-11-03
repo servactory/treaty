@@ -19,39 +19,37 @@ module Treaty
           def validate!
             return unless version_factory.strategy_instance.adapter?
 
-            validate_schemas!
-
-            validate_values! unless data.empty?
+            collection_of_scopes.each do |scope_factory|
+              validate_scope!(scope_factory)
+            end
           end
 
           private
 
-          def validate_schemas!
+          def collection_of_scopes
             # TODO: It is necessary to implement a translation system (I18n).
             raise Treaty::Exceptions::Validation,
-                  "Subclass must implement the validate_schemas! method"
+                  "Subclass must implement the collection_of_scopes method"
           end
 
-          def validate_values!
-            # TODO: It is necessary to implement a translation system (I18n).
-            raise Treaty::Exceptions::Validation,
-                  "Subclass must implement the validate_values! method"
-          end
+          def validate_scope!(scope_factory)
+            scope_data = data.empty? ? nil : scope_data_for(scope_factory.name)
 
-          def validate_scope_schemas!(scope_factory)
             scope_factory.collection_of_attributes.each do |attribute|
               validator = AttributeValidator.new(attribute)
               validator.validate_schema!
+
+              next if scope_data.nil?
+
+              value = scope_data.fetch(attribute.name, nil)
+              validator.validate_value!(value)
             end
           end
 
-          def validate_scope_values!(scope_factory, scope_data)
-            scope_factory.collection_of_attributes.each do |attribute|
-              validator = AttributeValidator.new(attribute)
-
-              value = scope_data[attribute.name]
-              validator.validate_value!(value)
-            end
+          def scope_data_for(_name)
+            # TODO: It is necessary to implement a translation system (I18n).
+            raise Treaty::Exceptions::Validation,
+                  "Subclass must implement the scope_data_for method"
           end
         end
       end

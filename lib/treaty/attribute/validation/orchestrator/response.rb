@@ -8,26 +8,19 @@ module Treaty
         class Response < Base
           private
 
-          def validate_schemas!
-            return unless version_factory.response_factory
+          def collection_of_scopes
+            return Response::Scope::Collection.new if version_factory.response_factory.nil?
 
-            version_factory.response_factory.collection_of_scopes.each do |scope_factory| # rubocop:disable Lint/UnreachableLoop
-              validate_scope_schemas!(scope_factory)
-
-              # Only validate the first scope for response.
-              break
-            end
+            # Only validate the first scope for response.
+            [version_factory.response_factory.collection_of_scopes.first].compact
           end
 
-          def validate_values!
-            return unless version_factory.response_factory
+          def scope_data_for(name)
+            # If the scope is :self, it's the root level.
+            return data if name == :self
 
-            version_factory.response_factory.collection_of_scopes.each do |scope_factory| # rubocop:disable Lint/UnreachableLoop
-              validate_scope_values!(scope_factory, data)
-
-              # Only validate the first scope for response.
-              break
-            end
+            # Otherwise, fetch data from the named scope.
+            data.fetch(name, {})
           end
         end
       end

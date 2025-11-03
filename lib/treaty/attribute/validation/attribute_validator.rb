@@ -53,7 +53,7 @@ module Treaty
           @required_validator ||= Option::Validators::RequiredValidator.new(
             attribute_name: attribute.name,
             attribute_type: attribute.type,
-            option_schema: attribute.options[:required]
+            option_schema: attribute.options.fetch(:required)
           )
         end
 
@@ -61,7 +61,7 @@ module Treaty
           @as_modifier ||= Option::Modifiers::AsModifier.new(
             attribute_name: attribute.name,
             attribute_type: attribute.type,
-            option_schema: attribute.options[:as]
+            option_schema: attribute.options.fetch(:as)
           )
         end
 
@@ -81,7 +81,7 @@ module Treaty
             nested_validator = AttributeValidator.new(nested_attr)
             nested_validator.validate_schema!
 
-            nested_value = hash[nested_attr.name]
+            nested_value = hash.fetch(nested_attr.name)
             nested_validator.validate_value!(nested_value)
           end
         end
@@ -94,7 +94,7 @@ module Treaty
               nested_validator = AttributeValidator.new(nested_attr)
               nested_validator.validate_schema!
 
-              nested_value = element.is_a?(Hash) ? element[nested_attr.name] : nil
+              nested_value = element.is_a?(Hash) ? element.fetch(nested_attr.name) : nil
               nested_validator.validate_value!(nested_value)
             rescue Treaty::Exceptions::Validation => e
               # TODO: It is necessary to implement a translation system (I18n).

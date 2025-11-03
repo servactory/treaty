@@ -57,6 +57,8 @@ module Treaty
           )
         end
 
+        # TODO: Need to apply DefaultModifier here.
+
         def as_modifier
           @as_modifier ||= Option::Modifiers::AsModifier.new(
             attribute_name: attribute.name,

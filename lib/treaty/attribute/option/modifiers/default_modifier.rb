@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# TODO: This is a prototype, this class is not used.
 module Treaty
   module Attribute
     module Option

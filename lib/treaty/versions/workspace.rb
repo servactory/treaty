@@ -17,6 +17,10 @@ module Treaty
           current_version:,
           collection_of_versions: @collection_of_versions
         )
+
+        # TODO: Call executor service here.
+
+        # TODO: Call response service here.
       end
 
       def current_version_from(controller)

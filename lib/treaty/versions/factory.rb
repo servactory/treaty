@@ -52,8 +52,8 @@ module Treaty
         @response_factory.instance_eval(&block) if block_given?
       end
 
-      def delegate_to(service_class)
-        @executor = service_class
+      def delegate_to(executor)
+        @executor = executor
       end
 
       ##########################################################################

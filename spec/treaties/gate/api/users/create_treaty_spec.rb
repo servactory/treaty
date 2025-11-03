@@ -23,12 +23,8 @@ RSpec.describe Gate::API::Users::CreateTreaty do
 
   let(:headers) do
     {
-      "Accept" => "application/vnd.myapp-v3+json"
+      "Accept" => "application/vnd.myapp-v#{version}+json"
     }
-  end
-
-  let(:params) do
-    {}
   end
 
   it_behaves_like "check class info",
@@ -328,6 +324,118 @@ RSpec.describe Gate::API::Users::CreateTreaty do
                   ]
 
   context "when required data for work is valid" do
-    it { expect { perform }.not_to raise_error }
+    context "when version is 1" do
+      let(:version) { 1 }
+
+      let(:params) do
+        {}
+      end
+
+      it { expect { perform }.not_to raise_error }
+    end
+
+    context "when version is 2" do
+      let(:version) { 2 }
+
+      let(:params) do
+        {}
+      end
+
+      it { expect { perform }.not_to raise_error }
+    end
+
+    context "when version is 3" do
+      let(:version) { 3 }
+
+      let(:params) do
+        {
+          # Query
+          signature: "...",
+          # Body
+          user: {
+            first_name: "John",
+            middle_name: nil,
+            last_name: "Doe",
+            address: {
+              street: "123 Main St",
+              city: "Anytown",
+              state: "NY",
+              zipcode: "12345"
+            },
+            socials: [
+              {
+                provider: "twitter",
+                handle: "johndoe"
+              }
+            ]
+          }
+        }
+      end
+
+      it { expect { perform }.not_to raise_error }
+    end
+  end
+
+  context "when required data for work is invalid" do
+    context "when version is 3" do
+      let(:version) { 3 }
+
+      describe "because request data is incorrect" do
+        let(:params) do
+          {
+            # Query
+            signature: "...",
+            # Body
+            user: {
+              first_name: "John",
+              middle_name: nil,
+              last_name: nil,
+              address: {
+                street: "123 Main St",
+                city: "Anytown",
+                state: "NY",
+                zipcode: "12345"
+              },
+              socials: [
+                {
+                  provider: "twitter",
+                  handle: "johndoe"
+                }
+              ]
+            }
+          }
+        end
+
+        it :aggregate_failures do
+          expect { perform }.to(
+            raise_error do |exception|
+              expect(exception).to be_a(Treaty::Exceptions::Validation)
+              expect(exception.message).to(
+                eq("Attribute 'last_name' is required but was not provided or is empty")
+              )
+            end
+          )
+        end
+      end
+    end
+
+    describe "because version is unknown" do
+      let(:version) { 999 }
+
+      let(:params) do
+        {}
+      end
+
+      it :aggregate_failures do
+        expect { perform }.to(
+          raise_error do |exception|
+            expect(exception).to be_a(Treaty::Exceptions::Validation)
+            expect(exception.message).to(
+              eq("Version 999 not found in treaty definition")
+            )
+          end
+        )
+      end
+    end
   end
 end

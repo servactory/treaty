@@ -8,11 +8,19 @@ module Treaty
       def call!(controller:, **)
         super
 
-        # TODO: Current version
-        # Example: 1, 1.0, 1.0.0, 1.0.0.rc1
-        # Treaty::Engine.config.treaty.version.call(controller).segments.inspect
+        # TODO: It is necessary to implement global access to the
+        #       current version within the context.
+        current_version = current_version_from(controller)
 
-        nil # delete me
+        Attribute::Validation::Request.validate!(
+          controller:,
+          current_version:,
+          collection_of_versions: @collection_of_versions
+        )
+      end
+
+      def current_version_from(controller)
+        Treaty::Engine.config.treaty.version.call(controller)
       end
     end
   end

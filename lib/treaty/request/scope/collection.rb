@@ -6,10 +6,14 @@ module Treaty
       class Collection
         extend Forwardable
 
-        def_delegators :@collection, :<<, :to_h
+        def_delegators :@collection, :<<, :to_h, :each, :find, :empty?
 
         def initialize(collection = Set.new)
           @collection = collection
+        end
+
+        def exists?
+          !empty?
         end
       end
     end

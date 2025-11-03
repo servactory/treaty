@@ -5,7 +5,7 @@ module Treaty
     class Collection
       extend Forwardable
 
-      def_delegators :@collection, :<<, :map
+      def_delegators :@collection, :<<, :map, :find
 
       def initialize(collection = Set.new)
         @collection = collection

@@ -19,7 +19,9 @@ module Treaty
       # Maps simple mode option keys to their advanced mode configuration.
       # Format: simple_key => { advanced_key:, value_key: }
       OPTION_KEY_MAPPING = {
-        in: { advanced_key: :inclusion, value_key: :in }
+        in: { advanced_key: :inclusion, value_key: :in },
+        as: { advanced_key: :as, value_key: :is },
+        default: { advanced_key: :default, value_key: :is }
       }.freeze
       private_constant :OPTION_KEY_MAPPING
 

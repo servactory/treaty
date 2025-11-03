@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Gate::API::Users::IndexTreaty do
+RSpec.describe Gate::API::Posts::IndexTreaty do
   subject(:perform) { described_class.call!(controller:, params:) }
 
   let(:request) do
@@ -14,7 +14,7 @@ RSpec.describe Gate::API::Users::IndexTreaty do
 
   let(:controller) do
     instance_double(
-      Gate::API::UsersController,
+      Gate::API::PostsController,
       request:,
       headers:,
       params:
@@ -35,26 +35,26 @@ RSpec.describe Gate::API::Users::IndexTreaty do
                       strategy: :direct,
                       summary: nil,
                       deprecated: true,
-                      executor: Users::V1::IndexService,
+                      executor: Posts::V1::IndexService,
                       request: {
                         scopes: {
                           filters: {
                             attributes: {
-                              first_name: {
+                              title: {
                                 type: :string,
                                 options: {
                                   required: { is: false, message: nil }
                                 },
                                 attributes: {}
                               },
-                              middle_name: {
+                              summary: {
                                 type: :string,
                                 options: {
                                   required: { is: false, message: nil }
                                 },
                                 attributes: {}
                               },
-                              last_name: {
+                              description: {
                                 type: :string,
                                 options: {
                                   required: { is: false, message: nil }
@@ -71,7 +71,7 @@ RSpec.describe Gate::API::Users::IndexTreaty do
                           meta: {
                             attributes: {}
                           },
-                          users: {
+                          posts: {
                             attributes: {}
                           }
                         }
@@ -83,26 +83,26 @@ RSpec.describe Gate::API::Users::IndexTreaty do
                       strategy: :direct,
                       summary: nil,
                       deprecated: true,
-                      executor: Users::V1::IndexService,
+                      executor: Posts::V1::IndexService,
                       request: {
                         scopes: {
                           filters: {
                             attributes: {
-                              first_name: {
+                              title: {
                                 type: :string,
                                 options: {
                                   required: { is: false, message: nil }
                                 },
                                 attributes: {}
                               },
-                              middle_name: {
+                              summary: {
                                 type: :string,
                                 options: {
                                   required: { is: false, message: nil }
                                 },
                                 attributes: {}
                               },
-                              last_name: {
+                              description: {
                                 type: :string,
                                 options: {
                                   required: { is: false, message: nil }
@@ -119,7 +119,7 @@ RSpec.describe Gate::API::Users::IndexTreaty do
                           meta: {
                             attributes: {}
                           },
-                          users: {
+                          posts: {
                             attributes: {}
                           }
                         }
@@ -136,21 +136,21 @@ RSpec.describe Gate::API::Users::IndexTreaty do
                         scopes: {
                           filters: {
                             attributes: {
-                              first_name: {
+                              title: {
                                 type: :string,
                                 options: {
                                   required: { is: false, message: nil }
                                 },
                                 attributes: {}
                               },
-                              middle_name: {
+                              summary: {
                                 type: :string,
                                 options: {
                                   required: { is: false, message: nil }
                                 },
                                 attributes: {}
                               },
-                              last_name: {
+                              description: {
                                 type: :string,
                                 options: {
                                   required: { is: false, message: nil }
@@ -167,7 +167,7 @@ RSpec.describe Gate::API::Users::IndexTreaty do
                           meta: {
                             attributes: {}
                           },
-                          users: {
+                          posts: {
                             attributes: {}
                           }
                         }
@@ -179,26 +179,26 @@ RSpec.describe Gate::API::Users::IndexTreaty do
                       strategy: :adapter,
                       summary: nil,
                       deprecated: false,
-                      executor: Users::Stable::IndexService,
+                      executor: Posts::Stable::IndexService,
                       request: {
                         scopes: {
                           filters: {
                             attributes: {
-                              first_name: {
+                              title: {
                                 type: :string,
                                 options: {
                                   required: { is: false, message: nil }
                                 },
                                 attributes: {}
                               },
-                              middle_name: {
+                              summary: {
                                 type: :string,
                                 options: {
                                   required: { is: false, message: nil }
                                 },
                                 attributes: {}
                               },
-                              last_name: {
+                              description: {
                                 type: :string,
                                 options: {
                                   required: { is: false, message: nil }
@@ -237,7 +237,7 @@ RSpec.describe Gate::API::Users::IndexTreaty do
                               }
                             }
                           },
-                          users: {
+                          posts: {
                             attributes: {
                               id: {
                                 type: :string,
@@ -246,21 +246,28 @@ RSpec.describe Gate::API::Users::IndexTreaty do
                                 },
                                 attributes: {}
                               },
-                              first_name: {
+                              title: {
                                 type: :string,
                                 options: {
                                   required: { is: true, message: nil }
                                 },
                                 attributes: {}
                               },
-                              middle_name: {
+                              summary: {
                                 type: :string,
                                 options: {
                                   required: { is: true, message: nil }
                                 },
                                 attributes: {}
                               },
-                              last_name: {
+                              description: {
+                                type: :string,
+                                options: {
+                                  required: { is: true, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              content: {
                                 type: :string,
                                 options: {
                                   required: { is: true, message: nil }
@@ -278,26 +285,26 @@ RSpec.describe Gate::API::Users::IndexTreaty do
                       strategy: :adapter,
                       summary: nil,
                       deprecated: false,
-                      executor: Users::Stable::IndexService,
+                      executor: Posts::Stable::IndexService,
                       request: {
                         scopes: {
                           filters: {
                             attributes: {
-                              first_name: {
+                              title: {
                                 type: :string,
                                 options: {
                                   required: { is: false, message: nil }
                                 },
                                 attributes: {}
                               },
-                              middle_name: {
+                              summary: {
                                 type: :string,
                                 options: {
                                   required: { is: false, message: nil }
                                 },
                                 attributes: {}
                               },
-                              last_name: {
+                              description: {
                                 type: :string,
                                 options: {
                                   required: { is: false, message: nil }
@@ -337,7 +344,7 @@ RSpec.describe Gate::API::Users::IndexTreaty do
                               }
                             }
                           },
-                          users: {
+                          posts: {
                             attributes: {
                               id: {
                                 type: :string,
@@ -346,21 +353,28 @@ RSpec.describe Gate::API::Users::IndexTreaty do
                                 },
                                 attributes: {}
                               },
-                              first_name: {
+                              title: {
                                 type: :string,
                                 options: {
                                   required: { is: true, message: nil }
                                 },
                                 attributes: {}
                               },
-                              middle_name: {
+                              summary: {
                                 type: :string,
                                 options: {
                                   required: { is: true, message: nil }
                                 },
                                 attributes: {}
                               },
-                              last_name: {
+                              description: {
+                                type: :string,
+                                options: {
+                                  required: { is: true, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              content: {
                                 type: :string,
                                 options: {
                                   required: { is: true, message: nil }

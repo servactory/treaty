@@ -16,7 +16,7 @@ Rails.application.routes.draw do
 
   namespace :gate, path: "/" do
     namespace :api, defaults: { format: :json } do
-      resources :users, only: %i[index create] do
+      resources :posts, only: %i[index create] do
         collection do
           get :invalid_class
         end

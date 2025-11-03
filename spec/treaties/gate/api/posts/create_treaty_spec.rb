@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Gate::API::Users::CreateTreaty do
+RSpec.describe Gate::API::Posts::CreateTreaty do
   subject(:perform) { described_class.call!(controller:, params:) }
 
   let(:request) do
@@ -14,7 +14,7 @@ RSpec.describe Gate::API::Users::CreateTreaty do
 
   let(:controller) do
     instance_double(
-      Gate::API::UsersController,
+      Gate::API::PostsController,
       request:,
       headers:,
       params:
@@ -33,12 +33,12 @@ RSpec.describe Gate::API::Users::CreateTreaty do
                       version: "1",
                       segments: [1],
                       strategy: :direct,
-                      summary: "The first version of the contract for creating a user",
+                      summary: "The first version of the contract for creating a post",
                       deprecated: false,
-                      executor: Users::V1::CreateService,
+                      executor: Posts::V1::CreateService,
                       request: {
                         scopes: {
-                          user: {
+                          post: {
                             attributes: {}
                           }
                         }
@@ -46,7 +46,7 @@ RSpec.describe Gate::API::Users::CreateTreaty do
                       response: {
                         status: 201,
                         scopes: {
-                          user: {
+                          post: {
                             attributes: {}
                           }
                         }
@@ -56,28 +56,35 @@ RSpec.describe Gate::API::Users::CreateTreaty do
                       version: "2",
                       segments: [2],
                       strategy: :adapter,
-                      summary: "Added middle name to expand user data",
+                      summary: "Added middle name to expand post data",
                       deprecated: false,
-                      executor: Users::Stable::CreateService,
+                      executor: Posts::Stable::CreateService,
                       request: {
                         scopes: {
-                          user: {
+                          post: {
                             attributes: {
-                              first_name: {
+                              title: {
                                 type: :string,
                                 options: {
                                   required: { is: true, message: nil }
                                 },
                                 attributes: {}
                               },
-                              middle_name: {
+                              summary: {
+                                type: :string,
+                                options: {
+                                  required: { is: true, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              description: {
                                 type: :string,
                                 options: {
                                   required: { is: false, message: nil }
                                 },
                                 attributes: {}
                               },
-                              last_name: {
+                              content: {
                                 type: :string,
                                 options: {
                                   required: { is: true, message: nil }
@@ -91,7 +98,7 @@ RSpec.describe Gate::API::Users::CreateTreaty do
                       response: {
                         status: 201,
                         scopes: {
-                          user: {
+                          post: {
                             attributes: {
                               id: {
                                 type: :string,
@@ -100,21 +107,28 @@ RSpec.describe Gate::API::Users::CreateTreaty do
                                 },
                                 attributes: {}
                               },
-                              first_name: {
+                              title: {
                                 type: :string,
                                 options: {
                                   required: { is: true, message: nil }
                                 },
                                 attributes: {}
                               },
-                              middle_name: {
+                              summary: {
                                 type: :string,
                                 options: {
                                   required: { is: true, message: nil }
                                 },
                                 attributes: {}
                               },
-                              last_name: {
+                              description: {
+                                type: :string,
+                                options: {
+                                  required: { is: true, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              content: {
                                 type: :string,
                                 options: {
                                   required: { is: true, message: nil }
@@ -130,9 +144,9 @@ RSpec.describe Gate::API::Users::CreateTreaty do
                       version: "3",
                       segments: [3],
                       strategy: :adapter,
-                      summary: "Added address and socials to expand user data",
+                      summary: "Added author and socials to expand post data",
                       deprecated: false,
-                      executor: Users::Stable::CreateService,
+                      executor: Posts::Stable::CreateService,
                       request: {
                         scopes: {
                           self: {
@@ -146,86 +160,79 @@ RSpec.describe Gate::API::Users::CreateTreaty do
                               }
                             }
                           },
-                          user: {
+                          post: {
                             attributes: {
-                              first_name: {
+                              title: {
                                 type: :string,
                                 options: {
                                   required: { is: true, message: nil }
                                 },
                                 attributes: {}
                               },
-                              middle_name: {
+                              summary: {
+                                type: :string,
+                                options: {
+                                  required: { is: true, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              description: {
                                 type: :string,
                                 options: {
                                   required: { is: false, message: nil }
                                 },
                                 attributes: {}
                               },
-                              last_name: {
+                              content: {
                                 type: :string,
                                 options: {
                                   required: { is: true, message: nil }
                                 },
                                 attributes: {}
                               },
-                              address: {
+                              author: {
                                 type: :object,
                                 options: {
                                   required: { is: true, message: nil }
                                 },
                                 attributes: {
-                                  street: {
+                                  name: {
                                     type: :string,
                                     options: {
                                       required: { is: true, message: nil }
                                     },
                                     attributes: {}
                                   },
-                                  city: {
+                                  bio: {
                                     type: :string,
                                     options: {
                                       required: { is: true, message: nil }
                                     },
                                     attributes: {}
                                   },
-                                  state: {
-                                    type: :string,
+                                  socials: {
+                                    type: :array,
                                     options: {
-                                      required: { is: true, message: nil }
+                                      required: { is: false, message: nil }
                                     },
-                                    attributes: {}
-                                  },
-                                  zipcode: {
-                                    type: :string,
-                                    options: {
-                                      required: { is: true, message: nil }
-                                    },
-                                    attributes: {}
-                                  }
-                                }
-                              },
-                              socials: {
-                                type: :array,
-                                options: {
-                                  required: { is: false, message: nil }
-                                },
-                                attributes: {
-                                  provider: {
-                                    type: :string,
-                                    options: {
-                                      required: { is: true, message: nil },
-                                      inclusion: { in: %w[twitter linkedin github], message: nil }
-                                    },
-                                    attributes: {}
-                                  },
-                                  handle: {
-                                    type: :string,
-                                    options: {
-                                      required: { is: true, message: nil },
-                                      as: { is: :value, message: nil }
-                                    },
-                                    attributes: {}
+                                    attributes: {
+                                      provider: {
+                                        type: :string,
+                                        options: {
+                                          required: { is: true, message: nil },
+                                          inclusion: { in: %w[twitter linkedin github], message: nil }
+                                        },
+                                        attributes: {}
+                                      },
+                                      handle: {
+                                        type: :string,
+                                        options: {
+                                          required: { is: true, message: nil },
+                                          as: { is: :value, message: nil }
+                                        },
+                                        attributes: {}
+                                      }
+                                    }
                                   }
                                 }
                               }
@@ -236,7 +243,7 @@ RSpec.describe Gate::API::Users::CreateTreaty do
                       response: {
                         status: 201,
                         scopes: {
-                          user: {
+                          post: {
                             attributes: {
                               id: {
                                 type: :string,
@@ -245,62 +252,92 @@ RSpec.describe Gate::API::Users::CreateTreaty do
                                 },
                                 attributes: {}
                               },
-                              first_name: {
+                              title: {
                                 type: :string,
                                 options: {
                                   required: { is: true, message: nil }
                                 },
                                 attributes: {}
                               },
-                              middle_name: {
+                              summary: {
                                 type: :string,
                                 options: {
                                   required: { is: true, message: nil }
                                 },
                                 attributes: {}
                               },
-                              last_name: {
+                              description: {
                                 type: :string,
                                 options: {
                                   required: { is: true, message: nil }
                                 },
                                 attributes: {}
                               },
-                              address: {
+                              content: {
+                                type: :string,
+                                options: {
+                                  required: { is: true, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              author: {
                                 type: :object,
                                 options: {
                                   required: { is: true, message: nil }
                                 },
                                 attributes: {
-                                  street: {
+                                  name: {
                                     type: :string,
                                     options: {
                                       required: { is: true, message: nil }
                                     },
                                     attributes: {}
                                   },
-                                  city: {
+                                  bio: {
                                     type: :string,
                                     options: {
                                       required: { is: true, message: nil }
                                     },
                                     attributes: {}
                                   },
-                                  state: {
-                                    type: :string,
+                                  socials: {
+                                    type: :array,
                                     options: {
                                       required: { is: true, message: nil }
                                     },
-                                    attributes: {}
-                                  },
-                                  zipcode: {
-                                    type: :string,
-                                    options: {
-                                      required: { is: true, message: nil }
-                                    },
-                                    attributes: {}
+                                    attributes: {
+                                      provider: {
+                                        type: :string,
+                                        options: {
+                                          required: { is: true, message: nil }
+                                        },
+                                        attributes: {}
+                                      },
+                                      value: {
+                                        type: :string,
+                                        options: {
+                                          required: { is: true, message: nil },
+                                          as: { is: :handle, message: nil }
+                                        },
+                                        attributes: {}
+                                      }
+                                    }
                                   }
                                 }
+                              },
+                              rating: {
+                                type: :integer,
+                                options: {
+                                  required: { is: true, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              views: {
+                                type: :integer,
+                                options: {
+                                  required: { is: true, message: nil }
+                                },
+                                attributes: {}
                               },
                               created_at: {
                                 type: :datetime,
@@ -352,22 +389,27 @@ RSpec.describe Gate::API::Users::CreateTreaty do
           # Query
           signature: "...",
           # Body
-          user: {
-            first_name: "John",
-            middle_name: nil,
-            last_name: "Doe",
-            address: {
-              street: "123 Main St",
-              city: "Anytown",
-              state: "NY",
-              zipcode: "12345"
-            },
-            socials: [
-              {
-                provider: "twitter",
-                handle: "johndoe"
-              }
-            ]
+          post: {
+            title: "Understanding Kubernetes Pod Networking: A Deep Dive",
+            summary:
+              "Explore how pods communicate in Kubernetes clusters and learn the fundamentals of CNI plugins, " \
+              "network policies, and service mesh integration.",
+            description:
+              "This comprehensive guide breaks down the complex world of Kubernetes networking, " \
+              "explaining how containers within pods share network namespaces and " \
+              "how inter-pod communication works across nodes.",
+            content: "...",
+            author: {
+              name: "John Doe",
+              bio: "Senior DevOps Engineer specializing in Kubernetes and cloud infrastructure. " \
+                   "Speaker and open-source contributor.",
+              socials: [
+                {
+                  provider: "twitter",
+                  handle: "johndoe"
+                }
+              ]
+            }
           }
         }
       end
@@ -386,15 +428,18 @@ RSpec.describe Gate::API::Users::CreateTreaty do
             # Query
             signature: "...",
             # Body
-            user: {
-              first_name: "John",
-              middle_name: nil,
-              last_name: nil,
-              address: {
-                street: "123 Main St",
-                city: "Anytown",
-                state: "NY",
-                zipcode: "12345"
+            post: {
+              title: "Understanding Kubernetes Pod Networking: A Deep Dive",
+              summary: nil,
+              description:
+                "This comprehensive guide breaks down the complex world of Kubernetes networking, " \
+                "explaining how containers within pods share network namespaces and " \
+                "how inter-pod communication works across nodes.",
+              content: "...",
+              author: {
+                name: "John Doe",
+                bio: "Senior DevOps Engineer specializing in Kubernetes and cloud infrastructure. " \
+                     "Speaker and open-source contributor."
               },
               socials: [
                 {
@@ -411,7 +456,7 @@ RSpec.describe Gate::API::Users::CreateTreaty do
             raise_error do |exception|
               expect(exception).to be_a(Treaty::Exceptions::Validation)
               expect(exception.message).to(
-                eq("Attribute 'last_name' is required but was not provided or is empty")
+                eq("Attribute 'summary' is required but was not provided or is empty")
               )
             end
           )

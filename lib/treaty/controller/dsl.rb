@@ -12,18 +12,24 @@ module Treaty
         private
 
         def treaty(action_name) # rubocop:disable Metrics/MethodLength
-          define_method(action_name) do
+          define_method(action_name) do # rubocop:disable Metrics/MethodLength
             _treaty = treaty_class.call!(controller: self, params:)
 
             # TODO
             # render json: treaty.data, status: treaty.status
 
             render json: {
-              user: {
+              post: {
                 id: SecureRandom.uuid,
-                first_name: "John",
-                middle_name: nil,
-                last_name: "Doe"
+                title: "Understanding Kubernetes Pod Networking: A Deep Dive",
+                summary:
+                  "Explore how pods communicate in Kubernetes clusters and learn the fundamentals of CNI plugins, " \
+                  "network policies, and service mesh integration.",
+                description:
+                  "This comprehensive guide breaks down the complex world of Kubernetes networking, " \
+                  "explaining how containers within pods share network namespaces and " \
+                  "how inter-pod communication works across nodes.",
+                content: "..."
               }
             }
           end

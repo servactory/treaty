@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-module Users
-  module Stable
+module Posts
+  module V1
     class IndexService < ApplicationService::Base
       # TODO: Inputs
 

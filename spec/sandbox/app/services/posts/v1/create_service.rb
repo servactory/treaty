@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Users
+module Posts
   module V1
     class CreateService < ApplicationService::Base
       # TODO: Inputs

@@ -2,7 +2,7 @@
 
 module Gate
   module API
-    class UsersController < Gate::API::BaseController
+    class PostsController < Gate::API::BaseController
       treaty :index
 
       treaty :create

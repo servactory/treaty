@@ -2,7 +2,7 @@
 
 module Gate
   module API
-    module Users
+    module Posts
       class IndexTreaty < ApplicationTreaty # rubocop:disable Metrics/ClassLength
         version [1, 0, 0, :rc1] do # Just to keep the idea going.
           strategy Treaty::Strategy::DIRECT
@@ -10,21 +10,21 @@ module Gate
           deprecated true # as boolean
 
           request do
-            # Query: filters[first_name], filters[middle_name], filters[last_name]
+            # Query: filters[title], filters[middle_name], filters[summary]
             scope :filters do
-              string :first_name, :optional
-              string :middle_name, :optional
-              string :last_name, :optional
+              string :title, :optional
+              string :summary, :optional
+              string :description, :optional
             end
           end
 
           response 200 do
-            scope :users
+            scope :posts
             scope :meta
           end
 
-          # Present: first_name, last_name. Missing: middle_name.
-          delegate_to ::Users::V1::IndexService
+          # Present: title, summary. Missing: middle_name.
+          delegate_to ::Posts::V1::IndexService
         end
 
         version "1.0.0.rc2" do # Just to keep the idea going.
@@ -33,21 +33,21 @@ module Gate
           deprecated true # as boolean
 
           request do
-            # Query: filters[first_name], filters[middle_name], filters[last_name]
+            # Query: filters[title], filters[middle_name], filters[summary]
             scope :filters do
-              string :first_name, :optional
-              string :middle_name, :optional
-              string :last_name, :optional
+              string :title, :optional
+              string :summary, :optional
+              string :description, :optional
             end
           end
 
           response 200 do
-            scope :users
+            scope :posts
             scope :meta
           end
 
-          # Present: first_name, last_name. Missing: middle_name.
-          delegate_to ::Users::V1::IndexService
+          # Present: title, summary. Missing: middle_name.
+          delegate_to ::Posts::V1::IndexService
         end
 
         version 1 do # Also supported: 1.0, 1.0.0.rc1
@@ -59,21 +59,21 @@ module Gate
           )
 
           request do
-            # Query: filters[first_name], filters[middle_name], filters[last_name]
+            # Query: filters[title], filters[middle_name], filters[summary]
             scope :filters do
-              string :first_name, :optional
-              string :middle_name, :optional
-              string :last_name, :optional
+              string :title, :optional
+              string :summary, :optional
+              string :description, :optional
             end
           end
 
           response 200 do
-            scope :users
+            scope :posts
             scope :meta
           end
 
-          # Present: first_name, last_name. Missing: middle_name.
-          # delegate_to ::Users::V1::IndexService
+          # Present: title, summary. Missing: middle_name.
+          # delegate_to ::Posts::V1::IndexService
           delegate_to(lambda do |params|
             # NOTE: To avoid using the service for any reason,
             #       use Proc to work with params locally.
@@ -86,26 +86,27 @@ module Gate
 
           # TODO: An idea on how to simplify while maintaining power:
           #       - When one scope:
-          #         - request(:user) { string :first_name }
-          #         - response(:user, 200) { string :first_name }
+          #         - request(:post) { string :title }
+          #         - response(:post, 200) { string :title }
           #       - When multiple scopes:
-          #         - requests { scope(:user) { string :first_name } }
-          #         - responses(200) { scope(:user) { string :first_name } }
+          #         - requests { scope(:post) { string :title } }
+          #         - responses(200) { scope(:post) { string :title } }
           request do
-            # Query: filters[first_name], filters[middle_name], filters[last_name]
+            # Query: filters[title], filters[middle_name], filters[summary]
             scope :filters do
-              string :first_name, :optional
-              string :middle_name, :optional
-              string :last_name, :optional
+              string :title, :optional
+              string :summary, :optional
+              string :description, :optional
             end
           end
 
           response 200 do
-            scope :users do
+            scope :posts do
               string :id
-              string :first_name
-              string :middle_name
-              string :last_name
+              string :title
+              string :summary
+              string :description
+              string :content
             end
 
             scope :meta do
@@ -115,7 +116,7 @@ module Gate
             end
           end
 
-          delegate_to ::Users::Stable::IndexService
+          delegate_to ::Posts::Stable::IndexService
         end
 
         version 3 do # Also supported: 2.0, 2.0.0.rc1
@@ -123,26 +124,27 @@ module Gate
 
           # TODO: An idea on how to simplify while maintaining power:
           #       - When one scope:
-          #         - request(:user) { string :first_name }
-          #         - response(:user, 200) { string :first_name }
+          #         - request(:post) { string :title }
+          #         - response(:post, 200) { string :title }
           #       - When multiple scopes:
-          #         - requests { scope(:user) { string :first_name } }
-          #         - responses(200) { scope(:user) { string :first_name } }
+          #         - requests { scope(:post) { string :title } }
+          #         - responses(200) { scope(:post) { string :title } }
           request do
-            # Query: filters[first_name], filters[middle_name], filters[last_name]
+            # Query: filters[title], filters[middle_name], filters[summary]
             scope :filters do
-              string :first_name, :optional
-              string :middle_name, :optional
-              string :last_name, :optional
+              string :title, :optional
+              string :summary, :optional
+              string :description, :optional
             end
           end
 
           response 200 do
-            scope :users do
+            scope :posts do
               string :id
-              string :first_name
-              string :middle_name
-              string :last_name
+              string :title
+              string :summary
+              string :description
+              string :content
             end
 
             scope :meta do
@@ -152,7 +154,7 @@ module Gate
             end
           end
 
-          delegate_to ::Users::Stable::IndexService
+          delegate_to ::Posts::Stable::IndexService
         end
       end
     end

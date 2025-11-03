@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-module Users
-  module V1
-    class IndexService < ApplicationService::Base
+module Posts
+  module Stable
+    class CreateService < ApplicationService::Base
       # TODO: Inputs
 
       private

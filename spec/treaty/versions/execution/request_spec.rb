@@ -215,10 +215,14 @@ RSpec.describe Treaty::Versions::Execution::Request do
         )
       end
 
-      it "raises an Execution exception with a clear message" do
-        expect { request.execute! }.to raise_error(
-          Treaty::Exceptions::Execution,
-          "Executor cannot be an empty string"
+      it "raises an Execution exception with a clear message", :aggregate_failures do
+        expect { request.execute! }.to(
+          raise_error do |exception|
+            expect(exception).to be_a(Treaty::Exceptions::Execution)
+            expect(exception.message).to(
+              eq("Executor cannot be an empty string")
+            )
+          end
         )
       end
     end
@@ -232,10 +236,14 @@ RSpec.describe Treaty::Versions::Execution::Request do
         )
       end
 
-      it "raises an Execution exception with a clear message" do
-        expect { request.execute! }.to raise_error(
-          Treaty::Exceptions::Execution,
-          "Executor class `Nonexistent::Path::Service` not found"
+      it "raises an Execution exception with a clear message", :aggregate_failures do
+        expect { request.execute! }.to(
+          raise_error do |exception|
+            expect(exception).to be_a(Treaty::Exceptions::Execution)
+            expect(exception.message).to(
+              eq("Executor class `Nonexistent::Path::Service` not found")
+            )
+          end
         )
       end
     end
@@ -243,10 +251,14 @@ RSpec.describe Treaty::Versions::Execution::Request do
     context "when executor is nil" do
       let(:executor_instance) { nil }
 
-      it "raises an Execution exception" do
-        expect { request.execute! }.to raise_error(
-          Treaty::Exceptions::Execution,
-          /Executor is not defined for version/
+      it "raises an Execution exception with a clear message", :aggregate_failures do
+        expect { request.execute! }.to(
+          raise_error do |exception|
+            expect(exception).to be_a(Treaty::Exceptions::Execution)
+            expect(exception.message).to(
+              eq("Executor is not defined for version 3")
+            )
+          end
         )
       end
     end

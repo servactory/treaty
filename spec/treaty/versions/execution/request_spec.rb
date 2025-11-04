@@ -6,14 +6,14 @@ RSpec.describe Treaty::Versions::Execution::Request do
       instance_double(
         Treaty::Versions::Factory,
         version: 3,
-        executor: executor_config
+        executor: executor_instance
       )
     end
     let(:request) { described_class.new(version_factory:, validated_params:) }
     let(:validated_params) { { title: "Test Post" } }
 
     context "when executor is defined as a path-style string" do
-      let(:executor_config) do
+      let(:executor_instance) do
         instance_double(
           Treaty::Versions::Executor,
           executor: "posts/stable/create_service",
@@ -50,7 +50,7 @@ RSpec.describe Treaty::Versions::Execution::Request do
     end
 
     context "when executor is defined as a string with underscores" do
-      let(:executor_config) do
+      let(:executor_instance) do
         instance_double(
           Treaty::Versions::Executor,
           executor: "posts/v1/create_service",
@@ -83,7 +83,7 @@ RSpec.describe Treaty::Versions::Execution::Request do
     end
 
     context "when executor is defined as a traditional constant string" do
-      let(:executor_config) do
+      let(:executor_instance) do
         instance_double(
           Treaty::Versions::Executor,
           executor: "Posts::Stable::CreateService",
@@ -116,7 +116,7 @@ RSpec.describe Treaty::Versions::Execution::Request do
     end
 
     context "when executor is defined as a Class" do
-      let(:executor_config) do
+      let(:executor_instance) do
         instance_double(
           Treaty::Versions::Executor,
           executor: Posts::Stable::CreateService,
@@ -149,7 +149,7 @@ RSpec.describe Treaty::Versions::Execution::Request do
     end
 
     context "when executor is defined as a Proc" do
-      let(:executor_config) do
+      let(:executor_instance) do
         instance_double(
           Treaty::Versions::Executor,
           executor: executor_proc,
@@ -173,7 +173,7 @@ RSpec.describe Treaty::Versions::Execution::Request do
     end
 
     context "when executor is a Servactory service" do
-      let(:executor_config) do
+      let(:executor_instance) do
         instance_double(
           Treaty::Versions::Executor,
           executor: Posts::Stable::CreateService,
@@ -206,8 +206,25 @@ RSpec.describe Treaty::Versions::Execution::Request do
       end
     end
 
+    context "when executor is an empty string" do
+      let(:executor_instance) do
+        instance_double(
+          Treaty::Versions::Executor,
+          executor: "",
+          method: :call
+        )
+      end
+
+      it "raises an Execution exception with a clear message" do
+        expect { request.execute! }.to raise_error(
+          Treaty::Exceptions::Execution,
+          "Executor cannot be an empty string"
+        )
+      end
+    end
+
     context "when executor path does not exist" do
-      let(:executor_config) do
+      let(:executor_instance) do
         instance_double(
           Treaty::Versions::Executor,
           executor: "nonexistent/path/service",
@@ -224,7 +241,7 @@ RSpec.describe Treaty::Versions::Execution::Request do
     end
 
     context "when executor is nil" do
-      let(:executor_config) { nil }
+      let(:executor_instance) { nil }
 
       it "raises an Execution exception" do
         expect { request.execute! }.to raise_error(

@@ -18,7 +18,7 @@ module Gate
           response(201) { scope :post }
 
           # Present: title, summary. Missing: description.
-          delegate_to ::Posts::V1::CreateService
+          delegate_to ::Posts::V1::CreateService # , :call
         end
 
         version 2 do # Also supported: 2.0, 2.0.0.rc1
@@ -50,7 +50,8 @@ module Gate
             end
           end
 
-          delegate_to ::Posts::Stable::CreateService
+          # delegate_to ::Posts::Stable::CreateService # , :call
+          delegate_to "Posts::Stable::CreateService" # , :call
         end
 
         version 3 do # Also supported: 3.0, 3.0.0.rc1
@@ -111,7 +112,8 @@ module Gate
             end
           end
 
-          delegate_to ::Posts::Stable::CreateService
+          # delegate_to ::Posts::Stable::CreateService # , :call
+          delegate_to "posts/stable/create_service" # , :call
         end
       end
     end

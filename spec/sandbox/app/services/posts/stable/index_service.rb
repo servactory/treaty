@@ -3,12 +3,14 @@
 module Posts
   module Stable
     class IndexService < ApplicationService::Base
-      # TODO: Inputs
+      input :params, type: Hash, required: false, default: {}
+
+      output :data, type: Hash
 
       private
 
       def call
-        # TODO
+        outputs.data = {}
       end
     end
   end

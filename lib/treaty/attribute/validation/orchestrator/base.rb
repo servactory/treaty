@@ -17,11 +17,13 @@ module Treaty
           end
 
           def validate!
-            return unless version_factory.strategy_instance.adapter?
+            return data unless version_factory.strategy_instance.adapter?
 
             collection_of_scopes.each do |scope_factory|
               validate_scope!(scope_factory)
             end
+
+            data
           end
 
           private
@@ -33,13 +35,11 @@ module Treaty
           end
 
           def validate_scope!(scope_factory)
-            scope_data = data.empty? ? nil : scope_data_for(scope_factory.name)
+            scope_data = scope_data_for(scope_factory.name)
 
             scope_factory.collection_of_attributes.each do |attribute|
               validator = AttributeValidator.new(attribute)
               validator.validate_schema!
-
-              next if scope_data.nil?
 
               value = scope_data.fetch(attribute.name, nil)
               validator.validate_value!(value)

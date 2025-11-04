@@ -35,7 +35,10 @@ RSpec.describe Gate::API::Posts::CreateTreaty do
                       strategy: :direct,
                       summary: "The first version of the contract for creating a post",
                       deprecated: false,
-                      executor: Posts::V1::CreateService,
+                      executor: {
+                        executor: Posts::V1::CreateService,
+                        method: :call
+                      },
                       request: {
                         scopes: {
                           post: {
@@ -58,7 +61,10 @@ RSpec.describe Gate::API::Posts::CreateTreaty do
                       strategy: :adapter,
                       summary: "Added middle name to expand post data",
                       deprecated: false,
-                      executor: Posts::Stable::CreateService,
+                      executor: {
+                        executor: "Posts::Stable::CreateService",
+                        method: :call
+                      },
                       request: {
                         scopes: {
                           post: {
@@ -146,7 +152,10 @@ RSpec.describe Gate::API::Posts::CreateTreaty do
                       strategy: :adapter,
                       summary: "Added author and socials to expand post data",
                       deprecated: false,
-                      executor: Posts::Stable::CreateService,
+                      executor: {
+                        executor: "posts/stable/create_service",
+                        method: :call
+                      },
                       request: {
                         scopes: {
                           self: {
@@ -375,7 +384,19 @@ RSpec.describe Gate::API::Posts::CreateTreaty do
       let(:version) { 2 }
 
       let(:params) do
-        {}
+        {
+          post: {
+            title: "Understanding Kubernetes Pod Networking: A Deep Dive",
+            summary:
+              "Explore how pods communicate in Kubernetes clusters and learn the fundamentals of CNI plugins, " \
+              "network policies, and service mesh integration.",
+            description:
+              "This comprehensive guide breaks down the complex world of Kubernetes networking, " \
+              "explaining how containers within pods share network namespaces and " \
+              "how inter-pod communication works across nodes.",
+            content: "..."
+          }
+        }
       end
 
       it { expect { perform }.not_to raise_error }
@@ -419,6 +440,27 @@ RSpec.describe Gate::API::Posts::CreateTreaty do
   end
 
   context "when required data for work is invalid" do
+    context "when version is 2" do
+      let(:version) { 2 }
+
+      describe "because request data is incorrect" do
+        let(:params) do
+          {}
+        end
+
+        it :aggregate_failures do
+          expect { perform }.to(
+            raise_error do |exception|
+              expect(exception).to be_a(Treaty::Exceptions::Validation)
+              expect(exception.message).to(
+                eq("Attribute 'title' is required but was not provided or is empty")
+              )
+            end
+          )
+        end
+      end
+    end
+
     context "when version is 3" do
       let(:version) { 3 }
 

@@ -36,11 +36,20 @@ module Treaty
             summary: version.summary_text,
             strategy: version.strategy_instance.code,
             deprecated: version.deprecated_result,
-            executor: version.executor,
+            executor: build_executor_with(version),
             request: build_request_with(version),
             response: build_response_with(version)
           }
         end
+      end
+
+      ##########################################################################
+
+      def build_executor_with(version)
+        {
+          executor: version.executor.executor,
+          method: version.executor.method
+        }
       end
 
       ##########################################################################

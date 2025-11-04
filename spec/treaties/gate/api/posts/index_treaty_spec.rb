@@ -35,7 +35,10 @@ RSpec.describe Gate::API::Posts::IndexTreaty do
                       strategy: :direct,
                       summary: nil,
                       deprecated: true,
-                      executor: Posts::V1::IndexService,
+                      executor: {
+                        executor: Posts::V1::IndexService,
+                        method: :call
+                      },
                       request: {
                         scopes: {
                           filters: {
@@ -83,7 +86,10 @@ RSpec.describe Gate::API::Posts::IndexTreaty do
                       strategy: :direct,
                       summary: nil,
                       deprecated: true,
-                      executor: Posts::V1::IndexService,
+                      executor: {
+                        executor: Posts::V1::IndexService,
+                        method: :call
+                      },
                       request: {
                         scopes: {
                           filters: {
@@ -131,7 +137,10 @@ RSpec.describe Gate::API::Posts::IndexTreaty do
                       strategy: :direct,
                       summary: nil,
                       deprecated: false,
-                      executor: Proc,
+                      executor: {
+                        executor: Proc,
+                        method: :call
+                      },
                       request: {
                         scopes: {
                           filters: {
@@ -179,7 +188,10 @@ RSpec.describe Gate::API::Posts::IndexTreaty do
                       strategy: :adapter,
                       summary: nil,
                       deprecated: false,
-                      executor: Posts::Stable::IndexService,
+                      executor: {
+                        executor: Posts::Stable::IndexService,
+                        method: :call
+                      },
                       request: {
                         scopes: {
                           filters: {
@@ -285,7 +297,10 @@ RSpec.describe Gate::API::Posts::IndexTreaty do
                       strategy: :adapter,
                       summary: nil,
                       deprecated: false,
-                      executor: Posts::Stable::IndexService,
+                      executor: {
+                        executor: Posts::Stable::IndexService,
+                        method: :call
+                      },
                       request: {
                         scopes: {
                           filters: {

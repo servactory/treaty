@@ -13,7 +13,7 @@ module Treaty
           collection_of_versions: @collection_of_versions
         )
 
-        validated_params = Attribute::Validation::Request.validate!(
+        validated_params = Request::Attribute::Validation.validate!(
           controller:,
           version_factory:
         )
@@ -23,7 +23,7 @@ module Treaty
           validated_params:
         )
 
-        validated_response = Attribute::Validation::Response.validate!(
+        validated_response = Response::Attribute::Validation.validate!(
           version_factory:,
           response_data: executor_result
         )

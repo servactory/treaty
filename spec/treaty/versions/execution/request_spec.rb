@@ -156,7 +156,7 @@ RSpec.describe Treaty::Versions::Execution::Request do
           method: :call
         )
       end
-      let(:executor_proc) { ->(params) { { result: params } } }
+      let(:executor_proc) { ->(params:) { { result: params } } }
 
       before { allow(executor_proc).to receive(:call).and_call_original }
 
@@ -165,7 +165,7 @@ RSpec.describe Treaty::Versions::Execution::Request do
 
         expect(executor_proc).to(
           have_received(:call)
-            .with(validated_params)
+            .with(params: validated_params)
         )
 
         expect(result).to eq({ result: validated_params })

@@ -66,7 +66,7 @@ module Treaty
         ########################################################################
 
         def execute_proc(proc_executor)
-          proc_executor.call(@validated_params)
+          proc_executor.call(params: @validated_params)
         rescue StandardError => e
           # TODO: It is necessary to implement a translation system (I18n).
           raise Treaty::Exceptions::Execution, e.message
@@ -97,7 +97,7 @@ module Treaty
                   "Method '#{method_name}' not found in class '#{service_executor}'"
           end
 
-          service_executor.public_send(method_name, @validated_params)
+          service_executor.public_send(method_name, params: @validated_params)
         rescue StandardError => e
           # TODO: It is necessary to implement a translation system (I18n).
           raise Treaty::Exceptions::Execution, e.message

@@ -74,7 +74,7 @@ module Gate
 
           # Present: title, summary. Missing: middle_name.
           # delegate_to ::Posts::V1::IndexService # , :call
-          delegate_to(lambda do |params|
+          delegate_to(lambda do |params:|
             # NOTE: To avoid using the service for any reason,
             #       use Proc to work with params locally.
             params

@@ -3,12 +3,14 @@
 module Posts
   module Stable
     class CreateService < ApplicationService::Base
-      # TODO: Inputs
+      input :params, type: Hash
+
+      output :data, type: Hash
 
       private
 
       def call
-        # TODO
+        outputs.data = {}
       end
     end
   end

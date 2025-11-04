@@ -52,8 +52,8 @@ module Treaty
         @response_factory.instance_eval(&block) if block_given?
       end
 
-      def delegate_to(executor)
-        @executor = executor
+      def delegate_to(executor, method = :call)
+        @executor = Executor.new(executor, method)
       end
 
       ##########################################################################

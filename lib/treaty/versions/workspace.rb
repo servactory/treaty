@@ -5,7 +5,7 @@ module Treaty
     module Workspace
       private
 
-      def call!(controller:, **)
+      def call!(controller:, **) # rubocop:disable Metrics/MethodLength
         super
 
         version_factory = Resolver.resolve!(
@@ -13,12 +13,15 @@ module Treaty
           collection_of_versions: @collection_of_versions
         )
 
-        Attribute::Validation::Request.validate!(
+        validated_params = Attribute::Validation::Request.validate!(
           controller:,
           version_factory:
         )
 
-        # TODO: Call executor service here.
+        Execution::Request.execute!(
+          version_factory:,
+          validated_params:
+        )
 
         # TODO: Call response service here.
       end

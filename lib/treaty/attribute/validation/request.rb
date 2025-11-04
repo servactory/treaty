@@ -16,6 +16,8 @@ module Treaty
 
         def validate!
           validate_request_attributes!
+
+          request_data
         end
 
         private

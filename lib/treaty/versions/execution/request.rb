@@ -16,16 +16,32 @@ module Treaty
         def execute!
           raise_executor_missing_error! if @version_factory.executor.nil?
 
-          if executor.is_a?(Proc)
-            execute_proc
-          elsif servactory_service?
-            execute_servactory
-          else
-            execute_regular_class
-          end
+          extract_data_from_result
         end
 
         private
+
+        def extract_data_from_result
+          return execution_result if executor.is_a?(Proc)
+          return execution_result.data if execution_result.respond_to?(:data)
+
+          execution_result
+        end
+
+        ########################################################################
+
+        def execution_result
+          @execution_result ||=
+            if executor.is_a?(Proc)
+              execute_proc
+            elsif servactory_service?
+              execute_servactory
+            else
+              execute_regular_class
+            end
+        end
+
+        ########################################################################
 
         def executor
           @executor ||= resolve_executor(@version_factory.executor.executor)

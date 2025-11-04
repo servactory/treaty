@@ -18,12 +18,22 @@ module Treaty
           version_factory:
         )
 
-        Execution::Request.execute!(
+        executor_result = Execution::Request.execute!(
           version_factory:,
           validated_params:
         )
 
-        # TODO: Call response service here.
+        validated_response = Attribute::Validation::Response.validate!(
+          version_factory:,
+          response_data: executor_result
+        )
+
+        status = version_factory.response_factory&.status || 200
+
+        Treaty::Result.new(
+          data: validated_response,
+          status:
+        )
       end
     end
   end

@@ -10,7 +10,7 @@ module Posts
       private
 
       def call
-        outputs.data = {}
+        outputs.data = inputs.params
       end
     end
   end

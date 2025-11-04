@@ -229,21 +229,21 @@ RSpec.describe Gate::API::Posts::IndexTreaty do
                               count: {
                                 type: :integer,
                                 options: {
-                                  required: { is: true, message: nil }
+                                  required: { is: false, message: nil }
                                 },
                                 attributes: {}
                               },
                               page: {
                                 type: :integer,
                                 options: {
-                                  required: { is: true, message: nil }
+                                  required: { is: false, message: nil }
                                 },
                                 attributes: {}
                               },
                               limit: {
                                 type: :integer,
                                 options: {
-                                  required: { is: true, message: nil }
+                                  required: { is: false, message: nil }
                                 },
                                 attributes: {}
                               }
@@ -254,35 +254,35 @@ RSpec.describe Gate::API::Posts::IndexTreaty do
                               id: {
                                 type: :string,
                                 options: {
-                                  required: { is: true, message: nil }
+                                  required: { is: false, message: nil }
                                 },
                                 attributes: {}
                               },
                               title: {
                                 type: :string,
                                 options: {
-                                  required: { is: true, message: nil }
+                                  required: { is: false, message: nil }
                                 },
                                 attributes: {}
                               },
                               summary: {
                                 type: :string,
                                 options: {
-                                  required: { is: true, message: nil }
+                                  required: { is: false, message: nil }
                                 },
                                 attributes: {}
                               },
                               description: {
                                 type: :string,
                                 options: {
-                                  required: { is: true, message: nil }
+                                  required: { is: false, message: nil }
                                 },
                                 attributes: {}
                               },
                               content: {
                                 type: :string,
                                 options: {
-                                  required: { is: true, message: nil }
+                                  required: { is: false, message: nil }
                                 },
                                 attributes: {}
                               }
@@ -338,21 +338,21 @@ RSpec.describe Gate::API::Posts::IndexTreaty do
                               count: {
                                 type: :integer,
                                 options: {
-                                  required: { is: true, message: nil }
+                                  required: { is: false, message: nil }
                                 },
                                 attributes: {}
                               },
                               page: {
                                 type: :integer,
                                 options: {
-                                  required: { is: true, message: nil }
+                                  required: { is: false, message: nil }
                                 },
                                 attributes: {}
                               },
                               limit: {
                                 type: :integer,
                                 options: {
-                                  required: { is: true, message: nil },
+                                  required: { is: false, message: nil },
                                   default: { is: 12, message: nil }
                                 },
                                 attributes: {}
@@ -364,35 +364,35 @@ RSpec.describe Gate::API::Posts::IndexTreaty do
                               id: {
                                 type: :string,
                                 options: {
-                                  required: { is: true, message: nil }
+                                  required: { is: false, message: nil }
                                 },
                                 attributes: {}
                               },
                               title: {
                                 type: :string,
                                 options: {
-                                  required: { is: true, message: nil }
+                                  required: { is: false, message: nil }
                                 },
                                 attributes: {}
                               },
                               summary: {
                                 type: :string,
                                 options: {
-                                  required: { is: true, message: nil }
+                                  required: { is: false, message: nil }
                                 },
                                 attributes: {}
                               },
                               description: {
                                 type: :string,
                                 options: {
-                                  required: { is: true, message: nil }
+                                  required: { is: false, message: nil }
                                 },
                                 attributes: {}
                               },
                               content: {
                                 type: :string,
                                 options: {
-                                  required: { is: true, message: nil }
+                                  required: { is: false, message: nil }
                                 },
                                 attributes: {}
                               }

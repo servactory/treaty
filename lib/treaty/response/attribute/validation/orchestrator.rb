@@ -1,14 +1,14 @@
 # frozen_string_literal: true
 
 module Treaty
-  module Attribute
-    module Validation
-      module Orchestrator
-        class Response < Base
+  module Response
+    module Attribute
+      module Validation
+        class Orchestrator < Treaty::Attribute::Validation::Orchestrator::Base
           private
 
           def collection_of_scopes
-            return Response::Scope::Collection.new if version_factory.response_factory.nil?
+            return Treaty::Response::Scope::Collection.new if version_factory.response_factory.nil?
 
             version_factory.response_factory.collection_of_scopes
           end

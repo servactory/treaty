@@ -16,14 +16,13 @@ module Treaty
             type,
             *helpers,
             nesting_level: 0,
-            context: :response,
             **options,
             &block
           )
         end
 
         def collection_of_attributes
-          @collection_of_attributes ||= Attribute::Collection.new
+          @collection_of_attributes ||= Treaty::Attribute::Collection.new
         end
 
         ########################################################################

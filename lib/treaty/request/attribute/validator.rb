@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 module Treaty
-  module Attribute
-    module Validation
-      class Request < Base
+  module Request
+    module Attribute
+      class Validator < Treaty::Attribute::Validation::Base
         def self.validate!(...)
           new(...).validate!
         end
@@ -33,7 +33,7 @@ module Treaty
           return request_data unless request_attributes_exist?
 
           # For adapter strategy:
-          Orchestrator::Request.validate!(
+          Validation::Orchestrator.validate!(
             version_factory: @version_factory,
             data: request_data
           )

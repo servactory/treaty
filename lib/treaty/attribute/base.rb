@@ -2,18 +2,16 @@
 
 module Treaty
   module Attribute
-    class Attribute
+    class Base
       attr_reader :name,
                   :type,
                   :options,
-                  :nesting_level,
-                  :context
+                  :nesting_level
 
-      def initialize(name, type, *helpers, nesting_level: 0, context: :request, **options, &block)
+      def initialize(name, type, *helpers, nesting_level: 0, **options, &block)
         @name = name
         @type = type
         @nesting_level = nesting_level
-        @context = context
 
         validate_nesting_level!
 
@@ -35,16 +33,6 @@ module Treaty
       def collection_of_attributes
         @collection_of_attributes ||= Collection.new
       end
-
-      # TODO: Currently not in use.
-      # def required?
-      #   @options.dig(:required, :is) == true
-      # end
-
-      # TODO: Currently not in use.
-      # def optional?
-      #   !required?
-      # end
 
       def nested?
         object_or_array? && collection_of_attributes.exists?
@@ -85,19 +73,13 @@ module Treaty
       end
 
       def apply_defaults!
-        # For request: required by default (true).
-        # For response: optional by default (false).
-        default_required = @context == :request
-
-        # TODO: It is necessary to implement a translation system (I18n).
-        @options[:required] ||= { is: default_required, message: nil }
+        # Must be implemented in subclasses
+        raise NotImplementedError, "#{self.class} must implement #apply_defaults!"
       end
 
       def process_nested_attributes(&block)
-        return unless object_or_array?
-
-        builder = Builder.new(collection_of_attributes, @nesting_level + 1, @context)
-        builder.instance_eval(&block)
+        # Must be implemented in subclasses
+        raise NotImplementedError, "#{self.class} must implement #process_nested_attributes"
       end
     end
   end

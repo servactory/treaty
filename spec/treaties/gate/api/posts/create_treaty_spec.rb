@@ -158,7 +158,7 @@ RSpec.describe Gate::API::Posts::CreateTreaty do
                       },
                       request: {
                         scopes: {
-                          self: {
+                          _self: {
                             attributes: {
                               signature: {
                                 type: :string,
@@ -198,6 +198,21 @@ RSpec.describe Gate::API::Posts::CreateTreaty do
                                   required: { is: true, message: nil }
                                 },
                                 attributes: {}
+                              },
+                              tags: {
+                                type: :array,
+                                options: {
+                                  required: { is: false, message: nil }
+                                },
+                                attributes: {
+                                  _self: {
+                                    type: :string,
+                                    options: {
+                                      required: { is: true, message: nil }
+                                    },
+                                    attributes: {}
+                                  }
+                                }
                               },
                               author: {
                                 type: :object,
@@ -288,6 +303,21 @@ RSpec.describe Gate::API::Posts::CreateTreaty do
                                   required: { is: true, message: nil }
                                 },
                                 attributes: {}
+                              },
+                              tags: {
+                                type: :array,
+                                options: {
+                                  required: { is: true, message: nil }
+                                },
+                                attributes: {
+                                  _self: {
+                                    type: :string,
+                                    options: {
+                                      required: { is: true, message: nil }
+                                    },
+                                    attributes: {}
+                                  }
+                                }
                               },
                               author: {
                                 type: :object,
@@ -420,6 +450,14 @@ RSpec.describe Gate::API::Posts::CreateTreaty do
               "explaining how containers within pods share network namespaces and " \
               "how inter-pod communication works across nodes.",
             content: "...",
+            tags: %w[
+              kubernetes
+              networking
+              devops
+              cloud-native
+              containers
+              cni
+            ],
             author: {
               name: "John Doe",
               bio: "Senior DevOps Engineer specializing in Kubernetes and cloud infrastructure. " \
@@ -464,7 +502,7 @@ RSpec.describe Gate::API::Posts::CreateTreaty do
     context "when version is 3" do
       let(:version) { 3 }
 
-      describe "because request data is incorrect" do
+      describe "because required attribute is missing" do
         let(:params) do
           {
             # Query
@@ -472,12 +510,20 @@ RSpec.describe Gate::API::Posts::CreateTreaty do
             # Body
             post: {
               title: "Understanding Kubernetes Pod Networking: A Deep Dive",
-              summary: nil,
+              summary: nil, # problem with this attribute
               description:
                 "This comprehensive guide breaks down the complex world of Kubernetes networking, " \
                 "explaining how containers within pods share network namespaces and " \
                 "how inter-pod communication works across nodes.",
               content: "...",
+              tags: %w[
+                kubernetes
+                networking
+                devops
+                cloud-native
+                containers
+                cni
+              ],
               author: {
                 name: "John Doe",
                 bio: "Senior DevOps Engineer specializing in Kubernetes and cloud infrastructure. " \
@@ -499,6 +545,61 @@ RSpec.describe Gate::API::Posts::CreateTreaty do
               expect(exception).to be_a(Treaty::Exceptions::Validation)
               expect(exception.message).to(
                 eq("Attribute 'summary' is required but was not provided or is empty")
+              )
+            end
+          )
+        end
+      end
+
+      describe "because there is invalid value in tag attribute" do
+        let(:params) do
+          {
+            # Query
+            signature: "...",
+            # Body
+            post: {
+              title: "Understanding Kubernetes Pod Networking: A Deep Dive",
+              summary:
+                "Explore how pods communicate in Kubernetes clusters and learn the fundamentals of CNI plugins, " \
+                "network policies, and service mesh integration.",
+              description:
+                "This comprehensive guide breaks down the complex world of Kubernetes networking, " \
+                "explaining how containers within pods share network namespaces and " \
+                "how inter-pod communication works across nodes.",
+              content: "...",
+              tags: [
+                "kubernetes",
+                "networking",
+                "devops",
+                "cloud-native",
+                "containers",
+                "cni",
+                123 # this is wrong
+              ],
+              author: {
+                name: "John Doe",
+                bio: "Senior DevOps Engineer specializing in Kubernetes and cloud infrastructure. " \
+                     "Speaker and open-source contributor.",
+                socials: [
+                  {
+                    provider: "twitter",
+                    handle: "johndoe"
+                  }
+                ]
+              }
+            }
+          }
+        end
+
+        it :aggregate_failures do
+          expect { perform }.to(
+            raise_error do |exception|
+              expect(exception).to be_a(Treaty::Exceptions::Validation)
+              expect(exception.message).to(
+                eq(
+                  "Error in array 'tags' at index 6: Element must match one of the defined types. " \
+                  "Errors: Attribute '_self' must be a String, got Integer"
+                )
               )
             end
           )

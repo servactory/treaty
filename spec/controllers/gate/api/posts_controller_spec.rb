@@ -258,16 +258,9 @@ RSpec.describe Gate::API::PostsController do
               "how inter-pod communication works across nodes.",
             content: "...",
             author: {
-              name: "John Doe",
-              bio: "Senior DevOps Engineer specializing in Kubernetes and cloud infrastructure. " \
-                   "Speaker and open-source contributor."
-            },
-            socials: [ # this is the wrong location
-              {
-                provider: "twitter",
-                handle: "johndoe"
-              }
-            ]
+              name: "John Doe"
+              # Missing required 'bio' field.
+            }
           }
         }
       end
@@ -275,7 +268,7 @@ RSpec.describe Gate::API::PostsController do
       let(:expectation) do
         {
           error: {
-            message: "Attribute 'socials' not found in object 'author'"
+            message: "Attribute 'bio' is required but was not provided or is empty"
           }
         }
       end

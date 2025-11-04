@@ -14,8 +14,8 @@ module Treaty
           end
 
           def scope_data_for(name)
-            # If the scope is :self, it's the root level.
-            return data if name == :self
+            # If the scope is :_self, it's the root level.
+            return data if name == :_self
 
             # Otherwise, fetch data from the named scope.
             data.fetch(name, {})

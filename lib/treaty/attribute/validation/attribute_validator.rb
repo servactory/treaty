@@ -12,6 +12,8 @@ module Treaty
 
         def initialize(attribute)
           @attribute = attribute
+          @nested_object_validator = nil
+          @nested_array_validator = nil
         end
 
         def validate_options!
@@ -70,54 +72,18 @@ module Treaty
         def validate_nested!(value)
           case attribute.type
           when :object
-            validate_nested_object!(value)
+            nested_object_validator.validate!(value)
           when :array
-            validate_nested_array!(value)
+            nested_array_validator.validate!(value)
           end
         end
 
-        def validate_nested_object!(hash) # rubocop:disable Metrics/MethodLength
-          return unless hash.is_a?(Hash)
-
-          attribute.collection_of_attributes.each do |nested_attribute|
-            nested_validator = AttributeValidator.new(nested_attribute)
-            nested_validator.validate_schema!
-
-            unless hash.key?(nested_attribute.name)
-              # TODO: It is necessary to implement a translation system (I18n).
-              raise Treaty::Exceptions::Validation,
-                    "Attribute '#{nested_attribute.name}' not found in object '#{attribute.name}'"
-            end
-
-            nested_value = hash.fetch(nested_attribute.name)
-            nested_validator.validate_value!(nested_value)
-          end
+        def nested_object_validator
+          @nested_object_validator ||= NestedObjectValidator.new(attribute)
         end
 
-        # TODO: Refactoring is needed.
-        def validate_nested_array!(array) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
-          return unless array.is_a?(Array)
-
-          array.each_with_index do |element, index|
-            attribute.collection_of_attributes.each do |nested_attribute|
-              nested_validator = AttributeValidator.new(nested_attribute)
-              nested_validator.validate_schema!
-
-              nested_value = if element.is_a?(Hash)
-                               unless element.key?(nested_attribute.name)
-                                 # TODO: It is necessary to implement a translation system (I18n).
-                                 raise Treaty::Exceptions::Validation,
-                                       "Attribute '#{nested_attribute.name}' not found in array '#{attribute.name}' at index #{index}" # rubocop:disable Layout/LineLength
-                               end
-                               element.fetch(nested_attribute.name)
-                             end
-              nested_validator.validate_value!(nested_value)
-            rescue Treaty::Exceptions::Validation => e
-              # TODO: It is necessary to implement a translation system (I18n).
-              raise Treaty::Exceptions::Validation,
-                    "Error in array '#{attribute.name}' at index #{index}: #{e.message}"
-            end
-          end
+        def nested_array_validator
+          @nested_array_validator ||= NestedArrayValidator.new(attribute)
         end
       end
     end

@@ -61,7 +61,7 @@ module Gate
 
           request do
             # Query
-            scope :self do # should be perceived as root
+            scope :_self do # should be perceived as root
               string :signature, :required
             end
           end
@@ -73,6 +73,10 @@ module Gate
               string :summary, :required
               string :description, :optional
               string :content, :required
+
+              array :tags, :optional do
+                string :_self, :required
+              end
 
               object :author, :required do
                 string :name, :required
@@ -93,6 +97,10 @@ module Gate
               string :summary
               string :description
               string :content
+
+              array :tags do
+                string :_self
+              end
 
               object :author do
                 string :name

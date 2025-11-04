@@ -37,12 +37,22 @@ module Treaty
           def validate_scope!(scope_factory)
             scope_data = scope_data_for(scope_factory.name)
 
-            scope_factory.collection_of_attributes.each do |attribute|
-              validator = AttributeValidator.new(attribute)
-              validator.validate_schema!
-
+            validators_for_scope(scope_factory).each do |attribute, validator|
               value = scope_data.fetch(attribute.name, nil)
               validator.validate_value!(value)
+            end
+          end
+
+          def validators_for_scope(scope_factory)
+            @validators_cache ||= {}
+            @validators_cache[scope_factory] ||= build_validators_for_scope(scope_factory)
+          end
+
+          def build_validators_for_scope(scope_factory)
+            scope_factory.collection_of_attributes.each_with_object({}) do |attribute, cache|
+              validator = AttributeValidator.new(attribute)
+              validator.validate_schema!
+              cache[attribute] = validator
             end
           end
 

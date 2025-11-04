@@ -13,24 +13,24 @@ RSpec.describe Gate::API::PostsController do
     let(:params) do
       {
         filters: {
-          title: "Understanding Kubernetes Pod Networking: A Deep Dive"
+          title: "Title 1"
         }
       }
     end
 
     let(:expectation) do
       {
-        post: {
+        posts: {
           id: be_present & be_a(String),
-          title: "Understanding Kubernetes Pod Networking: A Deep Dive",
-          summary:
-            "Explore how pods communicate in Kubernetes clusters and learn the fundamentals of CNI plugins, " \
-            "network policies, and service mesh integration.",
-          description:
-            "This comprehensive guide breaks down the complex world of Kubernetes networking, " \
-            "explaining how containers within pods share network namespaces and " \
-            "how inter-pod communication works across nodes.",
+          title: "Title 1",
+          summary: "Summary 1",
+          description: "Description 1",
           content: "..."
+        },
+        meta: {
+          count: 1,
+          page: 1,
+          limit: 10
         }
       }
     end
@@ -52,14 +52,9 @@ RSpec.describe Gate::API::PostsController do
       let(:params) do
         {
           post: {
-            title: "Understanding Kubernetes Pod Networking: A Deep Dive",
-            summary:
-              "Explore how pods communicate in Kubernetes clusters and learn the fundamentals of CNI plugins, " \
-              "network policies, and service mesh integration.",
-            description:
-              "This comprehensive guide breaks down the complex world of Kubernetes networking, " \
-              "explaining how containers within pods share network namespaces and " \
-              "how inter-pod communication works across nodes.",
+            title: "Title 1",
+            summary: "Summary 1",
+            description: "Description 1",
             content: "..."
           }
         }
@@ -69,22 +64,17 @@ RSpec.describe Gate::API::PostsController do
         {
           post: {
             id: be_present & be_a(String),
-            title: "Understanding Kubernetes Pod Networking: A Deep Dive",
-            summary:
-              "Explore how pods communicate in Kubernetes clusters and learn the fundamentals of CNI plugins, " \
-              "network policies, and service mesh integration.",
-            description:
-              "This comprehensive guide breaks down the complex world of Kubernetes networking, " \
-              "explaining how containers within pods share network namespaces and " \
-              "how inter-pod communication works across nodes.",
+            title: "Title 1",
+            summary: "Summary 1",
+            description: "Description 1",
             content: "..."
           }
         }
       end
 
-      it "renders HTTP 200 OK" do
+      it "renders HTTP 201 Created" do
         expect(perform).to(
-          have_http_status(:ok) &
+          have_http_status(:created) &
           have_json_body(expectation)
         )
       end
@@ -96,14 +86,9 @@ RSpec.describe Gate::API::PostsController do
       let(:params) do
         {
           post: {
-            title: "Understanding Kubernetes Pod Networking: A Deep Dive",
-            summary:
-              "Explore how pods communicate in Kubernetes clusters and learn the fundamentals of CNI plugins, " \
-              "network policies, and service mesh integration.",
-            description:
-              "This comprehensive guide breaks down the complex world of Kubernetes networking, " \
-              "explaining how containers within pods share network namespaces and " \
-              "how inter-pod communication works across nodes.",
+            title: "Title 1",
+            summary: "Summary 1",
+            description: "Description 1",
             content: "..."
           }
         }
@@ -113,22 +98,17 @@ RSpec.describe Gate::API::PostsController do
         {
           post: {
             id: be_present & be_a(String),
-            title: "Understanding Kubernetes Pod Networking: A Deep Dive",
-            summary:
-              "Explore how pods communicate in Kubernetes clusters and learn the fundamentals of CNI plugins, " \
-              "network policies, and service mesh integration.",
-            description:
-              "This comprehensive guide breaks down the complex world of Kubernetes networking, " \
-              "explaining how containers within pods share network namespaces and " \
-              "how inter-pod communication works across nodes.",
+            title: "Title 1",
+            summary: "Summary 1",
+            description: "Description 1",
             content: "..."
           }
         }
       end
 
-      it "renders HTTP 200 OK" do
+      it "renders HTTP 201 Created" do
         expect(perform).to(
-          have_http_status(:ok) &
+          have_http_status(:created) &
           have_json_body(expectation)
         )
       end
@@ -143,19 +123,14 @@ RSpec.describe Gate::API::PostsController do
           signature: "...",
           # Body
           post: {
-            title: "Understanding Kubernetes Pod Networking: A Deep Dive",
-            summary:
-              "Explore how pods communicate in Kubernetes clusters and learn the fundamentals of CNI plugins, " \
-              "network policies, and service mesh integration.",
-            description:
-              "This comprehensive guide breaks down the complex world of Kubernetes networking, " \
-              "explaining how containers within pods share network namespaces and " \
-              "how inter-pod communication works across nodes.",
+            title: "Title 1",
+            summary: "Summary 1",
+            description: "Description 1",
             content: "...",
+            tags: %w[tag1 tag2 tag3],
             author: {
               name: "John Doe",
-              bio: "Senior DevOps Engineer specializing in Kubernetes and cloud infrastructure. " \
-                   "Speaker and open-source contributor.",
+              bio: "...",
               socials: [
                 {
                   provider: "twitter",
@@ -171,22 +146,32 @@ RSpec.describe Gate::API::PostsController do
         {
           post: {
             id: be_present & be_a(String),
-            title: "Understanding Kubernetes Pod Networking: A Deep Dive",
-            summary:
-              "Explore how pods communicate in Kubernetes clusters and learn the fundamentals of CNI plugins, " \
-              "network policies, and service mesh integration.",
-            description:
-              "This comprehensive guide breaks down the complex world of Kubernetes networking, " \
-              "explaining how containers within pods share network namespaces and " \
-              "how inter-pod communication works across nodes.",
-            content: "..."
+            title: "Title 1",
+            summary: "Summary 1",
+            description: "Description 1",
+            content: "...",
+            tags: %w[tag1 tag2 tag3],
+            author: {
+              name: "John Doe",
+              bio: "...",
+              socials: [
+                {
+                  provider: "twitter",
+                  handle: "johndoe"
+                }
+              ]
+            },
+            rating: 0,
+            views: 0,
+            created_at: be_present & be_a(String),
+            updated_at: be_present & be_a(String)
           }
         }
       end
 
-      it "renders HTTP 200 OK" do
+      it "renders HTTP 201 Created" do
         expect(perform).to(
-          have_http_status(:ok) &
+          have_http_status(:created) &
           have_json_body(expectation)
         )
       end
@@ -201,17 +186,13 @@ RSpec.describe Gate::API::PostsController do
           signature: "...",
           # Body
           post: {
-            title: "Understanding Kubernetes Pod Networking: A Deep Dive",
+            title: "Title 1",
             summary: nil,
-            description:
-              "This comprehensive guide breaks down the complex world of Kubernetes networking, " \
-              "explaining how containers within pods share network namespaces and " \
-              "how inter-pod communication works across nodes.",
+            description: "Description 1",
             content: "...",
             author: {
               name: "John Doe",
-              bio: "Senior DevOps Engineer specializing in Kubernetes and cloud infrastructure. " \
-                   "Speaker and open-source contributor.",
+              bio: "...",
               socials: [
                 {
                   provider: "twitter",
@@ -248,14 +229,9 @@ RSpec.describe Gate::API::PostsController do
           signature: "...",
           # Body
           post: {
-            title: "Understanding Kubernetes Pod Networking: A Deep Dive",
-            summary:
-              "Explore how pods communicate in Kubernetes clusters and learn the fundamentals of CNI plugins, " \
-              "network policies, and service mesh integration.",
-            description:
-              "This comprehensive guide breaks down the complex world of Kubernetes networking, " \
-              "explaining how containers within pods share network namespaces and " \
-              "how inter-pod communication works across nodes.",
+            title: "Title 1",
+            summary: "Summary 1",
+            description: "Description 1",
             content: "...",
             author: {
               name: "John Doe"

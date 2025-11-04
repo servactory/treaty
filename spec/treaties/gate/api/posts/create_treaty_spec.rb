@@ -109,35 +109,35 @@ RSpec.describe Gate::API::Posts::CreateTreaty do
                               id: {
                                 type: :string,
                                 options: {
-                                  required: { is: true, message: nil }
+                                  required: { is: false, message: nil }
                                 },
                                 attributes: {}
                               },
                               title: {
                                 type: :string,
                                 options: {
-                                  required: { is: true, message: nil }
+                                  required: { is: false, message: nil }
                                 },
                                 attributes: {}
                               },
                               summary: {
                                 type: :string,
                                 options: {
-                                  required: { is: true, message: nil }
+                                  required: { is: false, message: nil }
                                 },
                                 attributes: {}
                               },
                               description: {
                                 type: :string,
                                 options: {
-                                  required: { is: true, message: nil }
+                                  required: { is: false, message: nil }
                                 },
                                 attributes: {}
                               },
                               content: {
                                 type: :string,
                                 options: {
-                                  required: { is: true, message: nil }
+                                  required: { is: false, message: nil }
                                 },
                                 attributes: {}
                               }
@@ -272,48 +272,48 @@ RSpec.describe Gate::API::Posts::CreateTreaty do
                               id: {
                                 type: :string,
                                 options: {
-                                  required: { is: true, message: nil }
+                                  required: { is: false, message: nil }
                                 },
                                 attributes: {}
                               },
                               title: {
                                 type: :string,
                                 options: {
-                                  required: { is: true, message: nil }
+                                  required: { is: false, message: nil }
                                 },
                                 attributes: {}
                               },
                               summary: {
                                 type: :string,
                                 options: {
-                                  required: { is: true, message: nil }
+                                  required: { is: false, message: nil }
                                 },
                                 attributes: {}
                               },
                               description: {
                                 type: :string,
                                 options: {
-                                  required: { is: true, message: nil }
+                                  required: { is: false, message: nil }
                                 },
                                 attributes: {}
                               },
                               content: {
                                 type: :string,
                                 options: {
-                                  required: { is: true, message: nil }
+                                  required: { is: false, message: nil }
                                 },
                                 attributes: {}
                               },
                               tags: {
                                 type: :array,
                                 options: {
-                                  required: { is: true, message: nil }
+                                  required: { is: false, message: nil }
                                 },
                                 attributes: {
                                   _self: {
                                     type: :string,
                                     options: {
-                                      required: { is: true, message: nil }
+                                      required: { is: false, message: nil }
                                     },
                                     attributes: {}
                                   }
@@ -322,40 +322,40 @@ RSpec.describe Gate::API::Posts::CreateTreaty do
                               author: {
                                 type: :object,
                                 options: {
-                                  required: { is: true, message: nil }
+                                  required: { is: false, message: nil }
                                 },
                                 attributes: {
                                   name: {
                                     type: :string,
                                     options: {
-                                      required: { is: true, message: nil }
+                                      required: { is: false, message: nil }
                                     },
                                     attributes: {}
                                   },
                                   bio: {
                                     type: :string,
                                     options: {
-                                      required: { is: true, message: nil }
+                                      required: { is: false, message: nil }
                                     },
                                     attributes: {}
                                   },
                                   socials: {
                                     type: :array,
                                     options: {
-                                      required: { is: true, message: nil }
+                                      required: { is: false, message: nil }
                                     },
                                     attributes: {
                                       provider: {
                                         type: :string,
                                         options: {
-                                          required: { is: true, message: nil }
+                                          required: { is: false, message: nil }
                                         },
                                         attributes: {}
                                       },
                                       value: {
                                         type: :string,
                                         options: {
-                                          required: { is: true, message: nil },
+                                          required: { is: false, message: nil },
                                           as: { is: :handle, message: nil }
                                         },
                                         attributes: {}
@@ -367,28 +367,28 @@ RSpec.describe Gate::API::Posts::CreateTreaty do
                               rating: {
                                 type: :integer,
                                 options: {
-                                  required: { is: true, message: nil }
+                                  required: { is: false, message: nil }
                                 },
                                 attributes: {}
                               },
                               views: {
                                 type: :integer,
                                 options: {
-                                  required: { is: true, message: nil }
+                                  required: { is: false, message: nil }
                                 },
                                 attributes: {}
                               },
                               created_at: {
                                 type: :datetime,
                                 options: {
-                                  required: { is: true, message: nil }
+                                  required: { is: false, message: nil }
                                 },
                                 attributes: {}
                               },
                               updated_at: {
                                 type: :datetime,
                                 options: {
-                                  required: { is: true, message: nil }
+                                  required: { is: false, message: nil }
                                 },
                                 attributes: {}
                               }
@@ -416,14 +416,9 @@ RSpec.describe Gate::API::Posts::CreateTreaty do
       let(:params) do
         {
           post: {
-            title: "Understanding Kubernetes Pod Networking: A Deep Dive",
-            summary:
-              "Explore how pods communicate in Kubernetes clusters and learn the fundamentals of CNI plugins, " \
-              "network policies, and service mesh integration.",
-            description:
-              "This comprehensive guide breaks down the complex world of Kubernetes networking, " \
-              "explaining how containers within pods share network namespaces and " \
-              "how inter-pod communication works across nodes.",
+            title: "Title 1",
+            summary: "Summary 1",
+            description: "Description 1",
             content: "..."
           }
         }
@@ -441,27 +436,14 @@ RSpec.describe Gate::API::Posts::CreateTreaty do
           signature: "...",
           # Body
           post: {
-            title: "Understanding Kubernetes Pod Networking: A Deep Dive",
-            summary:
-              "Explore how pods communicate in Kubernetes clusters and learn the fundamentals of CNI plugins, " \
-              "network policies, and service mesh integration.",
-            description:
-              "This comprehensive guide breaks down the complex world of Kubernetes networking, " \
-              "explaining how containers within pods share network namespaces and " \
-              "how inter-pod communication works across nodes.",
+            title: "Title 1",
+            summary: "Summary 1",
+            description: "Description 1",
             content: "...",
-            tags: %w[
-              kubernetes
-              networking
-              devops
-              cloud-native
-              containers
-              cni
-            ],
+            tags: %w[tag1 tag2 tag3],
             author: {
               name: "John Doe",
-              bio: "Senior DevOps Engineer specializing in Kubernetes and cloud infrastructure. " \
-                   "Speaker and open-source contributor.",
+              bio: "...",
               socials: [
                 {
                   provider: "twitter",
@@ -509,25 +491,14 @@ RSpec.describe Gate::API::Posts::CreateTreaty do
             signature: "...",
             # Body
             post: {
-              title: "Understanding Kubernetes Pod Networking: A Deep Dive",
+              title: "Title 1",
               summary: nil, # problem with this attribute
-              description:
-                "This comprehensive guide breaks down the complex world of Kubernetes networking, " \
-                "explaining how containers within pods share network namespaces and " \
-                "how inter-pod communication works across nodes.",
+              description: "Description 1",
               content: "...",
-              tags: %w[
-                kubernetes
-                networking
-                devops
-                cloud-native
-                containers
-                cni
-              ],
+              tags: %w[tag1 tag2 tag3],
               author: {
                 name: "John Doe",
-                bio: "Senior DevOps Engineer specializing in Kubernetes and cloud infrastructure. " \
-                     "Speaker and open-source contributor."
+                bio: "..."
               },
               socials: [
                 {
@@ -558,28 +529,14 @@ RSpec.describe Gate::API::Posts::CreateTreaty do
             signature: "...",
             # Body
             post: {
-              title: "Understanding Kubernetes Pod Networking: A Deep Dive",
-              summary:
-                "Explore how pods communicate in Kubernetes clusters and learn the fundamentals of CNI plugins, " \
-                "network policies, and service mesh integration.",
-              description:
-                "This comprehensive guide breaks down the complex world of Kubernetes networking, " \
-                "explaining how containers within pods share network namespaces and " \
-                "how inter-pod communication works across nodes.",
+              title: "Title 1",
+              summary: "Summary 1",
+              description: "Description 1",
               content: "...",
-              tags: [
-                "kubernetes",
-                "networking",
-                "devops",
-                "cloud-native",
-                "containers",
-                "cni",
-                123 # this is wrong
-              ],
+              tags: ["tag1", "tag2", "tag3", 4],
               author: {
                 name: "John Doe",
-                bio: "Senior DevOps Engineer specializing in Kubernetes and cloud infrastructure. " \
-                     "Speaker and open-source contributor.",
+                bio: "...",
                 socials: [
                   {
                     provider: "twitter",
@@ -597,7 +554,7 @@ RSpec.describe Gate::API::Posts::CreateTreaty do
               expect(exception).to be_a(Treaty::Exceptions::Validation)
               expect(exception.message).to(
                 eq(
-                  "Error in array 'tags' at index 6: Element must match one of the defined types. " \
+                  "Error in array 'tags' at index 3: Element must match one of the defined types. " \
                   "Errors: Attribute '_self' must be a String, got Integer"
                 )
               )

@@ -10,7 +10,9 @@ module Posts
       private
 
       def call
-        outputs.data = {}
+        inputs.params[:post][:id] ||= SecureRandom.uuid if inputs.params[:post]
+
+        outputs.data = inputs.params
       end
     end
   end

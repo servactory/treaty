@@ -111,6 +111,7 @@ module Treaty
       # def validate_nesting_level!(level)
       #   return unless level > Treaty::Engine.config.treaty.attribute_nesting_level
       #
+      #   # TODO: It is necessary to implement a translation system (I18n).
       #   raise Treaty::Exceptions::NestedAttributes,
       #         "Nesting level #{level} exceeds maximum allowed level of " \
       #         "#{Treaty::Engine.config.treaty.attribute_nesting_level}"

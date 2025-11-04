@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-# TODO: This is a prototype, this class is not used.
 module Treaty
   module Attribute
     module Validation
@@ -25,9 +24,9 @@ module Treaty
         private
 
         def validate_response_attributes!
-          return unless adapter_strategy?
-          return unless response_attributes_exist?
+          return @response_data unless response_attributes_exist?
 
+          # For adapter strategy:
           Orchestrator::Response.validate!(
             version_factory: @version_factory,
             data: @response_data

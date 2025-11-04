@@ -16,8 +16,6 @@ module Treaty
 
         def validate!
           validate_request_attributes!
-
-          request_data
         end
 
         private
@@ -31,9 +29,10 @@ module Treaty
         end
 
         def validate_request_attributes!
-          return unless adapter_strategy?
-          return unless request_attributes_exist?
+          return request_data unless adapter_strategy?
+          return request_data unless request_attributes_exist?
 
+          # For adapter strategy:
           Orchestrator::Request.validate!(
             version_factory: @version_factory,
             data: request_data

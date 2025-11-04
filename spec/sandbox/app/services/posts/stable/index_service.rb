@@ -9,8 +9,21 @@ module Posts
 
       private
 
-      def call
-        outputs.data = {}
+      def call # rubocop:disable Metrics/MethodLength
+        outputs.data = {
+          posts: {
+            id: SecureRandom.uuid,
+            title: "Title 1",
+            summary: "Summary 1",
+            description: "Description 1",
+            content: "..."
+          },
+          meta: {
+            count: 1,
+            page: 1,
+            limit: 10
+          }
+        }
       end
     end
   end

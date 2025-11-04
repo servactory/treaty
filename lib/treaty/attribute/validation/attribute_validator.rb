@@ -14,6 +14,8 @@ module Treaty
           @attribute = attribute
           @nested_object_validator = nil
           @nested_array_validator = nil
+          @type_validator = nil
+          @required_validator = nil
         end
 
         def validate_options!
@@ -41,8 +43,6 @@ module Treaty
           validate_nested!(value) if attribute.nested? && !value.nil?
         end
 
-        private
-
         def type_validator
           @type_validator ||= Option::Validators::TypeValidator.new(
             attribute_name: attribute.name,
@@ -58,6 +58,8 @@ module Treaty
             option_schema: attribute.options.fetch(:required)
           )
         end
+
+        private
 
         # TODO: Need to apply DefaultModifier here.
 

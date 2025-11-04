@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-# TODO: This is a prototype, this class is not used.
 module Treaty
   module Attribute
     module Validation
@@ -11,8 +10,7 @@ module Treaty
           def collection_of_scopes
             return Response::Scope::Collection.new if version_factory.response_factory.nil?
 
-            # Only validate the first scope for response.
-            [version_factory.response_factory.collection_of_scopes.first].compact
+            version_factory.response_factory.collection_of_scopes
           end
 
           def scope_data_for(name)

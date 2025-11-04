@@ -6,12 +6,14 @@ module Treaty
       attr_reader :name,
                   :type,
                   :options,
-                  :nesting_level
+                  :nesting_level,
+                  :context
 
-      def initialize(name, type, *helpers, nesting_level: 0, **options, &block)
+      def initialize(name, type, *helpers, nesting_level: 0, context: :request, **options, &block)
         @name = name
         @type = type
         @nesting_level = nesting_level
+        @context = context
 
         validate_nesting_level!
 
@@ -62,7 +64,6 @@ module Treaty
 
       private
 
-      # Validates that nesting level doesn't exceed maximum.
       def validate_nesting_level!
         return unless @nesting_level > Treaty::Engine.config.treaty.attribute_nesting_level
 
@@ -84,14 +85,18 @@ module Treaty
       end
 
       def apply_defaults!
+        # For request: required by default (true).
+        # For response: optional by default (false).
+        default_required = @context == :request
+
         # TODO: It is necessary to implement a translation system (I18n).
-        @options[:required] ||= { is: true, message: nil }
+        @options[:required] ||= { is: default_required, message: nil }
       end
 
       def process_nested_attributes(&block)
         return unless object_or_array?
 
-        builder = Builder.new(collection_of_attributes, @nesting_level + 1)
+        builder = Builder.new(collection_of_attributes, @nesting_level + 1, @context)
         builder.instance_eval(&block)
       end
     end

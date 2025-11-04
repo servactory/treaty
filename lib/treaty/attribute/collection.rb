@@ -11,8 +11,8 @@ module Treaty
                      :<<,
                      :to_h, :map,
                      :each_with_object, :each,
-                     :select, :reject,
-                     :find,
+                     :select, :reject, :size,
+                     :find, :first,
                      :empty?
 
       def initialize(collection = Set.new)

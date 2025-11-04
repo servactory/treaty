@@ -24,7 +24,10 @@ module Gate
           end
 
           # Present: title, summary. Missing: middle_name.
-          delegate_to ::Posts::V1::IndexService # , :call
+          delegate_to ::Posts::V1::IndexService
+
+          # Full example:
+          # delegate_to ::Posts::V1::IndexService => :call, return: lambda(&:data)
         end
 
         version "1.0.0.rc2" do # Just to keep the idea going.
@@ -47,7 +50,10 @@ module Gate
           end
 
           # Present: title, summary. Missing: middle_name.
-          delegate_to ::Posts::V1::IndexService # , :call
+          delegate_to ::Posts::V1::IndexService
+
+          # Full example:
+          # delegate_to ::Posts::V1::IndexService => :call, return: lambda(&:data)
         end
 
         version 1 do # Also supported: 1.0, 1.0.0.rc1
@@ -73,12 +79,16 @@ module Gate
           end
 
           # Present: title, summary. Missing: middle_name.
-          # delegate_to ::Posts::V1::IndexService # , :call
           delegate_to(lambda do |params:|
             # NOTE: To avoid using the service for any reason,
             #       use Proc to work with params locally.
             params
           end)
+
+          # Full example:
+          # delegate_to(lambda do |params:|
+          #   params
+          # end => :call, return: lambda(&:data))
         end
 
         version 2 do # Also supported: 2.0, 2.0.0.rc1
@@ -116,7 +126,10 @@ module Gate
             end
           end
 
-          delegate_to ::Posts::Stable::IndexService # , :call
+          delegate_to ::Posts::Stable::IndexService
+
+          # Full example:
+          # delegate_to ::Posts::Stable::IndexService => :call, return: lambda(&:data)
         end
 
         version 3 do # Also supported: 2.0, 2.0.0.rc1
@@ -154,7 +167,10 @@ module Gate
             end
           end
 
-          delegate_to ::Posts::Stable::IndexService # , :call
+          delegate_to ::Posts::Stable::IndexService
+
+          # Full example:
+          # delegate_to ::Posts::Stable::IndexService => :call, return: lambda(&:data)
         end
       end
     end

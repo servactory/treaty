@@ -85,7 +85,7 @@ module Treaty
         end
 
         def execute_servactory
-          executor.call(params: @validated_params)
+          executor.call!(params: @validated_params)
         rescue ApplicationService::Exceptions::Input => e
           # TODO: It is necessary to implement a translation system (I18n).
           raise Treaty::Exceptions::Execution, e.message

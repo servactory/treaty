@@ -17,7 +17,7 @@ RSpec.describe Treaty::Versions::Execution::Request do
         instance_double(
           Treaty::Versions::Executor,
           executor: "posts/stable/create_service",
-          method: :call
+          method: :call!
         )
       end
 
@@ -30,7 +30,7 @@ RSpec.describe Treaty::Versions::Execution::Request do
         allow(Posts::Stable::CreateService).to(
           receive_messages(
             servactory?: true,
-            call: { success: true }
+            call!: { success: true }
           )
         )
       end
@@ -39,7 +39,7 @@ RSpec.describe Treaty::Versions::Execution::Request do
         request.execute!
 
         expect(Posts::Stable::CreateService).to(
-          have_received(:call)
+          have_received(:call!)
             .with(params: validated_params)
         )
       end
@@ -54,7 +54,7 @@ RSpec.describe Treaty::Versions::Execution::Request do
         instance_double(
           Treaty::Versions::Executor,
           executor: "posts/v1/create_service",
-          method: :call
+          method: :call!
         )
       end
 
@@ -67,7 +67,7 @@ RSpec.describe Treaty::Versions::Execution::Request do
         allow(Posts::V1::CreateService).to(
           receive_messages(
             servactory?: true,
-            call: { success: true }
+            call!: { success: true }
           )
         )
       end
@@ -76,7 +76,7 @@ RSpec.describe Treaty::Versions::Execution::Request do
         request.execute!
 
         expect(Posts::V1::CreateService).to(
-          have_received(:call)
+          have_received(:call!)
             .with(params: validated_params)
         )
       end
@@ -87,7 +87,7 @@ RSpec.describe Treaty::Versions::Execution::Request do
         instance_double(
           Treaty::Versions::Executor,
           executor: "Posts::Stable::CreateService",
-          method: :call
+          method: :call!
         )
       end
 
@@ -100,7 +100,7 @@ RSpec.describe Treaty::Versions::Execution::Request do
         allow(Posts::Stable::CreateService).to(
           receive_messages(
             servactory?: true,
-            call: { success: true }
+            call!: { success: true }
           )
         )
       end
@@ -109,7 +109,7 @@ RSpec.describe Treaty::Versions::Execution::Request do
         request.execute!
 
         expect(Posts::Stable::CreateService).to(
-          have_received(:call)
+          have_received(:call!)
             .with(params: validated_params)
         )
       end
@@ -120,7 +120,7 @@ RSpec.describe Treaty::Versions::Execution::Request do
         instance_double(
           Treaty::Versions::Executor,
           executor: Posts::Stable::CreateService,
-          method: :call
+          method: :call!
         )
       end
 
@@ -133,7 +133,7 @@ RSpec.describe Treaty::Versions::Execution::Request do
         allow(Posts::Stable::CreateService).to(
           receive_messages(
             servactory?: true,
-            call: { success: true }
+            call!: { success: true }
           )
         )
       end
@@ -142,7 +142,7 @@ RSpec.describe Treaty::Versions::Execution::Request do
         request.execute!
 
         expect(Posts::Stable::CreateService).to(
-          have_received(:call)
+          have_received(:call!)
             .with(params: validated_params)
         )
       end
@@ -177,7 +177,7 @@ RSpec.describe Treaty::Versions::Execution::Request do
         instance_double(
           Treaty::Versions::Executor,
           executor: Posts::Stable::CreateService,
-          method: :call
+          method: :call!
         )
       end
       let(:service_result) { { data: {} } }
@@ -191,7 +191,7 @@ RSpec.describe Treaty::Versions::Execution::Request do
         allow(Posts::Stable::CreateService).to(
           receive_messages(
             servactory?: true,
-            call: service_result
+            call!: service_result
           )
         )
       end
@@ -200,7 +200,7 @@ RSpec.describe Treaty::Versions::Execution::Request do
         request.execute!
 
         expect(Posts::Stable::CreateService).to(
-          have_received(:call)
+          have_received(:call!)
             .with(params: validated_params)
         )
       end

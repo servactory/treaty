@@ -15,7 +15,7 @@ module Treaty
           define_method(action_name) do # rubocop:disable Metrics/MethodLength
             _treaty = treaty_class.call!(controller: self, params:)
 
-            # TODO
+            # TODO: Need to apply the result of Treaty here.
             # render json: treaty.data, status: treaty.status
 
             render json: {

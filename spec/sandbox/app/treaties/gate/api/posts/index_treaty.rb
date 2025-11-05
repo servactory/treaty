@@ -132,7 +132,7 @@ module Gate
           # delegate_to ::Posts::Stable::IndexService => :call, return: lambda(&:data)
         end
 
-        version 3 do # Also supported: 2.0, 2.0.0.rc1
+        version 3, default: true do # Also supported: 2.0, 2.0.0.rc1
           strategy Treaty::Strategy::ADAPTER
 
           # TODO: An idea on how to simplify while maintaining power:

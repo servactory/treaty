@@ -12,14 +12,23 @@ module Treaty
         @collection_of_versions = collection_of_versions
       end
 
-      def resolve!
-        raise_current_version_not_found! if current_version.nil?
+      def resolve! # rubocop:disable Metrics/MethodLength
+        factory =
+          if current_version_blank?
+            # Если версия не была передана, ищем дефолтную версию
+            default_version_factory.tap do |default_factory|
+              raise_current_version_not_found! if default_factory.nil?
+            end
+          else
+            # Если версия передана, ищем её в коллекции
+            version_factory.tap do |found_factory|
+              raise_version_not_found! if found_factory.nil?
+            end
+          end
 
-        raise_version_not_found! if version_factory.nil?
+        raise_version_deprecated! if factory.deprecated_result
 
-        raise_version_deprecated! if version_factory.deprecated_result
-
-        version_factory
+        factory
       end
 
       private
@@ -29,11 +38,20 @@ module Treaty
           Treaty::Engine.config.treaty.version.call(@controller)
       end
 
+      def current_version_blank?
+        current_version.nil? || current_version.to_s.strip.empty?
+      end
+
       def version_factory
         @version_factory ||=
           @collection_of_versions.find do |factory|
             factory.version.version == current_version
           end
+      end
+
+      def default_version_factory
+        @default_version_factory ||=
+          @collection_of_versions.find(&:default?)
       end
 
       def raise_current_version_not_found!

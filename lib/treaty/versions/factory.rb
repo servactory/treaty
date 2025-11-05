@@ -7,15 +7,17 @@ module Treaty
                   :summary_text,
                   :strategy_instance,
                   :deprecated_result,
+                  :default_option,
                   :executor,
                   :request_factory,
                   :response_factory
 
-      def initialize(version)
+      def initialize(version, default: false)
         @version = Semantic.new(version)
         @summary_text = nil
         @strategy_instance = Strategy.new(Strategy::ADAPTER) # without .validate!
         @deprecated_result = false
+        @default_option = validate_default_option!(default)
         @executor = nil
       end
 
@@ -54,6 +56,26 @@ module Treaty
 
       def delegate_to(executor, method = :call)
         @executor = Executor.new(executor, method)
+      end
+
+      def default?
+        if @default_option.is_a?(Proc)
+          @default_option.call
+        else
+          @default_option
+        end
+      end
+
+      ##########################################################################
+
+      private
+
+      def validate_default_option!(option)
+        return option if option.is_a?(TrueClass) || option.is_a?(FalseClass) || option.is_a?(Proc)
+
+        # TODO: It is necessary to implement a translation system (I18n).
+        raise Treaty::Exceptions::Validation,
+              "Default option for version must be true, false, or a Proc, got: #{option.class}"
       end
 
       ##########################################################################

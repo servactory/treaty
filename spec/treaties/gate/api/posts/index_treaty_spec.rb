@@ -433,6 +433,18 @@ RSpec.describe Gate::API::Posts::IndexTreaty do
 
       it { expect { perform }.not_to raise_error }
     end
+
+    describe "when version was not specified" do
+      let(:version) { "" }
+
+      let(:params) do
+        {}
+      end
+
+      it "uses default version 3" do
+        expect { perform }.not_to raise_error
+      end
+    end
   end
 
   context "when required data for work is invalid" do

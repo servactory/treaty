@@ -582,5 +582,22 @@ RSpec.describe Gate::API::Posts::CreateTreaty do
         )
       end
     end
+
+    describe "because version was not specified" do
+      let(:version) { "" }
+
+      let(:params) do
+        {}
+      end
+
+      it :aggregate_failures do
+        expect { perform }.to(
+          raise_error do |exception|
+            expect(exception).to be_a(Treaty::Exceptions::Validation)
+            expect(exception.message).to eq("Current version is required for validation")
+          end
+        )
+      end
+    end
   end
 end

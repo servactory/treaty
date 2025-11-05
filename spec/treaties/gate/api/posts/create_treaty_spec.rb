@@ -32,6 +32,7 @@ RSpec.describe Gate::API::Posts::CreateTreaty do
                     {
                       version: "1",
                       segments: [1],
+                      default: false,
                       strategy: :direct,
                       summary: "The first version of the contract for creating a post",
                       deprecated: false,
@@ -58,6 +59,7 @@ RSpec.describe Gate::API::Posts::CreateTreaty do
                     {
                       version: "2",
                       segments: [2],
+                      default: false,
                       strategy: :adapter,
                       summary: "Added middle name to expand post data",
                       deprecated: false,
@@ -149,6 +151,7 @@ RSpec.describe Gate::API::Posts::CreateTreaty do
                     {
                       version: "3",
                       segments: [3],
+                      default: false,
                       strategy: :adapter,
                       summary: "Added author and socials to expand post data",
                       deprecated: false,

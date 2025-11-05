@@ -3,7 +3,7 @@
 Treaty::Engine.configure do |config|
   config.version = lambda do |controller|
     vendor_version_header_regex =
-      %r{\Aapplication/vnd\.(?<vendor>[a-z0-9.\-_!^]+?)(?:-v(?<version>[0-9*.]+))?(?:\+(?<format>[a-z0-9*\-.]+))?\z}
+      %r{\Aapplication/vnd\.(?<vendor>[a-z0-9\-_!^]+?)(?:-v(?<version>[0-9]+(?:\.[0-9]+)*(?:[-.][a-z0-9]+(?:[-.][a-z0-9]+)*)?))?(?:\+(?<format>[a-z0-9*\-.]+))?\z}i # rubocop:disable Metrics/LineLength
 
     accept = controller.request.headers["Accept"]
     return if accept.blank?

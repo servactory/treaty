@@ -17,6 +17,8 @@ module Treaty
 
         raise_version_not_found! if version_factory.nil?
 
+        raise_version_deprecated! if version_factory.deprecated_result
+
         version_factory
       end
 
@@ -44,6 +46,12 @@ module Treaty
         # TODO: It is necessary to implement a translation system (I18n).
         raise Treaty::Exceptions::Validation,
               "Version #{current_version} not found in treaty definition"
+      end
+
+      def raise_version_deprecated!
+        # TODO: It is necessary to implement a translation system (I18n).
+        raise Treaty::Exceptions::Deprecated,
+              "Version #{current_version} is deprecated and cannot be used"
       end
     end
   end

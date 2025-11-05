@@ -13,13 +13,16 @@ module Treaty
       end
 
       def resolve!
-        raise_current_version_not_found! if current_version.nil?
+        determined_factory =
+          if current_version_blank?
+            default_version_factory || raise_current_version_not_found!
+          else
+            version_factory || raise_version_not_found!
+          end
 
-        raise_version_not_found! if version_factory.nil?
+        raise_version_deprecated! if determined_factory.deprecated_result
 
-        raise_version_deprecated! if version_factory.deprecated_result
-
-        version_factory
+        determined_factory
       end
 
       private
@@ -35,6 +38,17 @@ module Treaty
             factory.version.version == current_version
           end
       end
+
+      def default_version_factory
+        @default_version_factory ||=
+          @collection_of_versions.find(&:default_result)
+      end
+
+      def current_version_blank?
+        current_version.to_s.strip.empty?
+      end
+
+      ##########################################################################
 
       def raise_current_version_not_found!
         # TODO: It is necessary to implement a translation system (I18n).

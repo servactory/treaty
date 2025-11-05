@@ -33,6 +33,7 @@ module Treaty
           {
             version: gem_version.version,
             segments: gem_version.segments,
+            default: version.default_result,
             summary: version.summary_text,
             strategy: version.strategy_instance.code,
             deprecated: version.deprecated_result,

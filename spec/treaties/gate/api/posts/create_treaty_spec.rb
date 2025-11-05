@@ -32,6 +32,7 @@ RSpec.describe Gate::API::Posts::CreateTreaty do
                     {
                       version: "1",
                       segments: [1],
+                      default: false,
                       strategy: :direct,
                       summary: "The first version of the contract for creating a post",
                       deprecated: false,
@@ -58,6 +59,7 @@ RSpec.describe Gate::API::Posts::CreateTreaty do
                     {
                       version: "2",
                       segments: [2],
+                      default: false,
                       strategy: :adapter,
                       summary: "Added middle name to expand post data",
                       deprecated: false,
@@ -149,6 +151,7 @@ RSpec.describe Gate::API::Posts::CreateTreaty do
                     {
                       version: "3",
                       segments: [3],
+                      default: false,
                       strategy: :adapter,
                       summary: "Added author and socials to expand post data",
                       deprecated: false,
@@ -578,6 +581,23 @@ RSpec.describe Gate::API::Posts::CreateTreaty do
             expect(exception.message).to(
               eq("Version 999 not found in treaty definition")
             )
+          end
+        )
+      end
+    end
+
+    describe "because version was not specified" do
+      let(:version) { "" }
+
+      let(:params) do
+        {}
+      end
+
+      it :aggregate_failures do
+        expect { perform }.to(
+          raise_error do |exception|
+            expect(exception).to be_a(Treaty::Exceptions::Validation)
+            expect(exception.message).to eq("Current version is required for validation")
           end
         )
       end

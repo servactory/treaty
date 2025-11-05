@@ -4,21 +4,27 @@ module Treaty
   module Versions
     class Factory
       attr_reader :version,
+                  :default_result,
                   :summary_text,
                   :strategy_instance,
                   :deprecated_result,
-                  :default_option,
                   :executor,
                   :request_factory,
                   :response_factory
 
-      def initialize(version, default: false)
+      def initialize(version:, default:)
         @version = Semantic.new(version)
+        @default_result = default.is_a?(Proc) ? default.call : default
         @summary_text = nil
         @strategy_instance = Strategy.new(Strategy::ADAPTER) # without .validate!
         @deprecated_result = false
-        @default_option = validate_default_option!(default)
         @executor = nil
+
+        validate!
+      end
+
+      def validate!
+        validate_default_option!
       end
 
       def summary(text)
@@ -58,24 +64,18 @@ module Treaty
         @executor = Executor.new(executor, method)
       end
 
-      def default?
-        if @default_option.is_a?(Proc)
-          @default_option.call
-        else
-          @default_option
-        end
-      end
-
       ##########################################################################
 
       private
 
-      def validate_default_option!(option)
-        return option if option.is_a?(TrueClass) || option.is_a?(FalseClass) || option.is_a?(Proc)
+      def validate_default_option!
+        if @default_result.is_a?(TrueClass) || @default_result.is_a?(FalseClass) || @default_result.is_a?(Proc)
+          return @default_result
+        end
 
         # TODO: It is necessary to implement a translation system (I18n).
         raise Treaty::Exceptions::Validation,
-              "Default option for version must be true, false, or a Proc, got: #{option.class}"
+              "Default option for version must be true, false, or a Proc, got: #{@default_result.class}"
       end
 
       ##########################################################################

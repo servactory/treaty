@@ -10,36 +10,94 @@ RSpec.describe Gate::API::PostsController do
   describe "#index" do
     subject(:perform) { get :index, params: }
 
-    let(:params) do
-      {
-        filters: {
-          title: "Title 1"
-        }
-      }
-    end
+    context "when version is 1.0.0.rc1" do
+      let(:version) { "1.0.0.rc1" }
 
-    let(:expectation) do
-      {
-        posts: {
-          id: be_present & be_a(String),
-          title: "Title 1",
-          summary: "Summary 1",
-          description: "Description 1",
-          content: "..."
-        },
-        meta: {
-          count: 1,
-          page: 1,
-          limit: 10
+      let(:params) do
+        {
+          filters: {
+            title: "Title 1"
+          }
         }
-      }
-    end
+      end
 
-    it "renders HTTP 200 OK" do
-      expect(perform).to(
-        have_http_status(:ok) &
+      let(:expectation) do
+        {
+          error: {
+            message: "Version 1.0.0.rc1 is deprecated and cannot be used"
+          }
+        }
+      end
+
+      it "renders HTTP 410 Gone" do
+        expect(perform).to(
+          have_http_status(:gone) &
           have_json_body(expectation)
-      )
+        )
+      end
+    end
+
+    context "when version is 1.0.0.rc2" do
+      let(:version) { "1.0.0.rc2" }
+
+      let(:params) do
+        {
+          filters: {
+            title: "Title 1"
+          }
+        }
+      end
+
+      let(:expectation) do
+        {
+          error: {
+            message: "Version 1.0.0.rc2 is deprecated and cannot be used"
+          }
+        }
+      end
+
+      it "renders HTTP 410 Gone" do
+        expect(perform).to(
+          have_http_status(:gone) &
+          have_json_body(expectation)
+        )
+      end
+    end
+
+    context "when version is 3" do
+      let(:version) { 3 }
+
+      let(:params) do
+        {
+          filters: {
+            title: "Title 1"
+          }
+        }
+      end
+
+      let(:expectation) do
+        {
+          posts: {
+            id: be_present & be_a(String),
+            title: "Title 1",
+            summary: "Summary 1",
+            description: "Description 1",
+            content: "..."
+          },
+          meta: {
+            count: 1,
+            page: 1,
+            limit: 10
+          }
+        }
+      end
+
+      it "renders HTTP 200 OK" do
+        expect(perform).to(
+          have_http_status(:ok) &
+          have_json_body(expectation)
+        )
+      end
     end
   end
 

@@ -216,8 +216,8 @@ end
     "content" => "World",
     "rating" => 5,
     "author" => {
-      "name" => "Alice",
-      "email" => "alice@example.com"
+      "name" => "John Doe",
+      "email" => "johndoe@example.com"
     }
   }
 }
@@ -240,8 +240,8 @@ end
     content: "World",
     rating: 5,
     author: {
-      name: "Alice",
-      email: "alice@example.com"
+      name: "John Doe",
+      email: "johndoe@example.com"
     }
   }
 }
@@ -254,7 +254,7 @@ end
     "title" => "Hello",
     # Missing required 'content'
     "rating" => 6,  # Not in allowed values
-    "author" => "Alice"  # Should be object, not string
+    "author" => "John Doe"  # Should be object, not string
   }
 }
 

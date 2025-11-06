@@ -272,8 +272,8 @@ end
 {
   "post" => {
     "author" => {
-      "display_name" => "Alice",
-      "email_address" => "alice@example.com"
+      "display_name" => "John Doe",
+      "email_address" => "johndoe@example.com"
     }
   }
 }
@@ -284,8 +284,8 @@ end
 {
   post: {
     author: {
-      name: "Alice",
-      email: "alice@example.com"
+      name: "John Doe",
+      email: "johndoe@example.com"
     }
   }
 }
@@ -809,12 +809,15 @@ Always test that transformations work correctly:
 
 ```ruby
 # In your specs
-it "transforms handle to value" do
-  params = { social: { handle: "alice" } }
-  result = treaty.call(params)
+RSpec.describe Users::UpdateProfileTreaty do
+  subject(:perform) { described_class.call!(params: params) }
 
-  expect(result[:social][:value]).to eq("alice")
-  expect(result[:social][:handle]).to be_nil
+  let(:params) { { social: { handle: "johndoe" } } }
+
+  it "transforms handle to value" do
+    expect(perform[:social][:value]).to eq("johndoe")
+    expect(perform[:social][:handle]).to be_nil
+  end
 end
 ```
 

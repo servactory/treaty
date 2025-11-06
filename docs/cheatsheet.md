@@ -192,7 +192,7 @@ array :authors do
   string :name, :required
   string :email
 end
-# Data: [{ name: "Alice", email: "..." }, { name: "Bob", email: "..." }]
+# Data: [{ name: "John Doe", email: "..." }, { name: "John Doe", email: "..." }]
 
 # Array with nested objects
 array :posts do
@@ -234,7 +234,7 @@ request do
   # Filters scope
   scope :filters do
     string :category, :optional
-    datetime :created_after, :optional
+    datetime :created_after_at, :optional
   end
 end
 ```
@@ -346,8 +346,8 @@ end
 scope :filters do
   string :status, :optional, in: %w[draft published archived]
   string :category, :optional
-  datetime :created_after, :optional
-  datetime :created_before, :optional
+  datetime :created_after_at, :optional
+  datetime :created_before_at, :optional
 end
 ```
 
@@ -357,16 +357,6 @@ end
 scope :sort do
   string :by, default: "created_at", in: %w[created_at updated_at title]
   string :direction, default: "desc", in: %w[asc desc]
-end
-```
-
-### Including Related Resources
-
-```ruby
-scope :_self do
-  array :include, :optional do
-    string :_self, in: %w[author comments tags]
-  end
 end
 ```
 
@@ -531,21 +521,22 @@ end
 
 ```ruby
 RSpec.describe Posts::CreateTreaty do
-  it "validates required fields" do
-    treaty = described_class.new
-    params = { post: {} }
+  subject(:perform) { described_class.call!(params: params) }
 
-    expect { treaty.call(params: params, version: 1) }
-      .to raise_error(Treaty::Exceptions::Validation)
+  context "when validating required fields" do
+    let(:params) { { post: {} } }
+
+    it "raises validation error" do
+      expect { perform }.to raise_error(Treaty::Exceptions::Validation)
+    end
   end
 
-  it "creates post successfully" do
-    treaty = described_class.new
-    params = { post: { title: "Test", content: "Content" } }
+  context "when creating post successfully" do
+    let(:params) { { post: { title: "Test", content: "Content" } } }
 
-    result = treaty.call(params: params, version: 1)
-
-    expect(result[:post]).to include(:id, :title, :content)
+    it "returns post with expected attributes" do
+      expect(perform[:post]).to include(:id, :title, :content)
+    end
   end
 end
 ```
@@ -556,7 +547,7 @@ end
 - ADAPTER for production, DIRECT only for prototypes
 - Always mark one version as `default: true`
 - Use `:_self` scope for root-level attributes
-- Keep nesting shallow (max 3 levels recommended)
+- Keep nesting shallow (max 5 levels recommended)
 - Deprecate versions before removing them
 - Test both old and new versions during migration
 

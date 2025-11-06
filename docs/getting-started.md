@@ -26,8 +26,12 @@ Create `config/initializers/treaty.rb`:
 
 ```ruby
 Treaty::Engine.configure do |config|
-  # Maximum nesting level for attributes (default: 3)
-  config.treaty.attribute_nesting_level = 3
+  config.version = lambda do |controller|
+    # Your logic for determining the version number
+  end
+
+  # Maximum nesting level for attributes (default: 5)
+  config.attribute_nesting_level = 5
 end
 ```
 
@@ -91,15 +95,12 @@ In `app/controllers/gate/api/posts_controller.rb`:
 module Gate
   module API
     class PostsController < ApplicationController
+      # Treaty automatically creates the index action and:
+      # 1. Validates incoming parameters according to request definition
+      # 2. Calls Posts::IndexService with validated data
+      # 3. Validates service response according to response definition
+      # 4. Returns transformed data
       treaty :index
-
-      def index
-        # Treaty automatically:
-        # 1. Validates incoming parameters according to request definition
-        # 2. Calls Posts::IndexService with validated data
-        # 3. Validates service response according to response definition
-        # 4. Returns transformed data
-      end
     end
   end
 end
@@ -120,18 +121,18 @@ end
 
 ```
 app/
-  treaties/
-    application_treaty.rb
-    gate/
-      api/
-        posts/
-          index_treaty.rb
-          create_treaty.rb
-          show_treaty.rb
-  controllers/
-    gate/
-      api/
-        posts_controller.rb
+├── treaties/
+│   ├── application_treaty.rb
+│   └── gate/
+│       └── api/
+│           └── posts/
+│               ├── index_treaty.rb
+│               ├── create_treaty.rb
+│               └── show_treaty.rb
+└── controllers/
+    └── gate/
+        └── api/
+            └── posts_controller.rb
 ```
 
 ## Treaty Naming Convention

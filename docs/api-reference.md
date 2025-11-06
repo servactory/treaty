@@ -129,8 +129,7 @@ Specify the service or lambda to handle the request.
 **Syntax:**
 ```ruby
 delegate_to ServiceClass
-delegate_to lambda { |params:| ... }
-delegate_to ServiceClass, with: { option: value }
+delegate_to(lambda do |params:| ... end)
 ```
 
 **Examples:**
@@ -142,14 +141,9 @@ end
 
 # Lambda
 version 1 do
-  delegate_to lambda { |params:|
+  delegate_to(lambda do |params:|
     { result: params[:a] + params[:b] }
-  }
-end
-
-# With options
-version 1 do
-  delegate_to Posts::CreateService, with: { author_id: :current_user_id }
+  end)
 end
 ```
 
@@ -392,11 +386,6 @@ array :tags, :optional do
   string :_self
 end
 
-# Simple array with validation
-array :tags do
-  string :_self, in: %w[ruby rails api docker]
-end
-
 # Complex array of objects
 array :authors, :required do
   string :name, :required
@@ -518,18 +507,18 @@ string :title, required: {
 }
 ```
 
-#### `in`
+#### `inclusion`
 
-**Type:** Hash with `:list` and `:message`
+**Type:** Hash with `:in` and `:message`
 
 ```ruby
-string :category, in: {
-  list: %w[tech business lifestyle],
+string :category, inclusion: {
+  in: %w[tech business lifestyle],
   message: "Please select a valid category"
 }
 
-integer :rating, in: {
-  list: [1, 2, 3, 4, 5],
+integer :rating, inclusion: {
+  in: [1, 2, 3, 4, 5],
   message: "Rating must be between 1 and 5 stars"
 }
 ```
@@ -541,10 +530,11 @@ integer :rating, in: {
 ```ruby
 # config/initializers/treaty.rb
 Treaty::Engine.configure do |config|
-  # Maximum nesting level for nested structures
-  config.treaty.attribute_nesting_level = 3
+  config.version = lambda do |controller|
+    # Your logic for determining the version number
+  end
 
-  # Other Treaty configuration options
+  config.attribute_nesting_level = 3
 end
 ```
 
@@ -552,7 +542,7 @@ end
 
 Controls how deeply attributes can be nested.
 
-**Default:** 3 levels
+**Default:** 5 levels
 
 **Example:**
 ```ruby
@@ -562,8 +552,15 @@ object :post do
   object :author do
     # Level 3
     array :socials do
-      string :provider
-      # Level 4 would raise error!
+      # Level 4
+      object :metadata do
+        string :provider
+        # Level 5
+        object :details do
+          string :url
+          # Level 6 would raise error!
+        end
+      end
     end
   end
 end
@@ -578,28 +575,18 @@ Define which action uses a treaty.
 **Syntax:**
 ```ruby
 treaty :action_name
-treaty :action_name, class_name: CustomTreaty
 ```
 
 **Examples:**
 ```ruby
 class PostsController < ApplicationController
   # Uses Posts::IndexTreaty
+  # Automatically creates the index action
   treaty :index
 
   # Uses Posts::CreateTreaty
+  # Automatically creates the create action
   treaty :create
-
-  # Custom treaty class
-  treaty :update, class_name: Posts::CustomUpdateTreaty
-
-  def index
-    # Treaty handles everything
-  end
-
-  def create
-    # Treaty handles everything
-  end
 end
 ```
 
@@ -649,7 +636,7 @@ Raised when validation fails.
 **Example:**
 ```ruby
 begin
-  treaty.call(params)
+  Posts::CreateTreaty.call!(params: params)
 rescue Treaty::Exceptions::Validation => e
   puts e.message
   # => "Attribute 'title' is required but was not provided"
@@ -717,7 +704,7 @@ module Gate
 
               # Simple array
               array :tags, :optional do
-                string :_self, in: %w[ruby rails api docker kubernetes]
+                string :_self
               end
 
               # Nested object
@@ -765,7 +752,7 @@ module Gate
 
             scope :meta do
               string :request_id
-              datetime :timestamp
+              datetime :requested_at
             end
           end
 
@@ -797,7 +784,7 @@ end
 - Provide helpful custom error messages
 
 ### 4. Structure Organization
-- Keep nesting shallow (max 3 levels)
+- Keep nesting shallow (max 5 levels)
 - Use meaningful scope names
 - Use `:_self` sparingly
 - Group related attributes in scopes

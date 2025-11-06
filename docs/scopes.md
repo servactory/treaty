@@ -140,7 +140,7 @@ end
 response 200 do
   scope :_self do
     string :request_id
-    datetime :timestamp
+    datetime :responded_at
   end
 
   scope :data do
@@ -148,7 +148,7 @@ response 200 do
   end
 end
 
-# Returns: { request_id: "...", timestamp: "...", data: { message: "..." } }
+# Returns: { request_id: "...", responded_at: "...", data: { message: "..." } }
 ```
 
 ## Empty Scopes

@@ -174,8 +174,8 @@ end
   post: {
     title: "Hello",
     author: {
-      name: "Alice",
-      email: "alice@example.com",
+      name: "John Doe",
+      email: "johndoe@example.com",
       bio: "Engineer"
     }
   }
@@ -197,7 +197,7 @@ end
 {
   post: {
     title: "Hello",
-    author: "Alice"
+    author: "John Doe"
   }
 } ✗
 # Error: Attribute 'author' must be a Hash (object), got String
@@ -209,7 +209,7 @@ end
   post: {
     title: "Hello",
     author: {
-      name: "Alice"
+      name: "John Doe"
     }
   }
 } ✗
@@ -254,8 +254,8 @@ end
 ```ruby
 {
   authors: [
-    { name: "Alice", email: "alice@example.com" },
-    { name: "Bob", email: "bob@example.com" }
+    { name: "John Doe", email: "johndoe@example.com" },
+    { name: "John Doe", email: "bob@example.com" }
   ]
 } ✓
 ```
@@ -264,8 +264,8 @@ end
 ```ruby
 {
   authors: [
-    { name: "Alice", email: "alice@example.com" },
-    "Bob"
+    { name: "John Doe", email: "johndoe@example.com" },
+    "John Doe"
   ]
 } ✗
 # Error in array 'authors' at index 1: Item must be a Hash (object), got String
@@ -275,8 +275,8 @@ end
 ```ruby
 {
   authors: [
-    { name: "Alice", email: "alice@example.com" },
-    { name: "Bob" }
+    { name: "John Doe", email: "johndoe@example.com" },
+    { name: "John Doe" }
   ]
 } ✗
 # Error in array 'authors' at index 1: Attribute 'email' is required but was not provided
@@ -524,8 +524,8 @@ version 1, default: true do
       string :title, :optional
       string :category, :optional, in: %w[tech business lifestyle]
       string :status, :optional, in: %w[draft published archived]
-      datetime :created_after, :optional
-      datetime :created_before, :optional
+      datetime :created_after_at, :optional
+      datetime :created_before_at, :optional
 
       array :tags, :optional do
         string :_self

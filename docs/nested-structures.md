@@ -26,8 +26,8 @@ end
 ```ruby
 {
   author: {
-    name: "Alice",
-    email: "alice@example.com",
+    name: "John Doe",
+    email: "johndoe@example.com",
     bio: "Software engineer"
   }
 }
@@ -72,7 +72,7 @@ end
   post: {
     title: "Hello World",
     author: {
-      name: "Alice",
+      name: "John Doe",
       company: {
         name: "Acme Corp",
         website: "acme.com"
@@ -155,8 +155,8 @@ end
 ```ruby
 {
   authors: [
-    { name: "Alice", email: "alice@example.com", bio: "Engineer" },
-    { name: "Bob", email: "bob@example.com", bio: "Designer" }
+    { name: "John Doe", email: "johndoe@example.com", bio: "Engineer" },
+    { name: "John Doe", email: "bob@example.com", bio: "Designer" }
   ]
 }
 ```
@@ -204,11 +204,11 @@ end
     {
       title: "First Post",
       author: {
-        name: "Alice",
-        email: "alice@example.com"
+        name: "John Doe",
+        email: "johndoe@example.com"
       },
       comments: [
-        { text: "Great post!", author_name: "Bob" }
+        { text: "Great post!", author_name: "John Doe" }
       ]
     }
   ]
@@ -349,7 +349,7 @@ end
     content: "...",
     tags: ["ruby", "rails", "api"],
     author: {
-      name: "Alice",
+      name: "John Doe",
       bio: "Software Engineer",
       socials: [
         { provider: "twitter", handle: "alice" },

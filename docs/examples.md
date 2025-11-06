@@ -254,8 +254,8 @@ Headers: API-Version: 3
     "category": "tech",
     "tags": ["ruby", "rails", "api"],
     "author": {
-      "name": "Alice Smith",
-      "email": "alice@example.com",
+      "name": "John Doe",
+      "email": "johndoe@example.com",
       "bio": "Software Engineer"
     }
   }
@@ -271,8 +271,8 @@ Headers: API-Version: 3
     "category": "tech",
     "tags": ["ruby", "rails", "api"],
     "author": {
-      "name": "Alice Smith",
-      "email": "alice@example.com",
+      "name": "John Doe",
+      "email": "johndoe@example.com",
       "bio": "Software Engineer"
     },
     "views": 0,
@@ -352,16 +352,16 @@ PUT /api/users/profile
 
 {
   "profile": {
-    "name": "Alice Smith",
+    "name": "John Doe",
     "bio": "Software Engineer & Open Source Contributor",
     "socials": [
       {
         "provider": "twitter",
-        "handle": "alice_codes"
+        "handle": "johndoe"
       },
       {
         "provider": "github",
-        "handle": "alice",
+        "handle": "johndoe",
         "url": "https://github.com/alice"
       }
     ],
@@ -376,16 +376,16 @@ PUT /api/users/profile
 # Service receives (note 'handle' → 'value' transformation):
 {
   profile: {
-    name: "Alice Smith",
+    name: "John Doe",
     bio: "Software Engineer & Open Source Contributor",
     socials: [
       {
         provider: "twitter",
-        value: "alice_codes"  # Transformed from 'handle'
+        value: "johndoe"  # Transformed from 'handle'
       },
       {
         provider: "github",
-        value: "alice",
+        value: "johndoe",
         url: "https://github.com/alice"
       }
     ],
@@ -401,17 +401,17 @@ PUT /api/users/profile
 {
   "profile": {
     "id": "user-123",
-    "name": "Alice Smith",
+    "name": "John Doe",
     "bio": "Software Engineer & Open Source Contributor",
     "socials": [
       {
         "provider": "twitter",
-        "handle": "alice_codes",  # Transformed from 'value'
+        "handle": "johndoe",  # Transformed from 'value'
         "url": null
       },
       {
         "provider": "github",
-        "handle": "alice",
+        "handle": "johndoe",
         "url": "https://github.com/alice"
       }
     ],
@@ -563,8 +563,8 @@ end
 scope :filters do
   string :status, :optional, in: %w[draft published archived]
   string :category, :optional
-  datetime :created_after, :optional
-  datetime :created_before, :optional
+  datetime :created_after_at, :optional
+  datetime :created_before_at, :optional
 end
 ```
 
@@ -574,16 +574,6 @@ end
 scope :sort do
   string :by, default: "created_at", in: %w[created_at updated_at title]
   string :direction, default: "desc", in: %w[asc desc]
-end
-```
-
-### Pattern 4: Including Related Resources
-
-```ruby
-scope :_self do
-  array :include, :optional do
-    string :_self, in: %w[author comments tags]
-  end
 end
 ```
 

@@ -100,10 +100,10 @@ object :author, :required do
 end
 
 # Send:
-{ "author" => { "name" => "Alice" } }  # ✓ Correct
+{ "author" => { "name" => "John Doe" } }  # ✓ Correct
 
 # Not:
-{ "author" => "Alice" }  # ✗ String instead of object
+{ "author" => "John Doe" }  # ✗ String instead of object
 ```
 
 ### "Error in array 'X' at index Y: ..."
@@ -134,10 +134,10 @@ array :authors do
 end
 
 # Send:
-{ "authors" => [{ "name" => "Alice" }, { "name" => "Bob" }] }  # ✓ Correct
+{ "authors" => [{ "name" => "John Doe" }, { "name" => "John Doe" }] }  # ✓ Correct
 
 # Not:
-{ "authors" => ["Alice", "Bob"] }  # ✗ Strings instead of objects
+{ "authors" => ["John Doe", "John Doe"] }  # ✗ Strings instead of objects
 ```
 
 ## Version Issues
@@ -358,7 +358,7 @@ array :authors do
   string :name   # Each item is a Hash with :name
   string :email
 end
-# Data: [{ name: "Alice", email: "..." }, { name: "Bob", email: "..." }]
+# Data: [{ name: "John Doe", email: "..." }, { name: "John Doe", email: "..." }]
 ```
 
 ### "Array must contain items of type..."
@@ -384,8 +384,8 @@ array :authors do
   string :name, :required
 end
 
-{ "authors" => [{ "name" => "Alice" }] }  # ✓ Valid hash
-{ "authors" => ["Alice"] }  # ✗ String instead of hash
+{ "authors" => [{ "name" => "John Doe" }] }  # ✓ Valid hash
+{ "authors" => ["John Doe"] }  # ✗ String instead of hash
 ```
 
 ## Nesting Issues
@@ -571,23 +571,22 @@ treaty.default_version  # See default version
 
 ```ruby
 # In rails console
-treaty = Posts::CreateTreaty.new
 params = { post: { title: "Test" } }
 
 begin
-  result = treaty.call(params: params, version: 1)
+  result = Posts::CreateTreaty.call!(params: params)
   puts "Success: #{result.inspect}"
 rescue Treaty::Exceptions::Validation => e
   puts "Error: #{e.message}"
 end
 ```
 
-### Use binding.pry or debugger
+### Use debugger
 
 ```ruby
 # In your service
 def self.call(params:)
-  binding.pry  # or debugger
+  debugger  # or debugger
   # Inspect params structure here
 end
 ```

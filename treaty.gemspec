@@ -10,8 +10,7 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Anton Sokolov"]
   spec.email         = ["profox.rus@gmail.com"]
 
-  spec.summary       = "Flexible DTO library combining data transfer objects, adapter pattern, " \
-                       "and embedded execution logic for clean architecture"
+  spec.summary       = "A Ruby library for defining and managing REST API contracts with versioning support"
   spec.description   = spec.summary
   spec.homepage      = "https://github.com/servactory/treaty"
 

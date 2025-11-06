@@ -96,23 +96,23 @@ module Treaty
                 I18n.t("treaty.execution.proc_error", message: e.message)
         end
 
-        def execute_servactory
+        def execute_servactory # rubocop:disable Metrics/MethodLength
           executor.call!(params: @validated_params)
         rescue ApplicationService::Exceptions::Input => e
           raise Treaty::Exceptions::Execution,
                 I18n.t("treaty.execution.service_input_error", message: e.message)
-        rescue ApplicationService::Exceptions::Internal => e # rubocop:disable Lint/DuplicateBranch
+        rescue ApplicationService::Exceptions::Internal => e
           raise Treaty::Exceptions::Execution,
                 I18n.t("treaty.execution.service_internal_error", message: e.message)
-        rescue ApplicationService::Exceptions::Output => e # rubocop:disable Lint/DuplicateBranch
+        rescue ApplicationService::Exceptions::Output => e
           raise Treaty::Exceptions::Execution,
                 I18n.t("treaty.execution.service_output_error", message: e.message)
-        rescue ApplicationService::Exceptions::Failure => e # rubocop:disable Lint/DuplicateBranch
+        rescue ApplicationService::Exceptions::Failure => e
           raise Treaty::Exceptions::Execution,
                 I18n.t("treaty.execution.service_failure_error", message: e.message)
         end
 
-        def execute_regular_class
+        def execute_regular_class # rubocop:disable Metrics/MethodLength
           method_name = @version_factory.executor.method
 
           unless executor.respond_to?(method_name)

@@ -74,14 +74,14 @@ module Treaty
         end
 
         raise Treaty::Exceptions::Validation,
-              I18n.t("treaty.versions.factory.invalid_default_option", type: @default_result.class)
+              I18n.t("treaty.versioning.factory.invalid_default_option", type: @default_result.class)
       end
 
       ##########################################################################
 
       def method_missing(name, *, &_block)
         raise Treaty::Exceptions::MethodName,
-              I18n.t("treaty.versions.factory.unknown_method", method: name)
+              I18n.t("treaty.versioning.factory.unknown_method", method: name)
       end
 
       def respond_to_missing?(name, *)

@@ -54,7 +54,7 @@ module Treaty
             return if target.is_a?(Symbol)
 
             raise Treaty::Exceptions::Validation,
-                  I18n.t("treaty.modifiers.as.invalid_type",
+                  I18n.t("treaty.attributes.modifiers.as.invalid_type",
                          attribute: @attribute_name,
                          type: target.class)
           end

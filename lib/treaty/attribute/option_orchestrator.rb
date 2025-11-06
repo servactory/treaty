@@ -177,10 +177,10 @@ module Treaty
         return if unknown_options.empty?
 
         raise Treaty::Exceptions::Validation,
-              I18n.t("treaty.options.unknown",
+              I18n.t("treaty.attributes.options.unknown",
                      attribute: @attribute.name,
-                     unknown: unknown_options.join(', '),
-                     known: Option::Registry.all_options.join(', '))
+                     unknown: unknown_options.join(", "),
+                     known: Option::Registry.all_options.join(", "))
       end
     end
   end

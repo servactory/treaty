@@ -17,7 +17,7 @@ module Treaty
       return self if LIST.include?(@code)
 
       raise Treaty::Exceptions::Strategy,
-            I18n.t("treaty.strategy.unknown", strategy: @code)
+            I18n.t("treaty.versioning.strategy.unknown", strategy: @code)
     end
 
     def direct?

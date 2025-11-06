@@ -51,10 +51,10 @@ module Treaty
             return if ALLOWED_TYPES.include?(@attribute_type)
 
             raise Treaty::Exceptions::Validation,
-                  I18n.t("treaty.validators.type.unknown_type",
+                  I18n.t("treaty.attributes.validators.type.unknown_type",
                          type: @attribute_type,
                          attribute: @attribute_name,
-                         allowed: ALLOWED_TYPES.join(', '))
+                         allowed: ALLOWED_TYPES.join(", "))
           end
 
           # Validates that the value matches the declared type
@@ -91,7 +91,7 @@ module Treaty
             return if value.is_a?(Integer)
 
             raise Treaty::Exceptions::Validation,
-                  I18n.t("treaty.validators.type.mismatch.integer",
+                  I18n.t("treaty.attributes.validators.type.mismatch.integer",
                          attribute: @attribute_name,
                          actual: value.class)
           end
@@ -105,7 +105,7 @@ module Treaty
             return if value.is_a?(String)
 
             raise Treaty::Exceptions::Validation,
-                  I18n.t("treaty.validators.type.mismatch.string",
+                  I18n.t("treaty.attributes.validators.type.mismatch.string",
                          attribute: @attribute_name,
                          actual: value.class)
           end
@@ -119,7 +119,7 @@ module Treaty
             return if value.is_a?(Hash)
 
             raise Treaty::Exceptions::Validation,
-                  I18n.t("treaty.validators.type.mismatch.object",
+                  I18n.t("treaty.attributes.validators.type.mismatch.object",
                          attribute: @attribute_name,
                          actual: value.class)
           end
@@ -133,7 +133,7 @@ module Treaty
             return if value.is_a?(Array)
 
             raise Treaty::Exceptions::Validation,
-                  I18n.t("treaty.validators.type.mismatch.array",
+                  I18n.t("treaty.attributes.validators.type.mismatch.array",
                          attribute: @attribute_name,
                          actual: value.class)
           end
@@ -148,7 +148,7 @@ module Treaty
             return if value.is_a?(DateTime) || value.is_a?(Time) || value.is_a?(Date)
 
             raise Treaty::Exceptions::Validation,
-                  I18n.t("treaty.validators.type.mismatch.datetime",
+                  I18n.t("treaty.attributes.validators.type.mismatch.datetime",
                          attribute: @attribute_name,
                          actual: value.class)
           end

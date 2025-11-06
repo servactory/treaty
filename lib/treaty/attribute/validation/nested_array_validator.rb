@@ -117,8 +117,8 @@ module Treaty
           raise Treaty::Exceptions::Validation,
                 I18n.t("treaty.nested.array.element_validation_error",
                        attribute: @attribute.name,
-                       index: index,
-                       errors: errors.join('; '))
+                       index:,
+                       errors: errors.join("; "))
         end
 
         # Validates array item for complex arrays (with regular attributes)
@@ -134,7 +134,7 @@ module Treaty
             raise Treaty::Exceptions::Validation,
                   I18n.t("treaty.nested.array.element_type_error",
                          attribute: @attribute.name,
-                         index: index,
+                         index:,
                          actual: array_item.class)
           end
 
@@ -145,7 +145,7 @@ module Treaty
             raise Treaty::Exceptions::Validation,
                   I18n.t("treaty.nested.array.attribute_error",
                          attribute: @attribute.name,
-                         index: index,
+                         index:,
                          message: e.message)
           end
         end

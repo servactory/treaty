@@ -173,7 +173,7 @@ module Treaty
               raise Treaty::Exceptions::Validation,
                     I18n.t("treaty.nested.array.element_validation_error",
                            attribute: attribute.name,
-                           index: index,
+                           index:,
                            errors: e.message)
             end
           end
@@ -184,12 +184,12 @@ module Treaty
           # @param index [Integer] Element index for error messages
           # @raise [Treaty::Exceptions::Validation] If item is not a Hash
           # @return [Hash] Transformed hash
-          def transform_array_item(item, index)
+          def transform_array_item(item, index) # rubocop:disable Metrics/MethodLength
             unless item.is_a?(Hash)
               raise Treaty::Exceptions::Validation,
                     I18n.t("treaty.nested.array.element_type_error",
                            attribute: attribute.name,
-                           index: index,
+                           index:,
                            actual: item.class)
             end
 
@@ -232,7 +232,7 @@ module Treaty
               raise Treaty::Exceptions::Validation,
                     I18n.t("treaty.nested.array.attribute_error",
                            attribute: attribute.name,
-                           index: index,
+                           index:,
                            message: e.message)
             end
 

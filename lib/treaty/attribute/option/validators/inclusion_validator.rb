@@ -29,7 +29,7 @@ module Treaty
             return if allowed_values.is_a?(Array) && !allowed_values.empty?
 
             raise Treaty::Exceptions::Validation,
-                  I18n.t("treaty.validators.inclusion.invalid_schema", attribute: @attribute_name)
+                  I18n.t("treaty.attributes.validators.inclusion.invalid_schema", attribute: @attribute_name)
           end
 
           # Validates that value is included in allowed set
@@ -68,10 +68,10 @@ module Treaty
           # @param value [Object] The actual value that failed validation
           # @return [String] Default error message
           def default_message(allowed_values, value)
-            I18n.t("treaty.validators.inclusion.not_included",
+            I18n.t("treaty.attributes.validators.inclusion.not_included",
                    attribute: @attribute_name,
-                   allowed: allowed_values.join(', '),
-                   value: value)
+                   allowed: allowed_values.join(", "),
+                   value:)
           end
         end
       end

@@ -170,6 +170,7 @@ module Treaty
             begin
               validator.validate_value!(item)
             rescue Treaty::Exceptions::Validation => e
+              # TODO: It is necessary to implement a translation system (I18n).
               raise Treaty::Exceptions::Validation,
                     "Error in array '#{attribute.name}' at index #{index}: " \
                     "Element must match one of the defined types. " \
@@ -185,6 +186,7 @@ module Treaty
           # @return [Hash] Transformed hash
           def transform_array_item(item, index)
             unless item.is_a?(Hash)
+              # TODO: It is necessary to implement a translation system (I18n).
               raise Treaty::Exceptions::Validation,
                     "Error in array '#{attribute.name}' at index #{index}: " \
                     "Expected Hash but got #{item.class}"
@@ -226,6 +228,7 @@ module Treaty
                                     validator.transform_value(nested_value)
                                   end
             rescue Treaty::Exceptions::Validation => e
+              # TODO: It is necessary to implement a translation system (I18n).
               raise Treaty::Exceptions::Validation,
                     "Error in array '#{attribute.name}' at index #{index}: #{e.message}"
             end

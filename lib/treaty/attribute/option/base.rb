@@ -137,6 +137,7 @@ module Treaty
         def custom_message
           return nil unless @option_schema.is_a?(Hash)
 
+          # TODO: It is necessary to implement a translation system (I18n).
           @option_schema.fetch(:message, nil)
         end
 

@@ -128,6 +128,7 @@ module Treaty
         def normalize_value(value, value_key)
           if advanced_mode?(value, value_key)
             # Already in advanced mode, ensure it has both keys.
+            # TODO: It is necessary to implement a translation system (I18n).
             { value_key => value.fetch(value_key), message: value.fetch(:message, nil) }
           else
             # Simple mode, convert to advanced.

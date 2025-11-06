@@ -154,6 +154,7 @@ module Treaty
       # @return [void]
       def apply_defaults!
         # Must be implemented in subclasses
+        # TODO: It is necessary to implement a translation system (I18n).
         raise NotImplementedError, "#{self.class} must implement #apply_defaults!"
       end
 
@@ -165,6 +166,7 @@ module Treaty
       # @return [void]
       def process_nested_attributes(&block)
         # Must be implemented in subclasses
+        # TODO: It is necessary to implement a translation system (I18n).
         raise NotImplementedError, "#{self.class} must implement #process_nested_attributes"
       end
     end

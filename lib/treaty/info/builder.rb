@@ -114,7 +114,7 @@ module Treaty
       #
       #   raise Treaty::Exceptions::NestedAttributes,
       #         I18n.t("treaty.attributes.errors.nesting_level_exceeded",
-      #                level: level,
+      #                level:,
       #                max_level: Treaty::Engine.config.treaty.attribute_nesting_level)
       # end
     end

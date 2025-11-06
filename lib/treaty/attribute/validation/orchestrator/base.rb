@@ -94,7 +94,7 @@ module Treaty
           # @return [Array<ScopeFactory>] Collection of scope factories
           def collection_of_scopes
             raise Treaty::Exceptions::Validation,
-                  I18n.t("treaty.nested.orchestrator.collection_not_implemented")
+                  I18n.t("treaty.attributes.validators.nested.orchestrator.collection_not_implemented")
           end
 
           # Validates all attributes in a scope (deprecated, not used)
@@ -139,7 +139,7 @@ module Treaty
           # @return [Hash] Scope data
           def scope_data_for(_name)
             raise Treaty::Exceptions::Validation,
-                  I18n.t("treaty.nested.orchestrator.scope_data_not_implemented")
+                  I18n.t("treaty.attributes.validators.nested.orchestrator.scope_data_not_implemented")
           end
 
           # Validates and transforms all attributes in a scope

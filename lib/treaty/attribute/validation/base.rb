@@ -75,7 +75,7 @@ module Treaty
         # @return [Hash] Validated and transformed data
         def validate!
           raise Treaty::Exceptions::Validation,
-                I18n.t("treaty.nested.orchestrator.collection_not_implemented")
+                I18n.t("treaty.attributes.validators.nested.orchestrator.collection_not_implemented")
         end
 
         private

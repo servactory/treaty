@@ -16,7 +16,7 @@ module Treaty
       # ```ruby
       # def some_method
       #   raise Treaty::Exceptions::NotImplemented,
-      #         I18n.t("treaty.builder.not_implemented", class: self.class)
+      #         I18n.t("treaty.attributes.builder.not_implemented", class: self.class)
       # end
       # ```
       #

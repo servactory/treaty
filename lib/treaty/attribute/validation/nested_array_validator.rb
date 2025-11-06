@@ -115,7 +115,7 @@ module Treaty
           return if validated
 
           raise Treaty::Exceptions::Validation,
-                I18n.t("treaty.nested.array.element_validation_error",
+                I18n.t("treaty.attributes.validators.nested.array.element_validation_error",
                        attribute: @attribute.name,
                        index:,
                        errors: errors.join("; "))
@@ -132,7 +132,7 @@ module Treaty
         def validate_regular_array_item!(array_item, index) # rubocop:disable Metrics/MethodLength
           unless array_item.is_a?(Hash)
             raise Treaty::Exceptions::Validation,
-                  I18n.t("treaty.nested.array.element_type_error",
+                  I18n.t("treaty.attributes.validators.nested.array.element_type_error",
                          attribute: @attribute.name,
                          index:,
                          actual: array_item.class)
@@ -143,7 +143,7 @@ module Treaty
             validator.validate_value!(nested_value)
           rescue Treaty::Exceptions::Validation => e
             raise Treaty::Exceptions::Validation,
-                  I18n.t("treaty.nested.array.attribute_error",
+                  I18n.t("treaty.attributes.validators.nested.array.attribute_error",
                          attribute: @attribute.name,
                          index:,
                          message: e.message)

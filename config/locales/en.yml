@@ -22,6 +22,19 @@ en:
           invalid_schema: "Option 'inclusion' for attribute '%{attribute}' must have a non-empty array of allowed values"
           not_included: "Attribute '%{attribute}' must be one of: %{allowed}. Got: '%{value}'"
 
+        # Nested structures validation
+        nested:
+          # Orchestrator errors
+          orchestrator:
+            collection_not_implemented: "Subclass must implement the collection_of_scopes method"
+            scope_data_not_implemented: "Subclass must implement the scope_data_for method"
+
+          # Array validation errors
+          array:
+            element_validation_error: "Error in array '%{attribute}' at index %{index}: Element must match one of the defined types. Errors: %{errors}"
+            element_type_error: "Error in array '%{attribute}' at index %{index}: Expected Hash but got %{actual}"
+            attribute_error: "Error in array '%{attribute}' at index %{index}: %{message}"
+
       # Attribute options
       options:
         unknown: "Unknown options for attribute '%{attribute}': %{unknown}. Known options: %{known}"
@@ -31,26 +44,15 @@ en:
         as:
           invalid_type: "Option 'as' for attribute '%{attribute}' must be a Symbol. Got: %{type}"
 
+      # Attribute builder DSL
+      builder:
+        not_implemented: "%{class} must implement #create_attribute"
+
       # Attribute-level errors
       errors:
         nesting_level_exceeded: "Nesting level %{level} exceeds maximum allowed level of %{max_level}"
         apply_defaults_not_implemented: "%{class} must implement #apply_defaults!"
         process_nested_not_implemented: "%{class} must implement #process_nested_attributes"
-
-    # ============================================================================
-    # Nested Structures: Complex data structures validation
-    # ============================================================================
-    nested:
-      # Orchestrator errors
-      orchestrator:
-        collection_not_implemented: "Subclass must implement the collection_of_scopes method"
-        scope_data_not_implemented: "Subclass must implement the scope_data_for method"
-
-      # Array validation errors
-      array:
-        element_validation_error: "Error in array '%{attribute}' at index %{index}: Element must match one of the defined types. Errors: %{errors}"
-        element_type_error: "Error in array '%{attribute}' at index %{index}: Expected Hash but got %{actual}"
-        attribute_error: "Error in array '%{attribute}' at index %{index}: %{message}"
 
     # ============================================================================
     # Versioning: API version management and resolution
@@ -88,12 +90,7 @@ en:
       regular_service_error: "%{message}"
 
     # ============================================================================
-    # DSL Infrastructure: Core framework components
+    # Controller DSL: Rails controller integration
     # ============================================================================
-    # Controller DSL
     controller:
       treaty_class_not_found: "%{class_name}"
-
-    # Builder DSL
-    builder:
-      not_implemented: "%{class} must implement #create_attribute"

@@ -134,8 +134,8 @@ module Treaty
         # @return [Attribute::Base] Created attribute instance
         def create_attribute(*)
           # Must be implemented in subclasses
-          # TODO: It is necessary to implement a translation system (I18n).
-          raise NotImplementedError, "#{self.class} must implement #create_attribute"
+          raise NotImplementedError,
+                I18n.t("treaty.builder.not_implemented", class: self.class)
         end
       end
     end

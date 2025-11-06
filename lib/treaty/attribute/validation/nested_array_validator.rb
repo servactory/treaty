@@ -114,10 +114,11 @@ module Treaty
 
           return if validated
 
-          # TODO: It is necessary to implement a translation system (I18n).
           raise Treaty::Exceptions::Validation,
-                "Error in array '#{@attribute.name}' at index #{index}: " \
-                "Item must match one of the defined types. Errors: #{errors.join('; ')}"
+                I18n.t("treaty.nested.array.element_validation_error",
+                       attribute: @attribute.name,
+                       index: index,
+                       errors: errors.join('; '))
         end
 
         # Validates array item for complex arrays (with regular attributes)
@@ -130,18 +131,22 @@ module Treaty
         # @return [void]
         def validate_regular_array_item!(array_item, index) # rubocop:disable Metrics/MethodLength
           unless array_item.is_a?(Hash)
-            # TODO: It is necessary to implement a translation system (I18n).
             raise Treaty::Exceptions::Validation,
-                  "Error in array '#{@attribute.name}' at index #{index}: Expected Hash but got #{array_item.class}"
+                  I18n.t("treaty.nested.array.element_type_error",
+                         attribute: @attribute.name,
+                         index: index,
+                         actual: array_item.class)
           end
 
           regular_validators.each do |nested_attribute, validator|
             nested_value = array_item.fetch(nested_attribute.name, nil)
             validator.validate_value!(nested_value)
           rescue Treaty::Exceptions::Validation => e
-            # TODO: It is necessary to implement a translation system (I18n).
             raise Treaty::Exceptions::Validation,
-                  "Error in array '#{@attribute.name}' at index #{index}: #{e.message}"
+                  I18n.t("treaty.nested.array.attribute_error",
+                         attribute: @attribute.name,
+                         index: index,
+                         message: e.message)
           end
         end
 

@@ -132,12 +132,12 @@ module Treaty
         end
 
         # Gets custom error message from advanced mode schema
+        # Returns nil if no custom message, which triggers I18n default message
         #
         # @return [String, nil] Custom error message or nil for default message
         def custom_message
           return nil unless @option_schema.is_a?(Hash)
 
-          # TODO: It is necessary to implement a translation system (I18n).
           @option_schema.fetch(:message, nil)
         end
 

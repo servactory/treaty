@@ -16,8 +16,8 @@ module Treaty
     def validate!
       return self if LIST.include?(@code)
 
-      # TODO: It is necessary to implement a translation system (I18n).
-      raise Treaty::Exceptions::Strategy, "Unknown strategy: #{@code}"
+      raise Treaty::Exceptions::Strategy,
+            I18n.t("treaty.strategy.unknown", strategy: @code)
     end
 
     def direct?

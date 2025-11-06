@@ -73,16 +73,15 @@ module Treaty
           return @default_result
         end
 
-        # TODO: It is necessary to implement a translation system (I18n).
         raise Treaty::Exceptions::Validation,
-              "Default option for version must be true, false, or a Proc, got: #{@default_result.class}"
+              I18n.t("treaty.versions.factory.invalid_default_option", type: @default_result.class)
       end
 
       ##########################################################################
 
       def method_missing(name, *, &_block)
-        # TODO: It is necessary to implement a translation system (I18n).
-        raise Treaty::Exceptions::MethodName, "Unknown method: #{name}"
+        raise Treaty::Exceptions::MethodName,
+              I18n.t("treaty.versions.factory.unknown_method", method: name)
       end
 
       def respond_to_missing?(name, *)

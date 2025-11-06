@@ -176,10 +176,11 @@ module Treaty
 
         return if unknown_options.empty?
 
-        # TODO: It is necessary to implement a translation system (I18n).
         raise Treaty::Exceptions::Validation,
-              "Unknown options for attribute '#{@attribute.name}': #{unknown_options.join(', ')}. " \
-              "Known options: #{Option::Registry.all_options.join(', ')}"
+              I18n.t("treaty.options.unknown",
+                     attribute: @attribute.name,
+                     unknown: unknown_options.join(', '),
+                     known: Option::Registry.all_options.join(', '))
       end
     end
   end

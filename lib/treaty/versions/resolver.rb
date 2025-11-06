@@ -51,21 +51,18 @@ module Treaty
       ##########################################################################
 
       def raise_current_version_not_found!
-        # TODO: It is necessary to implement a translation system (I18n).
         raise Treaty::Exceptions::Validation,
-              "Current version is required for validation"
+              I18n.t("treaty.versions.resolver.current_version_required")
       end
 
       def raise_version_not_found!
-        # TODO: It is necessary to implement a translation system (I18n).
         raise Treaty::Exceptions::Validation,
-              "Version #{current_version} not found in treaty definition"
+              I18n.t("treaty.versions.resolver.version_not_found", version: current_version)
       end
 
       def raise_version_deprecated!
-        # TODO: It is necessary to implement a translation system (I18n).
         raise Treaty::Exceptions::Deprecated,
-              "Version #{current_version} is deprecated and cannot be used"
+              I18n.t("treaty.versions.resolver.version_deprecated", version: current_version)
       end
     end
   end

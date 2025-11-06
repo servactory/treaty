@@ -170,11 +170,11 @@ module Treaty
             begin
               validator.validate_value!(item)
             rescue Treaty::Exceptions::Validation => e
-              # TODO: It is necessary to implement a translation system (I18n).
               raise Treaty::Exceptions::Validation,
-                    "Error in array '#{attribute.name}' at index #{index}: " \
-                    "Element must match one of the defined types. " \
-                    "Errors: #{e.message}"
+                    I18n.t("treaty.nested.array.element_validation_error",
+                           attribute: attribute.name,
+                           index: index,
+                           errors: e.message)
             end
           end
 
@@ -186,10 +186,11 @@ module Treaty
           # @return [Hash] Transformed hash
           def transform_array_item(item, index)
             unless item.is_a?(Hash)
-              # TODO: It is necessary to implement a translation system (I18n).
               raise Treaty::Exceptions::Validation,
-                    "Error in array '#{attribute.name}' at index #{index}: " \
-                    "Expected Hash but got #{item.class}"
+                    I18n.t("treaty.nested.array.element_type_error",
+                           attribute: attribute.name,
+                           index: index,
+                           actual: item.class)
             end
 
             transformed = {}
@@ -228,9 +229,11 @@ module Treaty
                                     validator.transform_value(nested_value)
                                   end
             rescue Treaty::Exceptions::Validation => e
-              # TODO: It is necessary to implement a translation system (I18n).
               raise Treaty::Exceptions::Validation,
-                    "Error in array '#{attribute.name}' at index #{index}: #{e.message}"
+                    I18n.t("treaty.nested.array.attribute_error",
+                           attribute: attribute.name,
+                           index: index,
+                           message: e.message)
             end
 
             target_name = validator.target_name

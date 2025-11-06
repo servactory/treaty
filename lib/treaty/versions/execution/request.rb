@@ -56,9 +56,8 @@ module Treaty
             string_executor = executor.to_s
 
             if string_executor.empty?
-              # TODO: It is necessary to implement a translation system (I18n).
               raise Treaty::Exceptions::Execution,
-                    "Executor cannot be an empty string"
+                    I18n.t("treaty.execution.executor_empty")
             end
 
             constant_name = normalize_constant_name(executor)
@@ -66,15 +65,12 @@ module Treaty
             begin
               constant_name.constantize
             rescue NameError
-              # TODO: It is necessary to implement a translation system (I18n).
               raise Treaty::Exceptions::Execution,
-                    "Executor class `#{constant_name}` not found"
+                    I18n.t("treaty.execution.executor_not_found", class_name: constant_name)
             end
           else
-            # TODO: It is necessary to implement a translation system (I18n).
             raise Treaty::Exceptions::Execution,
-                  "Invalid executor type: #{executor.class}. " \
-                  "Expected Proc, Class, String, or Symbol"
+                  I18n.t("treaty.execution.executor_invalid_type", type: executor.class)
           end
         end
 
@@ -96,39 +92,40 @@ module Treaty
         def execute_proc
           executor.call(params: @validated_params)
         rescue StandardError => e
-          # TODO: It is necessary to implement a translation system (I18n).
-          raise Treaty::Exceptions::Execution, e.message
+          raise Treaty::Exceptions::Execution,
+                I18n.t("treaty.execution.proc_error", message: e.message)
         end
 
         def execute_servactory
           executor.call!(params: @validated_params)
         rescue ApplicationService::Exceptions::Input => e
-          # TODO: It is necessary to implement a translation system (I18n).
-          raise Treaty::Exceptions::Execution, e.message
+          raise Treaty::Exceptions::Execution,
+                I18n.t("treaty.execution.service_input_error", message: e.message)
         rescue ApplicationService::Exceptions::Internal => e # rubocop:disable Lint/DuplicateBranch
-          # TODO: It is necessary to implement a translation system (I18n).
-          raise Treaty::Exceptions::Execution, e.message
+          raise Treaty::Exceptions::Execution,
+                I18n.t("treaty.execution.service_internal_error", message: e.message)
         rescue ApplicationService::Exceptions::Output => e # rubocop:disable Lint/DuplicateBranch
-          # TODO: It is necessary to implement a translation system (I18n).
-          raise Treaty::Exceptions::Execution, e.message
+          raise Treaty::Exceptions::Execution,
+                I18n.t("treaty.execution.service_output_error", message: e.message)
         rescue ApplicationService::Exceptions::Failure => e # rubocop:disable Lint/DuplicateBranch
-          # TODO: It is necessary to implement a translation system (I18n).
-          raise Treaty::Exceptions::Execution, e.message
+          raise Treaty::Exceptions::Execution,
+                I18n.t("treaty.execution.service_failure_error", message: e.message)
         end
 
         def execute_regular_class
           method_name = @version_factory.executor.method
 
           unless executor.respond_to?(method_name)
-            # TODO: It is necessary to implement a translation system (I18n).
             raise Treaty::Exceptions::Execution,
-                  "Method '#{method_name}' not found in class '#{executor}'"
+                  I18n.t("treaty.execution.method_not_found",
+                         method: method_name,
+                         class_name: executor)
           end
 
           executor.public_send(method_name, params: @validated_params)
         rescue StandardError => e
-          # TODO: It is necessary to implement a translation system (I18n).
-          raise Treaty::Exceptions::Execution, e.message
+          raise Treaty::Exceptions::Execution,
+                I18n.t("treaty.execution.regular_class_error", message: e.message)
         end
 
         ########################################################################
@@ -136,9 +133,8 @@ module Treaty
         ########################################################################
 
         def raise_executor_missing_error!
-          # TODO: It is necessary to implement a translation system (I18n).
           raise Treaty::Exceptions::Execution,
-                "Executor is not defined for version #{@version_factory.version}"
+                I18n.t("treaty.execution.executor_missing", version: @version_factory.version)
         end
 
         def servactory_service?

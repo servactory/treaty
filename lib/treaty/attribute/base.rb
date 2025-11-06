@@ -121,10 +121,10 @@ module Treaty
       def validate_nesting_level!
         return unless @nesting_level > Treaty::Engine.config.treaty.attribute_nesting_level
 
-        # TODO: It is necessary to implement a translation system (I18n).
         raise Treaty::Exceptions::NestedAttributes,
-              "Nesting level #{@nesting_level} exceeds maximum allowed level of " \
-              "#{Treaty::Engine.config.treaty.attribute_nesting_level}"
+              I18n.t("treaty.attribute.nesting_level_exceeded",
+                     level: @nesting_level,
+                     max_level: Treaty::Engine.config.treaty.attribute_nesting_level)
       end
 
       # Extracts helper symbols from arguments
@@ -154,8 +154,8 @@ module Treaty
       # @return [void]
       def apply_defaults!
         # Must be implemented in subclasses
-        # TODO: It is necessary to implement a translation system (I18n).
-        raise NotImplementedError, "#{self.class} must implement #apply_defaults!"
+        raise NotImplementedError,
+              I18n.t("treaty.attribute.apply_defaults_not_implemented", class: self.class)
       end
 
       # Processes nested attributes block for object/array types
@@ -166,8 +166,8 @@ module Treaty
       # @return [void]
       def process_nested_attributes(&block)
         # Must be implemented in subclasses
-        # TODO: It is necessary to implement a translation system (I18n).
-        raise NotImplementedError, "#{self.class} must implement #process_nested_attributes"
+        raise NotImplementedError,
+              I18n.t("treaty.attribute.process_nested_not_implemented", class: self.class)
       end
     end
   end

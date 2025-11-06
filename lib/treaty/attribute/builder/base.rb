@@ -130,7 +130,7 @@ module Treaty
 
         # Creates an attribute instance (must be implemented in subclasses)
         #
-        # @raise [NotImplemented] If subclass doesn't implement
+        # @raise [Treaty::Exceptions::NotImplemented] If subclass doesn't implement
         # @return [Attribute::Base] Created attribute instance
         def create_attribute(*)
           # Must be implemented in subclasses

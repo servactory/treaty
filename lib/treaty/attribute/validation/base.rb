@@ -71,7 +71,7 @@ module Treaty
         # Performs validation and transformation
         # Must be implemented in subclasses
         #
-        # @raise [NotImplemented] If subclass doesn't implement
+        # @raise [Treaty::Exceptions::NotImplemented] If subclass doesn't implement
         # @return [Hash] Validated and transformed data
         def validate!
           raise Treaty::Exceptions::Validation,

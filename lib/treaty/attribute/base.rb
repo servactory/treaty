@@ -150,7 +150,7 @@ module Treaty
       # Applies default values for options based on context (request/response)
       # Must be implemented in subclasses
       #
-      # @raise [NotImplemented] If subclass doesn't implement
+      # @raise [Treaty::Exceptions::NotImplemented] If subclass doesn't implement
       # @return [void]
       def apply_defaults!
         # Must be implemented in subclasses
@@ -162,7 +162,7 @@ module Treaty
       # Must be implemented in subclasses
       #
       # @param block [Proc] Block containing nested attribute definitions
-      # @raise [NotImplemented] If subclass doesn't implement
+      # @raise [Treaty::Exceptions::NotImplemented] If subclass doesn't implement
       # @return [void]
       def process_nested_attributes
         # Must be implemented in subclasses

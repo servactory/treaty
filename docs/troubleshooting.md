@@ -572,12 +572,17 @@ treaty.default_version  # See default version
 ```ruby
 # In rails console
 # Create a mock controller for testing
-controller = OpenStruct.new(
-  request: OpenStruct.new(
-    headers: { "Accept" => "application/json" },
-    remote_ip: "127.0.0.1",
-    user_agent: "Console"
-  ),
+MockRequest = Data.define(:headers, :remote_ip, :user_agent)
+MockController = Data.define(:request, :headers, :params)
+
+request = MockRequest.new(
+  headers: { "Accept" => "application/json" },
+  remote_ip: "127.0.0.1",
+  user_agent: "Console"
+)
+
+controller = MockController.new(
+  request: request,
   headers: { "Accept" => "application/json" },
   params: { post: { title: "Test" } }
 )

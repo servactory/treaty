@@ -13,7 +13,7 @@ require "rspec/rails"
 
 Dir[File.join(__dir__, "support", "**", "*.rb")].each { |file| require file }
 
-# I18n.load_path += Dir["#{File.expand_path('config/locales')}/*.yml"]
+I18n.load_path += Dir["#{File.expand_path('config/locales')}/*.yml"]
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure

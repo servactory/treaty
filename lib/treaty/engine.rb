@@ -10,6 +10,11 @@ module Treaty
       yield(config.treaty) if block_given?
     end
 
+    initializer "treaty.register_option_processors", before: :load_config_initializers do
+      # Register all option processors (validators and modifiers)
+      require "treaty/attribute/option/registry_initializer"
+    end
+
     initializer "treaty.validate_configuration" do
       config.after_initialize do
         unless config.treaty.valid?

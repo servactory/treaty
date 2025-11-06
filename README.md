@@ -11,6 +11,16 @@
 gem "treaty"
 ```
 
+## Documentation
+
+Complete documentation is available in the [docs](./docs) directory:
+
+- [Getting Started](./docs/getting-started.md) - installation and first steps
+- [Core Concepts](./docs/core-concepts.md) - fundamental concepts
+- [API Reference](./docs/api-reference.md) - complete API documentation
+- [Examples](./docs/examples.md) - practical examples
+- [Full Documentation Index](./docs/README.md) - all documentation topics
+
 ## Contributing
 
 This project is intended to be a safe, welcoming space for collaboration.

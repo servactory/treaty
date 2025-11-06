@@ -3,18 +3,67 @@
 module Treaty
   module Attribute
     # Normalizes options from simple mode to advanced mode.
+    #
+    # ## Purpose
+    #
+    # All options are stored and processed internally in advanced mode.
+    # This normalizer converts simple mode to advanced mode automatically.
+    #
+    # ## Modes Explained
+    #
+    # ### Simple Mode (Concise syntax)
+    # ```ruby
+    # {
+    #   required: true,
+    #   as: :value,
+    #   in: %w[twitter linkedin github],
+    #   default: 12
+    # }
+    # ```
+    #
+    # ### Advanced Mode (With messages)
+    # ```ruby
+    # {
+    #   required: { is: true, message: nil },
+    #   as: { is: :value, message: nil },
+    #   inclusion: { in: %w[twitter linkedin github], message: nil },
+    #   default: { is: 12, message: nil }
+    # }
+    # ```
+    #
+    # ## Key Mappings
+    #
+    # Some simple mode keys are renamed in advanced mode:
+    # - `in:` → `inclusion:` (with value key `:in`)
+    #
+    # Others keep the same name:
+    # - `required:` → `required:` (with value key `:is`)
+    # - `as:` → `as:` (with value key `:is`)
+    # - `default:` → `default:` (with value key `:is`)
+    #
+    # ## Value Keys
+    #
+    # Each option has a value key in advanced mode:
+    # - Default: `:is` (most options)
+    # - Special: `:in` (inclusion validator)
+    #
+    # ## Message Field
+    #
+    # The `message` field in advanced mode allows custom error messages:
+    # - `nil` - Use default message (most common)
+    # - String - Custom error message for validation failures
+    #
+    # ## Usage in DSL
+    #
+    # Users can write in either mode:
+    #
     # Simple mode:
-    #   {
-    #     required: true,
-    #     as: :value,
-    #     in: %w[twitter linkedin github]
-    #   }
+    #   string :provider, in: %w[twitter linkedin]
+    #
     # Advanced mode:
-    #   {
-    #     required: { is: true, message: nil },
-    #     as: { is: :value, message: nil },
-    #     inclusion: { in: %w[twitter linkedin github], message: nil }
-    #   }
+    #   string :provider, inclusion: { in: %w[twitter linkedin], message: "Invalid provider" }
+    #
+    # Both are normalized to advanced mode internally.
     class OptionNormalizer
       # Maps simple mode option keys to their advanced mode configuration.
       # Format: simple_key => { advanced_key:, value_key: }
@@ -36,6 +85,10 @@ module Treaty
       private_constant :DEFAULT_VALUE_KEY
 
       class << self
+        # Normalizes all options from simple mode to advanced mode
+        #
+        # @param options [Hash] Options hash in simple or advanced mode
+        # @return [Hash] Normalized options in advanced mode
         def normalize(options)
           options.each_with_object({}) do |(key, value), result|
             advanced_key, normalized_value = normalize_option(key, value)
@@ -45,6 +98,11 @@ module Treaty
 
         private
 
+        # Normalizes a single option to advanced mode
+        #
+        # @param key [Symbol] Option key
+        # @param value [Object] Option value
+        # @return [Array<Symbol, Hash>] Tuple of [advanced_key, normalized_value]
         def normalize_option(key, value) # rubocop:disable Metrics/MethodLength
           mapping = OPTION_KEY_MAPPING.fetch(key, nil)
 
@@ -62,6 +120,11 @@ module Treaty
           end
         end
 
+        # Normalizes option value to advanced mode format
+        #
+        # @param value [Object] The option value (simple or advanced mode)
+        # @param value_key [Symbol] The key to use for the value (:is or :in)
+        # @return [Hash] Normalized hash with value_key and :message
         def normalize_value(value, value_key)
           if advanced_mode?(value, value_key)
             # Already in advanced mode, ensure it has both keys.
@@ -73,6 +136,11 @@ module Treaty
           end
         end
 
+        # Checks if value is already in advanced mode
+        #
+        # @param value [Object] The value to check
+        # @param value_key [Symbol] The expected value key
+        # @return [Boolean] True if value is a hash with the value key
         def advanced_mode?(value, value_key)
           value.is_a?(Hash) && value.key?(value_key)
         end

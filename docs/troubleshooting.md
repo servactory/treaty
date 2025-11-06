@@ -571,10 +571,21 @@ treaty.default_version  # See default version
 
 ```ruby
 # In rails console
+# Create a mock controller for testing
+controller = OpenStruct.new(
+  request: OpenStruct.new(
+    headers: { "Accept" => "application/json" },
+    remote_ip: "127.0.0.1",
+    user_agent: "Console"
+  ),
+  headers: { "Accept" => "application/json" },
+  params: { post: { title: "Test" } }
+)
+
 params = { post: { title: "Test" } }
 
 begin
-  result = Posts::CreateTreaty.call!(params: params)
+  result = Posts::CreateTreaty.call!(controller: controller, params: params)
   puts "Success: #{result.inspect}"
 rescue Treaty::Exceptions::Validation => e
   puts "Error: #{e.message}"

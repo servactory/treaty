@@ -636,7 +636,7 @@ Raised when validation fails.
 **Example:**
 ```ruby
 begin
-  Posts::CreateTreaty.call!(params: params)
+  Posts::CreateTreaty.call!(controller: self, params: params)
 rescue Treaty::Exceptions::Validation => e
   puts e.message
   # => "Attribute 'title' is required but was not provided"

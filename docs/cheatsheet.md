@@ -521,9 +521,34 @@ end
 
 ```ruby
 RSpec.describe Posts::CreateTreaty do
-  subject(:perform) { described_class.call!(params: params) }
+  subject(:perform) { described_class.call!(controller: controller, params: params) }
+
+  let(:request) do
+    instance_double(
+      ActionDispatch::Request,
+      headers: headers,
+      remote_ip: "127.0.0.1",
+      user_agent: "Mozilla/5.0"
+    )
+  end
+
+  let(:controller) do
+    instance_double(
+      Posts::PostsController,
+      request: request,
+      headers: headers,
+      params: params
+    )
+  end
+
+  let(:headers) do
+    {
+      "Accept" => "application/vnd.myapp-v#{version}+json"
+    }
+  end
 
   context "when validating required fields" do
+    let(:version) { 1 }
     let(:params) { { post: {} } }
 
     it "raises validation error" do
@@ -532,6 +557,7 @@ RSpec.describe Posts::CreateTreaty do
   end
 
   context "when creating post successfully" do
+    let(:version) { 1 }
     let(:params) { { post: { title: "Test", content: "Content" } } }
 
     it "returns post with expected attributes" do

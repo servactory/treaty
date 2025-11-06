@@ -81,20 +81,19 @@ en:
       executor_invalid_type: "Invalid executor type: %{type}. Expected Proc, Class, String, or Symbol"
       method_not_found: "Method '%{method}' not found in class '%{class_name}'"
       proc_error: "%{message}"
-      service_input_error: "%{message}"
-      service_internal_error: "%{message}"
-      service_output_error: "%{message}"
-      service_failure_error: "%{message}"
-      regular_class_error: "%{message}"
+      servactory_input_error: "%{message}"
+      servactory_internal_error: "%{message}"
+      servactory_output_error: "%{message}"
+      servactory_failure_error: "%{message}"
+      regular_service_error: "%{message}"
 
     # ============================================================================
     # DSL Infrastructure: Core framework components
     # ============================================================================
-    dsl:
-      # Controller DSL
-      controller:
-        treaty_class_not_found: "%{class_name}"
+    # Controller DSL
+    controller:
+      treaty_class_not_found: "%{class_name}"
 
-      # Builder DSL
-      builder:
-        not_implemented: "%{class} must implement #create_attribute"
+    # Builder DSL
+    builder:
+      not_implemented: "%{class} must implement #create_attribute"

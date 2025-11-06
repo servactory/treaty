@@ -25,7 +25,7 @@ module Treaty
           treaty_class_name.constantize
         rescue NameError
           raise Treaty::Exceptions::ClassName,
-                I18n.t("treaty.dsl.controller.treaty_class_not_found", class_name: treaty_class_name)
+                I18n.t("treaty.controller.treaty_class_not_found", class_name: treaty_class_name)
         end
 
         def treaty_class_name

@@ -100,16 +100,16 @@ module Treaty
           executor.call!(params: @validated_params)
         rescue ApplicationService::Exceptions::Input => e
           raise Treaty::Exceptions::Execution,
-                I18n.t("treaty.execution.service_input_error", message: e.message)
+                I18n.t("treaty.execution.servactory_input_error", message: e.message)
         rescue ApplicationService::Exceptions::Internal => e
           raise Treaty::Exceptions::Execution,
-                I18n.t("treaty.execution.service_internal_error", message: e.message)
+                I18n.t("treaty.execution.servactory_internal_error", message: e.message)
         rescue ApplicationService::Exceptions::Output => e
           raise Treaty::Exceptions::Execution,
-                I18n.t("treaty.execution.service_output_error", message: e.message)
+                I18n.t("treaty.execution.servactory_output_error", message: e.message)
         rescue ApplicationService::Exceptions::Failure => e
           raise Treaty::Exceptions::Execution,
-                I18n.t("treaty.execution.service_failure_error", message: e.message)
+                I18n.t("treaty.execution.servactory_failure_error", message: e.message)
         end
 
         def execute_regular_class # rubocop:disable Metrics/MethodLength
@@ -125,7 +125,7 @@ module Treaty
           executor.public_send(method_name, params: @validated_params)
         rescue StandardError => e
           raise Treaty::Exceptions::Execution,
-                I18n.t("treaty.execution.regular_class_error", message: e.message)
+                I18n.t("treaty.execution.regular_service_error", message: e.message)
         end
 
         ########################################################################

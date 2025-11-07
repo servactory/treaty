@@ -8,7 +8,7 @@
 [![Gem Version](https://img.shields.io/gem/v/treaty.svg)](https://rubygems.org/gems/treaty)
 [![Release Date](https://img.shields.io/github/release-date/servactory/treaty)](https://github.com/servactory/servactory/releases)
 [![Gem Downloads](https://img.shields.io/gem/dt/treaty.svg)](https://rubygems.org/gems/treaty)
-![Ruby Version](https://img.shields.io/badge/Ruby-3.2%2B-red)
+[![Ruby Version](https://img.shields.io/badge/Ruby-3.2%2B-red)](https://www.ruby-lang.org)
 
 </div>
 

@@ -607,6 +607,53 @@ def self.call(params:)
 end
 ```
 
+## Internationalization (I18n) Issues
+
+### Wrong language in error messages
+
+**Problem:** Error messages appear in wrong language.
+
+**Solution:**
+1. Check current locale: `I18n.locale`
+2. Verify locale is set in controller or application
+3. Check Accept-Language header
+4. Ensure translation files are loaded
+
+**Example:**
+```ruby
+# Set locale per request
+class ApplicationController < ActionController::API
+  before_action :set_locale
+
+  def set_locale
+    I18n.locale = params[:locale] || extract_locale_from_header || :en
+  end
+end
+```
+
+### Missing translations
+
+**Problem:** Seeing "translation missing" warnings.
+
+**Solution:**
+1. Create translation file: `config/locales/treaty.de.yml`
+2. Copy structure from `config/locales/en.yml` in Treaty gem
+3. Translate messages to your language
+4. Restart Rails server
+
+**Example:**
+```yaml
+# config/locales/treaty.de.yml
+de:
+  treaty:
+    attributes:
+      validators:
+        required:
+          blank: "Attribut '%{attribute}' ist erforderlich"
+```
+
+See [Internationalization Guide](./internationalization.md) for complete setup.
+
 ## Getting Help
 
 If you're still stuck:
@@ -621,5 +668,6 @@ If you're still stuck:
 - [API Reference](./api-reference.md) - complete API documentation
 - [Examples](./examples.md) - practical examples
 - [Validation](./validation.md) - validation system details
+- [Internationalization](./internationalization.md) - I18n setup and configuration
 
 [← Back to Documentation](./README.md)

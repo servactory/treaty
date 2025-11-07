@@ -53,7 +53,8 @@ Each contract version describes:
 12. [API Reference](./api-reference.md) - complete API reference
 13. [Cheatsheet](./cheatsheet.md) - quick reference guide
 14. [Migration Guide](./migration-guide.md) - migrating between API versions
-15. [Troubleshooting](./troubleshooting.md) - common issues and solutions
+15. [Internationalization](./internationalization.md) - I18n setup and multilingual support
+16. [Troubleshooting](./troubleshooting.md) - common issues and solutions
 
 ## Quick Example
 

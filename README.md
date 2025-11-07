@@ -20,6 +20,7 @@ Explore comprehensive guides and documentation at [docs](./docs):
 - [Core Concepts](./docs/core-concepts.md) - understand fundamental concepts
 - [API Reference](./docs/api-reference.md) - complete API documentation
 - [Examples](./docs/examples.md) - practical real-world examples
+- [Internationalization](./docs/internationalization.md) - I18n and multilingual support
 - [Full Documentation Index](./docs/README.md) - all documentation topics
 
 ## 💡 Why Treaty?
@@ -31,6 +32,7 @@ Treaty provides a complete solution for building versioned APIs in Ruby on Rails
 - **Built-in Validation** - Validate incoming requests and outgoing responses automatically
 - **Data Transformation** - Transform data seamlessly between different API versions
 - **Deprecation Management** - Mark versions as deprecated with flexible conditions
+- **Internationalization** - Full I18n support for multilingual error messages
 - **Well-documented** - Comprehensive guides and examples for every feature
 
 ## 🚀 Quick Start

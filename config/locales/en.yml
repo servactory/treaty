@@ -14,6 +14,7 @@ en:
           mismatch:
             integer: "Attribute '%{attribute}' must be an Integer, got %{actual}"
             string: "Attribute '%{attribute}' must be a String, got %{actual}"
+            boolean: "Attribute '%{attribute}' must be a Boolean (true or false), got %{actual}"
             object: "Attribute '%{attribute}' must be a Hash (object), got %{actual}"
             array: "Attribute '%{attribute}' must be an Array, got %{actual}"
             datetime: "Attribute '%{attribute}' must be a DateTime/Time/Date, got %{actual}"

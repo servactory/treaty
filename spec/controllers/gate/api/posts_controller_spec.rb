@@ -208,6 +208,8 @@ RSpec.describe Gate::API::PostsController do
             summary: "Summary 1",
             description: "Description 1",
             content: "...",
+            published: nil,
+            featured: nil,
             tags: %w[tag1 tag2 tag3],
             author: {
               name: "John Doe",

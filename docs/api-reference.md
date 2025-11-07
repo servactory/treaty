@@ -303,6 +303,25 @@ integer :rating, in: [1, 2, 3, 4, 5]
 integer :age, as: :user_age
 ```
 
+### `boolean`
+
+Define a boolean attribute.
+
+**Syntax:**
+```ruby
+boolean :name, *modes, **options
+```
+
+**Examples:**
+```ruby
+boolean :published
+boolean :active, :required
+boolean :featured, :optional
+boolean :archived, default: false
+```
+
+**Note:** Only accepts `true` or `false` (TrueClass/FalseClass). Does not perform type coercion.
+
 ### `datetime`
 
 Define a datetime attribute.
@@ -701,6 +720,7 @@ module Gate
               string :content, :required
               string :summary, :optional
               string :category, :required, in: %w[tech business lifestyle]
+              boolean :published, :optional
 
               # Simple array
               array :tags, :optional do
@@ -729,6 +749,7 @@ module Gate
               string :content
               string :summary
               string :category
+              boolean :published
 
               array :tags do
                 string :_self

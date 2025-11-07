@@ -68,6 +68,7 @@ end
 ```ruby
 string :name
 integer :count
+boolean :active
 datetime :created_at
 object :metadata do; end
 array :items do; end
@@ -407,6 +408,7 @@ class Posts::CreateTreaty < ApplicationTreaty
         string :title, :required
         string :content, :required
         string :category, :required, in: %w[tech business lifestyle]
+        boolean :published, :optional
 
         array :tags, :optional do
           string :_self, in: %w[ruby rails api docker]
@@ -425,6 +427,7 @@ class Posts::CreateTreaty < ApplicationTreaty
         string :title
         string :content
         string :category
+        boolean :published
 
         array :tags do
           string :_self

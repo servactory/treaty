@@ -202,6 +202,13 @@ RSpec.describe Gate::API::Posts::CreateTreaty do
                                 },
                                 attributes: {}
                               },
+                              published: {
+                                type: :boolean,
+                                options: {
+                                  required: { is: false, message: nil }
+                                },
+                                attributes: {}
+                              },
                               tags: {
                                 type: :array,
                                 options: {
@@ -302,6 +309,20 @@ RSpec.describe Gate::API::Posts::CreateTreaty do
                               },
                               content: {
                                 type: :string,
+                                options: {
+                                  required: { is: false, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              published: {
+                                type: :boolean,
+                                options: {
+                                  required: { is: false, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              featured: {
+                                type: :boolean,
                                 options: {
                                   required: { is: false, message: nil }
                                 },
@@ -443,6 +464,7 @@ RSpec.describe Gate::API::Posts::CreateTreaty do
             summary: "Summary 1",
             description: "Description 1",
             content: "...",
+            published: true,
             tags: %w[tag1 tag2 tag3],
             author: {
               name: "John Doe",

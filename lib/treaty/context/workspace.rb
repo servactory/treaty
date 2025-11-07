@@ -6,12 +6,12 @@ module Treaty
       private
 
       def _call!(
-        controller:,
+        version:,
         params:,
         collection_of_versions:
       )
         call!(
-          controller:,
+          version:,
           params:,
           collection_of_versions:
         )

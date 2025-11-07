@@ -810,32 +810,14 @@ Always test that transformations work correctly:
 ```ruby
 # In your specs
 RSpec.describe Users::UpdateProfileTreaty do
-  subject(:perform) { described_class.call!(controller: controller, params: params) }
+  subject(:perform) { described_class.call!(version: version, params: params) }
 
-  let(:request) do
-    instance_double(
-      ActionDispatch::Request,
-      headers: headers,
-      remote_ip: "127.0.0.1",
-      user_agent: "Mozilla/5.0"
-    )
-  end
-
-  let(:controller) do
-    instance_double(
-      Users::ProfileController,
-      request: request,
-      headers: headers,
-      params: params
-    )
-  end
-
-  let(:headers) { { "Accept" => "application/json" } }
+  let(:version) { "2" }
   let(:params) { { social: { handle: "johndoe" } } }
 
   it "transforms handle to value" do
-    expect(perform[:social][:value]).to eq("johndoe")
-    expect(perform[:social][:handle]).to be_nil
+    expect(perform.data[:social][:value]).to eq("johndoe")
+    expect(perform.data[:social][:handle]).to be_nil
   end
 end
 ```

@@ -1,31 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe Gate::API::Posts::IndexTreaty do
-  subject(:perform) { described_class.call!(controller:, params:) }
-
-  let(:request) do
-    instance_double(
-      ActionDispatch::Request,
-      headers:,
-      remote_ip: "127.0.0.1",
-      user_agent: "Mozilla/5.0"
-    )
-  end
-
-  let(:controller) do
-    instance_double(
-      Gate::API::PostsController,
-      request:,
-      headers:,
-      params:
-    )
-  end
-
-  let(:headers) do
-    {
-      "Accept" => "application/vnd.myapp-v#{version}+json"
-    }
-  end
+  subject(:perform) { described_class.call!(version:, params:) }
 
   it_behaves_like "check class info",
                   versions: [
@@ -410,7 +386,7 @@ RSpec.describe Gate::API::Posts::IndexTreaty do
 
   context "when required data for work is valid" do
     context "when version is 1" do
-      let(:version) { 1 }
+      let(:version) { "1" }
 
       let(:params) do
         {}
@@ -420,7 +396,7 @@ RSpec.describe Gate::API::Posts::IndexTreaty do
     end
 
     context "when version is 2" do
-      let(:version) { 2 }
+      let(:version) { "2" }
 
       let(:params) do
         {}
@@ -430,7 +406,7 @@ RSpec.describe Gate::API::Posts::IndexTreaty do
     end
 
     context "when version is 3" do
-      let(:version) { 3 }
+      let(:version) { "3" }
 
       let(:params) do
         {}
@@ -454,7 +430,7 @@ RSpec.describe Gate::API::Posts::IndexTreaty do
 
   context "when required data for work is invalid" do
     describe "because version is unknown" do
-      let(:version) { 999 }
+      let(:version) { "999" }
 
       let(:params) do
         {}

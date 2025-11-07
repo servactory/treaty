@@ -5,11 +5,11 @@ module Treaty
     module Workspace
       private
 
-      def call!(controller:, params:, **) # rubocop:disable Metrics/MethodLength
+      def call!(version:, params:, **) # rubocop:disable Metrics/MethodLength
         super
 
         version_factory = Resolver.resolve!(
-          controller:,
+          current_version: version,
           collection_of_versions: @collection_of_versions
         )
 

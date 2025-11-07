@@ -572,25 +572,11 @@ treaty.default_version  # See default version
 ```ruby
 # In rails console
 # Create a mock controller for testing
-MockRequest = Data.define(:headers, :remote_ip, :user_agent)
-MockController = Data.define(:request, :headers, :params)
-
-request = MockRequest.new(
-  headers: { "Accept" => "application/json" },
-  remote_ip: "127.0.0.1",
-  user_agent: "Console"
-)
-
-controller = MockController.new(
-  request: request,
-  headers: { "Accept" => "application/json" },
-  params: { post: { title: "Test" } }
-)
-
+version = "2"  # or use the actual version number
 params = { post: { title: "Test" } }
 
 begin
-  result = Posts::CreateTreaty.call!(controller: controller, params: params)
+  result = Posts::CreateTreaty.call!(version: version, params: params)
   puts "Success: #{result.inspect}"
 rescue Treaty::Exceptions::Validation => e
   puts "Error: #{e.message}"

@@ -15,7 +15,7 @@ module Treaty
     #
     # ```ruby
     # begin
-    #   Treaty::Base.call!(controller: self, params: params)
+    #   Treaty::Base.call!(version: treaty_version, params: params)
     # rescue Treaty::Exceptions::Base => e
     #   # Catches any Treaty-specific exception
     #   handle_treaty_error(e)

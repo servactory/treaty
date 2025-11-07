@@ -623,9 +623,9 @@ end
 ```ruby
 # Set locale per request
 class ApplicationController < ActionController::API
-  before_action :set_locale
+  before_action :assign_locale
 
-  def set_locale
+  def assign_locale
     I18n.locale = params[:locale] || extract_locale_from_header || :en
   end
 end

@@ -177,9 +177,9 @@ config.i18n.available_locales = [:en, :de]
 # Or dynamically per request
 # app/controllers/application_controller.rb
 class ApplicationController < ActionController::API
-  before_action :set_locale
+  before_action :assign_locale
 
-  def set_locale
+  def assign_locale
     I18n.locale = params[:locale] ||
                   extract_locale_from_accept_language_header ||
                   I18n.default_locale
@@ -401,13 +401,13 @@ de:
 
 ```ruby
 class PostsController < ApplicationController
-  before_action :set_locale
+  before_action :assign_locale
 
   treaty :create
 
   private
 
-  def set_locale
+  def assign_locale
     I18n.locale = params[:locale] || :en
   end
 end

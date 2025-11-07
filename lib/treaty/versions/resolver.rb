@@ -7,8 +7,8 @@ module Treaty
         new(...).resolve!
       end
 
-      def initialize(controller:, collection_of_versions:)
-        @controller = controller
+      def initialize(current_version:, collection_of_versions:)
+        @current_version = current_version
         @collection_of_versions = collection_of_versions
       end
 
@@ -27,15 +27,10 @@ module Treaty
 
       private
 
-      def current_version
-        @current_version ||=
-          Treaty::Engine.config.treaty.version.call(@controller)
-      end
-
       def version_factory
         @version_factory ||=
           @collection_of_versions.find do |factory|
-            factory.version.version == current_version
+            factory.version.version == @current_version
           end
       end
 
@@ -45,7 +40,7 @@ module Treaty
       end
 
       def current_version_blank?
-        current_version.to_s.strip.empty?
+        @current_version.to_s.strip.empty?
       end
 
       ##########################################################################
@@ -57,12 +52,12 @@ module Treaty
 
       def raise_version_not_found!
         raise Treaty::Exceptions::Validation,
-              I18n.t("treaty.versioning.resolver.version_not_found", version: current_version)
+              I18n.t("treaty.versioning.resolver.version_not_found", version: @current_version)
       end
 
       def raise_version_deprecated!
         raise Treaty::Exceptions::Deprecated,
-              I18n.t("treaty.versioning.resolver.version_deprecated", version: current_version)
+              I18n.t("treaty.versioning.resolver.version_deprecated", version: @current_version)
       end
     end
   end

@@ -5,7 +5,7 @@ RSpec.describe Gate::API::PostsController do
 
   before { assign_json_headers_with(version:) }
 
-  let(:version) { 3 }
+  let(:version) { "3" }
 
   describe "#index" do
     subject(:perform) { get :index, params: }
@@ -65,7 +65,7 @@ RSpec.describe Gate::API::PostsController do
     end
 
     context "when version is 3" do
-      let(:version) { 3 }
+      let(:version) { "3" }
 
       let(:params) do
         {
@@ -105,7 +105,7 @@ RSpec.describe Gate::API::PostsController do
     subject(:perform) { post :create, params: }
 
     context "when version is 1" do
-      let(:version) { 1 }
+      let(:version) { "1" }
 
       let(:params) do
         {
@@ -139,7 +139,7 @@ RSpec.describe Gate::API::PostsController do
     end
 
     context "when version is 2" do
-      let(:version) { 2 }
+      let(:version) { "2" }
 
       let(:params) do
         {
@@ -173,7 +173,7 @@ RSpec.describe Gate::API::PostsController do
     end
 
     context "when version is 3" do
-      let(:version) { 3 }
+      let(:version) { "3" }
 
       let(:params) do
         {
@@ -238,7 +238,7 @@ RSpec.describe Gate::API::PostsController do
     end
 
     context "when version is unknown" do
-      let(:version) { 999 }
+      let(:version) { "999" }
 
       let(:params) do
         {
@@ -281,7 +281,7 @@ RSpec.describe Gate::API::PostsController do
     end
 
     context "when there is incorrect field" do
-      let(:version) { 3 }
+      let(:version) { "3" }
 
       let(:params) do
         {

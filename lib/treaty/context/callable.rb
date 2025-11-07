@@ -3,18 +3,18 @@
 module Treaty
   module Context
     module Callable
-      def call!(controller:, params:)
+      def call!(version:, params:)
         context = send(:new)
 
-        _call!(context, controller:, params:)
+        _call!(context, version:, params:)
       end
 
       private
 
-      def _call!(context, controller:, params:)
+      def _call!(context, version:, params:)
         context.send(
           :_call!,
-          controller:,
+          version:,
           params:,
           collection_of_versions:
         )

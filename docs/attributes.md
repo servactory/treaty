@@ -28,6 +28,20 @@ integer :page, default: 1
 
 **Type validation:** Value must be a Ruby `Integer`
 
+#### Boolean
+
+```ruby
+boolean :published
+boolean :active, :required
+boolean :featured, :optional
+```
+
+**Type validation:** Value must be `TrueClass` or `FalseClass`
+
+**Important:** Only actual Ruby boolean values are accepted. Type coercion is not performed:
+- ✅ Accepted: `true`, `false`
+- ❌ Rejected: any other type (Integer, String, NilClass, etc.)
+
 #### DateTime
 
 ```ruby
@@ -290,6 +304,7 @@ integer :age, :required
 **Supported type checks:**
 - `string` → Ruby `String`
 - `integer` → Ruby `Integer`
+- `boolean` → Ruby `TrueClass` or `FalseClass`
 - `datetime` → Ruby `DateTime`, `Time`, or `Date`
 - `object` → Ruby `Hash`
 - `array` → Ruby `Array`
@@ -324,6 +339,7 @@ request do
     string :title, :required
     string :content, :required
     string :summary, :optional
+    boolean :published, :optional
     array :tags, :optional do
       string :_self
     end

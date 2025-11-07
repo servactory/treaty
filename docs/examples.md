@@ -195,6 +195,7 @@ module Gate
               string :content, :required
               string :summary, :optional
               string :category, :required, in: %w[tech business lifestyle]
+              boolean :published, :optional
 
               array :tags, :optional do
                 string :_self, :required
@@ -215,6 +216,7 @@ module Gate
               string :content
               string :summary
               string :category
+              boolean :published
 
               array :tags do
                 string :_self
@@ -252,6 +254,7 @@ Headers: API-Version: 3
     "content": "Treaty is a powerful API contract library...",
     "summary": "Learn Treaty basics",
     "category": "tech",
+    "published": true,
     "tags": ["ruby", "rails", "api"],
     "author": {
       "name": "John Doe",
@@ -269,6 +272,7 @@ Headers: API-Version: 3
     "content": "Treaty is a powerful API contract library...",
     "summary": "Learn Treaty basics",
     "category": "tech",
+    "published": true,
     "tags": ["ruby", "rails", "api"],
     "author": {
       "name": "John Doe",
@@ -311,6 +315,8 @@ module Gate
                 string :theme, default: "light", in: %w[light dark]
                 string :language, default: "en"
                 string :timezone, default: "UTC"
+                boolean :email_notifications, default: true
+                boolean :public_profile, default: false
               end
             end
           end
@@ -331,6 +337,8 @@ module Gate
                 string :theme
                 string :language
                 string :timezone
+                boolean :email_notifications
+                boolean :public_profile
               end
 
               datetime :updated_at

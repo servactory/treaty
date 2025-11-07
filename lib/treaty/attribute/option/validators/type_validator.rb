@@ -10,6 +10,7 @@ module Treaty
         #
         # - `:integer` - Ruby Integer
         # - `:string` - Ruby String
+        # - `:boolean` - Ruby TrueClass or FalseClass
         # - `:object` - Ruby Hash (for nested objects)
         # - `:array` - Ruby Array (for collections)
         # - `:datetime` - Ruby DateTime, Time, or Date
@@ -19,6 +20,7 @@ module Treaty
         # Simple types:
         #   integer :age
         #   string :name
+        #   boolean :published
         #   datetime :created_at
         #
         # Nested structures:
@@ -41,7 +43,7 @@ module Treaty
         # TypeValidator doesn't use option_schema - it validates based on attribute_type.
         # This validator is always active for all attributes.
         class TypeValidator < Treaty::Attribute::Option::Base
-          ALLOWED_TYPES = %i[integer string object array datetime].freeze
+          ALLOWED_TYPES = %i[integer string boolean object array datetime].freeze
 
           # Validates that the attribute type is one of the allowed types
           #
@@ -63,7 +65,7 @@ module Treaty
           # @param value [Object] The value to validate
           # @raise [Treaty::Exceptions::Validation] If value type doesn't match
           # @return [void]
-          def validate_value!(value) # rubocop:disable Metrics/MethodLength
+          def validate_value!(value) # rubocop:disable Metrics/MethodLength, Metrics/CyclomaticComplexity
             return if value.nil? # Type validation doesn't check for nil, required does.
 
             case @attribute_type
@@ -71,6 +73,8 @@ module Treaty
               validate_integer!(value)
             when :string
               validate_string!(value)
+            when :boolean
+              validate_boolean!(value)
             when :object
               validate_object!(value)
             when :array
@@ -106,6 +110,20 @@ module Treaty
 
             raise Treaty::Exceptions::Validation,
                   I18n.t("treaty.attributes.validators.type.mismatch.string",
+                         attribute: @attribute_name,
+                         actual: value.class)
+          end
+
+          # Validates that value is a Boolean (TrueClass or FalseClass)
+          #
+          # @param value [Object] The value to validate
+          # @raise [Treaty::Exceptions::Validation] If value is not a Boolean
+          # @return [void]
+          def validate_boolean!(value)
+            return if value.is_a?(TrueClass) || value.is_a?(FalseClass)
+
+            raise Treaty::Exceptions::Validation,
+                  I18n.t("treaty.attributes.validators.type.mismatch.boolean",
                          attribute: @attribute_name,
                          actual: value.class)
           end

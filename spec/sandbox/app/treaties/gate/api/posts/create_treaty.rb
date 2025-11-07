@@ -78,6 +78,7 @@ module Gate
               string :summary, :required
               string :description, :optional
               string :content, :required
+              boolean :published, :optional
 
               array :tags, :optional do
                 string :_self, :required
@@ -102,6 +103,8 @@ module Gate
               string :summary
               string :description
               string :content
+              boolean :published
+              boolean :featured
 
               array :tags do
                 string :_self

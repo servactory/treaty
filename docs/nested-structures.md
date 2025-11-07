@@ -132,6 +132,12 @@ array :ratings do
 end
 # Data: [4, 5, 3, 5]
 
+# Array of booleans
+array :flags do
+  boolean :_self
+end
+# Data: [true, false, true]
+
 # Array of datetimes
 array :timestamps do
   datetime :_self

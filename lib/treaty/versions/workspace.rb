@@ -5,7 +5,7 @@ module Treaty
     module Workspace
       private
 
-      def call!(controller:, **) # rubocop:disable Metrics/MethodLength
+      def call!(controller:, params:, **) # rubocop:disable Metrics/MethodLength
         super
 
         version_factory = Resolver.resolve!(
@@ -14,7 +14,7 @@ module Treaty
         )
 
         validated_params = Request::Attribute::Validator.validate!(
-          controller:,
+          params:,
           version_factory:
         )
 

@@ -8,10 +8,10 @@ module Treaty
           new(...).validate!
         end
 
-        def initialize(controller:, version_factory:)
+        def initialize(params:, version_factory:)
           super(version_factory:)
 
-          @controller = controller
+          @params = params
         end
 
         def validate!
@@ -22,9 +22,9 @@ module Treaty
 
         def request_data
           @request_data ||= begin
-            @controller.params.to_unsafe_h
+            @params.to_unsafe_h
           rescue NoMethodError
-            @controller.params
+            @params
           end
         end
 

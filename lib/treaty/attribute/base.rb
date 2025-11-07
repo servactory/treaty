@@ -121,10 +121,10 @@ module Treaty
       def validate_nesting_level!
         return unless @nesting_level > Treaty::Engine.config.treaty.attribute_nesting_level
 
-        # TODO: It is necessary to implement a translation system (I18n).
         raise Treaty::Exceptions::NestedAttributes,
-              "Nesting level #{@nesting_level} exceeds maximum allowed level of " \
-              "#{Treaty::Engine.config.treaty.attribute_nesting_level}"
+              I18n.t("treaty.attributes.errors.nesting_level_exceeded",
+                     level: @nesting_level,
+                     max_level: Treaty::Engine.config.treaty.attribute_nesting_level)
       end
 
       # Extracts helper symbols from arguments
@@ -150,22 +150,24 @@ module Treaty
       # Applies default values for options based on context (request/response)
       # Must be implemented in subclasses
       #
-      # @raise [NotImplementedError] If subclass doesn't implement
+      # @raise [Treaty::Exceptions::NotImplemented] If subclass doesn't implement
       # @return [void]
       def apply_defaults!
         # Must be implemented in subclasses
-        raise NotImplementedError, "#{self.class} must implement #apply_defaults!"
+        raise Treaty::Exceptions::NotImplemented,
+              I18n.t("treaty.attributes.errors.apply_defaults_not_implemented", class: self.class)
       end
 
       # Processes nested attributes block for object/array types
       # Must be implemented in subclasses
       #
       # @param block [Proc] Block containing nested attribute definitions
-      # @raise [NotImplementedError] If subclass doesn't implement
+      # @raise [Treaty::Exceptions::NotImplemented] If subclass doesn't implement
       # @return [void]
-      def process_nested_attributes(&block)
+      def process_nested_attributes
         # Must be implemented in subclasses
-        raise NotImplementedError, "#{self.class} must implement #process_nested_attributes"
+        raise Treaty::Exceptions::NotImplemented,
+              I18n.t("treaty.attributes.errors.process_nested_not_implemented", class: self.class)
       end
     end
   end

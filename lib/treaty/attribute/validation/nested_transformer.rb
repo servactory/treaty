@@ -171,9 +171,10 @@ module Treaty
               validator.validate_value!(item)
             rescue Treaty::Exceptions::Validation => e
               raise Treaty::Exceptions::Validation,
-                    "Error in array '#{attribute.name}' at index #{index}: " \
-                    "Element must match one of the defined types. " \
-                    "Errors: #{e.message}"
+                    I18n.t("treaty.attributes.validators.nested.array.element_validation_error",
+                           attribute: attribute.name,
+                           index:,
+                           errors: e.message)
             end
           end
 
@@ -183,11 +184,13 @@ module Treaty
           # @param index [Integer] Element index for error messages
           # @raise [Treaty::Exceptions::Validation] If item is not a Hash
           # @return [Hash] Transformed hash
-          def transform_array_item(item, index)
+          def transform_array_item(item, index) # rubocop:disable Metrics/MethodLength
             unless item.is_a?(Hash)
               raise Treaty::Exceptions::Validation,
-                    "Error in array '#{attribute.name}' at index #{index}: " \
-                    "Expected Hash but got #{item.class}"
+                    I18n.t("treaty.attributes.validators.nested.array.element_type_error",
+                           attribute: attribute.name,
+                           index:,
+                           actual: item.class)
             end
 
             transformed = {}
@@ -227,7 +230,10 @@ module Treaty
                                   end
             rescue Treaty::Exceptions::Validation => e
               raise Treaty::Exceptions::Validation,
-                    "Error in array '#{attribute.name}' at index #{index}: #{e.message}"
+                    I18n.t("treaty.attributes.validators.nested.array.attribute_error",
+                           attribute: attribute.name,
+                           index:,
+                           message: e.message)
             end
 
             target_name = validator.target_name

@@ -28,9 +28,8 @@ module Treaty
 
             return if allowed_values.is_a?(Array) && !allowed_values.empty?
 
-            # TODO: It is necessary to implement a translation system (I18n).
             raise Treaty::Exceptions::Validation,
-                  "Option 'inclusion' for attribute '#{@attribute_name}' must have a non-empty array of allowed values"
+                  I18n.t("treaty.attributes.validators.inclusion.invalid_schema", attribute: @attribute_name)
           end
 
           # Validates that value is included in allowed set
@@ -48,7 +47,6 @@ module Treaty
 
             message = custom_message || default_message(allowed_values, value)
 
-            # TODO: It is necessary to implement a translation system (I18n).
             raise Treaty::Exceptions::Validation, message
           end
 
@@ -64,14 +62,16 @@ module Treaty
 
           private
 
-          # Generates default error message with allowed values
+          # Generates default error message with allowed values using I18n
           #
           # @param allowed_values [Array] Array of allowed values
           # @param value [Object] The actual value that failed validation
           # @return [String] Default error message
           def default_message(allowed_values, value)
-            # TODO: It is necessary to implement a translation system (I18n).
-            "Attribute '#{@attribute_name}' must be one of: #{allowed_values.join(', ')}. Got: '#{value}'"
+            I18n.t("treaty.attributes.validators.inclusion.not_included",
+                   attribute: @attribute_name,
+                   allowed: allowed_values.join(", "),
+                   value:)
           end
         end
       end

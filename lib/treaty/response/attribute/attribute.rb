@@ -8,7 +8,7 @@ module Treaty
 
         def apply_defaults!
           # For response: optional by default (false).
-          # TODO: It is necessary to implement a translation system (I18n).
+          # message: nil means use I18n default message from validators
           @options[:required] ||= { is: false, message: nil }
         end
 

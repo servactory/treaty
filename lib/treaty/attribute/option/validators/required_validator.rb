@@ -53,7 +53,6 @@ module Treaty
 
             message = custom_message || default_message
 
-            # TODO: It is necessary to implement a translation system (I18n).
             raise Treaty::Exceptions::Validation, message
           end
 
@@ -80,12 +79,11 @@ module Treaty
             true
           end
 
-          # Generates default error message
+          # Generates default error message using I18n
           #
           # @return [String] Default error message
           def default_message
-            # TODO: It is necessary to implement a translation system (I18n).
-            "Attribute '#{@attribute_name}' is required but was not provided or is empty"
+            I18n.t("treaty.attributes.validators.required.blank", attribute: @attribute_name)
           end
         end
       end

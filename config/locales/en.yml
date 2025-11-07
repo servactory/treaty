@@ -1,0 +1,96 @@
+en:
+  treaty:
+    # ============================================================================
+    # Attributes: Definition, validation, and processing
+    # ============================================================================
+    attributes:
+      # Attribute value validators
+      validators:
+        required:
+          blank: "Attribute '%{attribute}' is required but was not provided or is empty"
+
+        type:
+          unknown_type: "Unknown type '%{type}' for attribute '%{attribute}'. Allowed types: %{allowed}"
+          mismatch:
+            integer: "Attribute '%{attribute}' must be an Integer, got %{actual}"
+            string: "Attribute '%{attribute}' must be a String, got %{actual}"
+            object: "Attribute '%{attribute}' must be a Hash (object), got %{actual}"
+            array: "Attribute '%{attribute}' must be an Array, got %{actual}"
+            datetime: "Attribute '%{attribute}' must be a DateTime/Time/Date, got %{actual}"
+
+        inclusion:
+          invalid_schema: "Option 'inclusion' for attribute '%{attribute}' must have a non-empty array of allowed values"
+          not_included: "Attribute '%{attribute}' must be one of: %{allowed}. Got: '%{value}'"
+
+        # Nested structures validation
+        nested:
+          # Orchestrator errors
+          orchestrator:
+            collection_not_implemented: "Subclass must implement the collection_of_scopes method"
+            scope_data_not_implemented: "Subclass must implement the scope_data_for method"
+
+          # Array validation errors
+          array:
+            element_validation_error: "Error in array '%{attribute}' at index %{index}: Element must match one of the defined types. Errors: %{errors}"
+            element_type_error: "Error in array '%{attribute}' at index %{index}: Expected Hash but got %{actual}"
+            attribute_error: "Error in array '%{attribute}' at index %{index}: %{message}"
+
+      # Attribute options
+      options:
+        unknown: "Unknown options for attribute '%{attribute}': %{unknown}. Known options: %{known}"
+
+      # Attribute modifiers
+      modifiers:
+        as:
+          invalid_type: "Option 'as' for attribute '%{attribute}' must be a Symbol. Got: %{type}"
+
+      # Attribute builder DSL
+      builder:
+        not_implemented: "%{class} must implement #create_attribute"
+
+      # Attribute-level errors
+      errors:
+        nesting_level_exceeded: "Nesting level %{level} exceeds maximum allowed level of %{max_level}"
+        apply_defaults_not_implemented: "%{class} must implement #apply_defaults!"
+        process_nested_not_implemented: "%{class} must implement #process_nested_attributes"
+
+    # ============================================================================
+    # Versioning: API version management and resolution
+    # ============================================================================
+    versioning:
+      # Version resolver
+      resolver:
+        current_version_required: "Current version is required for validation"
+        version_not_found: "Version %{version} not found in treaty definition"
+        version_deprecated: "Version %{version} is deprecated and cannot be used"
+
+      # Version factory
+      factory:
+        invalid_default_option: "Default option for version must be true, false, or a Proc, got: %{type}"
+        unknown_method: "Unknown method: %{method}"
+
+      # Strategy validation
+      strategy:
+        unknown: "Unknown strategy: %{strategy}"
+
+    # ============================================================================
+    # Execution: Service and executor invocation
+    # ============================================================================
+    execution:
+      executor_missing: "Executor is not defined for version %{version}"
+      executor_empty: "Executor cannot be an empty string"
+      executor_not_found: "Executor class `%{class_name}` not found"
+      executor_invalid_type: "Invalid executor type: %{type}. Expected Proc, Class, String, or Symbol"
+      method_not_found: "Method '%{method}' not found in class '%{class_name}'"
+      proc_error: "%{message}"
+      servactory_input_error: "%{message}"
+      servactory_internal_error: "%{message}"
+      servactory_output_error: "%{message}"
+      servactory_failure_error: "%{message}"
+      regular_service_error: "%{message}"
+
+    # ============================================================================
+    # Controller DSL: Rails controller integration
+    # ============================================================================
+    controller:
+      treaty_class_not_found: "%{class_name}"

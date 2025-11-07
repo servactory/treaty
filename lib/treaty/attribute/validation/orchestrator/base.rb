@@ -93,9 +93,8 @@ module Treaty
           # @raise [Treaty::Exceptions::Validation] If not implemented
           # @return [Array<ScopeFactory>] Collection of scope factories
           def collection_of_scopes
-            # TODO: It is necessary to implement a translation system (I18n).
             raise Treaty::Exceptions::Validation,
-                  "Subclass must implement the collection_of_scopes method"
+                  I18n.t("treaty.attributes.validators.nested.orchestrator.collection_not_implemented")
           end
 
           # Validates all attributes in a scope (deprecated, not used)
@@ -139,9 +138,8 @@ module Treaty
           # @raise [Treaty::Exceptions::Validation] If not implemented
           # @return [Hash] Scope data
           def scope_data_for(_name)
-            # TODO: It is necessary to implement a translation system (I18n).
             raise Treaty::Exceptions::Validation,
-                  "Subclass must implement the scope_data_for method"
+                  I18n.t("treaty.attributes.validators.nested.orchestrator.scope_data_not_implemented")
           end
 
           # Validates and transforms all attributes in a scope

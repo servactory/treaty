@@ -24,11 +24,12 @@ Gem::Specification.new do |spec|
 
   spec.metadata["rubygems_mfa_required"] = "true"
 
-  spec.files = Dir["lib/**/*", "Rakefile", "README.md"]
+  spec.files = Dir["config/**/*", "lib/**/*", "Rakefile", "README.md"]
   spec.require_paths = ["lib"]
 
   spec.required_ruby_version = Gem::Requirement.new(">= 3.2")
 
+  spec.add_dependency "i18n", ">= 1.14"
   spec.add_dependency "rails", ">= 7.1"
   spec.add_dependency "zeitwerk", ">= 2.6"
 

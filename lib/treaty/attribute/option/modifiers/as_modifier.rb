@@ -53,9 +53,10 @@ module Treaty
 
             return if target.is_a?(Symbol)
 
-            # TODO: It is necessary to implement a translation system (I18n).
             raise Treaty::Exceptions::Validation,
-                  "Option 'as' for attribute '#{@attribute_name}' must be a Symbol. Got: #{target.class}"
+                  I18n.t("treaty.attributes.modifiers.as.invalid_type",
+                         attribute: @attribute_name,
+                         type: target.class)
           end
 
           # Indicates that AsModifier transforms attribute names

@@ -50,10 +50,11 @@ module Treaty
           def validate_schema!
             return if ALLOWED_TYPES.include?(@attribute_type)
 
-            # TODO: It is necessary to implement a translation system (I18n).
             raise Treaty::Exceptions::Validation,
-                  "Unknown type '#{@attribute_type}' for attribute '#{@attribute_name}'. " \
-                  "Allowed types: #{ALLOWED_TYPES.join(', ')}"
+                  I18n.t("treaty.attributes.validators.type.unknown_type",
+                         type: @attribute_type,
+                         attribute: @attribute_name,
+                         allowed: ALLOWED_TYPES.join(", "))
           end
 
           # Validates that the value matches the declared type
@@ -89,9 +90,10 @@ module Treaty
           def validate_integer!(value)
             return if value.is_a?(Integer)
 
-            # TODO: It is necessary to implement a translation system (I18n).
             raise Treaty::Exceptions::Validation,
-                  "Attribute '#{@attribute_name}' must be an Integer, got #{value.class}"
+                  I18n.t("treaty.attributes.validators.type.mismatch.integer",
+                         attribute: @attribute_name,
+                         actual: value.class)
           end
 
           # Validates that value is a String
@@ -102,9 +104,10 @@ module Treaty
           def validate_string!(value)
             return if value.is_a?(String)
 
-            # TODO: It is necessary to implement a translation system (I18n).
             raise Treaty::Exceptions::Validation,
-                  "Attribute '#{@attribute_name}' must be a String, got #{value.class}"
+                  I18n.t("treaty.attributes.validators.type.mismatch.string",
+                         attribute: @attribute_name,
+                         actual: value.class)
           end
 
           # Validates that value is a Hash (object type)
@@ -115,9 +118,10 @@ module Treaty
           def validate_object!(value)
             return if value.is_a?(Hash)
 
-            # TODO: It is necessary to implement a translation system (I18n).
             raise Treaty::Exceptions::Validation,
-                  "Attribute '#{@attribute_name}' must be a Hash (object), got #{value.class}"
+                  I18n.t("treaty.attributes.validators.type.mismatch.object",
+                         attribute: @attribute_name,
+                         actual: value.class)
           end
 
           # Validates that value is an Array
@@ -128,9 +132,10 @@ module Treaty
           def validate_array!(value)
             return if value.is_a?(Array)
 
-            # TODO: It is necessary to implement a translation system (I18n).
             raise Treaty::Exceptions::Validation,
-                  "Attribute '#{@attribute_name}' must be an Array, got #{value.class}"
+                  I18n.t("treaty.attributes.validators.type.mismatch.array",
+                         attribute: @attribute_name,
+                         actual: value.class)
           end
 
           # Validates that value is a DateTime, Time, or Date
@@ -142,9 +147,10 @@ module Treaty
             # TODO: It is better to divide it into different methods for each class.
             return if value.is_a?(DateTime) || value.is_a?(Time) || value.is_a?(Date)
 
-            # TODO: It is necessary to implement a translation system (I18n).
             raise Treaty::Exceptions::Validation,
-                  "Attribute '#{@attribute_name}' must be a DateTime/Time/Date, got #{value.class}"
+                  I18n.t("treaty.attributes.validators.type.mismatch.datetime",
+                         attribute: @attribute_name,
+                         actual: value.class)
           end
         end
       end

@@ -132,6 +132,7 @@ module Treaty
         end
 
         # Gets custom error message from advanced mode schema
+        # Returns nil if no custom message, which triggers I18n default message
         #
         # @return [String, nil] Custom error message or nil for default message
         def custom_message

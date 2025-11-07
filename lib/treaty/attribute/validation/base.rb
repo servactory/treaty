@@ -71,12 +71,11 @@ module Treaty
         # Performs validation and transformation
         # Must be implemented in subclasses
         #
-        # @raise [NotImplementedError] If subclass doesn't implement
+        # @raise [Treaty::Exceptions::NotImplemented] If subclass doesn't implement
         # @return [Hash] Validated and transformed data
         def validate!
-          # TODO: It is necessary to implement a translation system (I18n).
           raise Treaty::Exceptions::Validation,
-                "Subclass must implement the validate! method"
+                I18n.t("treaty.attributes.validators.nested.orchestrator.collection_not_implemented")
         end
 
         private

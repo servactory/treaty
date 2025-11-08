@@ -20,8 +20,9 @@ module Treaty
       ##########################################################################
 
       def method_missing(name, *, &_block)
-        # TODO: It needs to be implemented.
-        puts "Unknown request block method: #{name}"
+        # TODO: Translation keys need to be reorganized.
+        raise Treaty::Exceptions::MethodName,
+              I18n.t("treaty.versioning.factory.unknown_method", method: name)
       end
 
       def respond_to_missing?(name, *)

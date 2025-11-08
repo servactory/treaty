@@ -35,6 +35,12 @@ en:
       builder:         # Builder DSL errors
       errors:          # General attribute errors
 
+    request:           # Request definition errors
+      factory:         # Request factory DSL errors
+
+    response:          # Response definition errors
+      factory:         # Response factory DSL errors
+
     versioning:        # Version management
       resolver:
       factory:
@@ -135,6 +141,14 @@ de:
         apply_defaults_not_implemented: "%{class} muss #apply_defaults! implementieren"
         process_nested_not_implemented: "%{class} muss #process_nested_attributes implementieren"
 
+    request:
+      factory:
+        unknown_method: "Unbekannte Methode '%{method}' in Request-Definition. Verwenden Sie 'scope :name do ... end', um die Request-Struktur zu definieren"
+
+    response:
+      factory:
+        unknown_method: "Unbekannte Methode '%{method}' in Response-Definition. Verwenden Sie 'scope :name do ... end', um die Response-Struktur zu definieren"
+
     versioning:
       resolver:
         current_version_required: "Aktuelle Version ist für die Validierung erforderlich"
@@ -143,7 +157,7 @@ de:
 
       factory:
         invalid_default_option: "Standard-Option für Version muss true, false oder ein Proc sein, erhalten: %{type}"
-        unknown_method: "Unbekannte Methode: %{method}"
+        unknown_method: "Unbekannte Methode '%{method}' in Version-Definition. Verfügbare Methoden: summary, strategy, deprecated, request, response, delegate_to"
 
       strategy:
         unknown: "Unbekannte Strategie: %{strategy}"
@@ -292,6 +306,9 @@ Different validators provide different interpolation variables:
 - `%{actual}` - the actual type received
 - `%{message}` - the nested validation error message
 - `%{errors}` - concatenated errors for :_self arrays
+
+**Request/Response Factory:**
+- `%{method}` - the unknown method name that was called
 
 **Version/Execution:**
 - `%{version}` - version number

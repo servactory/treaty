@@ -20,9 +20,8 @@ module Treaty
       ##########################################################################
 
       def method_missing(name, *, &_block)
-        # TODO: Translation keys need to be reorganized.
         raise Treaty::Exceptions::MethodName,
-              I18n.t("treaty.versioning.factory.unknown_method", method: name)
+              I18n.t("treaty.request.factory.unknown_method", method: name)
       end
 
       def respond_to_missing?(name, *)

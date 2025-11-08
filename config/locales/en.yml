@@ -56,6 +56,22 @@ en:
         process_nested_not_implemented: "%{class} must implement #process_nested_attributes"
 
     # ============================================================================
+    # Request: Request definition and structure
+    # ============================================================================
+    request:
+      # Request factory DSL
+      factory:
+        unknown_method: "Unknown method '%{method}' in request definition. Use 'scope :name do ... end' to define request structure"
+
+    # ============================================================================
+    # Response: Response definition and structure
+    # ============================================================================
+    response:
+      # Response factory DSL
+      factory:
+        unknown_method: "Unknown method '%{method}' in response definition. Use 'scope :name do ... end' to define response structure"
+
+    # ============================================================================
     # Versioning: API version management and resolution
     # ============================================================================
     versioning:
@@ -68,7 +84,7 @@ en:
       # Version factory
       factory:
         invalid_default_option: "Default option for version must be true, false, or a Proc, got: %{type}"
-        unknown_method: "Unknown method: %{method}"
+        unknown_method: "Unknown method '%{method}' in version definition. Available methods: summary, strategy, deprecated, request, response, delegate_to"
 
       # Strategy validation
       strategy:

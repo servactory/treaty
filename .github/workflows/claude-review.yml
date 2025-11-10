@@ -2,8 +2,13 @@ name: "Claude review"
 
 on:
   pull_request:
+    types: [opened, synchronize, labeled, unlabeled]
     branches:
       - main
+
+concurrency:
+  group: claude-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
 
 jobs:
   claude-review:

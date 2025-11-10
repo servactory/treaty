@@ -98,16 +98,16 @@ module Treaty
 
         def execute_servactory # rubocop:disable Metrics/MethodLength
           executor.call!(params: @validated_params)
-        rescue ApplicationService::Exceptions::Input => e
+        rescue Servactory::Exceptions::Input => e
           raise Treaty::Exceptions::Execution,
                 I18n.t("treaty.execution.servactory_input_error", message: e.message)
-        rescue ApplicationService::Exceptions::Internal => e
+        rescue Servactory::Exceptions::Internal => e
           raise Treaty::Exceptions::Execution,
                 I18n.t("treaty.execution.servactory_internal_error", message: e.message)
-        rescue ApplicationService::Exceptions::Output => e
+        rescue Servactory::Exceptions::Output => e
           raise Treaty::Exceptions::Execution,
                 I18n.t("treaty.execution.servactory_output_error", message: e.message)
-        rescue ApplicationService::Exceptions::Failure => e
+        rescue Servactory::Exceptions::Failure => e
           raise Treaty::Exceptions::Execution,
                 I18n.t("treaty.execution.servactory_failure_error", message: e.message)
         end

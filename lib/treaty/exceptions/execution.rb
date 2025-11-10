@@ -37,7 +37,7 @@ module Treaty
     # # Servactory service error
     # begin
     #   executor.call!(params: validated_params)
-    # rescue ApplicationService::Exceptions::Input => e
+    # rescue Servactory::Exceptions::Input => e
     #   raise Treaty::Exceptions::Execution, I18n.t("treaty.execution.servactory_input_error", message: e.message)
     # end
     # ```

@@ -8,6 +8,7 @@ on:
 jobs:
   claude-review:
     name: Automated Code Review
+    if: contains(github.event.pull_request.labels.*.name, 'claude')
     runs-on: ubuntu-latest
     permissions:
       contents: read

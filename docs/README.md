@@ -45,7 +45,7 @@ Each contract version describes:
 7. [Transformation](./transformation.md) - data transformation
 8. [Strategies](./strategies.md) - DIRECT vs ADAPTER
 9. [Nested Structures](./nested-structures.md) - working with objects and arrays
-10. [Scopes](./scopes.md) - organizing data through object attributes
+10. [Objects](./objects.md) - organizing data through object attributes
 
 ### Additional Resources
 

@@ -40,7 +40,7 @@ Full control with custom error messages:
 
 ```ruby
 string :title, required: { is: true, message: "Post title is required" }
-string :category, in: { list: %w[tech business], message: "Invalid category" }
+string :category, inclusion: { in: %w[tech business], message: "Invalid category" }
 ```
 
 ## Validation Types
@@ -633,8 +633,8 @@ string :email, required: {
   message: "Email address is required for account creation"
 }
 
-integer :age, in: {
-  list: (18..100).to_a,
+integer :age, inclusion: {
+  in: (18..100).to_a,
   message: "Age must be between 18 and 100"
 }
 ```

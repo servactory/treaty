@@ -591,4 +591,4 @@ end
 - [Versioning](./versioning.md) - manage multiple versions
 - [API Reference](./api-reference.md) - complete API documentation
 
-[← Back: Scopes](./scopes.md) | [← Back to Documentation](./README.md)
+[← Back: Objects](./objects.md) | [← Back to Documentation](./README.md)

@@ -79,8 +79,7 @@ treaty:
 
       nested:
         orchestrator:
-          collection_not_implemented: "Subclass must implement the collection_of_scopes method"
-          scope_data_not_implemented: "Subclass must implement the scope_data_for method"
+          collection_not_implemented: "Subclass must implement the collection_of_attributes method"
         array:
           element_validation_error: "Error in array '%{attribute}' at index %{index}: Element must match one of the defined types. Errors: %{errors}"
           element_type_error: "Error in array '%{attribute}' at index %{index}: Expected Hash but got %{actual}"
@@ -119,8 +118,7 @@ de:
 
         nested:
           orchestrator:
-            collection_not_implemented: "Unterklasse muss die Methode collection_of_scopes implementieren"
-            scope_data_not_implemented: "Unterklasse muss die Methode scope_data_for implementieren"
+            collection_not_implemented: "Unterklasse muss die Methode collection_of_attributes implementieren"
           array:
             element_validation_error: "Fehler im Array '%{attribute}' bei Index %{index}: Element muss einem der definierten Typen entsprechen. Fehler: %{errors}"
             element_type_error: "Fehler im Array '%{attribute}' bei Index %{index}: Hash erwartet, aber %{actual} erhalten"
@@ -234,13 +232,13 @@ request do
       message: "Post title cannot be empty"
     }
 
-    string :category, in: {
-      list: %w[tech business lifestyle],
+    string :category, inclusion: {
+      in: %w[tech business lifestyle],
       message: "Please select a valid category: tech, business, or lifestyle"
     }
 
-    integer :rating, in: {
-      list: [1, 2, 3, 4, 5],
+    integer :rating, inclusion: {
+      in: [1, 2, 3, 4, 5],
       message: "Rating must be between 1 and 5 stars"
     }
   end
@@ -259,8 +257,8 @@ request do
       message: -> { I18n.t('custom.post.title.required') }
     }
 
-    string :category, in: {
-      list: %w[tech business lifestyle],
+    string :category, inclusion: {
+      in: %w[tech business lifestyle],
       message: -> { I18n.t('custom.post.category.invalid') }
     }
   end

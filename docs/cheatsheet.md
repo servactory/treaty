@@ -121,13 +121,13 @@ string :title, required: {
 }
 
 # Custom inclusion message
-string :category, in: {
-  list: %w[tech business lifestyle],
+string :category, inclusion: {
+  in: %w[tech business lifestyle],
   message: "Please select a valid category"
 }
 ```
 
-## Scopes
+## Objects
 
 ```ruby
 # Regular object

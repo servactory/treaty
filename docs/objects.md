@@ -1,10 +1,10 @@
-# Scopes
+# Objects
 
 [← Back to Documentation](./README.md)
 
-## What are Scopes?
+## What are Objects?
 
-Scopes are organizational units that group related attributes together using object attributes. They create nested structures in your request and response data through the `object` attribute type.
+Objects group related attributes together, creating nested structures in your request and response data. Use the `object` attribute type to organize your API data into logical hierarchies.
 
 ## Basic Object Grouping
 

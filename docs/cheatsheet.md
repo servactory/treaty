@@ -77,8 +77,20 @@ array :items do; end
 ## Attribute Options - Helper Mode
 
 ```ruby
-string :title, :required    # Must be present
+string :title    # Must be present (default in request)
 string :summary, :optional  # Can be missing
+```
+
+### In Response Blocks
+
+In response blocks (defined with `response` status_code), attributes are optional by default:
+
+```ruby
+response 200 do
+  string :id        # Optional by default
+  string :title     # Optional by default
+  string :summary, :required  # Explicitly required
+end
 ```
 
 ## Attribute Options - Simple Mode
@@ -147,13 +159,13 @@ object :metadata
 ```ruby
 # Basic object
 object :author do
-  string :name, :required
+  string :name
   string :email
 end
 
 # Required object
-object :author, :required do
-  string :name, :required
+object :author do
+  string :name
 end
 
 # Optional object
@@ -190,7 +202,7 @@ end
 
 # Complex array (objects)
 array :authors do
-  string :name, :required
+  string :name
   string :email
 end
 # Data: [{ name: "John Doe", email: "..." }, { name: "John Doe", email: "..." }]
@@ -205,7 +217,7 @@ array :posts do
 end
 
 # Required array
-array :tags, :required do
+array :tags do
   string :_self
 end
 
@@ -227,8 +239,8 @@ request do
 
   # Data object
   object :post do
-    string :title, :required
-    string :content, :required
+    string :title
+    string :content
     string :status, default: "draft"
   end
 
@@ -405,18 +417,18 @@ class Posts::CreateTreaty < ApplicationTreaty
 
     request do
       object :post do
-        string :title, :required
-        string :content, :required
-        string :category, :required, in: %w[tech business lifestyle]
+        string :title
+        string :content
+        string :category, in: %w[tech business lifestyle]
         boolean :published, :optional
 
         array :tags, :optional do
           string :_self, in: %w[ruby rails api docker]
         end
 
-        object :author, :required do
-          string :name, :required
-          string :email, :required
+        object :author do
+          string :name
+          string :email
         end
       end
     end
@@ -438,7 +450,7 @@ class Posts::CreateTreaty < ApplicationTreaty
           string :email
         end
 
-        datetime :created_at
+        datetime :created_at, :required
       end
     end
 
@@ -468,7 +480,7 @@ class Posts::ShowTreaty < ApplicationTreaty
 
     request do
       object :post do
-        string :id, :required
+        string :id
       end
     end
 
@@ -548,7 +560,8 @@ end
 
 ## Quick Tips
 
-- Use `:required` and `:optional` helpers for clarity
+- Request attributes are required by default - use `:optional` when needed
+- Response attributes are optional by default - use `:required` when needed
 - ADAPTER for production, DIRECT only for prototypes
 - Always mark one version as `default: true`
 - Use `:_self` object for root-level attributes

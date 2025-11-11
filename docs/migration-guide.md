@@ -172,7 +172,7 @@ version 1 do
   request do
     object :post do
       string :title
-      string :body, :required
+      string :body
     end
   end
 end
@@ -202,7 +202,7 @@ version 2, default: true do
   request do
     object :post do
       string :title
-      string :content, :required  # New field name
+      string :content  # New field name
     end
   end
 
@@ -226,8 +226,8 @@ end
 version 1, default: true do
   request do
     object :post do
-      string :title, :required
-      string :content, :required
+      string :title
+      string :content
       string :category, :optional, default: "general"  # Optional with default
     end
   end
@@ -255,9 +255,9 @@ end
 version 2, default: true do
   request do
     object :post do
-      string :title, :required
-      string :content, :required
-      string :category, :required  # Now required
+      string :title
+      string :content
+      string :category  # Now required
     end
   end
 
@@ -276,9 +276,9 @@ end
 version 1, default: true do
   request do
     object :post do
-      string :title, :required
+      string :title
       string :summary, :optional  # Deprecated - will be removed
-      string :content, :required
+      string :content
     end
   end
 end
@@ -305,8 +305,8 @@ end
 version 2, default: true do
   request do
     object :post do
-      string :title, :required
-      string :content, :required
+      string :title
+      string :content
       # summary field removed
     end
   end

@@ -13,8 +13,8 @@ Scopes are organizational units that group related attributes together using obj
 ```ruby
 request do
   object :post do
-    string :title, :required
-    string :content, :required
+    string :title
+    string :content
   end
 end
 ```
@@ -34,7 +34,7 @@ end
 ```ruby
 request do
   object :post do
-    string :title, :required
+    string :title
   end
 
   object :filters do
@@ -68,12 +68,12 @@ The `:_self` object is special - its attributes are merged into the parent level
 ```ruby
 request do
   object :_self do
-    string :signature, :required
-    string :timestamp, :required
+    string :signature
+    string :timestamp
   end
 
   object :post do
-    string :title, :required
+    string :title
   end
 end
 ```
@@ -108,7 +108,7 @@ end
 ```ruby
 request do
   object :_self do
-    string :api_key, :required
+    string :api_key
   end
 
   object :data do
@@ -437,14 +437,14 @@ version 3 do
 
   response 200 do
     object :posts do
-      string :id
-      string :title
-      string :summary
+      string :id, :required
+      string :title, :required
+      string :summary, :required
     end
 
     object :meta do
-      integer :count
-      integer :page
+      integer :count, :required
+      integer :page, :required
       integer :limit, default: 12
     end
   end
@@ -457,25 +457,25 @@ end
 version 3 do
   request do
     object :_self do
-      string :signature, :required
+      string :signature
     end
 
     object :post do
-      string :title, :required
-      string :content, :required
+      string :title
+      string :content
 
-      object :author, :required do
-        string :name, :required
+      object :author do
+        string :name
       end
     end
   end
 
   response 201 do
     object :post do
-      string :id
-      string :title
-      string :content
-      datetime :created_at
+      string :id, :required
+      string :title, :required
+      string :content, :required
+      datetime :created_at, :required
     end
   end
 end

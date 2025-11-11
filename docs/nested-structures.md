@@ -16,7 +16,7 @@ Objects represent nested hash structures with defined attributes.
 
 ```ruby
 object :author do
-  string :name, :required
+  string :name
   string :email
   string :bio
 end
@@ -38,12 +38,12 @@ end
 ```ruby
 # Object itself is optional, but if provided, must have required attributes
 object :author, :optional do
-  string :name, :required
+  string :name
   string :email
 end
 
 # Object itself is required
-object :settings, :required do
+object :settings do
   string :theme, default: "light"
   string :language, default: "en"
 end
@@ -53,10 +53,10 @@ end
 
 ```ruby
 object :post do
-  string :title, :required
+  string :title
 
-  object :author, :required do
-    string :name, :required
+  object :author do
+    string :name
 
     object :company do
       string :name
@@ -102,7 +102,7 @@ Arrays containing primitive values like strings, integers, or datetimes.
 
 ```ruby
 array :tags do
-  string :_self, :required
+  string :_self
 end
 ```
 
@@ -151,7 +151,7 @@ Arrays containing hash objects with defined structure.
 
 ```ruby
 array :authors do
-  string :name, :required
+  string :name
   string :email
   string :bio
 end
@@ -179,8 +179,8 @@ end
 
 # Array itself is required, must be present
 # Can be empty [] but not nil
-array :authors, :required do
-  string :name, :required
+array :authors do
+  string :name
   string :email
 end
 ```
@@ -189,15 +189,15 @@ end
 
 ```ruby
 array :posts do
-  string :title, :required
+  string :title
 
-  object :author, :required do
-    string :name, :required
+  object :author do
+    string :name
     string :email
   end
 
   array :comments do
-    string :text, :required
+    string :text
     string :author_name
   end
 end
@@ -226,13 +226,13 @@ end
 ```ruby
 # Simple array with validation
 array :tags, :optional do
-  string :_self, :required, in: %w[ruby rails api docker]
+  string :_self, in: %w[ruby rails api docker]
 end
 
 # Complex array with validation
 array :socials, :optional do
-  string :provider, :required, in: %w[twitter linkedin github]
-  string :handle, :required, as: :value
+  string :provider, in: %w[twitter linkedin github]
+  string :handle, as: :value
   string :url
 end
 ```
@@ -316,31 +316,31 @@ Attribute 'author' must be a Hash (object), got String
 ```ruby
 request do
   object :post do
-    string :title, :required
-    string :summary, :required
-    string :content, :required
+    string :title
+    string :summary
+    string :content
 
     # Simple array
     array :tags, :optional do
-      string :_self, :required
+      string :_self
     end
 
     # Object with nested array
-    object :author, :required do
-      string :name, :required
+    object :author do
+      string :name
       string :bio
 
       # Complex array
       array :socials, :optional do
-        string :provider, :required, in: %w[twitter linkedin github]
-        string :handle, :required, as: :value
+        string :provider, in: %w[twitter linkedin github]
+        string :handle, as: :value
       end
     end
 
     # Array of objects
     array :categories, :optional do
-      string :name, :required
-      string :slug, :required
+      string :name
+      string :slug
     end
   end
 end
@@ -462,8 +462,8 @@ end
 
 # Good - validate object structure
 array :authors do
-  string :name, :required
-  string :email, :required
+  string :name
+  string :email
 end
 ```
 

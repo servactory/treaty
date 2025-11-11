@@ -85,8 +85,8 @@ Defines incoming data structure.
 ```ruby
 request do
   object :post do
-    string :title, :required
-    string :content, :required
+    string :title
+    string :content
   end
 end
 ```

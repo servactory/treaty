@@ -24,8 +24,8 @@ module Gate
 
           request do
             object :post do
-              string :title, :required
-              string :content, :required
+              string :title
+              string :content
             end
           end
 
@@ -88,8 +88,8 @@ end
 ```ruby
 request do
   object :post do
-    string :title, :required
-    string :content, :required
+    string :title
+    string :content
   end
 end
 ```
@@ -99,8 +99,8 @@ end
 ```ruby
 request do
   object :post do
-    string :title, :required
-    string :content, :required
+    string :title
+    string :content
   end
 
   object :filters do
@@ -118,13 +118,13 @@ end
 request do
   # These attributes go to root level
   object :_self do
-    string :signature, :required
-    string :timestamp, :required
+    string :signature
+    string :timestamp
   end
 
   # These go under 'post' key
   object :post do
-    string :title, :required
+    string :title
   end
 end
 
@@ -236,8 +236,8 @@ version 2 do
 
   request do
     object :post do
-      string :title, :required
-      string :content, :required
+      string :title
+      string :content
       array :tags, :optional do
         string :_self
       end
@@ -304,15 +304,15 @@ You can define multiple request blocks that will be merged:
 request do
   # Query parameters
   object :_self do
-    string :signature, :required
+    string :signature
   end
 end
 
 request do
   # Body parameters
   object :post do
-    string :title, :required
-    string :content, :required
+    string :title
+    string :content
   end
 end
 ```
@@ -410,28 +410,28 @@ module Gate
 
           request do
             object :_self do
-              string :signature, :required
+              string :signature
             end
           end
 
           request do
             object :post do
-              string :title, :required
-              string :summary, :required
+              string :title
+              string :summary
               string :description, :optional
-              string :content, :required
+              string :content
 
               array :tags, :optional do
-                string :_self, :required
+                string :_self
               end
 
-              object :author, :required do
-                string :name, :required
-                string :bio, :required
+              object :author do
+                string :name
+                string :bio
 
                 array :socials, :optional do
-                  string :provider, :required, in: %w[twitter linkedin github]
-                  string :handle, :required, as: :value
+                  string :provider, in: %w[twitter linkedin github]
+                  string :handle, as: :value
                 end
               end
             end

@@ -22,7 +22,7 @@ This guide helps you diagnose and fix common issues when working with Treaty.
 # Treaty expects:
 request do
   object :post do
-    string :title, :required
+    string :title
   end
 end
 
@@ -95,7 +95,7 @@ string :status, in: %w[draft published archived]
 **Example:**
 ```ruby
 # Treaty expects:
-object :author, :required do
+object :author do
   string :name
 end
 
@@ -130,7 +130,7 @@ end
 
 # Complex array
 array :authors do
-  string :name, :required
+  string :name
 end
 
 # Send:
@@ -381,7 +381,7 @@ end
 
 # Complex array
 array :authors do
-  string :name, :required
+  string :name
 end
 
 { "authors" => [{ "name" => "John Doe" }] }  # ✓ Valid hash
@@ -509,7 +509,7 @@ end
 ```ruby
 request do
   object :post do
-    string :title, :required
+    string :title
     string :status, default: "draft"
   end
 end

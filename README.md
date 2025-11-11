@@ -63,8 +63,8 @@ module Posts
 
       request do
         object :post do
-          string :title, :required
-          string :content, :required
+          string :title
+          string :content
           string :summary, :optional
         end
       end

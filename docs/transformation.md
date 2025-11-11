@@ -450,8 +450,8 @@ version 1, default: true do
   request do
     object :profile do
       array :socials do
-        string :provider, :required
-        string :handle, :required, as: :value
+        string :provider
+        string :handle, as: :value
         string :display_url, :optional, as: :url
       end
     end
@@ -459,9 +459,9 @@ version 1, default: true do
 
   response 200 do
     object :profile do
-      string :id
+      string :id, :required
       array :socials do
-        string :provider
+        string :provider, :required
         string :value, as: :handle
         string :url, as: :display_url
       end

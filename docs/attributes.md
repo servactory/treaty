@@ -12,7 +12,7 @@ Treaty supports the following attribute types:
 
 ```ruby
 string :title
-string :email, :required
+string :email
 string :bio, :optional
 ```
 
@@ -22,7 +22,7 @@ string :bio, :optional
 
 ```ruby
 integer :age
-integer :count, :required
+integer :count
 integer :page, default: 1
 ```
 
@@ -32,7 +32,7 @@ integer :page, default: 1
 
 ```ruby
 boolean :published
-boolean :active, :required
+boolean :active
 boolean :featured, :optional
 ```
 
@@ -46,7 +46,7 @@ boolean :featured, :optional
 
 ```ruby
 datetime :created_at
-datetime :published_at, :required
+datetime :published_at
 ```
 
 **Type validation:** Value must be `DateTime`, `Time`, or `Date`
@@ -59,7 +59,7 @@ Represents a nested hash structure.
 
 ```ruby
 object :author do
-  string :name, :required
+  string :name
   string :email
 end
 ```
@@ -80,7 +80,7 @@ end
 
 # Complex array (objects)
 array :authors do
-  string :name, :required
+  string :name
   string :email
 end
 ```
@@ -98,8 +98,8 @@ end
 Marks attribute as required (must be present and non-empty).
 
 ```ruby
-string :title, :required
-integer :age, :required
+string :title
+integer :age
 ```
 
 **Equivalent to:**
@@ -178,7 +178,7 @@ Renames attribute during transformation.
 # Request: expect 'handle', output as 'value'
 string :handle, as: :value
 
-# Response: expect 'value' from service, output as 'handle'
+# Response: expect 'value', output as 'handle'
 string :value, as: :handle
 ```
 
@@ -256,7 +256,7 @@ response 200 do
   object :post do
     string :id             # required: false (implicit)
     string :title          # required: false (implicit)
-    string :rating, :required  # required: true (explicit)
+    string :rating, :required  # required: true (explicit, in response)
   end
 end
 ```
@@ -336,8 +336,8 @@ false  # boolean false is considered present!
 ```ruby
 request do
   object :post do
-    string :title, :required
-    string :content, :required
+    string :title
+    string :content
     string :summary, :optional
     boolean :published, :optional
     array :tags, :optional do
@@ -380,8 +380,8 @@ end
 
 ```ruby
 object :social do
-  string :provider, :required, in: %w[twitter linkedin github]
-  string :handle, :required, as: :value
+  string :provider, in: %w[twitter linkedin github]
+  string :handle, as: :value
   string :url
 end
 ```

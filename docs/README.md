@@ -69,8 +69,8 @@ class Posts::CreateTreaty < ApplicationTreaty
 
     request do
       object :post do
-        string :title, :required
-        string :content, :required
+        string :title
+        string :content
       end
     end
 

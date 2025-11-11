@@ -208,8 +208,8 @@ class Posts::CreateTreaty < ApplicationTreaty
 
     request do
       object :post do
-        string :title, :required
-        string :content, :required
+        string :title
+        string :content
         string :category, :optional, in: %w[tech business lifestyle]
       end
     end
@@ -235,29 +235,11 @@ class Posts::CreateTreaty < ApplicationTreaty
 
     request do
       object :post do
-        string :title, :required
-        string :content, :required
-        string :category, :required, in: %w[tech business lifestyle]
-
-        array :tags, :optional do
-          string :_self
-        end
-
-        object :author, :required do
-          string :name, :required
-          string :email, :required
-        end
-      end
-    end
-
-    response 201 do
-      object :post do
-        string :id
         string :title
         string :content
-        string :category
+        string :category, in: %w[tech business lifestyle]
 
-        array :tags do
+        array :tags, :optional do
           string :_self
         end
 
@@ -265,9 +247,27 @@ class Posts::CreateTreaty < ApplicationTreaty
           string :name
           string :email
         end
+      end
+    end
 
-        datetime :created_at
-        datetime :updated_at
+    response 201 do
+      object :post do
+        string :id, :required
+        string :title, :required
+        string :content, :required
+        string :category, :required
+
+        array :tags, :required do
+          string :_self
+        end
+
+        object :author, :required do
+          string :name, :required
+          string :email, :required
+        end
+
+        datetime :created_at, :required
+        datetime :updated_at, :required
       end
     end
 

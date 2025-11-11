@@ -139,8 +139,8 @@ module Gate
 
           request do
             object :post do
-              string :title, :required
-              string :content, :required
+              string :title
+              string :content
               string :summary, :optional
             end
           end
@@ -164,10 +164,10 @@ module Gate
 
           request do
             object :post do
-              string :title, :required
-              string :content, :required
+              string :title
+              string :content
               string :summary, :optional
-              string :category, :required, in: %w[tech business lifestyle]
+              string :category, in: %w[tech business lifestyle]
             end
           end
 
@@ -191,19 +191,19 @@ module Gate
 
           request do
             object :post do
-              string :title, :required
-              string :content, :required
+              string :title
+              string :content
               string :summary, :optional
-              string :category, :required, in: %w[tech business lifestyle]
+              string :category, in: %w[tech business lifestyle]
               boolean :published, :optional
 
               array :tags, :optional do
-                string :_self, :required
+                string :_self
               end
 
-              object :author, :required do
-                string :name, :required
-                string :email, :required
+              object :author do
+                string :name
+                string :email
                 string :bio, :optional
               end
             end
@@ -302,12 +302,12 @@ module Gate
 
           request do
             object :profile do
-              string :name, :required
+              string :name
               string :bio, :optional
 
               array :socials, :optional do
-                string :provider, :required, in: %w[twitter linkedin github]
-                string :handle, :required, as: :value
+                string :provider, in: %w[twitter linkedin github]
+                string :handle, as: :value
                 string :url, :optional
               end
 
@@ -444,9 +444,9 @@ class SimpleCalculatorTreaty < ApplicationTreaty
 
     request do
       object :calculation do
-        integer :a, :required
-        integer :b, :required
-        string :operation, :required, in: %w[add subtract multiply divide]
+        integer :a
+        integer :b
+        string :operation, in: %w[add subtract multiply divide]
       end
     end
 
@@ -498,7 +498,7 @@ class Posts::ShowTreaty < ApplicationTreaty
 
     request do
       object :post do
-        string :id, :required
+        string :id
       end
     end
 
@@ -519,7 +519,7 @@ class Posts::ShowTreaty < ApplicationTreaty
 
     request do
       object :post do
-        string :id, :required
+        string :id
       end
     end
 

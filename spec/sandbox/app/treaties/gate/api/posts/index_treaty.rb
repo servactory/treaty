@@ -19,8 +19,8 @@ module Gate
           end
 
           response 200 do
-            object :posts, :optional
-            object :meta, :optional
+            object :posts
+            object :meta
           end
 
           # Present: title, summary. Missing: middle_name.
@@ -45,8 +45,8 @@ module Gate
           end
 
           response 200 do
-            object :posts, :optional
-            object :meta, :optional
+            object :posts
+            object :meta
           end
 
           # Present: title, summary. Missing: middle_name.
@@ -74,8 +74,8 @@ module Gate
           end
 
           response 200 do
-            object :posts, :optional
-            object :meta, :optional
+            object :posts
+            object :meta
           end
 
           # Present: title, summary. Missing: middle_name.
@@ -111,7 +111,7 @@ module Gate
           end
 
           response 200 do
-            object :posts, :optional do
+            object :posts do
               string :id
               string :title
               string :summary
@@ -119,7 +119,7 @@ module Gate
               string :content
             end
 
-            object :meta, :optional do
+            object :meta do
               integer :count
               integer :page
               integer :limit
@@ -152,7 +152,7 @@ module Gate
           end
 
           response 200 do
-            object :posts, :optional do
+            object :posts do
               string :id
               string :title
               string :summary
@@ -160,7 +160,7 @@ module Gate
               string :content
             end
 
-            object :meta, :optional do
+            object :meta do
               integer :count
               integer :page
               integer :limit, default: 12

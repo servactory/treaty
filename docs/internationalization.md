@@ -368,10 +368,10 @@ class Posts::CreateTreaty < ApplicationTreaty
           message: -> { I18n.t('posts.create.title_required') }
         }
 
-        string :content, :required
+        string :content
 
-        string :category, in: {
-          list: %w[tech business lifestyle],
+        string :category, inclusion: {
+          in: %w[tech business lifestyle],
           message: -> { I18n.t('posts.create.category_invalid') }
         }
       end

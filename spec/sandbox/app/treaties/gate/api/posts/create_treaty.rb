@@ -36,10 +36,10 @@ module Gate
 
           request do
             object :post, :optional do
-              string :title, :required
-              string :summary, :required
+              string :title
+              string :summary
               string :description, :optional
-              string :content, :required
+              string :content
             end
           end
 
@@ -67,30 +67,30 @@ module Gate
           request do
             # Query
             object :_self do # should be perceived as root
-              string :signature, :required
+              string :signature
             end
           end
 
           request do
             # Body
             object :post do
-              string :title, :required
-              string :summary, :required
+              string :title
+              string :summary
               string :description, :optional
-              string :content, :required
+              string :content
               boolean :published, :optional
 
               array :tags, :optional do
-                string :_self, :required
+                string :_self
               end
 
-              object :author, :required do
-                string :name, :required
-                string :bio, :required
+              object :author do
+                string :name
+                string :bio
 
                 array :socials, :optional do
-                  string :provider, :required, in: %w[twitter linkedin github]
-                  string :handle, :required, as: :value
+                  string :provider, in: %w[twitter linkedin github]
+                  string :handle, as: :value
                 end
               end
             end

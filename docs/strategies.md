@@ -109,8 +109,8 @@ version 2 do
 
   request do
     object :post do
-      string :title, :required
-      string :content, :required
+      string :title
+      string :content
       string :summary, :optional
     end
   end
@@ -178,28 +178,28 @@ class Posts::CreateTreaty < ApplicationTreaty
 
     request do
       object :post do
-        string :title, :required
-        string :content, :required
+        string :title
+        string :content
         integer :rating, :optional, in: [1, 2, 3, 4, 5]
 
-        object :author, :required do
-          string :name, :required
-          string :email, :required
+        object :author do
+          string :name
+          string :email
         end
       end
     end
 
     response 201 do
       object :post do
-        string :id
-        string :title
-        string :content
+        string :id, :required
+        string :title, :required
+        string :content, :required
         integer :rating
-        object :author do
-          string :name
-          string :email
+        object :author, :required do
+          string :name, :required
+          string :email, :required
         end
-        datetime :created_at
+        datetime :created_at, :required
       end
     end
 
@@ -313,7 +313,7 @@ end
 ```ruby
 request do
   object :post do
-    string :title, :required
+    string :title
   end
 end
 
@@ -397,8 +397,8 @@ class Posts::CreateTreaty < ApplicationTreaty
 
     request do
       object :post do
-        string :title, :required
-        string :content, :required
+        string :title
+        string :content
       end
     end
 

@@ -17,16 +17,24 @@ RSpec.describe Gate::API::Posts::CreateTreaty do
                         method: :call
                       },
                       request: {
-                        scopes: {
+                        attributes: {
                           post: {
+                            type: :object,
+                            options: {
+                              required: { is: true, message: nil }
+                            },
                             attributes: {}
                           }
                         }
                       },
                       response: {
                         status: 201,
-                        scopes: {
+                        attributes: {
                           post: {
+                            type: :object,
+                            options: {
+                              required: { is: false, message: nil }
+                            },
                             attributes: {}
                           }
                         }
@@ -44,8 +52,12 @@ RSpec.describe Gate::API::Posts::CreateTreaty do
                         method: :call
                       },
                       request: {
-                        scopes: {
+                        attributes: {
                           post: {
+                            type: :object,
+                            options: {
+                              required: { is: false, message: nil }
+                            },
                             attributes: {
                               title: {
                                 type: :string,
@@ -81,8 +93,12 @@ RSpec.describe Gate::API::Posts::CreateTreaty do
                       },
                       response: {
                         status: 201,
-                        scopes: {
+                        attributes: {
                           post: {
+                            type: :object,
+                            options: {
+                              required: { is: false, message: nil }
+                            },
                             attributes: {
                               id: {
                                 type: :string,
@@ -136,8 +152,12 @@ RSpec.describe Gate::API::Posts::CreateTreaty do
                         method: :call
                       },
                       request: {
-                        scopes: {
+                        attributes: {
                           _self: {
+                            type: :object,
+                            options: {
+                              required: { is: true, message: nil }
+                            },
                             attributes: {
                               signature: {
                                 type: :string,
@@ -149,6 +169,10 @@ RSpec.describe Gate::API::Posts::CreateTreaty do
                             }
                           },
                           post: {
+                            type: :object,
+                            options: {
+                              required: { is: true, message: nil }
+                            },
                             attributes: {
                               title: {
                                 type: :string,
@@ -252,8 +276,12 @@ RSpec.describe Gate::API::Posts::CreateTreaty do
                       },
                       response: {
                         status: 201,
-                        scopes: {
+                        attributes: {
                           post: {
+                            type: :object,
+                            options: {
+                              required: { is: false, message: nil }
+                            },
                             attributes: {
                               id: {
                                 type: :string,
@@ -466,7 +494,9 @@ RSpec.describe Gate::API::Posts::CreateTreaty do
 
       describe "because request data is incorrect" do
         let(:params) do
-          {}
+          {
+            post: {}
+          }
         end
 
         it :aggregate_failures do

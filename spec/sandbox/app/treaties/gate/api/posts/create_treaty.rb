@@ -14,8 +14,8 @@ module Gate
               Gem::Version.new("17.0.0")
           end
 
-          request       { scope :post }
-          response(201) { scope :post }
+          request       { object :post }
+          response(201) { object :post }
 
           # Present: title, summary. Missing: description.
           delegate_to ::Posts::V1::CreateService
@@ -35,7 +35,7 @@ module Gate
           end)
 
           request do
-            scope :post do
+            object :post, :optional do
               string :title, :required
               string :summary, :required
               string :description, :optional
@@ -44,7 +44,7 @@ module Gate
           end
 
           response 201 do
-            scope :post do
+            object :post do
               string :id
               string :title
               string :summary
@@ -66,14 +66,14 @@ module Gate
 
           request do
             # Query
-            scope :_self do # should be perceived as root
+            object :_self do # should be perceived as root
               string :signature, :required
             end
           end
 
           request do
             # Body
-            scope :post do
+            object :post do
               string :title, :required
               string :summary, :required
               string :description, :optional
@@ -97,7 +97,7 @@ module Gate
           end
 
           response 201 do
-            scope :post do
+            object :post do
               string :id
               string :title
               string :summary

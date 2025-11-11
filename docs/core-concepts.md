@@ -84,7 +84,7 @@ Defines incoming data structure.
 
 ```ruby
 request do
-  scope :post do
+  object :post do
     string :title, :required
     string :content, :required
   end
@@ -93,7 +93,7 @@ end
 
 **Features:**
 - Attributes are required by default
-- Supports multiple scopes
+- Supports multiple objects
 - Validates types and options
 
 ### 5. Response
@@ -102,14 +102,14 @@ Defines outgoing data structure for a specific HTTP status.
 
 ```ruby
 response 200 do
-  scope :posts do
+  object :posts do
     string :id
     string :title
   end
 end
 
 response 201 do
-  scope :post do
+  object :post do
     string :id
   end
 end
@@ -125,21 +125,21 @@ end
 Groups related attributes.
 
 ```ruby
-scope :post do
+object :post do
   string :title
   string :content
 end
 
-scope :meta do
+object :meta do
   integer :count
   integer :page
 end
 ```
 
-**Special `:_self` scope:**
+**Special `:_self` object:**
 
 ```ruby
-scope :_self do
+object :_self do
   string :signature
 end
 ```

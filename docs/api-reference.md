@@ -163,7 +163,7 @@ end
 **Example:**
 ```ruby
 request do
-  scope :post do
+  object :post do
     string :title, :required
     string :content, :required
   end
@@ -174,13 +174,13 @@ end
 ```ruby
 # These will be merged
 request do
-  scope :filters do
+  object :filters do
     string :category
   end
 end
 
 request do
-  scope :post do
+  object :post do
     string :title
   end
 end
@@ -205,61 +205,61 @@ end
 **Example:**
 ```ruby
 response 200 do
-  scope :post do
+  object :post do
     string :id
     string :title
   end
 end
 
 response 201 do
-  scope :post do
+  object :post do
     string :id
     datetime :created_at
   end
 end
 
 response 404 do
-  scope :error do
+  object :error do
     string :message
   end
 end
 ```
 
-## Scope Definition
+## Object Definition
 
-### `scope`
+### `object`
 
-Define a scope to group related attributes.
+Define an object attribute to group related attributes.
 
 **Syntax:**
 ```ruby
-scope :name do
+object :name do
   # Attribute definitions
 end
 
-# Empty scope (no structure defined)
-scope :name
+# Empty object (no structure defined)
+object :name
 ```
 
 **Parameters:**
-- `:name` - Symbol representing the scope name
-- Special scope: `:_self` - Merges attributes to parent level
+- `:name` - Symbol representing the object name
+- Special object: `:_self` - Merges attributes to parent level
 
 **Examples:**
 ```ruby
-# Regular scope
-scope :post do
+# Regular object
+object :post do
   string :title
 end
 
-# Special :_self scope
-scope :_self do
+# Special :_self object
+object :_self do
   integer :page, default: 1
   integer :limit, default: 12
 end
 
-# Empty scope
-scope :metadata
+# Empty object
+object :metadata
 ```
 
 ## Attribute Types
@@ -697,8 +697,8 @@ module Gate
           deprecated true
           strategy Treaty::Strategy::DIRECT
 
-          request { scope :post }
-          response(201) { scope :post }
+          request { object :post }
+          response(201) { object :post }
 
           delegate_to Posts::V1::CreateService
         end
@@ -710,12 +710,12 @@ module Gate
 
           request do
             # Root-level attributes
-            scope :_self do
+            object :_self do
               string :api_key, :required
             end
 
             # Post data
-            scope :post do
+            object :post do
               string :title, :required
               string :content, :required
               string :summary, :optional
@@ -743,7 +743,7 @@ module Gate
           end
 
           response 201 do
-            scope :post do
+            object :post do
               string :id
               string :title
               string :content
@@ -771,7 +771,7 @@ module Gate
               datetime :updated_at
             end
 
-            scope :meta do
+            object :meta do
               string :request_id
               datetime :requested_at
             end
@@ -806,9 +806,9 @@ end
 
 ### 4. Structure Organization
 - Keep nesting shallow (max 5 levels)
-- Use meaningful scope names
+- Use meaningful object names
 - Use `:_self` sparingly
-- Group related attributes in scopes
+- Group related attributes in objects
 
 ### 5. Transformation
 - Use defaults for safe, sensible values

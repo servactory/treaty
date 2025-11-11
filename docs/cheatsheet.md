@@ -118,28 +118,28 @@ string :category, in: {
 ## Scopes
 
 ```ruby
-# Regular scope
-scope :post do
+# Regular object
+object :post do
   string :title
 end
 
-# Special :_self scope (merges to parent level)
-scope :_self do
+# Special :_self object (merges to parent level)
+object :_self do
   integer :page
   integer :limit
 end
 
-# Multiple scopes
-scope :post do
+# Multiple objects
+object :post do
   string :title
 end
 
-scope :filters do
+object :filters do
   string :category
 end
 
-# Empty scope (no structure)
-scope :metadata
+# Empty object (no structure)
+object :metadata
 ```
 
 ## Objects (Nested Hashes)
@@ -220,20 +220,20 @@ end
 ```ruby
 request do
   # Root-level attributes
-  scope :_self do
+  object :_self do
     integer :page, default: 1
     integer :limit, default: 12
   end
 
-  # Data scope
-  scope :post do
+  # Data object
+  object :post do
     string :title, :required
     string :content, :required
     string :status, default: "draft"
   end
 
-  # Filters scope
-  scope :filters do
+  # Filters object
+  object :filters do
     string :category, :optional
     datetime :created_after_at, :optional
   end
@@ -244,13 +244,13 @@ end
 
 ```ruby
 response 200 do
-  scope :posts do
+  object :posts do
     string :id
     string :title
     datetime :created_at
   end
 
-  scope :meta do
+  object :meta do
     integer :count
     integer :page
     integer :limit
@@ -258,14 +258,14 @@ response 200 do
 end
 
 response 201 do
-  scope :post do
+  object :post do
     string :id
     datetime :created_at
   end
 end
 
 response 404 do
-  scope :error do
+  object :error do
     string :message
   end
 end
@@ -328,12 +328,12 @@ version 2, default: true do; end
 ### Pagination
 
 ```ruby
-scope :_self do
+object :_self do
   integer :page, default: 1
   integer :limit, default: 12
 end
 
-scope :meta do
+object :meta do
   integer :count
   integer :page
   integer :limit
@@ -344,7 +344,7 @@ end
 ### Filtering
 
 ```ruby
-scope :filters do
+object :filters do
   string :status, :optional, in: %w[draft published archived]
   string :category, :optional
   datetime :created_after_at, :optional
@@ -355,7 +355,7 @@ end
 ### Sorting
 
 ```ruby
-scope :sort do
+object :sort do
   string :by, default: "created_at", in: %w[created_at updated_at title]
   string :direction, default: "desc", in: %w[asc desc]
 end
@@ -371,20 +371,20 @@ class Posts::IndexTreaty < ApplicationTreaty
     strategy Treaty::Strategy::ADAPTER
 
     request do
-      scope :filters do
+      object :filters do
         string :title, :optional
         string :category, :optional
       end
     end
 
     response 200 do
-      scope :posts do
+      object :posts do
         string :id
         string :title
         string :summary
       end
 
-      scope :meta do
+      object :meta do
         integer :count
         integer :page, default: 1
         integer :limit, default: 12
@@ -404,7 +404,7 @@ class Posts::CreateTreaty < ApplicationTreaty
     strategy Treaty::Strategy::ADAPTER
 
     request do
-      scope :post do
+      object :post do
         string :title, :required
         string :content, :required
         string :category, :required, in: %w[tech business lifestyle]
@@ -422,7 +422,7 @@ class Posts::CreateTreaty < ApplicationTreaty
     end
 
     response 201 do
-      scope :post do
+      object :post do
         string :id
         string :title
         string :content
@@ -456,8 +456,8 @@ class Posts::ShowTreaty < ApplicationTreaty
     deprecated true
     strategy Treaty::Strategy::DIRECT
 
-    request { scope :post }
-    response(200) { scope :post }
+    request { object :post }
+    response(200) { object :post }
 
     delegate_to Posts::V1::ShowService
   end
@@ -467,13 +467,13 @@ class Posts::ShowTreaty < ApplicationTreaty
     strategy Treaty::Strategy::ADAPTER
 
     request do
-      scope :post do
+      object :post do
         string :id, :required
       end
     end
 
     response 200 do
-      scope :post do
+      object :post do
         string :id
         string :title
         string :content
@@ -551,7 +551,7 @@ end
 - Use `:required` and `:optional` helpers for clarity
 - ADAPTER for production, DIRECT only for prototypes
 - Always mark one version as `default: true`
-- Use `:_self` scope for root-level attributes
+- Use `:_self` object for root-level attributes
 - Keep nesting shallow (max 5 levels recommended)
 - Deprecate versions before removing them
 - Test both old and new versions during migration

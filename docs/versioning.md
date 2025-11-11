@@ -193,8 +193,8 @@ class Posts::CreateTreaty < ApplicationTreaty
 
     strategy Treaty::Strategy::DIRECT
 
-    request { scope :post }
-    response(201) { scope :post }
+    request { object :post }
+    response(201) { object :post }
 
     delegate_to Posts::V1::CreateService
   end
@@ -207,7 +207,7 @@ class Posts::CreateTreaty < ApplicationTreaty
     strategy Treaty::Strategy::ADAPTER
 
     request do
-      scope :post do
+      object :post do
         string :title, :required
         string :content, :required
         string :category, :optional, in: %w[tech business lifestyle]
@@ -215,7 +215,7 @@ class Posts::CreateTreaty < ApplicationTreaty
     end
 
     response 201 do
-      scope :post do
+      object :post do
         string :id
         string :title
         string :content
@@ -234,7 +234,7 @@ class Posts::CreateTreaty < ApplicationTreaty
     strategy Treaty::Strategy::ADAPTER
 
     request do
-      scope :post do
+      object :post do
         string :title, :required
         string :content, :required
         string :category, :required, in: %w[tech business lifestyle]
@@ -251,7 +251,7 @@ class Posts::CreateTreaty < ApplicationTreaty
     end
 
     response 201 do
-      scope :post do
+      object :post do
         string :id
         string :title
         string :content
@@ -358,7 +358,7 @@ end
 ```ruby
 version 1 do
   response 200 do
-    scope :post do
+    object :post do
       string :id
       string :title
     end
@@ -367,7 +367,7 @@ end
 
 version 2, default: true do
   response 200 do
-    scope :post do
+    object :post do
       string :id
       string :title
       string :author  # New field - non-breaking
@@ -383,7 +383,7 @@ end
 version 1 do
   response 200 do
     # Old structure
-    scope :post do
+    object :post do
       string :author_name
     end
   end
@@ -392,7 +392,7 @@ end
 version 2, default: true do
   response 200 do
     # New structure - breaking change
-    scope :post do
+    object :post do
       object :author do
         string :name
         string :email
@@ -407,7 +407,7 @@ end
 ```ruby
 version 1 do
   request do
-    scope :post do
+    object :post do
       string :title
       string :body  # Old name
     end
@@ -416,7 +416,7 @@ end
 
 version 2, default: true do
   request do
-    scope :post do
+    object :post do
       string :title
       string :content  # New name - breaking change
     end

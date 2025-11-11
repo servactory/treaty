@@ -23,14 +23,14 @@ module Gate
           strategy Treaty::Strategy::ADAPTER
 
           request do
-            scope :post do
+            object :post do
               string :title, :required
               string :content, :required
             end
           end
 
           response 201 do
-            scope :post do
+            object :post do
               string :id
               string :title
               string :content
@@ -87,7 +87,7 @@ end
 
 ```ruby
 request do
-  scope :post do
+  object :post do
     string :title, :required
     string :content, :required
   end
@@ -98,12 +98,12 @@ end
 
 ```ruby
 request do
-  scope :post do
+  object :post do
     string :title, :required
     string :content, :required
   end
 
-  scope :filters do
+  object :filters do
     string :category, :optional
     array :tags, :optional do
       string :_self
@@ -112,18 +112,18 @@ request do
 end
 ```
 
-### Root Level Attributes (`:_self` scope)
+### Root Level Attributes (`:_self` object)
 
 ```ruby
 request do
   # These attributes go to root level
-  scope :_self do
+  object :_self do
     string :signature, :required
     string :timestamp, :required
   end
 
   # These go under 'post' key
-  scope :post do
+  object :post do
     string :title, :required
   end
 end
@@ -140,11 +140,11 @@ end
 
 ```ruby
 request do
-  scope :post
-  scope :filters
+  object :post
+  object :filters
 end
 
-# Just declares that these scopes exist
+# Just declares that these objects exist
 # Useful with DIRECT strategy
 ```
 
@@ -154,7 +154,7 @@ end
 
 ```ruby
 response 200 do
-  scope :posts do
+  object :posts do
     string :id
     string :title
   end
@@ -165,19 +165,19 @@ end
 
 ```ruby
 response 200 do
-  scope :posts do
+  object :posts do
     string :id
     string :title
   end
 
-  scope :meta do
+  object :meta do
     integer :count
     integer :page
   end
 end
 
 response 201 do
-  scope :post do
+  object :post do
     string :id
     string :title
     datetime :created_at
@@ -185,7 +185,7 @@ response 201 do
 end
 
 response 422 do
-  scope :errors do
+  object :errors do
     string :message
   end
 end
@@ -210,8 +210,8 @@ strategy Treaty::Strategy::DIRECT
 version 1 do
   strategy Treaty::Strategy::DIRECT
 
-  request { scope :post }
-  response(201) { scope :post }
+  request { object :post }
+  response(201) { object :post }
 
   delegate_to Posts::V1::CreateService
 end
@@ -235,7 +235,7 @@ version 2 do
   strategy Treaty::Strategy::ADAPTER
 
   request do
-    scope :post do
+    object :post do
       string :title, :required
       string :content, :required
       array :tags, :optional do
@@ -245,7 +245,7 @@ version 2 do
   end
 
   response 201 do
-    scope :post do
+    object :post do
       string :id
       string :title
       string :content
@@ -303,14 +303,14 @@ You can define multiple request blocks that will be merged:
 ```ruby
 request do
   # Query parameters
-  scope :_self do
+  object :_self do
     string :signature, :required
   end
 end
 
 request do
   # Body parameters
-  scope :post do
+  object :post do
     string :title, :required
     string :content, :required
   end
@@ -409,13 +409,13 @@ module Gate
           strategy Treaty::Strategy::ADAPTER
 
           request do
-            scope :_self do
+            object :_self do
               string :signature, :required
             end
           end
 
           request do
-            scope :post do
+            object :post do
               string :title, :required
               string :summary, :required
               string :description, :optional
@@ -438,7 +438,7 @@ module Gate
           end
 
           response 201 do
-            scope :post do
+            object :post do
               string :id
               string :title
               string :summary

@@ -315,7 +315,7 @@ Attribute 'author' must be a Hash (object), got String
 
 ```ruby
 request do
-  scope :post do
+  object :post do
     string :title, :required
     string :summary, :required
     string :content, :required
@@ -375,7 +375,7 @@ end
 ```ruby
 response 200 do
   # Array of posts
-  scope :posts do
+  object :posts do
     string :id
     string :title
     string :summary
@@ -394,7 +394,7 @@ response 200 do
   end
 
   # Pagination metadata
-  scope :meta do
+  object :meta do
     integer :count
     integer :page, default: 1
     integer :limit, default: 12
@@ -437,7 +437,7 @@ array :tags do
 end
 
 # Wrong - trying to use array without defining structure
-array :tags  # This declares empty scope, not primitive array
+array :tags  # This declares empty object, not primitive array
 ```
 
 ### 3. Don't Use Default for Arrays/Objects

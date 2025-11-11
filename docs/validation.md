@@ -51,7 +51,7 @@ Ensures an attribute is present and not empty.
 
 ```ruby
 request do
-  scope :post do
+  object :post do
     string :title, :required
     string :content, :required
   end
@@ -81,7 +81,7 @@ Attribute can be missing or nil without causing errors.
 
 ```ruby
 request do
-  scope :post do
+  object :post do
     string :title, :required
     string :summary, :optional
   end
@@ -101,7 +101,7 @@ Ensures attribute matches the declared type.
 
 ```ruby
 request do
-  scope :post do
+  object :post do
     string :title
     integer :rating
     datetime :published_at
@@ -130,7 +130,7 @@ Restricts values to a predefined list.
 
 ```ruby
 request do
-  scope :post do
+  object :post do
     string :status, in: %w[draft published archived]
     integer :rating, in: [1, 2, 3, 4, 5]
   end
@@ -156,7 +156,7 @@ Objects (hashes) are validated recursively.
 
 ```ruby
 request do
-  scope :post do
+  object :post do
     string :title, :required
 
     object :author, :required do
@@ -311,7 +311,7 @@ end
 
 ```ruby
 request do
-  scope :post do
+  object :post do
     string :title        # Required by default
     string :summary, :optional  # Explicitly optional
   end
@@ -324,7 +324,7 @@ end
 
 ```ruby
 response 200 do
-  scope :post do
+  object :post do
     string :id          # Optional by default
     string :title       # Optional by default
     datetime :created_at  # Optional by default
@@ -349,7 +349,7 @@ end
 Treaty validates in this order:
 
 1. **Schema Validation** - Is the structure correct?
-   - Are scopes present?
+   - Are objects present?
    - Are required attributes present?
    - Are values the right types?
 
@@ -410,7 +410,7 @@ Use advanced mode for custom error messages:
 
 ```ruby
 request do
-  scope :post do
+  object :post do
     string :title, required: {
       is: true,
       message: "Post title cannot be empty"
@@ -450,7 +450,7 @@ version 1, default: true do
   strategy Treaty::Strategy::ADAPTER
 
   request do
-    scope :post do
+    object :post do
       string :title, :required
       string :content, :required
       string :summary, :optional
@@ -474,7 +474,7 @@ version 1, default: true do
   end
 
   response 201 do
-    scope :post do
+    object :post do
       string :id
       string :title
       string :content
@@ -514,13 +514,13 @@ version 1, default: true do
 
   request do
     # Pagination at root level
-    scope :_self do
+    object :_self do
       integer :page, default: 1
       integer :limit, default: 12, in: [12, 24, 48, 96]
     end
 
-    # Filters as separate scope
-    scope :filters do
+    # Filters as separate object
+    object :filters do
       string :title, :optional
       string :category, :optional, in: %w[tech business lifestyle]
       string :status, :optional, in: %w[draft published archived]
@@ -533,14 +533,14 @@ version 1, default: true do
     end
 
     # Sorting options
-    scope :sort do
+    object :sort do
       string :by, default: "created_at", in: %w[created_at updated_at title]
       string :direction, default: "desc", in: %w[asc desc]
     end
   end
 
   response 200 do
-    scope :posts do
+    object :posts do
       string :id
       string :title
       string :summary
@@ -548,7 +548,7 @@ version 1, default: true do
       datetime :created_at
     end
 
-    scope :meta do
+    object :meta do
       integer :count
       integer :page
       integer :limit
@@ -579,7 +579,7 @@ string :summary, optional: true
 ```ruby
 # Good - strict validation for requests
 request do
-  scope :post do
+  object :post do
     string :title, :required
     string :status, :required, in: %w[draft published]
   end
@@ -591,7 +591,7 @@ end
 ```ruby
 # Good - flexible response validation
 response 200 do
-  scope :post do
+  object :post do
     string :id
     string :title
     datetime :created_at

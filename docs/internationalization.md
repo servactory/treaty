@@ -143,11 +143,11 @@ de:
 
     request:
       factory:
-        unknown_method: "Unbekannte Methode '%{method}' in Request-Definition. Verwenden Sie 'scope :name do ... end', um die Request-Struktur zu definieren"
+        unknown_method: "Unbekannte Methode '%{method}' in Request-Definition. Verwenden Sie 'object :name do ... end', um die Request-Struktur zu definieren"
 
     response:
       factory:
-        unknown_method: "Unbekannte Methode '%{method}' in Response-Definition. Verwenden Sie 'scope :name do ... end', um die Response-Struktur zu definieren"
+        unknown_method: "Unbekannte Methode '%{method}' in Response-Definition. Verwenden Sie 'object :name do ... end', um die Response-Struktur zu definieren"
 
     versioning:
       resolver:
@@ -228,7 +228,7 @@ You can override default messages at the attribute level using advanced mode:
 
 ```ruby
 request do
-  scope :post do
+  object :post do
     string :title, required: {
       is: true,
       message: "Post title cannot be empty"
@@ -253,7 +253,7 @@ Use I18n directly in custom messages:
 
 ```ruby
 request do
-  scope :post do
+  object :post do
     string :title, required: {
       is: true,
       message: -> { I18n.t('custom.post.title.required') }
@@ -362,7 +362,7 @@ class Posts::CreateTreaty < ApplicationTreaty
     strategy Treaty::Strategy::ADAPTER
 
     request do
-      scope :post do
+      object :post do
         string :title, required: {
           is: true,
           message: -> { I18n.t('posts.create.title_required') }
@@ -378,7 +378,7 @@ class Posts::CreateTreaty < ApplicationTreaty
     end
 
     response 201 do
-      scope :post do
+      object :post do
         string :id
         string :title
         string :content

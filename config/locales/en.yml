@@ -27,8 +27,7 @@ en:
         nested:
           # Orchestrator errors
           orchestrator:
-            collection_not_implemented: "Subclass must implement the collection_of_scopes method"
-            scope_data_not_implemented: "Subclass must implement the scope_data_for method"
+            collection_not_implemented: "Subclass must implement the collection_of_attributes method"
 
           # Array validation errors
           array:
@@ -61,7 +60,7 @@ en:
     request:
       # Request factory DSL
       factory:
-        unknown_method: "Unknown method '%{method}' in request definition. Use 'scope :name do ... end' to define request structure"
+        unknown_method: "Unknown method '%{method}' in request definition. Use 'object :name do ... end' to define request structure"
 
     # ============================================================================
     # Response: Response definition and structure
@@ -69,7 +68,7 @@ en:
     response:
       # Response factory DSL
       factory:
-        unknown_method: "Unknown method '%{method}' in response definition. Use 'scope :name do ... end' to define response structure"
+        unknown_method: "Unknown method '%{method}' in response definition. Use 'object :name do ... end' to define response structure"
 
     # ============================================================================
     # Versioning: API version management and resolution

@@ -7,18 +7,10 @@ module Treaty
         class Orchestrator < Treaty::Attribute::Validation::Orchestrator::Base
           private
 
-          def collection_of_scopes
-            return Treaty::Request::Scope::Collection.new if version_factory.request_factory.nil?
+          def collection_of_attributes
+            return Treaty::Attribute::Collection.new if version_factory.request_factory.nil?
 
-            version_factory.request_factory.collection_of_scopes
-          end
-
-          def scope_data_for(name)
-            # If the scope is :_self, it's the root level.
-            return data if name == :_self
-
-            # Otherwise, fetch data from the named scope.
-            data.fetch(name, {})
+            version_factory.request_factory.collection_of_attributes
           end
         end
       end

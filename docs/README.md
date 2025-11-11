@@ -45,7 +45,7 @@ Each contract version describes:
 7. [Transformation](./transformation.md) - data transformation
 8. [Strategies](./strategies.md) - DIRECT vs ADAPTER
 9. [Nested Structures](./nested-structures.md) - working with objects and arrays
-10. [Scopes](./scopes.md) - organizing data through scopes
+10. [Scopes](./scopes.md) - organizing data through object attributes
 
 ### Additional Resources
 
@@ -68,14 +68,14 @@ class Posts::CreateTreaty < ApplicationTreaty
     strategy Treaty::Strategy::ADAPTER
 
     request do
-      scope :post do
+      object :post do
         string :title, :required
         string :content, :required
       end
     end
 
     response 201 do
-      scope :post do
+      object :post do
         string :id
         string :title
         string :content

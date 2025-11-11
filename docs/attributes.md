@@ -185,7 +185,7 @@ string :value, as: :handle
 **Use case - Request (incoming data):**
 ```ruby
 request do
-  scope :social do
+  object :social do
     string :user_id, as: :id  # Client sends 'user_id', service receives 'id'
   end
 end
@@ -194,7 +194,7 @@ end
 **Use case - Response (outgoing data):**
 ```ruby
 response 200 do
-  scope :social do
+  object :social do
     string :id, as: :user_id  # Service returns 'id', client receives 'user_id'
   end
 end
@@ -239,7 +239,7 @@ By default, request attributes are **required**:
 
 ```ruby
 request do
-  scope :post do
+  object :post do
     string :title          # required: true (implicit)
     string :content        # required: true (implicit)
     string :bio, :optional # required: false (explicit)
@@ -253,7 +253,7 @@ By default, response attributes are **optional**:
 
 ```ruby
 response 200 do
-  scope :post do
+  object :post do
     string :id             # required: false (implicit)
     string :title          # required: false (implicit)
     string :rating, :required  # required: true (explicit)
@@ -335,7 +335,7 @@ false  # boolean false is considered present!
 
 ```ruby
 request do
-  scope :post do
+  object :post do
     string :title, :required
     string :content, :required
     string :summary, :optional
@@ -351,7 +351,7 @@ end
 
 ```ruby
 response 200 do
-  scope :user do
+  object :user do
     string :id
     string :email
     string :name
@@ -367,7 +367,7 @@ end
 
 ```ruby
 response 200 do
-  scope :meta do
+  object :meta do
     integer :count
     integer :page, default: 1
     integer :limit, default: 12

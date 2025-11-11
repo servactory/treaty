@@ -4,15 +4,15 @@
 
 ## What are Scopes?
 
-Scopes are organizational units that group related attributes together. They create nested structures in your request and response data.
+Scopes are organizational units that group related attributes together using object attributes. They create nested structures in your request and response data through the `object` attribute type.
 
-## Basic Scopes
+## Basic Object Grouping
 
-### Single Scope
+### Single Object
 
 ```ruby
 request do
-  scope :post do
+  object :post do
     string :title, :required
     string :content, :required
   end
@@ -29,15 +29,15 @@ end
 }
 ```
 
-### Multiple Scopes
+### Multiple Objects
 
 ```ruby
 request do
-  scope :post do
+  object :post do
     string :title, :required
   end
 
-  scope :filters do
+  object :filters do
     string :category
     array :tags do
       string :_self
@@ -59,20 +59,20 @@ end
 }
 ```
 
-## Special `:_self` Scope
+## Special `:_self` Object
 
-The `:_self` scope is special - its attributes are merged into the parent level instead of creating a nested structure.
+The `:_self` object is special - its attributes are merged into the parent level instead of creating a nested structure.
 
 ### Root Level Attributes
 
 ```ruby
 request do
-  scope :_self do
+  object :_self do
     string :signature, :required
     string :timestamp, :required
   end
 
-  scope :post do
+  object :post do
     string :title, :required
   end
 end
@@ -83,7 +83,7 @@ end
 {
   signature: "abc123",      # From :_self - at root level
   timestamp: "2024-01-01",  # From :_self - at root level
-  post: {                   # Regular scope - nested
+  post: {                   # Regular object - nested
     title: "Hello"
   }
 }
@@ -107,11 +107,11 @@ end
 **1. Authentication tokens at root:**
 ```ruby
 request do
-  scope :_self do
+  object :_self do
     string :api_key, :required
   end
 
-  scope :data do
+  object :data do
     string :message
   end
 end
@@ -122,12 +122,12 @@ end
 **2. Pagination params at root:**
 ```ruby
 request do
-  scope :_self do
+  object :_self do
     integer :page, default: 1
     integer :limit, default: 12
   end
 
-  scope :filters do
+  object :filters do
     string :category
   end
 end
@@ -138,12 +138,12 @@ end
 **3. Metadata in responses:**
 ```ruby
 response 200 do
-  scope :_self do
+  object :_self do
     string :request_id
     datetime :responded_at
   end
 
-  scope :data do
+  object :data do
     string :message
   end
 end
@@ -151,14 +151,14 @@ end
 # Returns: { request_id: "...", responded_at: "...", data: { message: "..." } }
 ```
 
-## Empty Scopes
+## Empty Objects
 
-You can declare scopes without defining their internal structure.
+You can declare objects without defining their internal structure.
 
 ```ruby
 request do
-  scope :post
-  scope :filters
+  object :post
+  object :filters
 end
 ```
 
@@ -167,7 +167,7 @@ end
 - When structure is validated elsewhere
 - Placeholder for future definitions
 
-## Scope Organization Patterns
+## Object Organization Patterns
 
 ### Pattern 1: Domain Grouping
 
@@ -175,17 +175,17 @@ Group attributes by domain entity:
 
 ```ruby
 request do
-  scope :user do
+  object :user do
     string :name
     string :email
   end
 
-  scope :post do
+  object :post do
     string :title
     string :content
   end
 
-  scope :settings do
+  object :settings do
     string :theme
     string :language
   end
@@ -198,17 +198,17 @@ Group by functionality:
 
 ```ruby
 request do
-  scope :authentication do
+  object :authentication do
     string :api_key
     string :signature
   end
 
-  scope :pagination do
+  object :pagination do
     integer :page
     integer :limit
   end
 
-  scope :data do
+  object :data do
     # Actual data
   end
 end
@@ -216,40 +216,40 @@ end
 
 ### Pattern 3: Singular vs Plural
 
-**Singular** for single objects:
+**Singular** for single object attributes:
 ```ruby
-scope :post do
+object :post do
   string :title
 end
 
-scope :user do
+object :user do
   string :name
 end
 ```
 
 **Plural** for collections (usually in responses):
 ```ruby
-scope :posts do
+object :posts do
   string :id
   string :title
 end
 
-scope :users do
+object :users do
   string :id
   string :name
 end
 ```
 
-## Nested Scopes Through Objects
+## Deeply Nested Objects
 
-While you can't nest scopes directly, you can achieve nesting through objects:
+You can nest objects to create complex data structures:
 
 ```ruby
 request do
-  scope :post do
+  object :post do
     string :title
 
-    # Nested structure through object type
+    # Nested objects create deeper structures
     object :author do
       string :name
       string :email
@@ -263,54 +263,54 @@ request do
 end
 ```
 
-## Scopes in Request vs Response
+## Objects in Request vs Response
 
-### Request Scopes
+### Request Objects
 
 Organize incoming data:
 
 ```ruby
 request do
   # Query parameters
-  scope :filters do
+  object :filters do
     string :category
     string :status
   end
 
   # Body parameters
-  scope :post do
+  object :post do
     string :title
     string :content
   end
 
   # Pagination
-  scope :_self do
+  object :_self do
     integer :page, default: 1
   end
 end
 ```
 
-### Response Scopes
+### Response Objects
 
 Organize outgoing data:
 
 ```ruby
 response 200 do
   # Main data
-  scope :posts do
+  object :posts do
     string :id
     string :title
   end
 
   # Metadata
-  scope :meta do
+  object :meta do
     integer :count
     integer :page
     integer :total_pages
   end
 
   # Related data
-  scope :included do
+  object :included do
     # Related resources
   end
 end
@@ -323,21 +323,21 @@ You can define multiple `request` blocks that will be merged:
 ```ruby
 # Query parameters
 request do
-  scope :filters do
+  object :filters do
     string :category
   end
 end
 
 # Header parameters
 request do
-  scope :_self do
+  object :_self do
     string :api_key
   end
 end
 
 # Body parameters
 request do
-  scope :post do
+  object :post do
     string :title
   end
 end
@@ -351,42 +351,33 @@ end
 
 ```ruby
 # Good
-scope :post
-scope :filters
-scope :meta
+object :post
+object :filters
+object :meta
 
 # Bad
-scope :data
-scope :params
-scope :stuff
+object :data
+object :params
+object :stuff
 ```
 
-### 2. Keep Scope Structure Flat
+### 2. Organize Related Data Together
 
 ```ruby
-# Good - flat structure with clear scopes
+# Good - clear grouping of related attributes
 request do
-  scope :post do
+  object :post do
     string :title
   end
 
-  scope :author do
+  object :author do
     string :name
   end
 end
 
-# Avoid - use object instead for nesting
+# Good - nest related objects
 request do
-  scope :post do
-    scope :author do  # Don't nest scopes this way
-      string :name
-    end
-  end
-end
-
-# Better - use object for nesting
-request do
-  scope :post do
+  object :post do
     string :title
 
     object :author do
@@ -400,13 +391,13 @@ end
 
 ```ruby
 # Good use of :_self - authentication/pagination at root
-scope :_self do
+object :_self do
   string :api_key
   integer :page
 end
 
 # Avoid - don't put too much in :_self
-scope :_self do
+object :_self do
   string :title
   string :content
   string :summary
@@ -418,12 +409,12 @@ end
 
 ```ruby
 # Good - singular for single entity
-scope :post do
+object :post do
   string :title
 end
 
 # Good - plural for collection
-scope :posts do
+object :posts do
   string :id
 end
 
@@ -437,7 +428,7 @@ end
 ```ruby
 version 3 do
   request do
-    scope :filters do
+    object :filters do
       string :title, :optional
       string :summary, :optional
       string :description, :optional
@@ -445,13 +436,13 @@ version 3 do
   end
 
   response 200 do
-    scope :posts do
+    object :posts do
       string :id
       string :title
       string :summary
     end
 
-    scope :meta do
+    object :meta do
       integer :count
       integer :page
       integer :limit, default: 12
@@ -465,11 +456,11 @@ end
 ```ruby
 version 3 do
   request do
-    scope :_self do
+    object :_self do
       string :signature, :required
     end
 
-    scope :post do
+    object :post do
       string :title, :required
       string :content, :required
 
@@ -480,7 +471,7 @@ version 3 do
   end
 
   response 201 do
-    scope :post do
+    object :post do
       string :id
       string :title
       string :content
@@ -492,8 +483,8 @@ end
 
 ## Next Steps
 
-- [Validation](./validation.md) - understand validation within scopes
-- [Transformation](./transformation.md) - how scopes are transformed
+- [Validation](./validation.md) - understand validation within objects
+- [Transformation](./transformation.md) - how objects are transformed
 - [Examples](./examples.md) - more practical examples
 
 [← Back: Nested Structures](./nested-structures.md) | [← Back to Documentation](./README.md) | [Next: Validation →](./validation.md)

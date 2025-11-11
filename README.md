@@ -62,7 +62,7 @@ module Posts
       strategy Treaty::Strategy::ADAPTER
 
       request do
-        scope :post do
+        object :post do
           string :title, :required
           string :content, :required
           string :summary, :optional
@@ -70,7 +70,7 @@ module Posts
       end
 
       response 201 do
-        scope :post do
+        object :post do
           string :id
           string :title
           string :content

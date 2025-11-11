@@ -105,7 +105,7 @@ module Treaty
           #
           # @return [Hash] Hash of attribute => validator
           def validators_for_attributes
-            @validators_cache ||= build_validators_for_attributes
+            @validators_for_attributes ||= build_validators_for_attributes
           end
 
           # Builds validators for all attributes
@@ -124,7 +124,7 @@ module Treaty
           #
           # @param attribute [Attribute] The attribute to process
           # @return [Object] Transformed attribute value
-          def validate_and_transform_attribute!(attribute)
+          def validate_and_transform_attribute!(attribute) # rubocop:disable Metrics/MethodLength
             validator = validators_for_attributes[attribute]
 
             # For :_self object, get data from root; otherwise from attribute key
@@ -149,12 +149,25 @@ module Treaty
           # @param value [Object, nil] The value to validate and transform
           # @param validator [AttributeValidator] The validator instance
           # @return [Object, nil] Transformed nested value or nil
+          #
+          # @note Flow control:
+          #   - If value is nil and attribute is required → validate_required! raises exception
+          #   - If value is nil and attribute is optional → validate_required! does nothing, returns nil
+          #   - If value is not nil → proceeds to transformation (value guaranteed non-nil)
           def validate_and_transform_nested(attribute, value, validator)
+            # Step 1: Validate type if value is present
             validator.validate_type!(value) unless value.nil?
+
+            # Step 2: Validate required constraint
+            # This will raise an exception if attribute is required and value is nil
             validator.validate_required!(value)
 
+            # Step 3: Early return for nil values
+            # Only reaches here if attribute is optional and value is nil
             return nil if value.nil?
 
+            # Step 4: Transform non-nil value
+            # At this point, value is guaranteed to be non-nil
             transformer = NestedTransformer.new(attribute)
             transformer.transform(value)
           end

@@ -6,8 +6,8 @@ module Treaty
       # Handles transformation of nested attributes (objects and arrays).
       # Extracted from Orchestrator::Base to reduce complexity.
       class NestedTransformer
-        SELF_SCOPE = :_self
-        private_constant :SELF_SCOPE
+        SELF_OBJECT = :_self
+        private_constant :SELF_OBJECT
 
         attr_reader :attribute
 
@@ -118,8 +118,8 @@ module Treaty
 
         # Transforms array with nested attributes
         class ArrayTransformer
-          SELF_SCOPE = :_self
-          private_constant :SELF_SCOPE
+          SELF_OBJECT = :_self
+          private_constant :SELF_OBJECT
 
           attr_reader :attribute
 
@@ -153,7 +153,7 @@ module Treaty
           # @return [Boolean] True if array contains primitive values with :_self attribute
           def simple_array?
             attribute.collection_of_attributes.size == 1 &&
-              attribute.collection_of_attributes.first.name == SELF_SCOPE
+              attribute.collection_of_attributes.first.name == SELF_OBJECT
           end
 
           # Validates a simple array element (primitive value)

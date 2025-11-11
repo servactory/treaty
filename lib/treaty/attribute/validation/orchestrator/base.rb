@@ -45,8 +45,8 @@ module Treaty
         # - Validator: Individual attribute validation
         # - Transformer: Nested structure transformation
         class Base
-          SELF_SCOPE = :_self
-          private_constant :SELF_SCOPE
+          SELF_OBJECT = :_self
+          private_constant :SELF_OBJECT
 
           attr_reader :version_factory, :data
 
@@ -78,7 +78,7 @@ module Treaty
             collection_of_attributes.each do |attribute|
               transformed_value = validate_and_transform_attribute!(attribute)
 
-              if attribute.name == SELF_SCOPE && attribute.type == :object
+              if attribute.name == SELF_OBJECT && attribute.type == :object
                 # For object :_self, merge nested attributes to root
                 transformed_data.merge!(transformed_value)
               else
@@ -128,7 +128,7 @@ module Treaty
             validator = validators_for_attributes[attribute]
 
             # For :_self object, get data from root; otherwise from attribute key
-            value = if attribute.name == SELF_SCOPE && attribute.type == :object
+            value = if attribute.name == SELF_OBJECT && attribute.type == :object
                       data
                     else
                       data.fetch(attribute.name, nil)

@@ -125,7 +125,7 @@ module Treaty
           # @param attribute [Attribute] The attribute to process
           # @return [Object] Transformed attribute value
           def validate_and_transform_attribute!(attribute) # rubocop:disable Metrics/MethodLength
-            validator = validators_for_attributes[attribute]
+            validator = validators_for_attributes.fetch(attribute)
 
             # For :_self object, get data from root; otherwise from attribute key
             value = if attribute.name == SELF_OBJECT && attribute.type == :object

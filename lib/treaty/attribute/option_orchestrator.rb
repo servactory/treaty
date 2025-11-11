@@ -131,7 +131,7 @@ module Treaty
       # @param option_name [Symbol] The option name (:required, :type, etc.)
       # @return [Option::Base, nil] The processor instance or nil if not found
       def processor_for(option_name)
-        @processors[option_name]
+        @processors.fetch(option_name)
       end
 
       private

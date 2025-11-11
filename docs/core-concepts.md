@@ -120,7 +120,7 @@ end
 - Each status has its own structure
 - Supports default values
 
-### 6. Scope
+### 6. Objects
 
 Groups related attributes.
 

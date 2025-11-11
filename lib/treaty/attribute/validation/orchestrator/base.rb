@@ -9,12 +9,12 @@ module Treaty
         # ## Purpose
         #
         # Coordinates the validation and transformation of request/response data for a specific
-        # API version. Processes all scopes and their attributes, applying validations and
-        # transformations defined in the treaty DSL.
+        # API version. Processes all attributes, applying validations and transformations
+        # defined in the treaty DSL.
         #
         # ## Responsibilities
         #
-        # 1. **Scope Processing** - Iterates through all defined scopes
+        # 1. **Attribute Processing** - Iterates through all defined attributes
         # 2. **Attribute Validation** - Validates each attribute's value
         # 3. **Data Transformation** - Transforms values (defaults, renaming)
         # 4. **Nested Handling** - Delegates nested structures to NestedTransformer
@@ -23,17 +23,16 @@ module Treaty
         # ## Usage
         #
         # Subclasses must implement:
-        # - `collection_of_scopes` - Returns scopes for this context (request/response)
-        # - `scope_data_for(name)` - Extracts data for a specific scope
+        # - `collection_of_attributes` - Returns attributes for this context (request/response)
         #
         # Example:
         #   orchestrator = Request::Orchestrator.new(version_factory: factory, data: params)
         #   validated_data = orchestrator.validate!
         #
-        # ## Special Scopes
+        # ## Special Case: object :_self
         #
-        # - Normal scope: `{ scope_name: { ... } }`
-        # - Self scope (`:_self`): Attributes merged directly into parent
+        # - Normal object: `{ object_name: { ... } }`
+        # - Self object (`:_self`): Attributes merged directly into parent
         #
         # ## Architecture
         #
@@ -41,8 +40,8 @@ module Treaty
         # - `AttributeValidator` - Validates individual attributes
         # - `NestedTransformer` - Handles nested objects and arrays
         #
-        # The refactored design separates concerns:
-        # - Orchestrator: High-level flow and scope iteration
+        # The design separates concerns:
+        # - Orchestrator: High-level flow and attribute iteration
         # - Validator: Individual attribute validation
         # - Transformer: Nested structure transformation
         class Base
@@ -96,7 +95,7 @@ module Treaty
           # Must be implemented in subclasses
           #
           # @raise [Treaty::Exceptions::Validation] If not implemented
-          # @return [Array<Attribute>] Collection of attributes
+          # @return [Treaty::Attribute::Collection] Collection of attributes
           def collection_of_attributes
             raise Treaty::Exceptions::Validation,
                   I18n.t("treaty.attributes.validators.nested.orchestrator.collection_not_implemented")
@@ -125,32 +124,21 @@ module Treaty
           #
           # @param attribute [Attribute] The attribute to process
           # @return [Object] Transformed attribute value
-          def validate_and_transform_attribute!(attribute) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
+          def validate_and_transform_attribute!(attribute)
             validator = validators_for_attributes[attribute]
-            source_name = attribute.name
 
             # For :_self object, get data from root; otherwise from attribute key
-            if attribute.name == SELF_SCOPE && attribute.type == :object
-              value = data
-            else
-              value = data.fetch(source_name, nil)
-            end
+            value = if attribute.name == SELF_SCOPE && attribute.type == :object
+                      data
+                    else
+                      data.fetch(attribute.name, nil)
+                    end
 
             if attribute.nested?
-              transformed_value = validate_and_transform_nested(attribute, value, validator)
+              validate_and_transform_nested(attribute, value, validator)
             else
               validator.validate_value!(value)
-              transformed_value = validator.transform_value(value)
-            end
-
-            # Apply target name transformation if needed
-            target_name = validator.target_name
-
-            # For :_self object, return the transformed nested data directly
-            if attribute.name == SELF_SCOPE && attribute.type == :object
-              transformed_value
-            else
-              transformed_value
+              validator.transform_value(value)
             end
           end
 
@@ -158,12 +146,14 @@ module Treaty
           # Delegates transformation to NestedTransformer
           #
           # @param attribute [Attribute::Base] The nested attribute
-          # @param value [Object] The value to validate and transform
+          # @param value [Object, nil] The value to validate and transform
           # @param validator [AttributeValidator] The validator instance
-          # @return [Object] Transformed nested value
+          # @return [Object, nil] Transformed nested value or nil
           def validate_and_transform_nested(attribute, value, validator)
             validator.validate_type!(value) unless value.nil?
             validator.validate_required!(value)
+
+            return nil if value.nil?
 
             transformer = NestedTransformer.new(attribute)
             transformer.transform(value)

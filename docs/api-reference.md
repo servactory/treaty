@@ -156,7 +156,7 @@ Define the structure of incoming requests.
 **Syntax:**
 ```ruby
 request do
-  # Scope and attribute definitions
+  # Attribute definitions
 end
 ```
 
@@ -195,7 +195,7 @@ Define the structure of outgoing responses.
 **Syntax:**
 ```ruby
 response status_code do
-  # Scope and attribute definitions
+  # Attribute definitions
 end
 ```
 

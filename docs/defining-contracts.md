@@ -83,7 +83,7 @@ end
 
 ## Request Definition
 
-### Single Scope
+### Single Object
 
 ```ruby
 request do
@@ -94,7 +94,7 @@ request do
 end
 ```
 
-### Multiple Scopes
+### Multiple Objects
 
 ```ruby
 request do
@@ -136,7 +136,7 @@ end
 # }
 ```
 
-### Empty Scope (Declaration Only)
+### Empty Object (Declaration Only)
 
 ```ruby
 request do
@@ -478,7 +478,7 @@ end
 ## Next Steps
 
 - [Attributes](./attributes.md) - learn about attribute types and options
-- [Scopes](./scopes.md) - understand scope organization
+- [Objects](./objects.md) - understand object organization
 - [Versioning](./versioning.md) - manage multiple versions
 
 [← Back: Core Concepts](./core-concepts.md) | [← Back to Documentation](./README.md) | [Next: Attributes →](./attributes.md)

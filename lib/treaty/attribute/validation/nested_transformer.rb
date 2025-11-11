@@ -150,7 +150,7 @@ module Treaty
 
           # Checks if this is a simple array (primitive values)
           #
-          # @return [Boolean] True if array contains primitive values with :_self scope
+          # @return [Boolean] True if array contains primitive values with :_self attribute
           def simple_array?
             attribute.collection_of_attributes.size == 1 &&
               attribute.collection_of_attributes.first.name == SELF_SCOPE

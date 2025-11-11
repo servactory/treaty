@@ -273,7 +273,7 @@ end
 
 ## Object Issues
 
-### "Scope 'X' not found"
+### "Object 'X' not found"
 
 **Problem:** Request data doesn't match object structure.
 

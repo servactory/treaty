@@ -3,11 +3,11 @@
 module Treaty
   module Attribute
     module Builder
-      # Base DSL builder for defining attributes in request/response scopes.
+      # Base DSL builder for defining attributes in request/response definitions.
       #
       # ## Purpose
       #
-      # Provides the DSL interface for defining attributes within scopes.
+      # Provides the DSL interface for defining attributes within objects.
       # Handles method_missing magic to support type-based method calls.
       #
       # ## Responsibilities
@@ -23,8 +23,8 @@ module Treaty
       #
       # ```ruby
       # request do
-      #   scope :user do
-      #     string :name, :required
+      #   object :user do
+      #     string :name
       #     integer :age, default: 18
       #     object :profile do
       #       string :bio

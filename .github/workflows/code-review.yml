@@ -1,0 +1,471 @@
+name: "Code Review"
+
+on:
+  pull_request:
+    types: [opened, synchronize, labeled, unlabeled]
+    branches:
+      - main
+
+concurrency:
+  group: code-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  claude:
+    name: Claude
+    if: contains(github.event.pull_request.labels.*.name, 'claude')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+      id-token: write
+
+    strategy:
+      matrix:
+        ruby-version: ['3.2']
+        rails-version: ['7.1']
+
+    steps:
+      - name: Check maintainer permissions
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: permission } = await github.rest.repos.getCollaboratorPermissionLevel({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              username: context.payload.pull_request.user.login
+            });
+            if (!['admin', 'maintain'].includes(permission.permission)) {
+              core.setFailed('Only maintainers can trigger this workflow');
+            }
+
+      - name: Checkout PR branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fetch base branch for context
+        run: git fetch origin ${{ github.event.pull_request.base.ref }}
+
+      - name: Run Claude Code Review
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.CO_ANTHROPIC_API_KEY }}
+          track_progress: false
+          claude_args: |
+            --allowedTools "mcp__context7__resolve-library-id,mcp__context7__get-library-docs,mcp__sequential-thinking__sequentialthinking,Bash(gh pr diff:*),Bash(gh pr view:*),Bash(gh pr comment:*),Bash(git show:*),Bash(bundle exec rails runner:*),Bash(bundle exec rubocop:*),Read,Write,Grep,Glob"
+          prompt: |
+            REPO: ${{ github.repository }}
+            PR NUMBER: ${{ github.event.pull_request.number }}
+            RUBY VERSION: ${{ matrix.ruby-version }}+
+            RAILS VERSION: ${{ matrix.rails-version }}+
+
+            Conduct a **code review** for this PR.
+
+            **Important:** The PR branch is already checked out in the current directory.
+
+            **CRITICAL - Publishing Results:**
+            1. Create file `/tmp/review.md` with the full review text (use Write tool)
+            2. Publish comment with command: `gh pr comment ${{ github.event.pull_request.number }} --body-file /tmp/review.md`
+
+            ❌ DO NOT use other publication methods (gh pr review, direct API calls, etc.)
+            ✅ ONLY: Write + gh pr comment --body-file
+
+            ## Project Context:
+
+            **Treaty** is a Ruby Gem as an Engine for Rails, providing a DSL for describing API contracts.
+            
+            **Key Concepts:**
+            - Treaty classes describe contracts for endpoints
+            - Contract versioning support
+            - Two strategies: DIRECT (no validation) and ADAPTER (with validation)
+            - Attribute types: string, integer, boolean, datetime, object, array
+            - Request (incoming data) and Response (outgoing data)
+            - Scopes for grouping attributes
+            - Transformation pipeline: validation → transformation → delegation → response
+
+            **Project Structure:**
+            - `lib/treaty/` - main gem code
+            - `spec/` - RSpec tests
+            - `spec/sandbox/` - mini Rails application for integration testing and usage examples
+              * Full Rails app structure (controllers, models, services, treaties)
+              * Demonstrates real-world Treaty usage patterns
+              * Tests Treaty gem as mounted engine
+              * Contains versioned API examples (stable, v1)
+              * Shows treaty integration with controllers and services
+            - `docs/` - Full documentation with correct examples
+
+            ## Analysis Steps:
+
+            ### 1. Change Context
+            - Read: `git show origin/${{ github.event.pull_request.base.ref }}:docs/core-concepts.md`
+            - Use: `gh pr diff` to analyze changes
+            - Check affected components via Sequential MCP
+            - Pay attention to all code comments
+
+            ### 2. Type Safety & Validation
+            **Type System:**
+            - Correctness of type checking for all attribute types
+            - Proper type coercion (or its absence where needed)
+            - Boolean validation (only TrueClass/FalseClass, not truthy values)
+            - DateTime/Time/Date handling
+            - Nil handling for optional attributes
+
+            **Validation Logic:**
+            - Required vs optional correctly applied
+            - Presence validation (nil, "", [], {} handling)
+            - Inclusion validation (`:in` option)
+            - Custom validators correctness
+            - Error messages informativeness
+
+            **Sequential MCP Analysis:**
+            - Trace validation flow from input to error/success
+            - Check edge cases for each type
+            - Find gaps in type checking
+
+            ### 3. DSL Consistency
+            **API Design:**
+            - DSL methods naming consistency
+            - Options format consistency (simple vs advanced mode)
+            - Helper shortcuts (`:required`, `:optional`) work correctly
+            - Block syntax for nested structures
+
+            **Breaking Changes (block PR!):**
+            - DSL syntax changes without deprecation
+            - Removal/renaming of DSL methods
+            - Behavior changes of existing options
+            - Incompatible changes in attribute definitions
+            - Breaking changes in transformation pipeline
+
+            **Backward Compatibility:**
+            - Existing treaties will continue to work
+            - Deprecation warnings for obsolete syntax
+            - Migration path for breaking changes
+
+            ### 4. Version Management
+            **Version Handling:**
+            - Version parsing (numeric, semantic, with labels)
+            - Default version logic
+            - Version selection from request
+            - Deprecation mechanism works correctly
+
+            **Version Migration:**
+            - Transformation between versions is safe
+            - Data consistency during migration
+            - Rollback capability
+
+            ### 5. Transformation Pipeline
+            **Request Processing:**
+            - Input validation before transformation
+            - Attribute renaming (`:as` option) correctly
+            - Default values applied properly
+            - Scope merging (especially `:_self`)
+            - Symbolization of keys
+
+            **Response Processing:**
+            - Service output validation
+            - Response transformation
+            - Status-specific responses (200, 201, etc.)
+            - Error responses handling
+
+            **Sequential MCP Analysis:**
+            - Trace data flow through entire pipeline
+            - Find points where data can be lost/corrupted
+            - Check idempotency of transformations
+
+            ### 6. Nested Structures
+            **Objects:**
+            - Hash type validation
+            - Nested attribute validation
+            - Deep nesting handling
+            - Nil handling for optional objects
+
+            **Arrays:**
+            - Array type validation
+            - Item validation (`:_self` for primitives)
+            - Object items validation
+            - Empty array handling
+            - ❌ Check absence of `default: []` anti-pattern
+
+            ### 7. Delegation Safety
+            **Service Integration:**
+            - Delegate target resolution (String, Class, Lambda)
+            - Method calling (`:call` vs custom method)
+            - Return value extraction (`:return` option)
+            - Service errors propagation
+
+            **Error Handling:**
+            - Validation errors properly raised
+            - Type errors properly raised
+            - Service errors properly propagated
+            - Error messages user-friendly
+
+            ### 8. Rails ${{ matrix.rails-version }} Integration
+            **Engine Compatibility:**
+            - Rails ${{ matrix.rails-version }}+ API compatibility
+            - Proper engine initialization
+            - Routes integration
+            - Controller integration
+            - Concerns/Mixins compatibility
+
+            **Dependencies:**
+            - Gemspec dependencies are up-to-date
+            - Version constraints are correct
+            - No deprecated Rails APIs
+
+            **Context7:** check current best practices for Rails ${{ matrix.rails-version }}+ engines
+
+            ### 9. Code Quality
+            **Ruby ${{ matrix.ruby-version }}+ Features:**
+            - Proper use of pattern matching
+            - Keyword arguments usage
+            - Frozen string literals
+            - Modern Ruby idioms
+
+            **Design Patterns:**
+            - SOLID principles
+            - DRY violations
+            - Proper abstraction levels
+            - Clear separation of concerns
+
+            **Performance:**
+            - No N+1 in validation loops
+            - Efficient data structures
+            - Lazy evaluation where appropriate
+            - Memory allocations
+
+            ### 10. Testing Coverage
+            **RSpec Tests:**
+            - Unit tests for new/changed code
+            - Integration tests in sandbox
+            - Edge cases covered
+            - Error scenarios tested
+
+            **Test Quality:**
+            - Clear test descriptions
+            - Proper setup/teardown
+            - No flaky tests
+            - Fast execution
+
+            ### 11. Documentation
+            **Code Documentation:**
+            - Public API documented
+            - Complex logic has comments
+            - Examples provided where needed
+            - YARD tags are correct
+
+            **User Documentation:**
+            - docs/ updated for new features
+            - Examples are up-to-date
+            - Breaking changes documented
+            - Migration guides when necessary
+
+            ### 12. Context7 Integration
+            For each library in changes:
+            - Load current documentation
+            - Check deprecated features
+            - Find best practices for Ruby ${{ matrix.ruby-version }}+ and Rails ${{ matrix.rails-version }}+
+            - Check security advisories
+
+            ## Anti-patterns (block PR):
+            - ❌ Breaking DSL changes without deprecation
+            - ❌ Type validation gaps
+            - ❌ `default: []` or `default: {}` for arrays/objects
+            - ❌ Truthy values for boolean (must be only true/false)
+            - ❌ Mutable default values
+            - ❌ Silent data loss in transformations
+            - ❌ Version incompatibility
+            - ❌ Missing error handling
+            - ❌ Tests don't cover new code
+            - ❌ Deprecated Rails ${{ matrix.rails-version }}+ APIs
+
+            **Result:**
+            1. Create file: `/tmp/review.md` (Write tool)
+            2. Publish: `gh pr comment ${{ github.event.pull_request.number }} --body-file /tmp/review.md`
+
+            **Comment Format:**
+            ```markdown
+            ## 🔍 Code Review
+
+            ### 📝 Summary
+            [Brief description of changes and their impact]
+
+            ---
+
+            ### 🔒 Type Safety & Validation
+            **Type System:**
+            - [✅/⚠️/❌] Type checking coverage
+            - [✅/⚠️/❌] Type coercion handling
+            - [✅/⚠️/❌] Nil handling
+
+            **Validation Logic:**
+            - Required/optional: [✅/⚠️/❌]
+            - Presence checks: [✅/⚠️/❌]
+            - Custom validators: [✅/⚠️/❌]
+
+            **Issues:**
+            - [found issues with code examples and line numbers]
+
+            ---
+
+            ### 🎯 DSL Consistency
+            **API Design:**
+            - [✅/⚠️/❌] Naming consistency
+            - [✅/⚠️/❌] Options format
+            - [✅/⚠️/❌] Helper shortcuts
+
+            **Breaking Changes:**
+            - [list of breaking changes or ✅ None]
+
+            **Backward Compatibility:**
+            - [✅/⚠️/❌] Existing treaties compatible
+            - [✅/⚠️/❌] Deprecation warnings present
+
+            ---
+
+            ### 🔄 Version Management
+            **Version Handling:**
+            - [✅/⚠️/❌] Version parsing
+            - [✅/⚠️/❌] Default version logic
+            - [✅/⚠️/❌] Deprecation mechanism
+
+            ---
+
+            ### 🔀 Transformation Pipeline
+            **Request Processing:**
+            - [✅/⚠️/❌] Validation before transform
+            - [✅/⚠️/❌] Attribute renaming (`:as`)
+            - [✅/⚠️/❌] Default values
+            - [✅/⚠️/❌] Scope merging
+
+            **Response Processing:**
+            - [✅/⚠️/❌] Output validation
+            - [✅/⚠️/❌] Transformation correctness
+            - [✅/⚠️/❌] Error handling
+
+            **Data Flow Analysis:**
+            - [Sequential MCP findings]
+
+            ---
+
+            ### 🏗️ Nested Structures
+            **Objects:**
+            - [✅/⚠️/❌] Hash validation
+            - [✅/⚠️/❌] Nested attributes
+
+            **Arrays:**
+            - [✅/⚠️/❌] Array validation
+            - [✅/⚠️/❌] Item validation
+            - [✅/⚠️/❌] No `default: []` anti-pattern
+
+            ---
+
+            ### 🚀 Delegation Safety
+            **Service Integration:**
+            - [✅/⚠️/❌] Target resolution
+            - [✅/⚠️/❌] Error propagation
+
+            ---
+
+            ### 🛤️ Rails ${{ matrix.rails-version }}+ Integration
+            **Engine Compatibility:**
+            - [✅/⚠️/❌] Rails ${{ matrix.rails-version }} APIs
+            - [✅/⚠️/❌] Engine initialization
+            - [✅/⚠️/❌] Dependencies up-to-date
+
+            ---
+
+            ### ✨ Code Quality
+            **Ruby ${{ matrix.ruby-version }}+ Features:**
+            - [modern features usage]
+
+            **Design Patterns:**
+            - [✅/⚠️/❌] SOLID principles
+            - [✅/⚠️/❌] DRY compliance
+
+            **Performance:**
+            - [performance notes]
+
+            ---
+
+            ### 🧪 Testing Coverage
+            **RSpec Tests:**
+            - [✅/⚠️/❌] Unit tests
+            - [✅/⚠️/❌] Integration tests
+            - [✅/⚠️/❌] Edge cases
+            - Coverage: [percentage or estimate]
+
+            ---
+
+            ### 📚 Documentation
+            **Code Documentation:**
+            - [✅/⚠️/❌] Public API documented
+            - [✅/⚠️/❌] Complex logic explained
+
+            **User Documentation:**
+            - [✅/⚠️/❌] docs/ updated
+            - [✅/⚠️/❌] Examples provided
+
+            ---
+
+            ### 💡 Recommendations
+
+            **Critical (Must Fix):**
+            1. [mandatory fixes with files:lines]
+
+            **Important (Should Fix):**
+            1. [important improvements]
+
+            **Nice to Have (Can Improve):**
+            1. [optional suggestions]
+
+            **Context7 References:**
+            - [links to current gem documentation]
+
+            ---
+
+            ### 📊 Risk Assessment
+            - Type safety: [🟢/🟡/🟠/🔴]
+            - DSL consistency: [🟢/🟡/🟠/🔴]
+            - Version management: [🟢/🟡/🟠/🔴]
+            - Transformation pipeline: [🟢/🟡/🟠/🔴]
+            - Rails integration: [🟢/🟡/🟠/🔴]
+            - Testing: [🟢/🟡/🟠/🔴]
+            - Documentation: [🟢/🟡/🟠/🔴]
+
+            **Overall Risk:** [🟢 LOW / 🟡 MEDIUM / 🟠 HIGH / 🔴 CRITICAL]
+
+            **Legend:**
+            - 🟢 LOW: No issues, safe to merge
+            - 🟡 MEDIUM: Minor issues, can merge with follow-up
+            - 🟠 HIGH: Important issues, should fix before merge
+            - 🔴 CRITICAL: Blocking issues, must fix before merge
+
+            ---
+
+            ### ✅ Final Decision
+            **[🟢 APPROVED / 🟡 APPROVED WITH COMMENTS / 🔴 CHANGES REQUESTED]**
+
+            **Reason:** [brief explanation of decision]
+
+            **Must Fix (Blocking):**
+            1. [critical blockers]
+
+            **Should Fix (Important):**
+            1. [important improvements]
+
+            **Can Improve (Optional):**
+            1. [optional improvements]
+
+            ---
+
+            **Review completed by Claude Sonnet 4.5 with Context7**
+            ```
+
+            Provide a structured review with:
+            - Specific code examples with line numbers
+            - Sequential MCP analysis for complex flows
+            - Context7 links to current documentation
+            - Practical recommendations
+            - Clear final decision with justification

@@ -94,13 +94,6 @@ module Gate
         version 2 do # Also supported: 2.0, 2.0.0.rc1
           strategy Treaty::Strategy::ADAPTER
 
-          # TODO: An idea on how to simplify while maintaining power:
-          #       - When one object:
-          #         - request(:post) { string :title }
-          #         - response(:post, 200) { string :title }
-          #       - When multiple objects:
-          #         - requests { object(:post) { string :title } }
-          #         - responses(200) { object(:post) { string :title } }
           request do
             # Query: filters[title], filters[middle_name], filters[summary]
             object :filters, :optional do
@@ -135,13 +128,6 @@ module Gate
         version 3, default: true do # Also supported: 2.0, 2.0.0.rc1
           strategy Treaty::Strategy::ADAPTER
 
-          # TODO: An idea on how to simplify while maintaining power:
-          #       - When one object:
-          #         - request(:post) { string :title }
-          #         - response(:post, 200) { string :title }
-          #       - When multiple objects:
-          #         - requests { object(:post) { string :title } }
-          #         - responses(200) { object(:post) { string :title } }
           request do
             # Query: filters[title], filters[middle_name], filters[summary]
             object :filters, :optional do

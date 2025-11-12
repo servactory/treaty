@@ -1,4 +1,4 @@
-name: "Claude review"
+name: "Code Review"
 
 on:
   pull_request:
@@ -7,12 +7,12 @@ on:
       - main
 
 concurrency:
-  group: claude-review-${{ github.event.pull_request.number }}
+  group: code-review-${{ github.event.pull_request.number }}
   cancel-in-progress: true
 
 jobs:
-  claude-review:
-    name: Automated Code Review
+  claude:
+    name: Claude
     if: contains(github.event.pull_request.labels.*.name, 'claude')
     runs-on: ubuntu-latest
     permissions:

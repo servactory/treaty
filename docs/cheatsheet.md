@@ -24,6 +24,54 @@ class Posts::CreateTreaty < ApplicationTreaty
 end
 ```
 
+## Entity Classes (DTOs)
+
+### Define Entity
+
+```ruby
+class PostEntity < Treaty::Entity
+  string :id
+  string :title
+  string :content, :optional
+
+  object :author do
+    string :name
+    string :email
+  end
+
+  array :tags, :optional do
+    string :_self
+  end
+end
+```
+
+### Use in Treaty
+
+```ruby
+version 1 do
+  # Use entity class instead of block
+  request PostRequestEntity
+  response 201, PostResponseEntity
+end
+```
+
+### Organize Entities
+
+```
+app/dtos/
+├── application_dto.rb              # Base class
+├── deserialization/                # Request DTOs
+│   └── posts/
+│       ├── create_dto.rb
+│       └── update_dto.rb
+└── serialization/                  # Response DTOs
+    └── posts/
+        ├── index_dto.rb
+        └── show_dto.rb
+```
+
+**Note:** Entity attributes are **required by default** (like request blocks).
+
 ## Strategies
 
 ```ruby
@@ -256,7 +304,7 @@ end
 
 ```ruby
 response 200 do
-  object :posts do
+  array :posts do
     string :id
     string :title
     datetime :created_at
@@ -390,7 +438,7 @@ class Posts::IndexTreaty < ApplicationTreaty
     end
 
     response 200 do
-      object :posts do
+      array :posts do
         string :id
         string :title
         string :summary

@@ -32,6 +32,8 @@ Treaty provides a complete solution for building versioned APIs in Ruby on Rails
 
 - **Type Safety** - Enforce strict type checking for request and response data
 - **API Versioning** - Manage multiple concurrent API versions effortlessly
+- **Unified Architecture** - Request blocks, response blocks, and Entity classes share the same validation system
+- **Entity Classes (DTOs)** - Define reusable data transfer objects for better code organization
 - **Built-in Validation** - Validate incoming requests and outgoing responses automatically
 - **Data Transformation** - Transform data seamlessly between different API versions
 - **Deprecation Management** - Mark versions as deprecated with flexible conditions

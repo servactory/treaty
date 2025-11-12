@@ -66,7 +66,7 @@ module Gate
           end
 
           response 200 do
-            object :posts do
+            array :posts do
               string :id
               string :title
               string :summary

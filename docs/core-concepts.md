@@ -80,8 +80,9 @@ strategy Treaty::Strategy::ADAPTER
 
 ### 4. Request
 
-Defines incoming data structure.
+Defines incoming data structure. Can be defined using a block or an Entity class.
 
+**Using a block:**
 ```ruby
 request do
   object :post do
@@ -91,18 +92,28 @@ request do
 end
 ```
 
+**Using an Entity class:**
+```ruby
+request PostRequestEntity
+```
+
 **Features:**
 - Attributes are required by default
 - Supports multiple objects
 - Validates types and options
+- Can be defined inline or as reusable Entity classes
+
+**Internal Architecture:**
+When using a block, Treaty creates an anonymous `Request::Entity` class dynamically and evaluates the block within it. This means request blocks and Entity classes use the same underlying system, ensuring consistent behavior.
 
 ### 5. Response
 
-Defines outgoing data structure for a specific HTTP status.
+Defines outgoing data structure for a specific HTTP status. Can be defined using a block or an Entity class.
 
+**Using a block:**
 ```ruby
 response 200 do
-  object :posts do
+  array :posts do
     string :id
     string :title
   end
@@ -115,10 +126,19 @@ response 201 do
 end
 ```
 
+**Using an Entity class:**
+```ruby
+response 201, PostResponseEntity
+```
+
 **Features:**
 - Attributes are optional by default
 - Each status has its own structure
 - Supports default values
+- Can be defined inline or as reusable Entity classes
+
+**Internal Architecture:**
+When using a block, Treaty creates an anonymous `Response::Entity` class dynamically and evaluates the block within it. This unified architecture means both blocks and Entity classes share the same validation and transformation logic.
 
 ### 6. Objects
 
@@ -146,7 +166,36 @@ end
 
 Attributes from `:_self` are merged into parent level (root).
 
-### 7. Delegate To
+### 7. Entity Classes (DTOs)
+
+Reusable data structure definitions that can be used across multiple treaties and versions.
+
+```ruby
+class PostEntity < Treaty::Entity
+  string :id
+  string :title
+  string :content
+  datetime :created_at
+end
+```
+
+**Use in treaties:**
+```ruby
+version 1 do
+  request PostRequestEntity
+  response 201, PostResponseEntity
+end
+```
+
+**Features:**
+- Attributes are required by default (like request blocks)
+- Reusable across multiple versions and treaties
+- Better code organization and maintainability
+- Support all attribute types and options
+
+See [Entity Classes (DTOs)](./entities.md) for detailed documentation.
+
+### 8. Delegate To
 
 Specifies where to pass request processing.
 
@@ -229,6 +278,56 @@ end
 { "posts" => [...], "meta" => { "count" => 10, "page" => 1, "limit" => 12 } }
 ```
 
+## Internal Architecture
+
+Understanding how Treaty works internally can help you use it more effectively.
+
+### Unified Entity System
+
+Treaty uses a unified entity-based architecture for all attribute definitions:
+
+1. **Treaty::Entity** - Base class for user-defined DTOs (required by default)
+2. **Treaty::RequestEntity** - Internal class for request blocks (required by default)
+3. **Treaty::ResponseEntity** - Internal class for response blocks (optional by default)
+
+All three share the same DSL (`Treaty::Attribute::DSL`) and attribute system, ensuring consistent behavior.
+
+### Request/Response Blocks
+
+When you write:
+```ruby
+request do
+  string :title
+end
+```
+
+Treaty automatically:
+1. Creates an anonymous `RequestEntity` class
+2. Evaluates your block in that class's context
+3. Uses the resulting attribute collection for validation
+
+This means blocks and Entity classes are equivalent under the hood!
+
+### Attribute System
+
+```
+Treaty::Attribute::DSL
+  ↓
+Treaty::Entity (required: true)
+  ↓
+├── Your DTOs
+├── RequestEntity (for request blocks)
+└── ResponseEntity (for response blocks)
+```
+
+### Factory Pattern
+
+Request and Response factories:
+- Accept blocks (creates anonymous entity)
+- Accept Entity classes (uses directly)
+- Provide `collection_of_attributes` for validators
+- Ensure consistent validation regardless of definition method
+
 ## Key Principles
 
 1. **Contract First** - Define the contract before implementation
@@ -236,6 +335,7 @@ end
 3. **Validate Early** - Catch errors at the contract level
 4. **Transform Safely** - Ensure data consistency between versions
 5. **Deprecate Gracefully** - Mark old versions as deprecated, don't delete
+6. **Unified System** - Blocks and Entity classes use the same underlying architecture
 
 ## Next Steps
 

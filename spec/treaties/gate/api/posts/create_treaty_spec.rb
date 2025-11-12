@@ -3,7 +3,7 @@
 RSpec.describe Gate::API::Posts::CreateTreaty do
   subject(:perform) { described_class.call!(version:, params:) }
 
-  it_behaves_like "check class info",
+  it_behaves_like "check treaty class info",
                   versions: [
                     {
                       version: "1",

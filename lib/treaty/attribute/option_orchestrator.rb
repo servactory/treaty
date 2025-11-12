@@ -146,7 +146,7 @@ module Treaty
         @attribute.options.each do |option_name, option_schema|
           processor_class = Option::Registry.processor_for(option_name)
 
-          next unless processor_class
+          next if processor_class.nil?
 
           processors_hash[option_name] = processor_class.new(
             attribute_name: @attribute.name,

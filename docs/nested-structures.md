@@ -375,7 +375,7 @@ end
 ```ruby
 response 200 do
   # Array of posts
-  object :posts do
+  array :posts do
     string :id
     string :title
     string :summary

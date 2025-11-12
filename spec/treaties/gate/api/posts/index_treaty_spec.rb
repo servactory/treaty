@@ -3,7 +3,7 @@
 RSpec.describe Gate::API::Posts::IndexTreaty do
   subject(:perform) { described_class.call!(version:, params:) }
 
-  it_behaves_like "check class info",
+  it_behaves_like "check treaty class info",
                   versions: [
                     {
                       version: "1.0.0.rc1",
@@ -60,7 +60,7 @@ RSpec.describe Gate::API::Posts::IndexTreaty do
                             attributes: {}
                           },
                           posts: {
-                            type: :object,
+                            type: :array,
                             options: {
                               required: { is: false, message: nil }
                             },
@@ -124,7 +124,7 @@ RSpec.describe Gate::API::Posts::IndexTreaty do
                             attributes: {}
                           },
                           posts: {
-                            type: :object,
+                            type: :array,
                             options: {
                               required: { is: false, message: nil }
                             },
@@ -188,7 +188,7 @@ RSpec.describe Gate::API::Posts::IndexTreaty do
                             attributes: {}
                           },
                           posts: {
-                            type: :object,
+                            type: :array,
                             options: {
                               required: { is: false, message: nil }
                             },
@@ -274,7 +274,7 @@ RSpec.describe Gate::API::Posts::IndexTreaty do
                             }
                           },
                           posts: {
-                            type: :object,
+                            type: :array,
                             options: {
                               required: { is: false, message: nil }
                             },
@@ -322,7 +322,7 @@ RSpec.describe Gate::API::Posts::IndexTreaty do
                     {
                       version: "3",
                       segments: [3],
-                      default: true,
+                      default: false,
                       strategy: :adapter,
                       summary: nil,
                       deprecated: false,
@@ -397,7 +397,7 @@ RSpec.describe Gate::API::Posts::IndexTreaty do
                             }
                           },
                           posts: {
-                            type: :object,
+                            type: :array,
                             options: {
                               required: { is: false, message: nil }
                             },
@@ -441,6 +441,129 @@ RSpec.describe Gate::API::Posts::IndexTreaty do
                           }
                         }
                       }
+                    },
+                    {
+                      version: "4",
+                      segments: [4],
+                      default: true,
+                      strategy: :adapter,
+                      summary: nil,
+                      deprecated: false,
+                      executor: {
+                        executor: Posts::Stable::IndexService,
+                        method: :call
+                      },
+                      request: {
+                        attributes: {
+                          filters: {
+                            type: :object,
+                            options: {
+                              required: { is: false, message: nil }
+                            },
+                            attributes: {
+                              title: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              summary: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              description: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil }
+                                },
+                                attributes: {}
+                              }
+                            }
+                          }
+                        }
+                      },
+                      response: {
+                        status: 200,
+                        attributes: {
+                          meta: {
+                            type: :object,
+                            options: {
+                              required: { is: true, message: nil }
+                            },
+                            attributes: {
+                              count: {
+                                type: :integer,
+                                options: {
+                                  required: { is: true, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              page: {
+                                type: :integer,
+                                options: {
+                                  required: { is: true, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              limit: {
+                                type: :integer,
+                                options: {
+                                  required: { is: true, message: nil },
+                                  default: { is: 12, message: nil }
+                                },
+                                attributes: {}
+                              }
+                            }
+                          },
+                          posts: {
+                            type: :array,
+                            options: {
+                              required: { is: true, message: nil }
+                            },
+                            attributes: {
+                              id: {
+                                type: :string,
+                                options: {
+                                  required: { is: true, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              title: {
+                                type: :string,
+                                options: {
+                                  required: { is: true, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              summary: {
+                                type: :string,
+                                options: {
+                                  required: { is: true, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              description: {
+                                type: :string,
+                                options: {
+                                  required: { is: true, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              content: {
+                                type: :string,
+                                options: {
+                                  required: { is: true, message: nil }
+                                },
+                                attributes: {}
+                              }
+                            }
+                          }
+                        }
+                      }
                     }
                   ]
 
@@ -475,6 +598,16 @@ RSpec.describe Gate::API::Posts::IndexTreaty do
       it { expect { perform }.not_to raise_error }
     end
 
+    context "when version is 4" do
+      let(:version) { "4" }
+
+      let(:params) do
+        {}
+      end
+
+      it { expect { perform }.not_to raise_error }
+    end
+
     describe "when version was not specified" do
       let(:version) { "" }
 
@@ -482,7 +615,7 @@ RSpec.describe Gate::API::Posts::IndexTreaty do
         {}
       end
 
-      it "uses default version 3" do
+      it "uses default version 4" do
         expect { perform }.not_to raise_error
       end
     end

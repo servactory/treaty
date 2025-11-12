@@ -41,20 +41,21 @@ Each contract version describes:
 3. [Defining Contracts](./defining-contracts.md) - how to create treaties
 4. [Versioning](./versioning.md) - working with API versions
 5. [Attributes](./attributes.md) - attribute types and options
-6. [Validation](./validation.md) - data validation system
-7. [Transformation](./transformation.md) - data transformation
-8. [Strategies](./strategies.md) - DIRECT vs ADAPTER
-9. [Nested Structures](./nested-structures.md) - working with objects and arrays
-10. [Objects](./objects.md) - organizing data through object attributes
+6. [Entity Classes (DTOs)](./entities.md) - reusable data transfer objects
+7. [Validation](./validation.md) - data validation system
+8. [Transformation](./transformation.md) - data transformation
+9. [Strategies](./strategies.md) - DIRECT vs ADAPTER
+10. [Nested Structures](./nested-structures.md) - working with objects and arrays
+11. [Objects](./objects.md) - organizing data through object attributes
 
 ### Additional Resources
 
-11. [Examples](./examples.md) - practical usage examples
-12. [API Reference](./api-reference.md) - complete API reference
-13. [Cheatsheet](./cheatsheet.md) - quick reference guide
-14. [Migration Guide](./migration-guide.md) - migrating between API versions
-15. [Internationalization](./internationalization.md) - I18n setup and multilingual support
-16. [Troubleshooting](./troubleshooting.md) - common issues and solutions
+12. [Examples](./examples.md) - practical usage examples
+13. [API Reference](./api-reference.md) - complete API reference
+14. [Cheatsheet](./cheatsheet.md) - quick reference guide
+15. [Migration Guide](./migration-guide.md) - migrating between API versions
+16. [Internationalization](./internationalization.md) - I18n setup and multilingual support
+17. [Troubleshooting](./troubleshooting.md) - common issues and solutions
 
 ## Quick Example
 

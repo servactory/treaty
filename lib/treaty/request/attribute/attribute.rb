@@ -3,7 +3,8 @@
 module Treaty
   module Request
     module Attribute
-      class Attribute < Treaty::Attribute::Base
+      # Request-specific attribute that defaults to required: true
+      class Attribute < Treaty::Attribute::Entity::Attribute
         private
 
         def apply_defaults!

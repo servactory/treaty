@@ -19,7 +19,7 @@ module Gate
           end
 
           response 200 do
-            object :posts
+            array :posts
             object :meta
           end
 
@@ -45,7 +45,7 @@ module Gate
           end
 
           response 200 do
-            object :posts
+            array :posts
             object :meta
           end
 
@@ -74,7 +74,7 @@ module Gate
           end
 
           response 200 do
-            object :posts
+            array :posts
             object :meta
           end
 
@@ -104,7 +104,7 @@ module Gate
           end
 
           response 200 do
-            object :posts do
+            array :posts do
               string :id
               string :title
               string :summary
@@ -125,7 +125,7 @@ module Gate
           # delegate_to ::Posts::Stable::IndexService => :call, return: lambda(&:data)
         end
 
-        version 3, default: true do # Also supported: 2.0, 2.0.0.rc1
+        version 3 do # Also supported: 2.0, 2.0.0.rc1
           strategy Treaty::Strategy::ADAPTER
 
           request do
@@ -138,7 +138,7 @@ module Gate
           end
 
           response 200 do
-            object :posts do
+            array :posts do
               string :id
               string :title
               string :summary
@@ -152,6 +152,19 @@ module Gate
               integer :limit, default: 12
             end
           end
+
+          delegate_to ::Posts::Stable::IndexService
+
+          # Full example:
+          # delegate_to ::Posts::Stable::IndexService => :call, return: lambda(&:data)
+        end
+
+        version 4, default: true do
+          strategy Treaty::Strategy::ADAPTER
+
+          request Deserialization::Gate::API::Posts::IndexDto
+
+          response 200, Serialization::Gate::API::Posts::IndexDto
 
           delegate_to ::Posts::Stable::IndexService
 

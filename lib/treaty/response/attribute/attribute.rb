@@ -3,7 +3,8 @@
 module Treaty
   module Response
     module Attribute
-      class Attribute < Treaty::Attribute::Base
+      # Response-specific attribute that defaults to required: false
+      class Attribute < Treaty::Attribute::Entity::Attribute
         private
 
         def apply_defaults!

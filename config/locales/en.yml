@@ -47,6 +47,7 @@ en:
       # Attribute builder DSL
       builder:
         not_implemented: "%{class} must implement #create_attribute"
+        create_attribute_not_implemented: "Subclass %{class} must implement #create_attribute method"
 
       # Attribute-level errors
       errors:

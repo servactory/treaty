@@ -18,6 +18,110 @@ class MyTreaty < ApplicationTreaty
 end
 ```
 
+### Introspection Methods
+
+Treaty classes provide class methods for introspection and metadata access:
+
+**`.info` - Get treaty metadata:**
+
+```ruby
+class Posts::IndexTreaty < ApplicationTreaty
+  version 1 do
+    strategy Treaty::Strategy::ADAPTER
+
+    request do
+      object :filters do
+        string :title, :optional
+      end
+    end
+
+    response 200 do
+      array :posts do
+        string :id
+        string :title
+      end
+    end
+
+    delegate_to Posts::IndexService
+  end
+end
+
+# Get treaty information
+info = Posts::IndexTreaty.info
+# => #<Treaty::Info::Rest::Result>
+
+# Access versions metadata
+info.versions
+# => [
+#   {
+#     version: "1",
+#     segments: [1],
+#     default: true,
+#     strategy: :adapter,
+#     summary: nil,
+#     deprecated: false,
+#     executor: {
+#       executor: Posts::IndexService,
+#       method: :call
+#     },
+#     request: {
+#       attributes: {
+#         filters: {
+#           type: :object,
+#           options: { required: { is: false, message: nil } },
+#           attributes: {
+#             title: {
+#               type: :string,
+#               options: { required: { is: false, message: nil } },
+#               attributes: {}
+#             }
+#           }
+#         }
+#       }
+#     },
+#     response: {
+#       status: 200,
+#       attributes: {
+#         posts: {
+#           type: :array,
+#           options: { required: { is: false, message: nil } },
+#           attributes: { ... }
+#         }
+#       }
+#     }
+#   }
+# ]
+```
+
+**`.info` method returns:**
+- `Treaty::Info::Rest::Result` object with `.versions` method
+- Array of version objects, each containing:
+  - `version` (String) - Version number
+  - `segments` (Array) - Version segments
+  - `default` (Boolean) - Whether this is the default version
+  - `strategy` (Symbol) - Strategy (`:direct` or `:adapter`)
+  - `summary` (String|nil) - Version summary text
+  - `deprecated` (Boolean) - Deprecation status
+  - `executor` (Hash) - Executor class and method
+  - `request` (Hash) - Request attributes structure
+  - `response` (Hash) - Response status and attributes structure
+
+**`.treaty?` - Check if class is a Treaty:**
+
+```ruby
+Posts::IndexTreaty.treaty?
+# => true
+
+String.respond_to?(:treaty?)
+# => false
+```
+
+**Use cases:**
+- Auto-generating API documentation
+- Building introspection tools and web interfaces
+- Creating API explorers and test tools
+- Validating treaty structure in tests
+
 ## Version Definition
 
 ### `version`
@@ -151,16 +255,23 @@ end
 
 ### `request`
 
-Define the structure of incoming requests.
+Define the structure of incoming requests. Can use a block or an Entity class.
 
-**Syntax:**
+**Syntax with block:**
 ```ruby
 request do
   # Attribute definitions
 end
 ```
 
-**Example:**
+**Syntax with Entity class:**
+```ruby
+request EntityClassName
+```
+
+**Examples:**
+
+**Using a block:**
 ```ruby
 request do
   object :post do
@@ -170,9 +281,13 @@ request do
 end
 ```
 
-**Multiple request blocks:**
+**Using an Entity class:**
 ```ruby
-# These will be merged
+request Deserialization::Posts::CreateDto
+```
+
+**Multiple request blocks (will be merged):**
+```ruby
 request do
   object :filters do
     string :category
@@ -186,23 +301,32 @@ request do
 end
 ```
 
+**Note:** Attributes in request blocks are **required by default**.
+
 ## Response Definition
 
 ### `response`
 
-Define the structure of outgoing responses.
+Define the structure of outgoing responses. Can use a block or an Entity class.
 
-**Syntax:**
+**Syntax with block:**
 ```ruby
 response status_code do
   # Attribute definitions
 end
 ```
 
+**Syntax with Entity class:**
+```ruby
+response status_code, EntityClassName
+```
+
 **Parameters:**
 - `status_code` (Integer) - HTTP status code (200, 201, 404, etc.)
 
-**Example:**
+**Examples:**
+
+**Using a block:**
 ```ruby
 response 200 do
   object :post do
@@ -224,6 +348,114 @@ response 404 do
   end
 end
 ```
+
+**Using an Entity class:**
+```ruby
+response 200, Serialization::Posts::IndexDto
+response 201, Serialization::Posts::CreateDto
+```
+
+**Note:** Attributes in response blocks are **optional by default**.
+
+## Entity Class Definition
+
+### `Treaty::Entity`
+
+Base class for creating reusable DTO (Data Transfer Object) classes.
+
+**Syntax:**
+```ruby
+class MyEntity < Treaty::Entity
+  # Attribute definitions
+end
+```
+
+**Example:**
+```ruby
+class PostEntity < Treaty::Entity
+  string :id
+  string :title
+  string :content, :optional
+  datetime :created_at
+
+  object :author do
+    string :name
+    string :email
+  end
+
+  array :tags, :optional do
+    string :_self
+  end
+end
+```
+
+**Usage in treaties:**
+```ruby
+version 1 do
+  request PostRequestEntity
+  response 201, PostResponseEntity
+end
+```
+
+**Features:**
+- Attributes are **required by default** (like request blocks)
+- Supports all attribute types (string, integer, boolean, datetime, object, array)
+- Supports all attribute options (required, optional, default, as, in)
+- Can be used in both request and response definitions
+- Reusable across multiple versions and treaties
+
+**Best Practices:**
+- Place entities in `app/entities/` or `app/dtos/` directory
+- Use descriptive names (e.g., `PostRequestEntity`, `UserResponseDto`)
+- Separate request and response entities
+- Use `ApplicationEntity` or `ApplicationDto` as base class
+
+**Example structure:**
+```ruby
+# app/dtos/application_dto.rb
+class ApplicationDto < Treaty::Entity
+end
+
+# app/dtos/deserialization/posts/create_dto.rb
+module Deserialization
+  module Posts
+    class CreateDto < ApplicationDto
+      object :post do
+        string :title
+        string :content
+      end
+    end
+  end
+end
+```
+
+**Introspection Methods:**
+
+Entity classes provide class methods for introspection:
+
+```ruby
+# Get entity metadata
+info = PostEntity.info
+# => #<Treaty::Info::Entity::Result>
+
+info.attributes
+# => {
+#   id: { type: :string, options: {...}, attributes: {} },
+#   title: { type: :string, options: {...}, attributes: {} },
+#   ...
+# }
+
+# Check if class is a Treaty entity
+PostEntity.treaty?
+# => true
+```
+
+**`.info` method returns:**
+- `Treaty::Info::Entity::Result` object with `.attributes` method
+- Attribute metadata including type, options, and nested attributes
+- Useful for auto-generating documentation and introspection
+
+See [Entity Classes (DTOs)](./entities.md) for detailed documentation, including the [Introspection with .info Method](./entities.md#introspection-with-info-method) section.
 
 ## Object Definition
 

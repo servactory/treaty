@@ -99,16 +99,16 @@ module Treaty
           #
           # @return [Hash] Hash of option_name => processor_class for validators
           def validators
-            registry.select { |_, info| info[:category] == :validator }
-                    .transform_values { |info| info[:processor_class] }
+            registry.select { |_, info| info.fetch(:category) == :validator }
+                    .transform_values { |info| info.fetch(:processor_class) }
           end
 
           # Get all modifiers
           #
           # @return [Hash] Hash of option_name => processor_class for modifiers
           def modifiers
-            registry.select { |_, info| info[:category] == :modifier }
-                    .transform_values { |info| info[:processor_class] }
+            registry.select { |_, info| info.fetch(:category) == :modifier }
+                    .transform_values { |info| info.fetch(:processor_class) }
           end
 
           # Reset registry (mainly for testing)

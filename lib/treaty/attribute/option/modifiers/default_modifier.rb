@@ -25,7 +25,7 @@ module Treaty
         # 1. **Response defaults** (most common):
         #    ```ruby
         #    response 200 do
-        #      scope :meta do
+        #      object :meta do
         #        integer :limit, default: 12
         #        integer :page, default: 1
         #      end

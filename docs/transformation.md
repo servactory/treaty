@@ -43,12 +43,12 @@ Apply default values when attributes are missing or nil.
 
 ```ruby
 request do
-  scope :_self do
+  object :_self do
     integer :page, default: 1
     integer :limit, default: 12
   end
 
-  scope :post do
+  object :post do
     string :status, default: "draft"
   end
 end
@@ -75,14 +75,14 @@ end
 
 ```ruby
 response 200 do
-  scope :post do
+  object :post do
     string :id
     string :title
     integer :views, default: 0
     string :status, default: "draft"
   end
 
-  scope :meta do
+  object :meta do
     integer :page, default: 1
     integer :limit, default: 12
   end
@@ -126,7 +126,7 @@ Rename attributes between client and service using the `as:` option.
 
 ```ruby
 request do
-  scope :social do
+  object :social do
     string :handle, as: :value
   end
 end
@@ -146,7 +146,7 @@ end
 
 ```ruby
 response 200 do
-  scope :social do
+  object :social do
     string :value, as: :handle
   end
 end
@@ -167,14 +167,14 @@ end
 ```ruby
 # Request: client 'handle' → service 'value'
 request do
-  scope :social do
+  object :social do
     string :handle, as: :value
   end
 end
 
 # Response: service 'value' → client 'handle'
 response 200 do
-  scope :social do
+  object :social do
     string :value, as: :handle
   end
 end
@@ -258,7 +258,7 @@ Transformations apply recursively to nested objects.
 
 ```ruby
 request do
-  scope :post do
+  object :post do
     object :author do
       string :display_name, as: :name
       string :email_address, as: :email
@@ -299,7 +299,7 @@ Transformations apply to each array item.
 
 ```ruby
 response 200 do
-  scope :post do
+  object :post do
     array :tags do
       string :_self
     end
@@ -321,7 +321,7 @@ end
 
 ```ruby
 request do
-  scope :post do
+  object :post do
     array :socials do
       string :handle, as: :value
       string :provider
@@ -360,7 +360,7 @@ Within the ADAPTER strategy, transformations happen in this order:
 
 ### Request Transformation
 
-1. **Validate structure** - Ensure scopes and types are correct
+1. **Validate structure** - Ensure objects and types are correct
 2. **Validate values** - Check required, inclusion, etc.
 3. **Apply defaults** - Fill in missing values with defaults
 4. **Rename attributes** - Apply `as:` transformations
@@ -385,19 +385,19 @@ version 1, default: true do
   strategy Treaty::Strategy::ADAPTER
 
   request do
-    scope :_self do
+    object :_self do
       integer :page, default: 1
       integer :limit, default: 12
     end
   end
 
   response 200 do
-    scope :posts do
+    object :posts do
       string :id
       string :title
     end
 
-    scope :meta do
+    object :meta do
       integer :count
       integer :page, default: 1
       integer :limit, default: 12
@@ -448,20 +448,20 @@ version 1, default: true do
   strategy Treaty::Strategy::ADAPTER
 
   request do
-    scope :profile do
+    object :profile do
       array :socials do
-        string :provider, :required
-        string :handle, :required, as: :value
+        string :provider
+        string :handle, as: :value
         string :display_url, :optional, as: :url
       end
     end
   end
 
   response 200 do
-    scope :profile do
-      string :id
+    object :profile do
+      string :id, :required
       array :socials do
-        string :provider
+        string :provider, :required
         string :value, as: :handle
         string :url, as: :display_url
       end
@@ -548,7 +548,7 @@ class Posts::ShowTreaty < ApplicationTreaty
     strategy Treaty::Strategy::ADAPTER
 
     response 200 do
-      scope :post do
+      object :post do
         string :id
         string :title
         string :author_name      # Flat structure
@@ -564,7 +564,7 @@ class Posts::ShowTreaty < ApplicationTreaty
     strategy Treaty::Strategy::ADAPTER
 
     response 200 do
-      scope :post do
+      object :post do
         string :id
         string :title
 
@@ -654,7 +654,7 @@ datetime :birth_date, :required
 ```ruby
 # Good - clear transformation
 request do
-  scope :user do
+  object :user do
     string :display_name, as: :name
     string :email_address, as: :email
   end
@@ -662,7 +662,7 @@ end
 
 # Avoid - confusing transformations
 request do
-  scope :user do
+  object :user do
     string :name, as: :email     # Confusing!
     string :email, as: :username # Misleading!
   end
@@ -675,7 +675,7 @@ end
 
 ```ruby
 request do
-  scope :post do
+  object :post do
     string :status, :required, default: "draft", in: %w[draft published]
   end
 end
@@ -698,8 +698,8 @@ end
 version 1 do
   strategy Treaty::Strategy::DIRECT
 
-  request { scope :post }
-  response(200) { scope :post }
+  request { object :post }
+  response(200) { object :post }
 
   delegate_to Posts::CreateService
 end
@@ -724,14 +724,14 @@ version 2 do
   strategy Treaty::Strategy::ADAPTER
 
   request do
-    scope :post do
+    object :post do
       string :title, :required
       string :status, default: "draft"
     end
   end
 
   response 201 do
-    scope :post do
+    object :post do
       string :id
       string :title
       string :status
@@ -778,7 +778,7 @@ boolean :terms_accepted, default: false
 ```ruby
 # Good - clear and documented
 request do
-  scope :profile do
+  object :profile do
     # Client sends 'handle', service expects 'value'
     string :handle, as: :value
   end
@@ -786,7 +786,7 @@ end
 
 # Better - use consistent naming to avoid renaming
 request do
-  scope :profile do
+  object :profile do
     string :handle  # Same name in client and service
   end
 end

@@ -15,14 +15,14 @@ This guide helps you diagnose and fix common issues when working with Treaty.
 **Solution:**
 1. Ensure attribute is present in request data
 2. Check if attribute is empty string or nil
-3. Verify scope structure matches definition
+3. Verify object structure matches definition
 
 **Example:**
 ```ruby
 # Treaty expects:
 request do
-  scope :post do
-    string :title, :required
+  object :post do
+    string :title
   end
 end
 
@@ -95,7 +95,7 @@ string :status, in: %w[draft published archived]
 **Example:**
 ```ruby
 # Treaty expects:
-object :author, :required do
+object :author do
   string :name
 end
 
@@ -130,7 +130,7 @@ end
 
 # Complex array
 array :authors do
-  string :name, :required
+  string :name
 end
 
 # Send:
@@ -228,7 +228,7 @@ version 1 do
   strategy Treaty::Strategy::ADAPTER
 
   request do
-    scope :_self do
+    object :_self do
       integer :page, default: 1  # Will apply
     end
   end
@@ -257,36 +257,36 @@ version 1 do
 
   # Request: client 'handle' → service 'value'
   request do
-    scope :social do
+    object :social do
       string :handle, as: :value
     end
   end
 
   # Response: service 'value' → client 'handle'
   response 200 do
-    scope :social do
+    object :social do
       string :value, as: :handle
     end
   end
 end
 ```
 
-## Scope Issues
+## Object Issues
 
-### "Scope 'X' not found"
+### "Object 'X' not found"
 
-**Problem:** Request data doesn't match scope structure.
+**Problem:** Request data doesn't match object structure.
 
 **Solution:**
-1. Check scope names in treaty
-2. Verify nested scope structure
-3. Ensure data is wrapped in correct scopes
+1. Check object names in treaty
+2. Verify nested object structure
+3. Ensure data is wrapped in correct objects
 
 **Example:**
 ```ruby
 # Treaty expects:
 request do
-  scope :post do
+  object :post do
     string :title
   end
 end
@@ -295,13 +295,13 @@ end
 { "post" => { "title" => "Hello" } }  # ✓ Correct
 
 # Not:
-{ "title" => "Hello" }  # ✗ Missing :post scope
-{ "article" => { "title" => "Hello" } }  # ✗ Wrong scope name
+{ "title" => "Hello" }  # ✗ Missing :post object
+{ "article" => { "title" => "Hello" } }  # ✗ Wrong object name
 ```
 
-### :_self scope confusion
+### :_self object confusion
 
-**Problem:** Not understanding how `:_self` scope works.
+**Problem:** Not understanding how `:_self` object works.
 
 **Solution:**
 `:_self` merges attributes into parent level instead of creating nested structure.
@@ -310,10 +310,10 @@ end
 ```ruby
 # With :_self
 request do
-  scope :_self do
+  object :_self do
     integer :page
   end
-  scope :post do
+  object :post do
     string :title
   end
 end
@@ -324,9 +324,9 @@ end
 # Not:
 { "_self" => { "page" => 1 }, "post" => { "title" => "Hello" } }  # ✗ Wrong
 
-# Without :_self (regular scope)
+# Without :_self (regular object)
 request do
-  scope :pagination do
+  object :pagination do
     integer :page
   end
 end
@@ -381,7 +381,7 @@ end
 
 # Complex array
 array :authors do
-  string :name, :required
+  string :name
 end
 
 { "authors" => [{ "name" => "John Doe" }] }  # ✓ Valid hash
@@ -508,8 +508,8 @@ end
 **Example:**
 ```ruby
 request do
-  scope :post do
-    string :title, :required
+  object :post do
+    string :title
     string :status, default: "draft"
   end
 end

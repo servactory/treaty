@@ -40,7 +40,7 @@ Full control with custom error messages:
 
 ```ruby
 string :title, required: { is: true, message: "Post title is required" }
-string :category, in: { list: %w[tech business], message: "Invalid category" }
+string :category, inclusion: { in: %w[tech business], message: "Invalid category" }
 ```
 
 ## Validation Types
@@ -51,9 +51,9 @@ Ensures an attribute is present and not empty.
 
 ```ruby
 request do
-  scope :post do
-    string :title, :required
-    string :content, :required
+  object :post do
+    string :title
+    string :content
   end
 end
 ```
@@ -81,8 +81,8 @@ Attribute can be missing or nil without causing errors.
 
 ```ruby
 request do
-  scope :post do
-    string :title, :required
+  object :post do
+    string :title
     string :summary, :optional
   end
 end
@@ -101,7 +101,7 @@ Ensures attribute matches the declared type.
 
 ```ruby
 request do
-  scope :post do
+  object :post do
     string :title
     integer :rating
     datetime :published_at
@@ -130,7 +130,7 @@ Restricts values to a predefined list.
 
 ```ruby
 request do
-  scope :post do
+  object :post do
     string :status, in: %w[draft published archived]
     integer :rating, in: [1, 2, 3, 4, 5]
   end
@@ -156,12 +156,12 @@ Objects (hashes) are validated recursively.
 
 ```ruby
 request do
-  scope :post do
-    string :title, :required
+  object :post do
+    string :title
 
-    object :author, :required do
-      string :name, :required
-      string :email, :required
+    object :author do
+      string :name
+      string :email
       string :bio, :optional
     end
   end
@@ -224,7 +224,7 @@ Arrays are validated item by item.
 
 ```ruby
 array :tags do
-  string :_self, :required
+  string :_self
 end
 ```
 
@@ -245,8 +245,8 @@ end
 
 ```ruby
 array :authors do
-  string :name, :required
-  string :email, :required
+  string :name
+  string :email
 end
 ```
 
@@ -311,7 +311,7 @@ end
 
 ```ruby
 request do
-  scope :post do
+  object :post do
     string :title        # Required by default
     string :summary, :optional  # Explicitly optional
   end
@@ -324,7 +324,7 @@ end
 
 ```ruby
 response 200 do
-  scope :post do
+  object :post do
     string :id          # Optional by default
     string :title       # Optional by default
     datetime :created_at  # Optional by default
@@ -349,7 +349,7 @@ end
 Treaty validates in this order:
 
 1. **Schema Validation** - Is the structure correct?
-   - Are scopes present?
+   - Are objects present?
    - Are required attributes present?
    - Are values the right types?
 
@@ -410,19 +410,19 @@ Use advanced mode for custom error messages:
 
 ```ruby
 request do
-  scope :post do
+  object :post do
     string :title, required: {
       is: true,
       message: "Post title cannot be empty"
     }
 
-    string :category, in: {
-      list: %w[tech business lifestyle],
+    string :category, inclusion: {
+      in: %w[tech business lifestyle],
       message: "Please select a valid category: tech, business, or lifestyle"
     }
 
-    integer :rating, in: {
-      list: [1, 2, 3, 4, 5],
+    integer :rating, inclusion: {
+      in: [1, 2, 3, 4, 5],
       message: "Rating must be between 1 and 5 stars"
     }
   end
@@ -450,55 +450,55 @@ version 1, default: true do
   strategy Treaty::Strategy::ADAPTER
 
   request do
-    scope :post do
-      string :title, :required
-      string :content, :required
+    object :post do
+      string :title
+      string :content
       string :summary, :optional
-      string :category, :required, in: %w[tech business lifestyle]
+      string :category, in: %w[tech business lifestyle]
 
       array :tags, :optional do
         string :_self, in: %w[ruby rails api docker kubernetes react vue]
       end
 
-      object :author, :required do
-        string :name, :required
-        string :email, :required
+      object :author do
+        string :name
+        string :email
         string :bio, :optional
 
         array :socials, :optional do
-          string :provider, :required, in: %w[twitter linkedin github]
-          string :handle, :required
+          string :provider, in: %w[twitter linkedin github]
+          string :handle
         end
       end
     end
   end
 
   response 201 do
-    scope :post do
-      string :id
-      string :title
-      string :content
+    object :post do
+      string :id, :required
+      string :title, :required
+      string :content, :required
       string :summary
-      string :category
+      string :category, :required
 
-      array :tags do
+      array :tags, :required do
         string :_self
       end
 
-      object :author do
-        string :name
-        string :email
+      object :author, :required do
+        string :name, :required
+        string :email, :required
         string :bio
 
         array :socials do
-          string :provider
-          string :handle
+          string :provider, :required
+          string :handle, :required
         end
       end
 
       integer :views
-      datetime :created_at
-      datetime :updated_at
+      datetime :created_at, :required
+      datetime :updated_at, :required
     end
   end
 
@@ -514,13 +514,13 @@ version 1, default: true do
 
   request do
     # Pagination at root level
-    scope :_self do
+    object :_self do
       integer :page, default: 1
       integer :limit, default: 12, in: [12, 24, 48, 96]
     end
 
-    # Filters as separate scope
-    scope :filters do
+    # Filters as separate object
+    object :filters do
       string :title, :optional
       string :category, :optional, in: %w[tech business lifestyle]
       string :status, :optional, in: %w[draft published archived]
@@ -533,26 +533,26 @@ version 1, default: true do
     end
 
     # Sorting options
-    scope :sort do
+    object :sort do
       string :by, default: "created_at", in: %w[created_at updated_at title]
       string :direction, default: "desc", in: %w[asc desc]
     end
   end
 
   response 200 do
-    scope :posts do
-      string :id
-      string :title
-      string :summary
-      string :category
-      datetime :created_at
+    object :posts do
+      string :id, :required
+      string :title, :required
+      string :summary, :required
+      string :category, :required
+      datetime :created_at, :required
     end
 
-    scope :meta do
-      integer :count
-      integer :page
-      integer :limit
-      integer :total_pages
+    object :meta do
+      integer :count, :required
+      integer :page, :required
+      integer :limit, :required
+      integer :total_pages, :required
     end
   end
 
@@ -566,7 +566,7 @@ end
 
 ```ruby
 # Good - clear and readable
-string :title, :required
+string :title
 string :summary, :optional
 
 # Acceptable but more verbose
@@ -579,9 +579,9 @@ string :summary, optional: true
 ```ruby
 # Good - strict validation for requests
 request do
-  scope :post do
-    string :title, :required
-    string :status, :required, in: %w[draft published]
+  object :post do
+    string :title
+    string :status, in: %w[draft published]
   end
 end
 ```
@@ -591,7 +591,7 @@ end
 ```ruby
 # Good - flexible response validation
 response 200 do
-  scope :post do
+  object :post do
     string :id
     string :title
     datetime :created_at
@@ -613,13 +613,13 @@ integer :rating, in: [1, 2, 3, 4, 5]
 
 ```ruby
 # Good - validate nested structures thoroughly
-object :author, :required do
-  string :name, :required
-  string :email, :required
+object :author do
+  string :name
+  string :email
 
   array :socials, :optional do
-    string :provider, :required, in: %w[twitter linkedin github]
-    string :handle, :required
+    string :provider, in: %w[twitter linkedin github]
+    string :handle
   end
 end
 ```
@@ -633,8 +633,8 @@ string :email, required: {
   message: "Email address is required for account creation"
 }
 
-integer :age, in: {
-  list: (18..100).to_a,
+integer :age, inclusion: {
+  in: (18..100).to_a,
   message: "Age must be between 18 and 100"
 }
 ```

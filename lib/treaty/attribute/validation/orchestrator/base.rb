@@ -9,12 +9,12 @@ module Treaty
         # ## Purpose
         #
         # Coordinates the validation and transformation of request/response data for a specific
-        # API version. Processes all scopes and their attributes, applying validations and
-        # transformations defined in the treaty DSL.
+        # API version. Processes all attributes, applying validations and transformations
+        # defined in the treaty DSL.
         #
         # ## Responsibilities
         #
-        # 1. **Scope Processing** - Iterates through all defined scopes
+        # 1. **Attribute Processing** - Iterates through all defined attributes
         # 2. **Attribute Validation** - Validates each attribute's value
         # 3. **Data Transformation** - Transforms values (defaults, renaming)
         # 4. **Nested Handling** - Delegates nested structures to NestedTransformer
@@ -23,17 +23,16 @@ module Treaty
         # ## Usage
         #
         # Subclasses must implement:
-        # - `collection_of_scopes` - Returns scopes for this context (request/response)
-        # - `scope_data_for(name)` - Extracts data for a specific scope
+        # - `collection_of_attributes` - Returns attributes for this context (request/response)
         #
         # Example:
         #   orchestrator = Request::Orchestrator.new(version_factory: factory, data: params)
         #   validated_data = orchestrator.validate!
         #
-        # ## Special Scopes
+        # ## Special Case: object :_self
         #
-        # - Normal scope: `{ scope_name: { ... } }`
-        # - Self scope (`:_self`): Attributes merged directly into parent
+        # - Normal object: `{ object_name: { ... } }`
+        # - Self object (`:_self`): Attributes merged directly into parent
         #
         # ## Architecture
         #
@@ -41,13 +40,13 @@ module Treaty
         # - `AttributeValidator` - Validates individual attributes
         # - `NestedTransformer` - Handles nested objects and arrays
         #
-        # The refactored design separates concerns:
-        # - Orchestrator: High-level flow and scope iteration
+        # The design separates concerns:
+        # - Orchestrator: High-level flow and attribute iteration
         # - Validator: Individual attribute validation
         # - Transformer: Nested structure transformation
         class Base
-          SELF_SCOPE = :_self
-          private_constant :SELF_SCOPE
+          SELF_OBJECT = :_self
+          private_constant :SELF_OBJECT
 
           attr_reader :version_factory, :data
 
@@ -69,17 +68,22 @@ module Treaty
             @data = data
           end
 
-          # Validates and transforms all scopes
-          # Iterates through scopes, processes attributes, handles :_self scope
+          # Validates and transforms all attributes
+          # Iterates through attributes, processes them, handles :_self objects
           #
-          # @return [Hash] Transformed data with all scopes processed
+          # @return [Hash] Transformed data with all attributes processed
           def validate!
             transformed_data = {}
 
-            collection_of_scopes.each do |scope_factory|
-              transformed_scope_data = validate_and_transform_scope!(scope_factory)
-              transformed_data[scope_factory.name] = transformed_scope_data if scope_factory.name != SELF_SCOPE
-              transformed_data.merge!(transformed_scope_data) if scope_factory.name == SELF_SCOPE
+            collection_of_attributes.each do |attribute|
+              transformed_value = validate_and_transform_attribute!(attribute)
+
+              if attribute.name == SELF_OBJECT && attribute.type == :object
+                # For object :_self, merge nested attributes to root
+                transformed_data.merge!(transformed_value)
+              else
+                transformed_data[attribute.name] = transformed_value
+              end
             end
 
             transformed_data
@@ -87,103 +91,83 @@ module Treaty
 
           private
 
-          # Returns collection of scopes for this context
+          # Returns collection of attributes for this context
           # Must be implemented in subclasses
           #
           # @raise [Treaty::Exceptions::Validation] If not implemented
-          # @return [Array<ScopeFactory>] Collection of scope factories
-          def collection_of_scopes
+          # @return [Treaty::Attribute::Collection] Collection of attributes
+          def collection_of_attributes
             raise Treaty::Exceptions::Validation,
                   I18n.t("treaty.attributes.validators.nested.orchestrator.collection_not_implemented")
           end
 
-          # Validates all attributes in a scope (deprecated, not used)
+          # Gets cached validators for attributes or builds them
           #
-          # @param scope_factory [ScopeFactory] The scope to validate
-          # @return [void]
-          def validate_scope!(scope_factory)
-            scope_data = scope_data_for(scope_factory.name)
-
-            validators_for_scope(scope_factory).each do |attribute, validator|
-              value = scope_data.fetch(attribute.name, nil)
-              validator.validate_value!(value)
-            end
+          # @return [Hash] Hash of attribute => validator
+          def validators_for_attributes
+            @validators_for_attributes ||= build_validators_for_attributes
           end
 
-          # Gets cached validators for scope or builds them
+          # Builds validators for all attributes
           #
-          # @param scope_factory [ScopeFactory] The scope factory
           # @return [Hash] Hash of attribute => validator
-          def validators_for_scope(scope_factory)
-            @validators_cache ||= {}
-            @validators_cache[scope_factory] ||= build_validators_for_scope(scope_factory)
-          end
-
-          # Builds validators for all attributes in a scope
-          #
-          # @param scope_factory [ScopeFactory] The scope factory
-          # @return [Hash] Hash of attribute => validator
-          def build_validators_for_scope(scope_factory)
-            scope_factory.collection_of_attributes.each_with_object({}) do |attribute, cache|
+          def build_validators_for_attributes
+            collection_of_attributes.each_with_object({}) do |attribute, cache|
               validator = AttributeValidator.new(attribute)
               validator.validate_schema!
               cache[attribute] = validator
             end
           end
 
-          # Extracts data for a specific scope
-          # Must be implemented in subclasses
-          #
-          # @param _name [Symbol] The scope name
-          # @raise [Treaty::Exceptions::Validation] If not implemented
-          # @return [Hash] Scope data
-          def scope_data_for(_name)
-            raise Treaty::Exceptions::Validation,
-                  I18n.t("treaty.attributes.validators.nested.orchestrator.scope_data_not_implemented")
-          end
-
-          # Validates and transforms all attributes in a scope
+          # Validates and transforms a single attribute
           # Handles both nested and regular attributes
           #
-          # @param scope_factory [ScopeFactory] The scope to process
-          # @return [Hash] Transformed scope data
-          def validate_and_transform_scope!(scope_factory) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
-            scope_data = scope_data_for(scope_factory.name)
+          # @param attribute [Attribute] The attribute to process
+          # @return [Object] Transformed attribute value
+          def validate_and_transform_attribute!(attribute) # rubocop:disable Metrics/MethodLength
+            validator = validators_for_attributes.fetch(attribute)
 
-            return scope_data if scope_factory.collection_of_attributes.empty?
+            # For :_self object, get data from root; otherwise from attribute key
+            value = if attribute.name == SELF_OBJECT && attribute.type == :object
+                      data
+                    else
+                      data.fetch(attribute.name, nil)
+                    end
 
-            transformed_scope_data = {}
-
-            validators_for_scope(scope_factory).each do |attribute, validator|
-              source_name = attribute.name
-              value = scope_data.fetch(source_name, nil)
-
-              if attribute.nested?
-                transformed_value = validate_and_transform_nested(attribute, value, validator)
-              else
-                validator.validate_value!(value)
-                transformed_value = validator.transform_value(value)
-              end
-
-              target_name = validator.target_name
-
-              transformed_scope_data[target_name] = transformed_value
+            if attribute.nested?
+              validate_and_transform_nested(attribute, value, validator)
+            else
+              validator.validate_value!(value)
+              validator.transform_value(value)
             end
-
-            transformed_scope_data
           end
 
           # Validates and transforms nested attribute (object/array)
           # Delegates transformation to NestedTransformer
           #
           # @param attribute [Attribute::Base] The nested attribute
-          # @param value [Object] The value to validate and transform
+          # @param value [Object, nil] The value to validate and transform
           # @param validator [AttributeValidator] The validator instance
-          # @return [Object] Transformed nested value
+          # @return [Object, nil] Transformed nested value or nil
+          #
+          # @note Flow control:
+          #   - If value is nil and attribute is required → validate_required! raises exception
+          #   - If value is nil and attribute is optional → validate_required! does nothing, returns nil
+          #   - If value is not nil → proceeds to transformation (value guaranteed non-nil)
           def validate_and_transform_nested(attribute, value, validator)
+            # Step 1: Validate type if value is present
             validator.validate_type!(value) unless value.nil?
+
+            # Step 2: Validate required constraint
+            # This will raise an exception if attribute is required and value is nil
             validator.validate_required!(value)
 
+            # Step 3: Early return for nil values
+            # Only reaches here if attribute is optional and value is nil
+            return nil if value.nil?
+
+            # Step 4: Transform non-nil value
+            # At this point, value is guaranteed to be non-nil
             transformer = NestedTransformer.new(attribute)
             transformer.transform(value)
           end

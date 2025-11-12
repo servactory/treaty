@@ -14,8 +14,8 @@ module Gate
               Gem::Version.new("17.0.0")
           end
 
-          request       { scope :post }
-          response(201) { scope :post }
+          request       { object :post }
+          response(201) { object :post }
 
           # Present: title, summary. Missing: description.
           delegate_to ::Posts::V1::CreateService
@@ -35,16 +35,16 @@ module Gate
           end)
 
           request do
-            scope :post do
-              string :title, :required
-              string :summary, :required
+            object :post, :optional do
+              string :title
+              string :summary
               string :description, :optional
-              string :content, :required
+              string :content
             end
           end
 
           response 201 do
-            scope :post do
+            object :post do
               string :id
               string :title
               string :summary
@@ -66,38 +66,38 @@ module Gate
 
           request do
             # Query
-            scope :_self do # should be perceived as root
-              string :signature, :required
+            object :_self do # should be perceived as root
+              string :signature
             end
           end
 
           request do
             # Body
-            scope :post do
-              string :title, :required
-              string :summary, :required
+            object :post do
+              string :title
+              string :summary
               string :description, :optional
-              string :content, :required
+              string :content
               boolean :published, :optional
 
               array :tags, :optional do
-                string :_self, :required
+                string :_self
               end
 
-              object :author, :required do
-                string :name, :required
-                string :bio, :required
+              object :author do
+                string :name
+                string :bio
 
                 array :socials, :optional do
-                  string :provider, :required, in: %w[twitter linkedin github]
-                  string :handle, :required, as: :value
+                  string :provider, in: %w[twitter linkedin github]
+                  string :handle, as: :value
                 end
               end
             end
           end
 
           response 201 do
-            scope :post do
+            object :post do
               string :id
               string :title
               string :summary

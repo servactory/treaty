@@ -12,7 +12,7 @@ Treaty supports the following attribute types:
 
 ```ruby
 string :title
-string :email, :required
+string :email
 string :bio, :optional
 ```
 
@@ -22,7 +22,7 @@ string :bio, :optional
 
 ```ruby
 integer :age
-integer :count, :required
+integer :count
 integer :page, default: 1
 ```
 
@@ -32,7 +32,7 @@ integer :page, default: 1
 
 ```ruby
 boolean :published
-boolean :active, :required
+boolean :active
 boolean :featured, :optional
 ```
 
@@ -46,7 +46,7 @@ boolean :featured, :optional
 
 ```ruby
 datetime :created_at
-datetime :published_at, :required
+datetime :published_at
 ```
 
 **Type validation:** Value must be `DateTime`, `Time`, or `Date`
@@ -59,7 +59,7 @@ Represents a nested hash structure.
 
 ```ruby
 object :author do
-  string :name, :required
+  string :name
   string :email
 end
 ```
@@ -80,7 +80,7 @@ end
 
 # Complex array (objects)
 array :authors do
-  string :name, :required
+  string :name
   string :email
 end
 ```
@@ -98,8 +98,8 @@ end
 Marks attribute as required (must be present and non-empty).
 
 ```ruby
-string :title, :required
-integer :age, :required
+string :title
+integer :age
 ```
 
 **Equivalent to:**
@@ -178,14 +178,14 @@ Renames attribute during transformation.
 # Request: expect 'handle', output as 'value'
 string :handle, as: :value
 
-# Response: expect 'value' from service, output as 'handle'
+# Response: expect 'value', output as 'handle'
 string :value, as: :handle
 ```
 
 **Use case - Request (incoming data):**
 ```ruby
 request do
-  scope :social do
+  object :social do
     string :user_id, as: :id  # Client sends 'user_id', service receives 'id'
   end
 end
@@ -194,7 +194,7 @@ end
 **Use case - Response (outgoing data):**
 ```ruby
 response 200 do
-  scope :social do
+  object :social do
     string :id, as: :user_id  # Service returns 'id', client receives 'user_id'
   end
 end
@@ -239,7 +239,7 @@ By default, request attributes are **required**:
 
 ```ruby
 request do
-  scope :post do
+  object :post do
     string :title          # required: true (implicit)
     string :content        # required: true (implicit)
     string :bio, :optional # required: false (explicit)
@@ -253,10 +253,10 @@ By default, response attributes are **optional**:
 
 ```ruby
 response 200 do
-  scope :post do
+  object :post do
     string :id             # required: false (implicit)
     string :title          # required: false (implicit)
-    string :rating, :required  # required: true (explicit)
+    string :rating, :required  # required: true (explicit, in response)
   end
 end
 ```
@@ -335,9 +335,9 @@ false  # boolean false is considered present!
 
 ```ruby
 request do
-  scope :post do
-    string :title, :required
-    string :content, :required
+  object :post do
+    string :title
+    string :content
     string :summary, :optional
     boolean :published, :optional
     array :tags, :optional do
@@ -351,7 +351,7 @@ end
 
 ```ruby
 response 200 do
-  scope :user do
+  object :user do
     string :id
     string :email
     string :name
@@ -367,7 +367,7 @@ end
 
 ```ruby
 response 200 do
-  scope :meta do
+  object :meta do
     integer :count
     integer :page, default: 1
     integer :limit, default: 12
@@ -380,8 +380,8 @@ end
 
 ```ruby
 object :social do
-  string :provider, :required, in: %w[twitter linkedin github]
-  string :handle, :required, as: :value
+  string :provider, in: %w[twitter linkedin github]
+  string :handle, as: :value
   string :url
 end
 ```

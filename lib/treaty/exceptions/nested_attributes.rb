@@ -18,7 +18,7 @@ module Treaty
     #
     # ```ruby
     # request do
-    #   scope :user do
+    #   object :user do
     #     object :profile do
     #       object :settings do
     #         object :preferences do
@@ -57,7 +57,7 @@ module Treaty
     #
     # - Keep nesting shallow (2-3 levels maximum)
     # - Consider flattening deeply nested structures
-    # - Use separate scopes instead of deep nesting
+    # - Use separate objects instead of deep nesting
     # - Refactor complex structures into simpler ones
     class NestedAttributes < Base
     end

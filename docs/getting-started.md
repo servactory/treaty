@@ -59,20 +59,20 @@ module Gate
           strategy Treaty::Strategy::ADAPTER
 
           request do
-            scope :filters do
+            object :filters do
               string :title, :optional
               string :summary, :optional
             end
           end
 
           response 200 do
-            scope :posts do
+            object :posts do
               string :id
               string :title
               string :summary
             end
 
-            scope :meta do
+            object :meta do
               integer :count
               integer :page
               integer :limit, default: 12

@@ -19,8 +19,8 @@ DIRECT strategy passes data directly to your service without validation or trans
 version 1 do
   strategy Treaty::Strategy::DIRECT
 
-  request { scope :post }
-  response(201) { scope :post }
+  request { object :post }
+  response(201) { object :post }
 
   delegate_to Posts::CreateService
 end
@@ -59,9 +59,9 @@ class Posts::CreateTreaty < ApplicationTreaty
   version 1 do
     strategy Treaty::Strategy::DIRECT
 
-    # Just declare scopes, no validation
-    request { scope :post }
-    response(201) { scope :post }
+    # Just declare objects, no validation
+    request { object :post }
+    response(201) { object :post }
 
     delegate_to Posts::CreateService
   end
@@ -108,15 +108,15 @@ version 2 do
   strategy Treaty::Strategy::ADAPTER
 
   request do
-    scope :post do
-      string :title, :required
-      string :content, :required
+    object :post do
+      string :title
+      string :content
       string :summary, :optional
     end
   end
 
   response 201 do
-    scope :post do
+    object :post do
       string :id
       string :title
       string :content
@@ -177,29 +177,29 @@ class Posts::CreateTreaty < ApplicationTreaty
     strategy Treaty::Strategy::ADAPTER
 
     request do
-      scope :post do
-        string :title, :required
-        string :content, :required
+      object :post do
+        string :title
+        string :content
         integer :rating, :optional, in: [1, 2, 3, 4, 5]
 
-        object :author, :required do
-          string :name, :required
-          string :email, :required
+        object :author do
+          string :name
+          string :email
         end
       end
     end
 
     response 201 do
-      scope :post do
-        string :id
-        string :title
-        string :content
+      object :post do
+        string :id, :required
+        string :title, :required
+        string :content, :required
         integer :rating
-        object :author do
-          string :name
-          string :email
+        object :author, :required do
+          string :name, :required
+          string :email, :required
         end
-        datetime :created_at
+        datetime :created_at, :required
       end
     end
 
@@ -295,7 +295,7 @@ end
 
 ```ruby
 request do
-  scope :post do
+  object :post do
     integer :rating
   end
 end
@@ -312,8 +312,8 @@ end
 
 ```ruby
 request do
-  scope :post do
-    string :title, :required
+  object :post do
+    string :title
   end
 end
 
@@ -329,7 +329,7 @@ end
 
 ```ruby
 request do
-  scope :post do
+  object :post do
     string :status, in: %w[draft published archived]
   end
 end
@@ -348,7 +348,7 @@ end
 
 ```ruby
 response 200 do
-  scope :meta do
+  object :meta do
     integer :page, default: 1
     integer :limit, default: 12
   end
@@ -365,7 +365,7 @@ end
 
 ```ruby
 request do
-  scope :social do
+  object :social do
     string :handle, as: :value
   end
 end
@@ -386,8 +386,8 @@ class Posts::CreateTreaty < ApplicationTreaty
   # Version 1: Quick MVP with DIRECT
   version 1 do
     strategy Treaty::Strategy::DIRECT
-    request { scope :post }
-    response(201) { scope :post }
+    request { object :post }
+    response(201) { object :post }
     delegate_to Posts::V1::CreateService
   end
 
@@ -396,14 +396,14 @@ class Posts::CreateTreaty < ApplicationTreaty
     strategy Treaty::Strategy::ADAPTER
 
     request do
-      scope :post do
-        string :title, :required
-        string :content, :required
+      object :post do
+        string :title
+        string :content
       end
     end
 
     response 201 do
-      scope :post do
+      object :post do
         string :id
         string :title
         string :content

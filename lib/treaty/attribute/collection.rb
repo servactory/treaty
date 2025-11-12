@@ -14,7 +14,7 @@ module Treaty
     # ## Usage
     #
     # Used internally by:
-    # - Scope factories (to store attributes in a scope)
+    # - Request/Response factories (to store attributes)
     # - Attribute::Base (to store nested attributes)
     #
     # ## Methods

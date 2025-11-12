@@ -34,9 +34,9 @@ module Treaty
         end
 
         def response_attributes_exist?
-          return false if @version_factory.response_factory&.collection_of_scopes&.empty?
+          return false if @version_factory.response_factory&.collection_of_attributes&.empty?
 
-          @version_factory.response_factory.collection_of_scopes.exists?
+          @version_factory.response_factory.collection_of_attributes.exists?
         end
       end
     end

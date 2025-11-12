@@ -56,41 +56,27 @@ module Treaty
       ##########################################################################
 
       def build_request_with(version)
-        {
-          scopes: build_scopes_with(version.request_factory)
-        }
+        build_attributes_structure(version.request_factory)
       end
 
       def build_response_with(version)
         response_factory = version.response_factory
         {
-          status: response_factory.status,
-          scopes: build_scopes_with(response_factory)
+          status: response_factory.status
+        }.merge(build_attributes_structure(response_factory))
+      end
+
+      ##########################################################################
+
+      def build_attributes_structure(factory)
+        {
+          attributes: build_attributes_hash(factory.collection_of_attributes)
         }
       end
 
-      ##########################################################################
-
-      def build_scopes_with(request_factory)
-        request_factory.collection_of_scopes.to_h do |scope|
-          [
-            scope.name,
-            build_attributes_with(scope.collection_of_attributes)
-          ]
-        end
-      end
-
-      ##########################################################################
-
-      def build_attributes_with(collection, current_level = 0)
+      def build_attributes_hash(collection, current_level = 0)
         # validate_nesting_level!(current_level)
 
-        {
-          attributes: build_attributes_hash(collection, current_level)
-        }
-      end
-
-      def build_attributes_hash(collection, current_level)
         collection.to_h do |attribute|
           [
             attribute.name,

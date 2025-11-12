@@ -23,14 +23,14 @@ module Gate
           strategy Treaty::Strategy::ADAPTER
 
           request do
-            scope :post do
-              string :title, :required
-              string :content, :required
+            object :post do
+              string :title
+              string :content
             end
           end
 
           response 201 do
-            scope :post do
+            object :post do
               string :id
               string :title
               string :content
@@ -83,27 +83,27 @@ end
 
 ## Request Definition
 
-### Single Scope
+### Single Object
 
 ```ruby
 request do
-  scope :post do
-    string :title, :required
-    string :content, :required
+  object :post do
+    string :title
+    string :content
   end
 end
 ```
 
-### Multiple Scopes
+### Multiple Objects
 
 ```ruby
 request do
-  scope :post do
-    string :title, :required
-    string :content, :required
+  object :post do
+    string :title
+    string :content
   end
 
-  scope :filters do
+  object :filters do
     string :category, :optional
     array :tags, :optional do
       string :_self
@@ -112,19 +112,19 @@ request do
 end
 ```
 
-### Root Level Attributes (`:_self` scope)
+### Root Level Attributes (`:_self` object)
 
 ```ruby
 request do
   # These attributes go to root level
-  scope :_self do
-    string :signature, :required
-    string :timestamp, :required
+  object :_self do
+    string :signature
+    string :timestamp
   end
 
   # These go under 'post' key
-  scope :post do
-    string :title, :required
+  object :post do
+    string :title
   end
 end
 
@@ -136,15 +136,15 @@ end
 # }
 ```
 
-### Empty Scope (Declaration Only)
+### Empty Object (Declaration Only)
 
 ```ruby
 request do
-  scope :post
-  scope :filters
+  object :post
+  object :filters
 end
 
-# Just declares that these scopes exist
+# Just declares that these objects exist
 # Useful with DIRECT strategy
 ```
 
@@ -154,7 +154,7 @@ end
 
 ```ruby
 response 200 do
-  scope :posts do
+  object :posts do
     string :id
     string :title
   end
@@ -165,19 +165,19 @@ end
 
 ```ruby
 response 200 do
-  scope :posts do
+  object :posts do
     string :id
     string :title
   end
 
-  scope :meta do
+  object :meta do
     integer :count
     integer :page
   end
 end
 
 response 201 do
-  scope :post do
+  object :post do
     string :id
     string :title
     datetime :created_at
@@ -185,7 +185,7 @@ response 201 do
 end
 
 response 422 do
-  scope :errors do
+  object :errors do
     string :message
   end
 end
@@ -210,8 +210,8 @@ strategy Treaty::Strategy::DIRECT
 version 1 do
   strategy Treaty::Strategy::DIRECT
 
-  request { scope :post }
-  response(201) { scope :post }
+  request { object :post }
+  response(201) { object :post }
 
   delegate_to Posts::V1::CreateService
 end
@@ -235,9 +235,9 @@ version 2 do
   strategy Treaty::Strategy::ADAPTER
 
   request do
-    scope :post do
-      string :title, :required
-      string :content, :required
+    object :post do
+      string :title
+      string :content
       array :tags, :optional do
         string :_self
       end
@@ -245,7 +245,7 @@ version 2 do
   end
 
   response 201 do
-    scope :post do
+    object :post do
       string :id
       string :title
       string :content
@@ -303,16 +303,16 @@ You can define multiple request blocks that will be merged:
 ```ruby
 request do
   # Query parameters
-  scope :_self do
-    string :signature, :required
+  object :_self do
+    string :signature
   end
 end
 
 request do
   # Body parameters
-  scope :post do
-    string :title, :required
-    string :content, :required
+  object :post do
+    string :title
+    string :content
   end
 end
 ```
@@ -409,36 +409,36 @@ module Gate
           strategy Treaty::Strategy::ADAPTER
 
           request do
-            scope :_self do
-              string :signature, :required
+            object :_self do
+              string :signature
             end
           end
 
           request do
-            scope :post do
-              string :title, :required
-              string :summary, :required
+            object :post do
+              string :title
+              string :summary
               string :description, :optional
-              string :content, :required
+              string :content
 
               array :tags, :optional do
-                string :_self, :required
+                string :_self
               end
 
-              object :author, :required do
-                string :name, :required
-                string :bio, :required
+              object :author do
+                string :name
+                string :bio
 
                 array :socials, :optional do
-                  string :provider, :required, in: %w[twitter linkedin github]
-                  string :handle, :required, as: :value
+                  string :provider, in: %w[twitter linkedin github]
+                  string :handle, as: :value
                 end
               end
             end
           end
 
           response 201 do
-            scope :post do
+            object :post do
               string :id
               string :title
               string :summary
@@ -478,7 +478,7 @@ end
 ## Next Steps
 
 - [Attributes](./attributes.md) - learn about attribute types and options
-- [Scopes](./scopes.md) - understand scope organization
+- [Objects](./objects.md) - understand object organization
 - [Versioning](./versioning.md) - manage multiple versions
 
 [← Back: Core Concepts](./core-concepts.md) | [← Back to Documentation](./README.md) | [Next: Attributes →](./attributes.md)

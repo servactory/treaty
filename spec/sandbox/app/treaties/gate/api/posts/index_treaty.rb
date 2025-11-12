@@ -11,7 +11,7 @@ module Gate
 
           request do
             # Query: filters[title], filters[middle_name], filters[summary]
-            scope :filters do
+            object :filters, :optional do
               string :title, :optional
               string :summary, :optional
               string :description, :optional
@@ -19,8 +19,8 @@ module Gate
           end
 
           response 200 do
-            scope :posts
-            scope :meta
+            object :posts
+            object :meta
           end
 
           # Present: title, summary. Missing: middle_name.
@@ -37,7 +37,7 @@ module Gate
 
           request do
             # Query: filters[title], filters[middle_name], filters[summary]
-            scope :filters do
+            object :filters, :optional do
               string :title, :optional
               string :summary, :optional
               string :description, :optional
@@ -45,8 +45,8 @@ module Gate
           end
 
           response 200 do
-            scope :posts
-            scope :meta
+            object :posts
+            object :meta
           end
 
           # Present: title, summary. Missing: middle_name.
@@ -66,7 +66,7 @@ module Gate
 
           request do
             # Query: filters[title], filters[middle_name], filters[summary]
-            scope :filters do
+            object :filters, :optional do
               string :title, :optional
               string :summary, :optional
               string :description, :optional
@@ -74,8 +74,8 @@ module Gate
           end
 
           response 200 do
-            scope :posts
-            scope :meta
+            object :posts
+            object :meta
           end
 
           # Present: title, summary. Missing: middle_name.
@@ -94,16 +94,9 @@ module Gate
         version 2 do # Also supported: 2.0, 2.0.0.rc1
           strategy Treaty::Strategy::ADAPTER
 
-          # TODO: An idea on how to simplify while maintaining power:
-          #       - When one scope:
-          #         - request(:post) { string :title }
-          #         - response(:post, 200) { string :title }
-          #       - When multiple scopes:
-          #         - requests { scope(:post) { string :title } }
-          #         - responses(200) { scope(:post) { string :title } }
           request do
             # Query: filters[title], filters[middle_name], filters[summary]
-            scope :filters do
+            object :filters, :optional do
               string :title, :optional
               string :summary, :optional
               string :description, :optional
@@ -111,7 +104,7 @@ module Gate
           end
 
           response 200 do
-            scope :posts do
+            object :posts do
               string :id
               string :title
               string :summary
@@ -119,7 +112,7 @@ module Gate
               string :content
             end
 
-            scope :meta do
+            object :meta do
               integer :count
               integer :page
               integer :limit
@@ -135,16 +128,9 @@ module Gate
         version 3, default: true do # Also supported: 2.0, 2.0.0.rc1
           strategy Treaty::Strategy::ADAPTER
 
-          # TODO: An idea on how to simplify while maintaining power:
-          #       - When one scope:
-          #         - request(:post) { string :title }
-          #         - response(:post, 200) { string :title }
-          #       - When multiple scopes:
-          #         - requests { scope(:post) { string :title } }
-          #         - responses(200) { scope(:post) { string :title } }
           request do
             # Query: filters[title], filters[middle_name], filters[summary]
-            scope :filters do
+            object :filters, :optional do
               string :title, :optional
               string :summary, :optional
               string :description, :optional
@@ -152,7 +138,7 @@ module Gate
           end
 
           response 200 do
-            scope :posts do
+            object :posts do
               string :id
               string :title
               string :summary
@@ -160,7 +146,7 @@ module Gate
               string :content
             end
 
-            scope :meta do
+            object :meta do
               integer :count
               integer :page
               integer :limit, default: 12

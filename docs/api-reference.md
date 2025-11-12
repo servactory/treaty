@@ -156,16 +156,16 @@ Define the structure of incoming requests.
 **Syntax:**
 ```ruby
 request do
-  # Scope and attribute definitions
+  # Attribute definitions
 end
 ```
 
 **Example:**
 ```ruby
 request do
-  scope :post do
-    string :title, :required
-    string :content, :required
+  object :post do
+    string :title
+    string :content
   end
 end
 ```
@@ -174,13 +174,13 @@ end
 ```ruby
 # These will be merged
 request do
-  scope :filters do
+  object :filters do
     string :category
   end
 end
 
 request do
-  scope :post do
+  object :post do
     string :title
   end
 end
@@ -195,7 +195,7 @@ Define the structure of outgoing responses.
 **Syntax:**
 ```ruby
 response status_code do
-  # Scope and attribute definitions
+  # Attribute definitions
 end
 ```
 
@@ -205,61 +205,61 @@ end
 **Example:**
 ```ruby
 response 200 do
-  scope :post do
+  object :post do
     string :id
     string :title
   end
 end
 
 response 201 do
-  scope :post do
+  object :post do
     string :id
     datetime :created_at
   end
 end
 
 response 404 do
-  scope :error do
+  object :error do
     string :message
   end
 end
 ```
 
-## Scope Definition
+## Object Definition
 
-### `scope`
+### `object`
 
-Define a scope to group related attributes.
+Define an object attribute to group related attributes.
 
 **Syntax:**
 ```ruby
-scope :name do
+object :name do
   # Attribute definitions
 end
 
-# Empty scope (no structure defined)
-scope :name
+# Empty object (no structure defined)
+object :name
 ```
 
 **Parameters:**
-- `:name` - Symbol representing the scope name
-- Special scope: `:_self` - Merges attributes to parent level
+- `:name` - Symbol representing the object name
+- Special object: `:_self` - Merges attributes to parent level
 
 **Examples:**
 ```ruby
-# Regular scope
-scope :post do
+# Regular object
+object :post do
   string :title
 end
 
-# Special :_self scope
-scope :_self do
+# Special :_self object
+object :_self do
   integer :page, default: 1
   integer :limit, default: 12
 end
 
-# Empty scope
-scope :metadata
+# Empty object
+object :metadata
 ```
 
 ## Attribute Types
@@ -273,16 +273,21 @@ Define a string attribute.
 string :name, *modes, **options
 ```
 
-**Examples:**
+**Examples (Request - required by default):**
 ```ruby
 string :title
-string :title, :required
 string :title, :optional
-string :title, required: true
 string :title, default: "Untitled"
 string :title, in: %w[draft published archived]
 string :title, as: :post_title
 string :category, required: { is: true, message: "Category is required" }
+```
+
+**Examples (Response - optional by default):**
+```ruby
+string :title
+string :title, :required
+string :title, default: "Untitled"
 ```
 
 ### `integer`
@@ -294,13 +299,20 @@ Define an integer attribute.
 integer :name, *modes, **options
 ```
 
-**Examples:**
+**Examples (Request - required by default):**
+```ruby
+integer :count
+integer :page
+integer :limit, default: 12
+integer :rating, in: [1, 2, 3, 4, 5]
+integer :age, as: :user_age
+```
+
+**Examples (Response - optional by default):**
 ```ruby
 integer :count
 integer :page, :required
 integer :limit, default: 12
-integer :rating, in: [1, 2, 3, 4, 5]
-integer :age, as: :user_age
 ```
 
 ### `boolean`
@@ -312,11 +324,18 @@ Define a boolean attribute.
 boolean :name, *modes, **options
 ```
 
-**Examples:**
+**Examples (Request - required by default):**
 ```ruby
 boolean :published
-boolean :active, :required
+boolean :active
 boolean :featured, :optional
+boolean :archived, default: false
+```
+
+**Examples (Response - optional by default):**
+```ruby
+boolean :published
+boolean :active
 boolean :archived, default: false
 ```
 
@@ -331,11 +350,18 @@ Define a datetime attribute.
 datetime :name, *modes, **options
 ```
 
-**Examples:**
+**Examples (Request - required by default):**
 ```ruby
 datetime :created_at
 datetime :published_at, :optional
 datetime :expires_at, default: -> { Time.now + 1.day }
+```
+
+**Examples (Response - optional by default):**
+```ruby
+datetime :created_at
+datetime :published_at
+datetime :updated_at, :required
 ```
 
 ### `object`
@@ -352,12 +378,12 @@ end
 object :name, *modes, **options
 ```
 
-**Examples:**
+**Examples (Request - required by default):**
 ```ruby
 # Object with structure
-object :author, :required do
-  string :name, :required
-  string :email, :required
+object :author do
+  string :name
+  string :email
   string :bio, :optional
 end
 
@@ -368,7 +394,33 @@ object :metadata, :optional
 object :post do
   string :title
 
-  object :author, :required do
+  object :author do
+    string :name
+
+    object :company do
+      string :name
+    end
+  end
+end
+```
+
+**Examples (Response - optional by default):**
+```ruby
+# Object with structure
+object :author do
+  string :name
+  string :email
+  string :bio
+end
+
+# Empty object
+object :metadata
+
+# Deeply nested
+object :post do
+  string :title
+
+  object :author do
     string :name
 
     object :company do
@@ -398,7 +450,7 @@ end
 array :name, *modes, **options
 ```
 
-**Examples:**
+**Examples (Request - required by default):**
 ```ruby
 # Simple array of strings
 array :tags, :optional do
@@ -406,8 +458,8 @@ array :tags, :optional do
 end
 
 # Complex array of objects
-array :authors, :required do
-  string :name, :required
+array :authors do
+  string :name
   string :email
 end
 
@@ -425,6 +477,23 @@ end
 array :items, :optional
 ```
 
+**Examples (Response - optional by default):**
+```ruby
+# Simple array of strings
+array :tags do
+  string :_self
+end
+
+# Complex array of objects
+array :authors do
+  string :name
+  string :email
+end
+
+# Empty array
+array :items
+```
+
 ## Attribute Options
 
 ### Helper Mode
@@ -436,11 +505,18 @@ Use symbols for simple definitions:
 :optional  # Attribute can be missing or nil
 ```
 
-**Examples:**
+**Request examples (required by default):**
 ```ruby
-string :title, :required
+string :title
 string :summary, :optional
-integer :count, :required
+integer :count
+```
+
+**Response examples (optional by default):**
+```ruby
+string :title
+string :summary, :required
+integer :count
 ```
 
 ### Simple Mode Options
@@ -697,8 +773,8 @@ module Gate
           deprecated true
           strategy Treaty::Strategy::DIRECT
 
-          request { scope :post }
-          response(201) { scope :post }
+          request { object :post }
+          response(201) { object :post }
 
           delegate_to Posts::V1::CreateService
         end
@@ -710,16 +786,16 @@ module Gate
 
           request do
             # Root-level attributes
-            scope :_self do
-              string :api_key, :required
+            object :_self do
+              string :api_key
             end
 
             # Post data
-            scope :post do
-              string :title, :required
-              string :content, :required
+            object :post do
+              string :title
+              string :content
               string :summary, :optional
-              string :category, :required, in: %w[tech business lifestyle]
+              string :category, in: %w[tech business lifestyle]
               boolean :published, :optional
 
               # Simple array
@@ -728,50 +804,50 @@ module Gate
               end
 
               # Nested object
-              object :author, :required do
-                string :name, :required
-                string :email, :required
+              object :author do
+                string :name
+                string :email
                 string :bio, :optional
 
                 # Complex array
                 array :socials, :optional do
-                  string :provider, :required, in: %w[twitter linkedin github]
-                  string :handle, :required, as: :value
+                  string :provider, in: %w[twitter linkedin github]
+                  string :handle, as: :value
                 end
               end
             end
           end
 
           response 201 do
-            scope :post do
-              string :id
-              string :title
-              string :content
+            object :post do
+              string :id, :required
+              string :title, :required
+              string :content, :required
               string :summary
-              string :category
-              boolean :published
+              string :category, :required
+              boolean :published, :required
 
-              array :tags do
+              array :tags, :required do
                 string :_self
               end
 
-              object :author do
-                string :name
-                string :email
+              object :author, :required do
+                string :name, :required
+                string :email, :required
                 string :bio
 
                 array :socials do
-                  string :provider
+                  string :provider, :required
                   string :value, as: :handle
                 end
               end
 
               integer :views, default: 0
-              datetime :created_at
-              datetime :updated_at
+              datetime :created_at, :required
+              datetime :updated_at, :required
             end
 
-            scope :meta do
+            object :meta do
               string :request_id
               datetime :requested_at
             end
@@ -806,9 +882,9 @@ end
 
 ### 4. Structure Organization
 - Keep nesting shallow (max 5 levels)
-- Use meaningful scope names
+- Use meaningful object names
 - Use `:_self` sparingly
-- Group related attributes in scopes
+- Group related attributes in objects
 
 ### 5. Transformation
 - Use defaults for safe, sensible values

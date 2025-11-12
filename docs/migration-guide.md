@@ -63,7 +63,7 @@ version 1, default: true do
   strategy Treaty::Strategy::ADAPTER
 
   response 200 do
-    scope :post do
+    object :post do
       string :id
       string :title
       string :content
@@ -80,7 +80,7 @@ version 1, default: true do
   strategy Treaty::Strategy::ADAPTER
 
   response 200 do
-    scope :post do
+    object :post do
       string :id
       string :title
       string :content
@@ -105,7 +105,7 @@ version 1 do
   strategy Treaty::Strategy::ADAPTER
 
   response 200 do
-    scope :post do
+    object :post do
       string :id
       string :title
       string :author_name   # Flat structure
@@ -125,7 +125,7 @@ version 1 do
   strategy Treaty::Strategy::ADAPTER
 
   response 200 do
-    scope :post do
+    object :post do
       string :id
       string :title
       string :author_name
@@ -141,7 +141,7 @@ version 2, default: true do
   strategy Treaty::Strategy::ADAPTER
 
   response 200 do
-    scope :post do
+    object :post do
       string :id
       string :title
 
@@ -170,9 +170,9 @@ end
 ```ruby
 version 1 do
   request do
-    scope :post do
+    object :post do
       string :title
-      string :body, :required
+      string :body
     end
   end
 end
@@ -186,7 +186,7 @@ version 1 do
   strategy Treaty::Strategy::ADAPTER
 
   request do
-    scope :post do
+    object :post do
       string :title
       string :body, :required, as: :content  # Transform to new name
     end
@@ -200,9 +200,9 @@ version 2, default: true do
   strategy Treaty::Strategy::ADAPTER
 
   request do
-    scope :post do
+    object :post do
       string :title
-      string :content, :required  # New field name
+      string :content  # New field name
     end
   end
 
@@ -225,9 +225,9 @@ end
 ```ruby
 version 1, default: true do
   request do
-    scope :post do
-      string :title, :required
-      string :content, :required
+    object :post do
+      string :title
+      string :content
       string :category, :optional, default: "general"  # Optional with default
     end
   end
@@ -241,7 +241,7 @@ version 1 do
   deprecated true
 
   request do
-    scope :post do
+    object :post do
       string :title, :required
       string :content, :required
       string :category, :optional, default: "general"
@@ -254,10 +254,10 @@ end
 # Version 2: Category required
 version 2, default: true do
   request do
-    scope :post do
-      string :title, :required
-      string :content, :required
-      string :category, :required  # Now required
+    object :post do
+      string :title
+      string :content
+      string :category  # Now required
     end
   end
 
@@ -275,10 +275,10 @@ end
 ```ruby
 version 1, default: true do
   request do
-    scope :post do
-      string :title, :required
+    object :post do
+      string :title
       string :summary, :optional  # Deprecated - will be removed
-      string :content, :required
+      string :content
     end
   end
 end
@@ -291,7 +291,7 @@ version 1 do
   deprecated true
 
   request do
-    scope :post do
+    object :post do
       string :title, :required
       string :summary, :optional  # Still accepted
       string :content, :required
@@ -304,9 +304,9 @@ end
 # Version 2: Remove field
 version 2, default: true do
   request do
-    scope :post do
-      string :title, :required
-      string :content, :required
+    object :post do
+      string :title
+      string :content
       # summary field removed
     end
   end
@@ -323,7 +323,7 @@ end
 ```ruby
 version 1 do
   request do
-    scope :post do
+    object :post do
       string :status, :optional  # Any string accepted
     end
   end
@@ -337,7 +337,7 @@ version 1 do
   deprecated true
 
   request do
-    scope :post do
+    object :post do
       string :status, :optional  # Still accepts any string
     end
   end
@@ -348,7 +348,7 @@ end
 # Version 2: Add strict validation
 version 2, default: true do
   request do
-    scope :post do
+    object :post do
       string :status, :required, in: %w[draft published archived]  # Restricted
     end
   end
@@ -446,7 +446,7 @@ end
 # Treaty handles adaptation
 version 1 do
   request do
-    scope :post do
+    object :post do
       string :body, as: :content  # Adapt old field name
     end
   end
@@ -456,7 +456,7 @@ end
 
 version 2 do
   request do
-    scope :post do
+    object :post do
       string :content  # New field name
     end
   end

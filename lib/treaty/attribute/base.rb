@@ -6,7 +6,7 @@ module Treaty
     #
     # ## Purpose
     #
-    # Represents a single attribute defined in request/response scopes.
+    # Represents a single attribute defined in request/response definitions.
     # Handles:
     # - Attribute metadata (name, type, nesting level)
     # - Helper mode to simple mode conversion
@@ -37,7 +37,7 @@ module Treaty
     # - `object` - nested attributes as direct children
     # - `array` - nested attributes define array element structure
     #
-    # Special scope `:_self` is used for simple arrays:
+    # Special attribute name `:_self` is used for simple arrays:
     #   array :tags do
     #     string :_self  # Array of strings
     #   end

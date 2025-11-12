@@ -9,25 +9,27 @@ module Treaty
         @status = status
       end
 
-      def scope(name, &block)
-        @scope_factory = Scope::Factory.new(name)
-
-        @scope_factory.instance_eval(&block) if block_given?
-
-        collection_of_scopes << @scope_factory
-
-        @scope_factory = nil
+      def attribute(name, type, *helpers, **options, &block)
+        collection_of_attributes << Attribute::Attribute.new(
+          name,
+          type,
+          *helpers,
+          nesting_level: 0,
+          **options,
+          &block
+        )
       end
 
-      def collection_of_scopes
-        @collection_of_scopes ||= Scope::Collection.new
+      def collection_of_attributes
+        @collection_of_attributes ||= Treaty::Attribute::Collection.new
       end
 
       ##########################################################################
 
-      def method_missing(name, *, &_block)
-        raise Treaty::Exceptions::MethodName,
-              I18n.t("treaty.response.factory.unknown_method", method: name)
+      def method_missing(type, *helpers, **options, &block)
+        name = helpers.shift
+
+        attribute(name, type, *helpers, **options, &block)
       end
 
       def respond_to_missing?(name, *)

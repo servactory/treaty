@@ -21,7 +21,7 @@ module Gate
           strategy Treaty::Strategy::ADAPTER
 
           request do
-            scope :filters do
+            object :filters do
               string :title, :optional
               string :summary, :optional
               string :category, :optional
@@ -29,14 +29,14 @@ module Gate
           end
 
           response 200 do
-            scope :posts do
+            object :posts do
               string :id
               string :title
               string :summary
               datetime :created_at
             end
 
-            scope :meta do
+            object :meta do
               integer :count
               integer :page, default: 1
               integer :limit, default: 12
@@ -138,15 +138,15 @@ module Gate
           strategy Treaty::Strategy::ADAPTER
 
           request do
-            scope :post do
-              string :title, :required
-              string :content, :required
+            object :post do
+              string :title
+              string :content
               string :summary, :optional
             end
           end
 
           response 201 do
-            scope :post do
+            object :post do
               string :id
               string :title
               string :content
@@ -163,16 +163,16 @@ module Gate
           strategy Treaty::Strategy::ADAPTER
 
           request do
-            scope :post do
-              string :title, :required
-              string :content, :required
+            object :post do
+              string :title
+              string :content
               string :summary, :optional
-              string :category, :required, in: %w[tech business lifestyle]
+              string :category, in: %w[tech business lifestyle]
             end
           end
 
           response 201 do
-            scope :post do
+            object :post do
               string :id
               string :title
               string :content
@@ -190,27 +190,27 @@ module Gate
           strategy Treaty::Strategy::ADAPTER
 
           request do
-            scope :post do
-              string :title, :required
-              string :content, :required
+            object :post do
+              string :title
+              string :content
               string :summary, :optional
-              string :category, :required, in: %w[tech business lifestyle]
+              string :category, in: %w[tech business lifestyle]
               boolean :published, :optional
 
               array :tags, :optional do
-                string :_self, :required
+                string :_self
               end
 
-              object :author, :required do
-                string :name, :required
-                string :email, :required
+              object :author do
+                string :name
+                string :email
                 string :bio, :optional
               end
             end
           end
 
           response 201 do
-            scope :post do
+            object :post do
               string :id
               string :title
               string :content
@@ -301,13 +301,13 @@ module Gate
           strategy Treaty::Strategy::ADAPTER
 
           request do
-            scope :profile do
-              string :name, :required
+            object :profile do
+              string :name
               string :bio, :optional
 
               array :socials, :optional do
-                string :provider, :required, in: %w[twitter linkedin github]
-                string :handle, :required, as: :value
+                string :provider, in: %w[twitter linkedin github]
+                string :handle, as: :value
                 string :url, :optional
               end
 
@@ -322,7 +322,7 @@ module Gate
           end
 
           response 200 do
-            scope :profile do
+            object :profile do
               string :id
               string :name
               string :bio
@@ -443,15 +443,15 @@ class SimpleCalculatorTreaty < ApplicationTreaty
     strategy Treaty::Strategy::ADAPTER
 
     request do
-      scope :calculation do
-        integer :a, :required
-        integer :b, :required
-        string :operation, :required, in: %w[add subtract multiply divide]
+      object :calculation do
+        integer :a
+        integer :b
+        string :operation, in: %w[add subtract multiply divide]
       end
     end
 
     response 200 do
-      scope :result do
+      object :result do
         integer :value
         string :operation
       end
@@ -484,8 +484,8 @@ class Posts::ShowTreaty < ApplicationTreaty
 
     strategy Treaty::Strategy::DIRECT
 
-    request { scope :post }
-    response(200) { scope :post }
+    request { object :post }
+    response(200) { object :post }
 
     delegate_to Posts::V1::ShowService
   end
@@ -497,13 +497,13 @@ class Posts::ShowTreaty < ApplicationTreaty
     strategy Treaty::Strategy::ADAPTER
 
     request do
-      scope :post do
-        string :id, :required
+      object :post do
+        string :id
       end
     end
 
     response 200 do
-      scope :post do
+      object :post do
         string :id
         string :title
         string :content
@@ -518,13 +518,13 @@ class Posts::ShowTreaty < ApplicationTreaty
     strategy Treaty::Strategy::ADAPTER
 
     request do
-      scope :post do
-        string :id, :required
+      object :post do
+        string :id
       end
     end
 
     response 200 do
-      scope :post do
+      object :post do
         string :id
         string :title
         string :content
@@ -551,13 +551,13 @@ end
 
 ```ruby
 # In request for page/limit
-scope :_self do
+object :_self do
   integer :page, default: 1
   integer :limit, default: 12
 end
 
 # In response for metadata
-scope :meta do
+object :meta do
   integer :count
   integer :page
   integer :limit
@@ -568,7 +568,7 @@ end
 ### Pattern 2: Filtering
 
 ```ruby
-scope :filters do
+object :filters do
   string :status, :optional, in: %w[draft published archived]
   string :category, :optional
   datetime :created_after_at, :optional
@@ -579,7 +579,7 @@ end
 ### Pattern 3: Sorting
 
 ```ruby
-scope :sort do
+object :sort do
   string :by, default: "created_at", in: %w[created_at updated_at title]
   string :direction, default: "desc", in: %w[asc desc]
 end
@@ -591,4 +591,4 @@ end
 - [Versioning](./versioning.md) - manage multiple versions
 - [API Reference](./api-reference.md) - complete API documentation
 
-[← Back: Scopes](./scopes.md) | [← Back to Documentation](./README.md)
+[← Back: Objects](./objects.md) | [← Back to Documentation](./README.md)

@@ -193,8 +193,8 @@ class Posts::CreateTreaty < ApplicationTreaty
 
     strategy Treaty::Strategy::DIRECT
 
-    request { scope :post }
-    response(201) { scope :post }
+    request { object :post }
+    response(201) { object :post }
 
     delegate_to Posts::V1::CreateService
   end
@@ -207,15 +207,15 @@ class Posts::CreateTreaty < ApplicationTreaty
     strategy Treaty::Strategy::ADAPTER
 
     request do
-      scope :post do
-        string :title, :required
-        string :content, :required
+      object :post do
+        string :title
+        string :content
         string :category, :optional, in: %w[tech business lifestyle]
       end
     end
 
     response 201 do
-      scope :post do
+      object :post do
         string :id
         string :title
         string :content
@@ -234,30 +234,12 @@ class Posts::CreateTreaty < ApplicationTreaty
     strategy Treaty::Strategy::ADAPTER
 
     request do
-      scope :post do
-        string :title, :required
-        string :content, :required
-        string :category, :required, in: %w[tech business lifestyle]
-
-        array :tags, :optional do
-          string :_self
-        end
-
-        object :author, :required do
-          string :name, :required
-          string :email, :required
-        end
-      end
-    end
-
-    response 201 do
-      scope :post do
-        string :id
+      object :post do
         string :title
         string :content
-        string :category
+        string :category, in: %w[tech business lifestyle]
 
-        array :tags do
+        array :tags, :optional do
           string :_self
         end
 
@@ -265,9 +247,27 @@ class Posts::CreateTreaty < ApplicationTreaty
           string :name
           string :email
         end
+      end
+    end
 
-        datetime :created_at
-        datetime :updated_at
+    response 201 do
+      object :post do
+        string :id, :required
+        string :title, :required
+        string :content, :required
+        string :category, :required
+
+        array :tags, :required do
+          string :_self
+        end
+
+        object :author, :required do
+          string :name, :required
+          string :email, :required
+        end
+
+        datetime :created_at, :required
+        datetime :updated_at, :required
       end
     end
 
@@ -358,7 +358,7 @@ end
 ```ruby
 version 1 do
   response 200 do
-    scope :post do
+    object :post do
       string :id
       string :title
     end
@@ -367,7 +367,7 @@ end
 
 version 2, default: true do
   response 200 do
-    scope :post do
+    object :post do
       string :id
       string :title
       string :author  # New field - non-breaking
@@ -383,7 +383,7 @@ end
 version 1 do
   response 200 do
     # Old structure
-    scope :post do
+    object :post do
       string :author_name
     end
   end
@@ -392,7 +392,7 @@ end
 version 2, default: true do
   response 200 do
     # New structure - breaking change
-    scope :post do
+    object :post do
       object :author do
         string :name
         string :email
@@ -407,7 +407,7 @@ end
 ```ruby
 version 1 do
   request do
-    scope :post do
+    object :post do
       string :title
       string :body  # Old name
     end
@@ -416,7 +416,7 @@ end
 
 version 2, default: true do
   request do
-    scope :post do
+    object :post do
       string :title
       string :content  # New name - breaking change
     end

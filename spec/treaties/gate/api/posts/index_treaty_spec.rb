@@ -17,8 +17,12 @@ RSpec.describe Gate::API::Posts::IndexTreaty do
                         method: :call
                       },
                       request: {
-                        scopes: {
+                        attributes: {
                           filters: {
+                            type: :object,
+                            options: {
+                              required: { is: false, message: nil }
+                            },
                             attributes: {
                               title: {
                                 type: :string,
@@ -47,11 +51,19 @@ RSpec.describe Gate::API::Posts::IndexTreaty do
                       },
                       response: {
                         status: 200,
-                        scopes: {
+                        attributes: {
                           meta: {
+                            type: :object,
+                            options: {
+                              required: { is: false, message: nil }
+                            },
                             attributes: {}
                           },
                           posts: {
+                            type: :object,
+                            options: {
+                              required: { is: false, message: nil }
+                            },
                             attributes: {}
                           }
                         }
@@ -69,8 +81,12 @@ RSpec.describe Gate::API::Posts::IndexTreaty do
                         method: :call
                       },
                       request: {
-                        scopes: {
+                        attributes: {
                           filters: {
+                            type: :object,
+                            options: {
+                              required: { is: false, message: nil }
+                            },
                             attributes: {
                               title: {
                                 type: :string,
@@ -99,11 +115,19 @@ RSpec.describe Gate::API::Posts::IndexTreaty do
                       },
                       response: {
                         status: 200,
-                        scopes: {
+                        attributes: {
                           meta: {
+                            type: :object,
+                            options: {
+                              required: { is: false, message: nil }
+                            },
                             attributes: {}
                           },
                           posts: {
+                            type: :object,
+                            options: {
+                              required: { is: false, message: nil }
+                            },
                             attributes: {}
                           }
                         }
@@ -121,8 +145,12 @@ RSpec.describe Gate::API::Posts::IndexTreaty do
                         method: :call
                       },
                       request: {
-                        scopes: {
+                        attributes: {
                           filters: {
+                            type: :object,
+                            options: {
+                              required: { is: false, message: nil }
+                            },
                             attributes: {
                               title: {
                                 type: :string,
@@ -151,11 +179,19 @@ RSpec.describe Gate::API::Posts::IndexTreaty do
                       },
                       response: {
                         status: 200,
-                        scopes: {
+                        attributes: {
                           meta: {
+                            type: :object,
+                            options: {
+                              required: { is: false, message: nil }
+                            },
                             attributes: {}
                           },
                           posts: {
+                            type: :object,
+                            options: {
+                              required: { is: false, message: nil }
+                            },
                             attributes: {}
                           }
                         }
@@ -173,8 +209,12 @@ RSpec.describe Gate::API::Posts::IndexTreaty do
                         method: :call
                       },
                       request: {
-                        scopes: {
+                        attributes: {
                           filters: {
+                            type: :object,
+                            options: {
+                              required: { is: false, message: nil }
+                            },
                             attributes: {
                               title: {
                                 type: :string,
@@ -203,8 +243,12 @@ RSpec.describe Gate::API::Posts::IndexTreaty do
                       },
                       response: {
                         status: 200,
-                        scopes: {
+                        attributes: {
                           meta: {
+                            type: :object,
+                            options: {
+                              required: { is: false, message: nil }
+                            },
                             attributes: {
                               count: {
                                 type: :integer,
@@ -230,6 +274,10 @@ RSpec.describe Gate::API::Posts::IndexTreaty do
                             }
                           },
                           posts: {
+                            type: :object,
+                            options: {
+                              required: { is: false, message: nil }
+                            },
                             attributes: {
                               id: {
                                 type: :string,
@@ -283,8 +331,12 @@ RSpec.describe Gate::API::Posts::IndexTreaty do
                         method: :call
                       },
                       request: {
-                        scopes: {
+                        attributes: {
                           filters: {
+                            type: :object,
+                            options: {
+                              required: { is: false, message: nil }
+                            },
                             attributes: {
                               title: {
                                 type: :string,
@@ -313,8 +365,12 @@ RSpec.describe Gate::API::Posts::IndexTreaty do
                       },
                       response: {
                         status: 200,
-                        scopes: {
+                        attributes: {
                           meta: {
+                            type: :object,
+                            options: {
+                              required: { is: false, message: nil }
+                            },
                             attributes: {
                               count: {
                                 type: :integer,
@@ -341,6 +397,10 @@ RSpec.describe Gate::API::Posts::IndexTreaty do
                             }
                           },
                           posts: {
+                            type: :object,
+                            options: {
+                              required: { is: false, message: nil }
+                            },
                             attributes: {
                               id: {
                                 type: :string,

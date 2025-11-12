@@ -8,7 +8,7 @@ module Treaty
       # ## Purpose
       #
       # Performs validation for nested array attributes during the validation phase.
-      # Handles both simple arrays (with :_self scope) and complex arrays (objects).
+      # Handles both simple arrays (with :_self attribute) and complex arrays (objects).
       #
       # ## Responsibilities
       #
@@ -19,7 +19,7 @@ module Treaty
       #
       # ## Array Types
       #
-      # ### Simple Array (`:_self` scope)
+      # ### Simple Array (`:_self` attribute)
       # Array containing primitive values (strings, integers, etc.)
       #
       # ```ruby
@@ -93,7 +93,7 @@ module Treaty
 
         private
 
-        # Validates array item for simple arrays (with :_self scope)
+        # Validates array item for simple arrays (with :_self attribute)
         # Simple array contains primitive values: strings, integers, datetimes, etc.
         # Example: ["ruby", "rails", "api"] where each item is a String
         #

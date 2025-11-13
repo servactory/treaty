@@ -62,6 +62,7 @@ en:
       # Request factory DSL
       factory:
         unknown_method: "Unknown method '%{method}' in request definition. Use 'object :name do ... end' to define request structure"
+        invalid_entity_class: "Request expects a Treaty::Entity subclass, got %{type}: %{value}"
 
     # ============================================================================
     # Response: Response definition and structure
@@ -70,6 +71,7 @@ en:
       # Response factory DSL
       factory:
         unknown_method: "Unknown method '%{method}' in response definition. Use 'object :name do ... end' to define response structure"
+        invalid_entity_class: "Response expects a Treaty::Entity subclass, got %{type}: %{value}"
 
     # ============================================================================
     # Versioning: API version management and resolution

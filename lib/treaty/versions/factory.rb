@@ -51,7 +51,8 @@ module Treaty
       def request(entity_class = nil, &block)
         @request_factory ||= Request::Factory.new
 
-        if entity_class.is_a?(Class) && entity_class < Treaty::Entity
+        if entity_class.present?
+          # Delegate validation to Request::Factory
           @request_factory.use_entity(entity_class)
         elsif block_given?
           # For blocks, use instance_eval to allow multiple request blocks to be merged
@@ -62,7 +63,8 @@ module Treaty
       def response(status, entity_class = nil, &block)
         @response_factory ||= Response::Factory.new(status)
 
-        if entity_class.is_a?(Class) && entity_class < Treaty::Entity
+        if entity_class.present?
+          # Delegate validation to Response::Factory
           @response_factory.use_entity(entity_class)
         elsif block_given?
           # For blocks, use instance_eval to allow multiple response blocks to be merged

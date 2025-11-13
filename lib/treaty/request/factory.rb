@@ -28,7 +28,9 @@ module Treaty
       #
       # @param entity_class [Class] Entity class to use
       # @return [void]
+      # @raise [Treaty::Exceptions::Validation] if entity_class is not a valid Treaty::Entity subclass
       def use_entity(entity_class)
+        validate_entity_class!(entity_class)
         @entity_class = entity_class
       end
 
@@ -56,6 +58,21 @@ module Treaty
 
       def respond_to_missing?(name, *)
         super
+      end
+
+      private
+
+      # Validates that the provided entity_class is a valid Treaty::Entity subclass
+      #
+      # @param entity_class [Class] Entity class to validate
+      # @raise [Treaty::Exceptions::Validation] if entity_class is not a valid Treaty::Entity subclass
+      def validate_entity_class!(entity_class)
+        unless entity_class.is_a?(Class) && entity_class < Treaty::Entity
+          raise Treaty::Exceptions::Validation,
+                I18n.t("treaty.request.factory.invalid_entity_class",
+                       type: entity_class.class,
+                       value: entity_class)
+        end
       end
     end
   end

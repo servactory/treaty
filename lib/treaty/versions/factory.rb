@@ -52,10 +52,8 @@ module Treaty
         @request_factory ||= Request::Factory.new
 
         if entity_class.present?
-          # Delegate validation to Request::Factory
           @request_factory.use_entity(entity_class)
         elsif block_given?
-          # For blocks, use instance_eval to allow multiple request blocks to be merged
           @request_factory.instance_eval(&block)
         end
       end
@@ -64,10 +62,8 @@ module Treaty
         @response_factory ||= Response::Factory.new(status)
 
         if entity_class.present?
-          # Delegate validation to Response::Factory
           @response_factory.use_entity(entity_class)
         elsif block_given?
-          # For blocks, use instance_eval to allow multiple response blocks to be merged
           @response_factory.instance_eval(&block)
         end
       end

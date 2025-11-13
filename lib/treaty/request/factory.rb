@@ -67,12 +67,12 @@ module Treaty
       # @param entity_class [Class] Entity class to validate
       # @raise [Treaty::Exceptions::Validation] if entity_class is not a valid Treaty::Entity subclass
       def validate_entity_class!(entity_class)
-        unless entity_class.is_a?(Class) && entity_class < Treaty::Entity
-          raise Treaty::Exceptions::Validation,
-                I18n.t("treaty.request.factory.invalid_entity_class",
-                       type: entity_class.class,
-                       value: entity_class)
-        end
+        return if entity_class.is_a?(Class) && entity_class < Treaty::Entity
+
+        raise Treaty::Exceptions::Validation,
+              I18n.t("treaty.request.factory.invalid_entity_class",
+                     type: entity_class.class,
+                     value: entity_class)
       end
     end
   end

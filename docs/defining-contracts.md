@@ -154,7 +154,7 @@ end
 
 ```ruby
 response 200 do
-  object :posts do
+  array :posts do
     string :id
     string :title
   end
@@ -165,7 +165,7 @@ end
 
 ```ruby
 response 200 do
-  object :posts do
+  array :posts do
     string :id
     string :title
   end

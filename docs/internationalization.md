@@ -133,6 +133,7 @@ de:
 
       builder:
         not_implemented: "%{class} muss #create_attribute implementieren"
+        create_attribute_not_implemented: "Unterklasse %{class} muss die Methode #create_attribute implementieren"
 
       errors:
         nesting_level_exceeded: "Verschachtelungsebene %{level} überschreitet die maximal erlaubte Ebene von %{max_level}"

@@ -3,6 +3,7 @@
 module Treaty
   module Response
     module Attribute
+      # Response-specific attribute that defaults to required: false
       class Attribute < Treaty::Attribute::Base
         private
 

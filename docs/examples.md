@@ -29,7 +29,7 @@ module Gate
           end
 
           response 200 do
-            object :posts do
+            array :posts do
               string :id
               string :title
               string :summary
@@ -584,6 +584,205 @@ object :sort do
   string :direction, default: "desc", in: %w[asc desc]
 end
 ```
+
+## Example 7: Using Entity Classes (DTOs)
+
+Demonstrates using reusable Entity classes for better code organization.
+
+### Entity Definitions
+
+```ruby
+# app/dtos/application_dto.rb
+class ApplicationDto < Treaty::Entity
+end
+
+# app/dtos/deserialization/posts/create_dto.rb
+module Deserialization
+  module Posts
+    class CreateDto < ApplicationDto
+      object :post do
+        string :title
+        string :content
+        string :summary, :optional
+        boolean :published, :optional
+
+        object :author do
+          string :name
+          string :email
+        end
+
+        array :tags, :optional do
+          string :_self  # Array of strings
+        end
+      end
+    end
+  end
+end
+
+# app/dtos/serialization/posts/create_dto.rb
+module Serialization
+  module Posts
+    class CreateDto < ApplicationDto
+      object :post do
+        string :id
+        string :title
+        string :content
+        string :summary
+        boolean :published
+        datetime :created_at
+        datetime :updated_at
+
+        object :author do
+          string :id
+          string :name
+          string :email
+        end
+
+        array :tags do
+          string :_self
+        end
+      end
+    end
+  end
+end
+```
+
+### Treaty Using Entities
+
+```ruby
+module Posts
+  class CreateTreaty < ApplicationTreaty
+    version 1 do
+      strategy Treaty::Strategy::ADAPTER
+
+      # Use Entity classes instead of inline blocks
+      request Deserialization::Posts::CreateDto
+      response 201, Serialization::Posts::CreateDto
+
+      delegate_to Posts::CreateService
+    end
+
+    version 2 do
+      strategy Treaty::Strategy::ADAPTER
+
+      # Reuse the same Entity classes across versions
+      request Deserialization::Posts::CreateDto
+      response 201, Serialization::Posts::CreateDto
+
+      delegate_to Posts::V2::CreateService
+    end
+  end
+end
+```
+
+### Controller
+
+```ruby
+class PostsController < ApplicationController
+  treaty :create
+
+  def create
+    # Treaty handles everything automatically
+    # Request validated against Deserialization::Posts::CreateDto
+    # Response validated against Serialization::Posts::CreateDto
+  end
+end
+```
+
+### Service
+
+```ruby
+module Posts
+  class CreateService
+    def self.call(params:)
+      post = Post.create!(
+        title: params[:post][:title],
+        content: params[:post][:content],
+        summary: params[:post][:summary],
+        published: params[:post][:published] || false
+      )
+
+      author = Author.create!(
+        name: params[:post][:author][:name],
+        email: params[:post][:author][:email]
+      )
+
+      post.update!(author: author)
+      post.tag_list = params[:post][:tags] if params[:post][:tags]
+      post.save!
+
+      {
+        post: {
+          id: post.id,
+          title: post.title,
+          content: post.content,
+          summary: post.summary,
+          published: post.published?,
+          created_at: post.created_at,
+          updated_at: post.updated_at,
+          author: {
+            id: author.id,
+            name: author.name,
+            email: author.email
+          },
+          tags: post.tag_list
+        }
+      }
+    end
+  end
+end
+```
+
+### Request/Response Examples
+
+**Request:**
+```json
+POST /posts
+{
+  "post": {
+    "title": "Getting Started with Treaty",
+    "content": "Treaty is a powerful library...",
+    "summary": "An introduction to Treaty",
+    "published": true,
+    "author": {
+      "name": "John Doe",
+      "email": "john@example.com"
+    },
+    "tags": ["ruby", "api", "treaty"]
+  }
+}
+```
+
+**Response:**
+```json
+{
+  "post": {
+    "id": "123",
+    "title": "Getting Started with Treaty",
+    "content": "Treaty is a powerful library...",
+    "summary": "An introduction to Treaty",
+    "published": true,
+    "created_at": "2024-11-12T10:30:00Z",
+    "updated_at": "2024-11-12T10:30:00Z",
+    "author": {
+      "id": "456",
+      "name": "John Doe",
+      "email": "john@example.com"
+    },
+    "tags": ["ruby", "api", "treaty"]
+  }
+}
+```
+
+### Benefits
+
+1. **Reusability** - Same Entity classes used across multiple versions
+2. **Maintainability** - Update structure in one place
+3. **Organization** - Clear separation between request and response structures
+4. **Type Safety** - Consistent validation across all usages
+5. **Testability** - Test Entity classes independently
+
+See [Entity Classes (DTOs)](./entities.md) for detailed documentation.
 
 ## Next Steps
 

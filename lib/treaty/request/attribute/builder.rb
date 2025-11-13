@@ -3,6 +3,7 @@
 module Treaty
   module Request
     module Attribute
+      # Request-specific attribute builder
       class Builder < Treaty::Attribute::Builder::Base
         private
 

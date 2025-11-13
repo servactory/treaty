@@ -82,7 +82,8 @@ jobs:
             - Two strategies: DIRECT (no validation) and ADAPTER (with validation)
             - Attribute types: string, integer, boolean, datetime, object, array
             - Request (incoming data) and Response (outgoing data)
-            - Scopes for grouping attributes
+            - Request/Response defined via inline blocks or Entity classes (reusable DTOs)
+            - Objects for grouping attributes (special :_self merges to parent)
             - Transformation pipeline: validation → transformation → delegation → response
 
             **Project Structure:**
@@ -160,7 +161,7 @@ jobs:
             - Input validation before transformation
             - Attribute renaming (`:as` option) correctly
             - Default values applied properly
-            - Scope merging (especially `:_self`)
+            - Object merging (especially `:_self`)
             - Symbolization of keys
 
             **Response Processing:**
@@ -337,7 +338,7 @@ jobs:
             - [✅/⚠️/❌] Validation before transform
             - [✅/⚠️/❌] Attribute renaming (`:as`)
             - [✅/⚠️/❌] Default values
-            - [✅/⚠️/❌] Scope merging
+            - [✅/⚠️/❌] Object merging (`:_self`)
 
             **Response Processing:**
             - [✅/⚠️/❌] Output validation

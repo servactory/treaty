@@ -3,6 +3,7 @@
 module Treaty
   module Response
     module Attribute
+      # Response-specific attribute builder
       class Builder < Treaty::Attribute::Builder::Base
         private
 

@@ -77,13 +77,15 @@ RSpec.describe Gate::API::PostsController do
 
       let(:expectation) do
         {
-          posts: {
-            id: be_present & be_a(String),
-            title: "Title 1",
-            summary: "Summary 1",
-            description: "Description 1",
-            content: "..."
-          },
+          posts: [
+            {
+              id: be_present & be_a(String),
+              title: "Title 1",
+              summary: "Summary 1",
+              description: "Description 1",
+              content: "..."
+            }
+          ],
           meta: {
             count: 1,
             page: 1,

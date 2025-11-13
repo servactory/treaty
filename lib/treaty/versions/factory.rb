@@ -48,16 +48,26 @@ module Treaty
         @deprecated_result = result
       end
 
-      def request(&block)
+      def request(entity_class = nil, &block)
         @request_factory ||= Request::Factory.new
 
-        @request_factory.instance_eval(&block) if block_given?
+        if entity_class.is_a?(Class) && entity_class < Treaty::Entity
+          @request_factory.use_entity(entity_class)
+        elsif block_given?
+          # For blocks, use instance_eval to allow multiple request blocks to be merged
+          @request_factory.instance_eval(&block)
+        end
       end
 
-      def response(status, &block)
+      def response(status, entity_class = nil, &block)
         @response_factory ||= Response::Factory.new(status)
 
-        @response_factory.instance_eval(&block) if block_given?
+        if entity_class.is_a?(Class) && entity_class < Treaty::Entity
+          @response_factory.use_entity(entity_class)
+        elsif block_given?
+          # For blocks, use instance_eval to allow multiple response blocks to be merged
+          @response_factory.instance_eval(&block)
+        end
       end
 
       def delegate_to(executor, method = :call)

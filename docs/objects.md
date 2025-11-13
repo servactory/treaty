@@ -229,7 +229,7 @@ end
 
 **Plural** for collections (usually in responses):
 ```ruby
-object :posts do
+array :posts do
   string :id
   string :title
 end
@@ -297,7 +297,7 @@ Organize outgoing data:
 ```ruby
 response 200 do
   # Main data
-  object :posts do
+  array :posts do
     string :id
     string :title
   end
@@ -414,7 +414,7 @@ object :post do
 end
 
 # Good - plural for collection
-object :posts do
+array :posts do
   string :id
 end
 
@@ -436,7 +436,7 @@ version 3 do
   end
 
   response 200 do
-    object :posts do
+    array :posts do
       string :id, :required
       string :title, :required
       string :summary, :required

@@ -84,6 +84,16 @@ treaty:
           element_validation_error: "Error in array '%{attribute}' at index %{index}: Element must match one of the defined types. Errors: %{errors}"
           element_type_error: "Error in array '%{attribute}' at index %{index}: Expected Hash but got %{actual}"
           attribute_error: "Error in array '%{attribute}' at index %{index}: %{message}"
+
+  request:
+    factory:
+      unknown_method: "Unknown method '%{method}' in request definition. Use 'object :name do ... end' to define request structure"
+      invalid_entity_class: "Request expects a Treaty::Entity subclass, got %{type}: %{value}"
+
+  response:
+    factory:
+      unknown_method: "Unknown method '%{method}' in response definition. Use 'object :name do ... end' to define response structure"
+      invalid_entity_class: "Response expects a Treaty::Entity subclass, got %{type}: %{value}"
 ```
 
 ## Adding New Languages
@@ -143,10 +153,12 @@ de:
     request:
       factory:
         unknown_method: "Unbekannte Methode '%{method}' in Request-Definition. Verwenden Sie 'object :name do ... end', um die Request-Struktur zu definieren"
+        invalid_entity_class: "Request erwartet eine Treaty::Entity-Unterklasse, erhalten: %{type}: %{value}"
 
     response:
       factory:
         unknown_method: "Unbekannte Methode '%{method}' in Response-Definition. Verwenden Sie 'object :name do ... end', um die Response-Struktur zu definieren"
+        invalid_entity_class: "Response erwartet eine Treaty::Entity-Unterklasse, erhalten: %{type}: %{value}"
 
     versioning:
       resolver:
@@ -308,6 +320,8 @@ Different validators provide different interpolation variables:
 
 **Request/Response Factory:**
 - `%{method}` - the unknown method name that was called
+- `%{type}` - the actual class type of the invalid entity
+- `%{value}` - the value that was provided instead of a Treaty::Entity subclass
 
 **Version/Execution:**
 - `%{version}` - version number

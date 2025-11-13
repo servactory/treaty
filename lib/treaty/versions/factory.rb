@@ -82,7 +82,10 @@ module Treaty
         end
 
         raise Treaty::Exceptions::Validation,
-              I18n.t("treaty.versioning.factory.invalid_default_option", type: @default_result.class)
+              I18n.t(
+                "treaty.versioning.factory.invalid_default_option",
+                type: @default_result.class
+              )
       end
 
       ##########################################################################

@@ -269,7 +269,7 @@ RSpec.describe Gate::API::Movies::ShowTreaty do
                               api_key: {
                                 type: :string,
                                 options: {
-                                  required: { is: true, message: nil }
+                                  required: { is: true, message: "API key is required for authentication" }
                                 },
                                 attributes: {}
                               }
@@ -278,7 +278,7 @@ RSpec.describe Gate::API::Movies::ShowTreaty do
                           id: {
                             type: :string,
                             options: {
-                              required: { is: true, message: nil }
+                              required: { is: true, message: Proc }
                             },
                             attributes: {}
                           },
@@ -338,7 +338,8 @@ RSpec.describe Gate::API::Movies::ShowTreaty do
                               genre: {
                                 type: :string,
                                 options: {
-                                  required: { is: false, message: nil }
+                                  required: { is: true, message: "Genre must be specified" },
+                                  inclusion: { in: %w[action comedy drama horror sci-fi thriller crime], message: nil }
                                 },
                                 attributes: {}
                               },
@@ -352,14 +353,18 @@ RSpec.describe Gate::API::Movies::ShowTreaty do
                               plot: {
                                 type: :string,
                                 options: {
-                                  required: { is: false, message: nil }
+                                  required: { is: true, message: Proc }
                                 },
                                 attributes: {}
                               },
                               rating: {
                                 type: :integer,
                                 options: {
-                                  required: { is: false, message: nil }
+                                  required: { is: false, message: nil },
+                                  inclusion: {
+                                    in: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                                    message: Proc
+                                  }
                                 },
                                 attributes: {}
                               },
@@ -400,7 +405,11 @@ RSpec.describe Gate::API::Movies::ShowTreaty do
                                   role_type: {
                                     type: :string,
                                     options: {
-                                      required: { is: false, message: nil }
+                                      required: { is: false, message: nil },
+                                      inclusion: {
+                                        in: %w[lead supporting cameo protagonist],
+                                        message: Proc
+                                      }
                                     },
                                     attributes: {}
                                   },
@@ -699,7 +708,7 @@ RSpec.describe Gate::API::Movies::ShowTreaty do
             raise_error do |exception|
               expect(exception).to be_a(Treaty::Exceptions::Validation)
               expect(exception.message).to(
-                eq("Attribute 'api_key' is required but was not provided or is empty")
+                eq("API key is required for authentication")
               )
             end
           )
@@ -718,7 +727,7 @@ RSpec.describe Gate::API::Movies::ShowTreaty do
             raise_error do |exception|
               expect(exception).to be_a(Treaty::Exceptions::Validation)
               expect(exception.message).to(
-                eq("Attribute 'id' is required but was not provided or is empty")
+                eq("Movie id must be provided")
               )
             end
           )

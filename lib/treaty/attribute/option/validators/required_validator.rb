@@ -51,7 +51,10 @@ module Treaty
             return unless required?
             return if present?(value)
 
-            message = custom_message || default_message
+            message = resolve_custom_message(
+              attribute: @attribute_name,
+              value:
+            ) || default_message
 
             raise Treaty::Exceptions::Validation, message
           end
@@ -83,7 +86,10 @@ module Treaty
           #
           # @return [String] Default error message
           def default_message
-            I18n.t("treaty.attributes.validators.required.blank", attribute: @attribute_name)
+            I18n.t(
+              "treaty.attributes.validators.required.blank",
+              attribute: @attribute_name
+            )
           end
         end
       end

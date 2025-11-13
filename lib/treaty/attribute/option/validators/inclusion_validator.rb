@@ -29,7 +29,10 @@ module Treaty
             return if allowed_values.is_a?(Array) && !allowed_values.empty?
 
             raise Treaty::Exceptions::Validation,
-                  I18n.t("treaty.attributes.validators.inclusion.invalid_schema", attribute: @attribute_name)
+                  I18n.t(
+                    "treaty.attributes.validators.inclusion.invalid_schema",
+                    attribute: @attribute_name
+                  )
           end
 
           # Validates that value is included in allowed set
@@ -45,7 +48,13 @@ module Treaty
 
             return if allowed_values.include?(value)
 
-            message = custom_message || default_message(allowed_values, value)
+            attributes = {
+              attribute: @attribute_name,
+              value:,
+              allowed_values:
+            }
+
+            message = resolve_custom_message(**attributes) || default_message(**attributes)
 
             raise Treaty::Exceptions::Validation, message
           end
@@ -64,14 +73,17 @@ module Treaty
 
           # Generates default error message with allowed values using I18n
           #
-          # @param allowed_values [Array] Array of allowed values
+          # @param attribute [Symbol] The attribute name
           # @param value [Object] The actual value that failed validation
+          # @param allowed_values [Array] Array of allowed values
           # @return [String] Default error message
-          def default_message(allowed_values, value)
-            I18n.t("treaty.attributes.validators.inclusion.not_included",
-                   attribute: @attribute_name,
-                   allowed: allowed_values.join(", "),
-                   value:)
+          def default_message(attribute:, value:, allowed_values:)
+            I18n.t(
+              "treaty.attributes.validators.inclusion.not_included",
+              attribute:,
+              allowed: allowed_values.join(", "),
+              value:
+            )
           end
         end
       end

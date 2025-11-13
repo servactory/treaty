@@ -214,7 +214,9 @@ integer :rating, in: [1, 2, 3, 4, 5]
 
 ### Advanced Mode Options
 
-All simple mode options can be extended with custom error messages:
+All simple mode options can be extended with custom error messages using either static strings or dynamic lambda functions:
+
+#### Static Messages
 
 ```ruby
 string :title, required: { is: true, message: "Title is mandatory" }
@@ -222,14 +224,49 @@ string :provider, inclusion: { in: %w[twitter linkedin], message: "Invalid provi
 integer :age, required: { is: true, message: "Age must be provided" }
 ```
 
+#### Lambda Messages
+
+Use lambda functions for dynamic, context-aware error messages:
+
+```ruby
+# Required validation with lambda
+string :title, required: {
+  is: true,
+  message: lambda do |attribute:, value:, **|
+    "The #{attribute} field is mandatory (received: #{value.inspect})"
+  end
+}
+
+# Inclusion validation with lambda
+string :category, inclusion: {
+  in: %w[tech business lifestyle],
+  message: lambda do |attribute:, value:, allowed_values:, **|
+    "Invalid #{attribute}: '#{value}'. Must be one of: #{allowed_values.join(', ')}"
+  end
+}
+
+# Type validation with lambda
+integer :rating, required: {
+  is: true,
+  message: lambda do |attribute:, expected_type:, actual_type:, **|
+    "Expected #{attribute} to be #{expected_type}, but got #{actual_type}"
+  end
+}
+```
+
 **Format:**
 ```ruby
-option_name: { value_key: value, message: "Custom message" }
+option_name: { value_key: value, message: "String" | lambda }
 ```
 
 **Value keys:**
 - Most options use `:is` as value key
 - Inclusion uses `:in` as value key
+
+**Lambda arguments** vary by validator (see [Validation](./validation.md#available-lambda-arguments) for details):
+- Required: `attribute`, `value`
+- Inclusion: `attribute`, `value`, `allowed_values`
+- Type: `attribute`, `value`, `expected_type`, `actual_type`
 
 ## Default Behavior
 

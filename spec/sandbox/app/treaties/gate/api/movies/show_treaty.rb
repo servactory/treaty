@@ -75,12 +75,18 @@ module Gate
 
           request do
             object :_self do
-              string :api_key
+              # Example: required with custom string message
+              string :api_key, required: { is: true, message: "API key is required for authentication" }
             end
           end
 
           request do
-            string :id
+            # Example: required with custom lambda message
+            string :id, required: {
+              is: true,
+              message: ->(attribute:, **) { "Movie #{attribute} must be provided" }
+            }
+
             boolean :include_cast, :optional
             boolean :include_scenes, :optional
             boolean :include_soundtrack, :optional
@@ -90,18 +96,49 @@ module Gate
             object :movie do
               string :id
               string :title
+
+              # Example: type validation with custom string message (implicitly applied through attribute type)
               integer :year
-              string :genre
+
+              # Example: inclusion with custom string message (simple mode for in, advanced for message)
+              string :genre,
+                     in: %w[action comedy drama horror sci-fi thriller crime],
+                     required: { is: true, message: "Genre must be specified" }
+
               integer :runtime
-              string :plot
-              integer :rating
+
+              # Example: required with custom lambda message for response
+              string :plot, required: {
+                is: true,
+                message: lambda do |attribute:, value:, **|
+                  "The #{attribute} field is mandatory (received: #{value.inspect})"
+                end
+              }
+
+              # Example: inclusion with custom lambda message (advanced mode)
+              integer :rating,
+                      inclusion: {
+                        in: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                        message: lambda do |attribute:, value:, allowed_values:, **|
+                          "Invalid #{attribute}: #{value}. " \
+                            "Must be between #{allowed_values.min} and #{allowed_values.max}"
+                        end
+                      }
+
               boolean :cult_classic
               boolean :contains_violence
 
               array :cast do
                 string :actor
                 string :character
-                string :role_type
+
+                # Example: inclusion with custom lambda in nested array
+                string :role_type,
+                       inclusion: {
+                         in: %w[lead supporting cameo protagonist],
+                         message: ->(value:, **) { "Role type '#{value}' is not recognized" }
+                       }
+
                 boolean :lead_role
                 integer :screen_time
               end

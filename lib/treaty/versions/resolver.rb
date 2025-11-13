@@ -52,12 +52,18 @@ module Treaty
 
       def raise_version_not_found!
         raise Treaty::Exceptions::Validation,
-              I18n.t("treaty.versioning.resolver.version_not_found", version: @current_version)
+              I18n.t(
+                "treaty.versioning.resolver.version_not_found",
+                version: @current_version
+              )
       end
 
       def raise_version_deprecated!
         raise Treaty::Exceptions::Deprecated,
-              I18n.t("treaty.versioning.resolver.version_deprecated", version: @current_version)
+              I18n.t(
+                "treaty.versioning.resolver.version_deprecated",
+                version: @current_version
+              )
       end
     end
   end

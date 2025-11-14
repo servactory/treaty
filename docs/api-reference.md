@@ -819,6 +819,30 @@ integer :rating, in: [1, 2, 3, 4, 5]
 string :priority, in: %w[low medium high urgent]
 ```
 
+#### `format`
+
+Validate string values match specific formats. **Only works with string type.**
+
+**Type:** Symbol
+**Default:** nil
+
+```ruby
+string :email, format: :email
+string :birth_date, format: :date
+string :external_id, format: :uuid
+string :session_duration, format: :duration
+```
+
+**Supported formats:**
+- `:uuid` - UUID format (8-4-4-4-12 hexadecimal)
+- `:email` - RFC 2822 email address
+- `:password` - Password (8-16 chars, digit+lowercase+uppercase)
+- `:date` - ISO 8601 date (e.g., "2025-01-15")
+- `:datetime` - ISO 8601 datetime (e.g., "2025-01-15T10:30:00Z")
+- `:time` - Time string (e.g., "10:30:00")
+- `:duration` - ISO 8601 duration (e.g., "PT2H", "P1D")
+- `:boolean` - Boolean string ("true", "false", "0", "1")
+
 ### Advanced Mode Options
 
 For custom error messages (static or dynamic) and fine-grained control:
@@ -906,6 +930,38 @@ string :username, as: {
 ```
 
 **Note:** The `message` parameter is available but not used for error handling since renaming cannot fail.
+
+#### `format` (Advanced Mode)
+
+**Type:** Hash with `:is` and `:message` (String or Lambda)
+
+**Static message:**
+```ruby
+string :email, format: {
+  is: :email,
+  message: "Invalid email address"
+}
+
+string :password, format: {
+  is: :password,
+  message: "Password must be 8-16 characters with digit, lowercase, and uppercase"
+}
+```
+
+**Lambda message:**
+```ruby
+string :password, format: {
+  is: :password,
+  message: lambda do |attribute:, value:, format_name:, **|
+    "#{attribute.to_s.capitalize} must match #{format_name} format (got: #{value})"
+  end
+}
+```
+
+**Lambda arguments:**
+- `attribute` - Symbol: The attribute name
+- `value` - Object: The invalid value
+- `format_name` - Symbol: The format name (e.g., :email, :uuid)
 
 ## Configuration
 
@@ -1038,6 +1094,11 @@ end
 
 # Invalid inclusion
 "Attribute 'status' must be one of: draft, published, archived. Got: 'deleted'"
+
+# Invalid format
+"Attribute 'email' has invalid email format: 'invalid-email'"
+"Attribute 'external_id' has invalid uuid format: 'not-a-uuid'"
+"Attribute 'birth_date' has invalid date format: 'not-a-date'"
 
 # Object validation
 "Attribute 'author' must be a Hash (object), got String"

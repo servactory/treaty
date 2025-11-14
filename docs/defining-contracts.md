@@ -101,6 +101,7 @@ request do
   object :post do
     string :title
     string :content
+    string :summary, :optional
   end
 
   object :filters do
@@ -108,6 +109,22 @@ request do
     array :tags, :optional do
       string :_self
     end
+  end
+end
+```
+
+### With Format Validation
+
+```ruby
+request do
+  object :user do
+    string :email, format: :email
+    string :password, format: {
+      is: :password,
+      message: "Password must be 8-16 characters with digit, lowercase, and uppercase"
+    }
+    string :birth_date, :optional, format: :date
+    string :external_id, :optional, format: :uuid
   end
 end
 ```

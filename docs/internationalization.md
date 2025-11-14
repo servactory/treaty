@@ -77,6 +77,11 @@ treaty:
         invalid_schema: "Option 'inclusion' for attribute '%{attribute}' must have a non-empty array of allowed values"
         not_included: "Attribute '%{attribute}' must be one of: %{allowed}. Got: '%{value}'"
 
+      format:
+        type_mismatch: "Option 'format' for attribute '%{attribute}' can only be used with String type. Current type: %{type}"
+        unknown_format: "Unknown format '%{format_name}' for attribute '%{attribute}'. Allowed formats: %{allowed}"
+        mismatch: "Attribute '%{attribute}' has invalid %{format_name} format: '%{value}'"
+
       nested:
         orchestrator:
           collection_not_implemented: "Subclass must implement the collection_of_attributes method"
@@ -125,6 +130,11 @@ de:
         inclusion:
           invalid_schema: "Option 'inclusion' für Attribut '%{attribute}' muss ein nicht-leeres Array von erlaubten Werten haben"
           not_included: "Attribut '%{attribute}' muss einer der folgenden Werte sein: %{allowed}. Erhalten: '%{value}'"
+
+        format:
+          type_mismatch: "Option 'format' für Attribut '%{attribute}' kann nur mit String-Typ verwendet werden. Aktueller Typ: %{type}"
+          unknown_format: "Unbekanntes Format '%{format_name}' für Attribut '%{attribute}'. Erlaubte Formate: %{allowed}"
+          mismatch: "Attribut '%{attribute}' hat ungültiges %{format_name} Format: '%{value}'"
 
         nested:
           orchestrator:
@@ -310,6 +320,13 @@ Different validators provide different interpolation variables:
 - `%{attribute}` - the attribute name
 - `%{allowed}` - comma-separated list of allowed values
 - `%{value}` - the actual value provided
+
+**Format validator:**
+- `%{attribute}` - the attribute name
+- `%{format_name}` - the format name (e.g., email, uuid, date)
+- `%{value}` - the actual value provided
+- `%{type}` - the attribute type (for type_mismatch error)
+- `%{allowed}` - comma-separated list of allowed formats (for unknown_format error)
 
 **Nested validators:**
 - `%{attribute}` - the array/object attribute name

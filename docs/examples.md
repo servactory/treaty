@@ -784,6 +784,156 @@ POST /posts
 
 See [Entity Classes (DTOs)](./entities.md) for detailed documentation.
 
+## Example 8: Format Validation for User Registration
+
+Demonstrates format validation for email, password, dates, and other specific string formats.
+
+### Treaty Definition
+
+```ruby
+module Gate
+  module API
+    module Users
+      class RegisterTreaty < ApplicationTreaty
+        version 1, default: true do
+          strategy Treaty::Strategy::ADAPTER
+
+          request do
+            object :user do
+              # Email format validation
+              string :email, format: :email
+
+              string :username
+
+              # Password format with custom message
+              string :password, format: {
+                is: :password,
+                message: "Password must be 8-16 characters with at least one digit, lowercase, and uppercase"
+              }
+
+              # Optional fields with format validation
+              string :birth_date, :optional, format: :date
+              string :phone, :optional
+              string :website, :optional
+
+              # UUID format for external ID
+              string :external_id, :optional, format: :uuid
+
+              # Boolean string format
+              string :newsletter_consent, format: :boolean
+            end
+          end
+
+          response 201 do
+            object :user do
+              string :id
+              string :email, format: :email
+              string :username
+              string :birth_date, :optional, format: :date
+              string :external_id, :optional, format: :uuid
+              datetime :created_at
+            end
+          end
+
+          delegate_to Users::RegisterService
+        end
+      end
+    end
+  end
+end
+```
+
+### Valid Request Example
+
+```bash
+POST /api/users/register
+
+{
+  "user": {
+    "email": "john@example.com",
+    "username": "johndoe",
+    "password": "SecurePass123",
+    "birth_date": "1990-01-15",
+    "external_id": "550e8400-e29b-41d4-a716-446655440000",
+    "newsletter_consent": "true"
+  }
+}
+```
+
+### Invalid Requests - Format Validation Errors
+
+```bash
+# Invalid email format
+{
+  "user": {
+    "email": "invalid-email",
+    "username": "johndoe",
+    "password": "SecurePass123",
+    "newsletter_consent": "true"
+  }
+}
+# Error: Attribute 'email' has invalid email format: 'invalid-email'
+
+# Invalid password format (too weak)
+{
+  "user": {
+    "email": "john@example.com",
+    "username": "johndoe",
+    "password": "weak",
+    "newsletter_consent": "true"
+  }
+}
+# Error: Password must be 8-16 characters with at least one digit, lowercase, and uppercase
+
+# Invalid date format
+{
+  "user": {
+    "email": "john@example.com",
+    "username": "johndoe",
+    "password": "SecurePass123",
+    "birth_date": "not-a-date",
+    "newsletter_consent": "true"
+  }
+}
+# Error: Attribute 'birth_date' has invalid date format: 'not-a-date'
+
+# Invalid UUID format
+{
+  "user": {
+    "email": "john@example.com",
+    "username": "johndoe",
+    "password": "SecurePass123",
+    "external_id": "not-a-uuid",
+    "newsletter_consent": "true"
+  }
+}
+# Error: Attribute 'external_id' has invalid uuid format: 'not-a-uuid'
+
+# Invalid boolean format
+{
+  "user": {
+    "email": "john@example.com",
+    "username": "johndoe",
+    "password": "SecurePass123",
+    "newsletter_consent": "yes"
+  }
+}
+# Error: Attribute 'newsletter_consent' has invalid boolean format: 'yes'
+```
+
+### Supported Format Types
+
+- `:uuid` - UUID format (e.g., "550e8400-e29b-41d4-a716-446655440000")
+- `:email` - RFC 2822 compliant email address
+- `:password` - Password (8-16 chars, must contain digit, lowercase, and uppercase)
+- `:date` - ISO 8601 date string (e.g., "2025-01-15")
+- `:datetime` - ISO 8601 datetime string (e.g., "2025-01-15T10:30:00Z")
+- `:time` - Time string (e.g., "10:30:00", "10:30 AM")
+- `:duration` - ISO 8601 duration format (e.g., "PT2H", "P1D", "PT30M")
+- `:boolean` - Boolean string ("true", "false", "0", "1")
+
+See [Format Validation](./validation.md#format-validation) for complete documentation.
+
 ## Next Steps
 
 - [Validation](./validation.md) - understand how validation works

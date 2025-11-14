@@ -821,12 +821,13 @@ string :priority, in: %w[low medium high urgent]
 
 ### Advanced Mode Options
 
-For custom error messages and fine-grained control:
+For custom error messages (static or dynamic) and fine-grained control:
 
 #### `required`
 
-**Type:** Hash with `:is` and `:message`
+**Type:** Hash with `:is` and `:message` (String or Lambda)
 
+**Static message:**
 ```ruby
 string :title, required: {
   is: true,
@@ -834,10 +835,25 @@ string :title, required: {
 }
 ```
 
+**Lambda message:**
+```ruby
+string :title, required: {
+  is: true,
+  message: lambda do |attribute:, value:, **|
+    "The #{attribute} field is mandatory (received: #{value.inspect})"
+  end
+}
+```
+
+**Lambda arguments:**
+- `attribute` - Symbol: The attribute name
+- `value` - Object: The current value
+
 #### `inclusion`
 
-**Type:** Hash with `:in` and `:message`
+**Type:** Hash with `:in` and `:message` (String or Lambda)
 
+**Static message:**
 ```ruby
 string :category, inclusion: {
   in: %w[tech business lifestyle],
@@ -849,6 +865,47 @@ integer :rating, inclusion: {
   message: "Rating must be between 1 and 5 stars"
 }
 ```
+
+**Lambda message:**
+```ruby
+string :category, inclusion: {
+  in: %w[tech business lifestyle],
+  message: lambda do |attribute:, value:, allowed_values:, **|
+    "Invalid #{attribute}: '#{value}'. Must be one of: #{allowed_values.join(', ')}"
+  end
+}
+```
+
+**Lambda arguments:**
+- `attribute` - Symbol: The attribute name
+- `value` - Object: The invalid value
+- `allowed_values` - Array: List of valid values
+
+#### `default` (Advanced Mode)
+
+**Type:** Hash with `:is` and `:message`
+
+```ruby
+integer :limit, default: {
+  is: 12,
+  message: nil  # Message not used for defaults
+}
+```
+
+**Note:** The `message` parameter is available but not used for error handling since default assignment cannot fail.
+
+#### `as` (Advanced Mode)
+
+**Type:** Hash with `:is` and `:message`
+
+```ruby
+string :username, as: {
+  is: :login,
+  message: nil  # Message not used for renaming
+}
+```
+
+**Note:** The `message` parameter is available but not used for error handling since renaming cannot fail.
 
 ## Configuration
 

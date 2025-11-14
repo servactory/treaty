@@ -162,16 +162,32 @@ string :handle, as: :value
 ## Attribute Options - Advanced Mode
 
 ```ruby
-# Custom required message
+# Custom required message (static)
 string :title, required: {
   is: true,
   message: "Post title cannot be empty"
 }
 
-# Custom inclusion message
+# Custom inclusion message (static)
 string :category, inclusion: {
   in: %w[tech business lifestyle],
   message: "Please select a valid category"
+}
+
+# Custom message with lambda (dynamic)
+string :status, required: {
+  is: true,
+  message: lambda do |attribute:, value:, **|
+    "The #{attribute} field is mandatory (received: #{value.inspect})"
+  end
+}
+
+# Inclusion with lambda
+string :priority, inclusion: {
+  in: %w[low medium high],
+  message: lambda do |attribute:, value:, allowed_values:, **|
+    "Invalid #{attribute}: '#{value}'. Must be: #{allowed_values.join(', ')}"
+  end
 }
 ```
 

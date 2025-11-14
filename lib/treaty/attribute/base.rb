@@ -122,9 +122,11 @@ module Treaty
         return unless @nesting_level > Treaty::Engine.config.treaty.attribute_nesting_level
 
         raise Treaty::Exceptions::NestedAttributes,
-              I18n.t("treaty.attributes.errors.nesting_level_exceeded",
-                     level: @nesting_level,
-                     max_level: Treaty::Engine.config.treaty.attribute_nesting_level)
+              I18n.t(
+                "treaty.attributes.errors.nesting_level_exceeded",
+                level: @nesting_level,
+                max_level: Treaty::Engine.config.treaty.attribute_nesting_level
+              )
       end
 
       # Extracts helper symbols from arguments
@@ -155,7 +157,10 @@ module Treaty
       def apply_defaults!
         # Must be implemented in subclasses
         raise Treaty::Exceptions::NotImplemented,
-              I18n.t("treaty.attributes.errors.apply_defaults_not_implemented", class: self.class)
+              I18n.t(
+                "treaty.attributes.errors.apply_defaults_not_implemented",
+                class: self.class
+              )
       end
 
       # Processes nested attributes block for object/array types
@@ -167,7 +172,10 @@ module Treaty
       def process_nested_attributes
         # Must be implemented in subclasses
         raise Treaty::Exceptions::NotImplemented,
-              I18n.t("treaty.attributes.errors.process_nested_not_implemented", class: self.class)
+              I18n.t(
+                "treaty.attributes.errors.process_nested_not_implemented",
+                class: self.class
+              )
       end
     end
   end

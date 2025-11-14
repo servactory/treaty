@@ -406,7 +406,11 @@ Attribute 'tags' must be an Array, got String
 
 ## Custom Error Messages
 
-Use advanced mode for custom error messages:
+Use advanced mode for custom error messages with both static strings and dynamic lambda functions.
+
+### Static Messages
+
+Simple string messages for straightforward error descriptions:
 
 ```ruby
 request do
@@ -439,6 +443,142 @@ Please select a valid category: tech, business, or lifestyle
 
 # Custom inclusion message for integer
 Rating must be between 1 and 5 stars
+```
+
+### Lambda Messages (Dynamic)
+
+Use lambda functions to create dynamic, context-aware error messages with access to validation context:
+
+```ruby
+request do
+  object :post do
+    # Required validation with lambda
+    string :title, required: {
+      is: true,
+      message: lambda do |attribute:, value:, **|
+        "The #{attribute} field is mandatory (received: #{value.inspect})"
+      end
+    }
+
+    # Inclusion validation with lambda
+    string :category, inclusion: {
+      in: %w[tech business lifestyle],
+      message: lambda do |attribute:, value:, allowed_values:, **|
+        "Invalid #{attribute}: '#{value}'. Must be one of: #{allowed_values.join(', ')}"
+      end
+    }
+
+    # Type validation with lambda
+    integer :rating, required: {
+      is: true,
+      message: lambda do |attribute:, expected_type:, actual_type:, **|
+        "Expected #{attribute} to be #{expected_type}, but got #{actual_type}"
+      end
+    }
+  end
+end
+```
+
+**Error output:**
+```ruby
+# Dynamic required message
+The title field is mandatory (received: nil)
+
+# Dynamic inclusion message
+Invalid category: 'gaming'. Must be one of: tech, business, lifestyle
+
+# Dynamic type message
+Expected rating to be integer, but got String
+```
+
+### Available Lambda Arguments
+
+Different validators provide different context arguments to lambda functions:
+
+**Required Validator:**
+- `attribute` - Symbol: The attribute name
+- `value` - Object: The current value (nil or empty)
+
+**Inclusion Validator:**
+- `attribute` - Symbol: The attribute name
+- `value` - Object: The invalid value
+- `allowed_values` - Array: List of valid values
+
+**Type Validator:**
+- `attribute` - Symbol: The attribute name
+- `value` - Object: The value being validated
+- `expected_type` - Symbol: Expected type (`:integer`, `:string`, etc.)
+- `actual_type` - Class: Actual class of the value
+
+### Practical Lambda Examples
+
+```ruby
+response 200 do
+  object :movie do
+    # Contextual required message
+    string :plot, required: {
+      is: true,
+      message: ->(attribute:, **) { "Movie #{attribute} is required for catalog" }
+    }
+
+    # Detailed inclusion message with range
+    integer :rating, inclusion: {
+      in: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+      message: lambda do |attribute:, value:, allowed_values:, **|
+        "Invalid #{attribute}: #{value}. Must be between #{allowed_values.min} and #{allowed_values.max}"
+      end
+    }
+
+    # Array with custom inclusion message
+    array :cast do
+      string :role_type, inclusion: {
+        in: %w[lead supporting cameo],
+        message: ->(value:, **) { "Role type '#{value}' is not recognized" }
+      }
+    end
+  end
+end
+```
+
+### Best Practices for Custom Messages
+
+**1. Use static messages for simple, unchanging errors:**
+```ruby
+# Good - clear and simple
+string :email, required: { is: true, message: "Email is required" }
+```
+
+**2. Use lambda messages when you need context:**
+```ruby
+# Good - dynamic and informative
+string :status, inclusion: {
+  in: %w[draft published],
+  message: lambda do |attribute:, value:, allowed_values:, **|
+    "#{attribute.capitalize} '#{value}' is invalid. Choose: #{allowed_values.join(' or ')}"
+  end
+}
+```
+
+**3. Keep lambda messages concise:**
+```ruby
+# Good - concise but informative
+message: ->(attribute:, value:, **) { "Invalid #{attribute}: #{value}" }
+
+# Avoid - too verbose
+message: lambda do |attribute:, value:, **|
+  "An error has occurred with the attribute named #{attribute}. " \
+  "The value that was provided is #{value}, which is not acceptable. " \
+  "Please provide a valid value according to the rules."
+end
+```
+
+**4. Use catch-all parameters (`**`) for forward compatibility:**
+```ruby
+# Good - handles future context additions
+message: ->(attribute:, value:, **) { "Error in #{attribute}: #{value}" }
+
+# Avoid - might break if new context is added
+message: ->(attribute:, value) { "Error in #{attribute}: #{value}" }
 ```
 
 ## Validation Examples

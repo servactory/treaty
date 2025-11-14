@@ -3,7 +3,7 @@
 module Treaty
   module Versions
     module Execution
-      class Request
+      class Request # rubocop:disable Metrics/ClassLength
         def self.execute!(...)
           new(...).execute!
         end
@@ -117,9 +117,11 @@ module Treaty
 
           unless executor.respond_to?(method_name)
             raise Treaty::Exceptions::Execution,
-                  I18n.t("treaty.execution.method_not_found",
-                         method: method_name,
-                         class_name: executor)
+                  I18n.t(
+                    "treaty.execution.method_not_found",
+                    method: method_name,
+                    class_name: executor
+                  )
           end
 
           executor.public_send(method_name, params: @validated_params)
@@ -134,7 +136,10 @@ module Treaty
 
         def raise_executor_missing_error!
           raise Treaty::Exceptions::Execution,
-                I18n.t("treaty.execution.executor_missing", version: @version_factory.version)
+                I18n.t(
+                  "treaty.execution.executor_missing",
+                  version: @version_factory.version
+                )
         end
 
         def servactory_service?

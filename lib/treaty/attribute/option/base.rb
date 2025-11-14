@@ -134,11 +134,27 @@ module Treaty
         # Gets custom error message from advanced mode schema
         # Returns nil if no custom message, which triggers I18n default message
         #
-        # @return [String, nil] Custom error message or nil for default message
+        # @return [String, Proc, nil] Custom error message, lambda, or nil for default message
         def custom_message
           return nil unless @option_schema.is_a?(Hash)
 
           @option_schema.fetch(:message, nil)
+        end
+
+        # Resolves custom message with lambda support
+        # If message is a lambda, calls it with provided named arguments
+        #
+        # @param context [Hash] Named arguments to pass to lambda
+        # @return [String, nil] Resolved message string or nil
+        def resolve_custom_message(**context)
+          message = custom_message
+          return nil if message.nil?
+
+          if message.respond_to?(:call)
+            message.call(**context)
+          else
+            message
+          end
         end
 
         # Checks if schema is in advanced mode

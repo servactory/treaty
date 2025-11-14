@@ -79,7 +79,10 @@ module Treaty
         # @return [Attribute::Base] Created attribute instance
         def create_attribute(*)
           raise Treaty::Exceptions::NotImplemented,
-                I18n.t("treaty.attributes.dsl.create_attribute_not_implemented", class: self)
+                I18n.t(
+                  "treaty.attributes.dsl.create_attribute_not_implemented",
+                  class: self
+                )
         end
       end
     end

@@ -70,9 +70,11 @@ module Treaty
         return if entity_class.is_a?(Class) && entity_class < Treaty::Entity
 
         raise Treaty::Exceptions::Validation,
-              I18n.t("treaty.request.factory.invalid_entity_class",
-                     type: entity_class.class,
-                     value: entity_class)
+              I18n.t(
+                "treaty.request.factory.invalid_entity_class",
+                type: entity_class.class,
+                value: entity_class
+              )
       end
     end
   end

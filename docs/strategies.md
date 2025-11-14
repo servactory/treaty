@@ -4,6 +4,8 @@
 
 ## Overview
 
+This guide explains the two processing strategies in Treaty: DIRECT and ADAPTER. Learn when to use each strategy, how they differ in performance and validation, and best practices for production APIs.
+
 Treaty supports two processing strategies that determine how requests and responses are handled:
 
 - **DIRECT** - Direct pass-through without validation or transformation
@@ -518,8 +520,8 @@ end
 
 ## Next Steps
 
-- [Validation](./validation.md) - detailed validation system
-- [Transformation](./transformation.md) - data transformation details
-- [Examples](./examples.md) - practical examples
+- [Validation](./validation.md) - Detailed validation system
+- [Transformation](./transformation.md) - Data transformation details
+- [Examples](./examples.md) - Practical examples
 
-[← Back: Versioning](./versioning.md) | [← Back to Documentation](./README.md) | [Next: Validation →](./validation.md)
+[← Back to Documentation](./README.md)

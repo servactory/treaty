@@ -2,6 +2,10 @@
 
 [← Back to Documentation](./README.md)
 
+## Overview
+
+This guide will help you get started with Treaty, from installation to creating your first API contract. You'll learn how to install the gem, set up Rails integration, and build a working contract with validation and service delegation.
+
 ## Installation
 
 Add to your Gemfile:

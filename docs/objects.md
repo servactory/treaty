@@ -2,6 +2,10 @@
 
 [← Back to Documentation](./README.md)
 
+## Overview
+
+Objects group related attributes together, creating nested structures in your request and response data. This guide covers basic object grouping, the special `:_self` object, organization patterns, and best practices for structuring your API data.
+
 ## What are Objects?
 
 Objects group related attributes together, creating nested structures in your request and response data. Use the `object` attribute type to organize your API data into logical hierarchies.
@@ -483,8 +487,8 @@ end
 
 ## Next Steps
 
-- [Validation](./validation.md) - understand validation within objects
-- [Transformation](./transformation.md) - how objects are transformed
-- [Examples](./examples.md) - more practical examples
+- [Validation](./validation.md) - Understand validation within objects
+- [Transformation](./transformation.md) - How objects are transformed
+- [Examples](./examples.md) - More practical examples
 
-[← Back: Nested Structures](./nested-structures.md) | [← Back to Documentation](./README.md) | [Next: Validation →](./validation.md)
+[← Back to Documentation](./README.md)

@@ -2,6 +2,10 @@
 
 [← Back to Documentation](./README.md)
 
+## Overview
+
+This comprehensive troubleshooting guide helps you diagnose and resolve common issues when working with Treaty. Find solutions for validation errors, version selection, strategy configuration, controller integration, service delegation, performance issues, and internationalization problems.
+
 ## Common Issues and Solutions
 
 This guide helps you diagnose and fix common issues when working with Treaty.
@@ -723,9 +727,9 @@ If you're still stuck:
 
 ## Next Steps
 
-- [API Reference](./api-reference.md) - complete API documentation
-- [Examples](./examples.md) - practical examples
-- [Validation](./validation.md) - validation system details
+- [API Reference](./api-reference.md) - Complete API documentation
+- [Examples](./examples.md) - Practical examples
+- [Validation](./validation.md) - Validation system details
 - [Internationalization](./internationalization.md) - I18n setup and configuration
 
 [← Back to Documentation](./README.md)

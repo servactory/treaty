@@ -19,12 +19,12 @@
 
 Explore comprehensive guides and documentation at [docs](./docs):
 
-- [Getting Started](./docs/getting-started.md) - installation and configuration
-- [Core Concepts](./docs/core-concepts.md) - understand fundamental concepts
-- [API Reference](./docs/api-reference.md) - complete API documentation
-- [Examples](./docs/examples.md) - practical real-world examples
+- [Getting Started](./docs/getting-started.md) - Installation and basic setup
+- [Core Concepts](./docs/core-concepts.md) - Fundamental concepts and architecture
+- [API Reference](./docs/api-reference.md) - Complete API documentation
+- [Examples](./docs/examples.md) - Real-world usage examples
 - [Internationalization](./docs/internationalization.md) - I18n and multilingual support
-- [Full Documentation Index](./docs/README.md) - all documentation topics
+- [Full Documentation Index](./docs/README.md) - Complete documentation index
 
 ## 💡 Why Treaty?
 

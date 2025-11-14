@@ -2,6 +2,10 @@
 
 [← Back to Documentation](./README.md)
 
+## Overview
+
+Attributes are the building blocks of Treaty contracts. This guide covers all available attribute types (string, integer, boolean, datetime, object, array) and their options, including validation, defaults, and transformation rules.
+
 ## Attribute Types
 
 Treaty supports the following attribute types:
@@ -464,8 +468,8 @@ end
 
 ## Next Steps
 
-- [Nested Structures](./nested-structures.md) - working with objects and arrays
-- [Validation](./validation.md) - validation system details
-- [Transformation](./transformation.md) - data transformation
+- [Nested Structures](./nested-structures.md) - Working with objects and arrays
+- [Validation](./validation.md) - Validation system details
+- [Transformation](./transformation.md) - Data transformation
 
-[← Back: Defining Contracts](./defining-contracts.md) | [← Back to Documentation](./README.md) | [Next: Nested Structures →](./nested-structures.md)
+[← Back to Documentation](./README.md)

@@ -4,7 +4,7 @@
 
 ## Overview
 
-This document provides a complete reference for all Treaty DSL methods and configuration options.
+This comprehensive API reference covers all Treaty DSL methods, configuration options, attribute types, validation rules, and exception handling. Use this as a complete reference for building Treaty contracts.
 
 ## Treaty Class Definition
 
@@ -1244,9 +1244,9 @@ end
 
 ## Next Steps
 
-- [Getting Started](./getting-started.md) - start building with Treaty
-- [Examples](./examples.md) - practical examples
-- [Validation](./validation.md) - validation details
-- [Transformation](./transformation.md) - transformation details
+- [Getting Started](./getting-started.md) - Start building with Treaty
+- [Examples](./examples.md) - Practical examples
+- [Validation](./validation.md) - Validation details
+- [Transformation](./transformation.md) - Transformation details
 
 [← Back to Documentation](./README.md)

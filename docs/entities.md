@@ -2,11 +2,15 @@
 
 [← Back to Documentation](./README.md)
 
+## Overview
+
+Entity classes (DTOs - Data Transfer Objects) are reusable data structure definitions that can be used across multiple treaties and versions. This guide covers creating entities, organizing them, using the introspection `.info` method, and best practices for maintainable API design.
+
+**Important:** Entity classes and request/response blocks use the same underlying system. When you define a request or response with a block, Treaty creates an anonymous Entity class internally. This unified architecture ensures consistent behavior whether you use blocks or explicit Entity classes.
+
 ## What are Entity Classes?
 
 Entity classes (also known as DTOs - Data Transfer Objects) are reusable class definitions that can be used in multiple treaty definitions. They provide a way to define data structures once and reuse them across different versions and treaties.
-
-**Important:** Entity classes and request/response blocks use the same underlying system. When you define a request or response with a block, Treaty creates an anonymous Entity class internally. This unified architecture ensures consistent behavior whether you use blocks or explicit Entity classes.
 
 ## Benefits of Entity Classes
 
@@ -659,9 +663,9 @@ end
 
 ## Next Steps
 
-- [Attributes](./attributes.md) - learn about attribute types and options
-- [Nested Structures](./nested-structures.md) - working with complex data
-- [Validation](./validation.md) - data validation system
-- [Examples](./examples.md) - practical usage examples
+- [Attributes](./attributes.md) - Learn about attribute types and options
+- [Nested Structures](./nested-structures.md) - Working with complex data
+- [Validation](./validation.md) - Data validation system
+- [Examples](./examples.md) - Practical usage examples
 
-[← Back to Documentation](./README.md) | [Next: Validation →](./validation.md)
+[← Back to Documentation](./README.md)

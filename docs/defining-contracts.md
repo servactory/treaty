@@ -2,6 +2,10 @@
 
 [← Back to Documentation](./README.md)
 
+## Overview
+
+Learn how to define Treaty contracts, including request and response definitions, strategy selection, and service delegation. This guide covers the complete structure of a contract and best practices for organizing your API definitions.
+
 ## Contract Structure
 
 A Treaty contract consists of:
@@ -494,8 +498,8 @@ end
 
 ## Next Steps
 
-- [Attributes](./attributes.md) - learn about attribute types and options
-- [Objects](./objects.md) - understand object organization
-- [Versioning](./versioning.md) - manage multiple versions
+- [Attributes](./attributes.md) - Learn about attribute types and options
+- [Objects](./objects.md) - Understand object organization
+- [Versioning](./versioning.md) - Manage multiple API versions
 
-[← Back: Core Concepts](./core-concepts.md) | [← Back to Documentation](./README.md) | [Next: Attributes →](./attributes.md)
+[← Back to Documentation](./README.md)

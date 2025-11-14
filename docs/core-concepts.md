@@ -2,6 +2,10 @@
 
 [← Back to Documentation](./README.md)
 
+## Overview
+
+This guide introduces the fundamental concepts of Treaty, including treaties (contracts), versions, strategies, requests, responses, and service delegation. Understanding these core building blocks will help you design robust API contracts.
+
 ## What is a Treaty?
 
 A Treaty (contract) is a formal definition of the data structure for an API endpoint. A contract describes:
@@ -339,8 +343,8 @@ Request and Response factories:
 
 ## Next Steps
 
-- [Defining Contracts](./defining-contracts.md) - detailed treaty creation
-- [Attributes](./attributes.md) - attribute types and options
-- [Versioning](./versioning.md) - working with versions
+- [Defining Contracts](./defining-contracts.md) - Detailed treaty creation and configuration
+- [Attributes](./attributes.md) - Attribute types and options
+- [Versioning](./versioning.md) - Working with multiple API versions
 
-[← Back: Getting Started](./getting-started.md) | [← Back to Documentation](./README.md) | [Next: Defining Contracts →](./defining-contracts.md)
+[← Back to Documentation](./README.md)

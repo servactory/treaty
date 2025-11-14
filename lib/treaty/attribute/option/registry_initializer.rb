@@ -21,6 +21,7 @@ module Treaty
       # - `:required` → RequiredValidator - Validates required/optional attributes
       # - `:type` → TypeValidator - Validates value types
       # - `:inclusion` → InclusionValidator - Validates value is in allowed set
+      # - `:format` → FormatValidator - Validates string values match specific formats
       #
       # ## Built-in Modifiers
       #
@@ -71,6 +72,7 @@ module Treaty
             Registry.register(:required, Validators::RequiredValidator, category: :validator)
             Registry.register(:type, Validators::TypeValidator, category: :validator)
             Registry.register(:inclusion, Validators::InclusionValidator, category: :validator)
+            Registry.register(:format, Validators::FormatValidator, category: :validator)
           end
 
           # Registers all built-in modifiers

@@ -23,6 +23,11 @@ en:
           invalid_schema: "Option 'inclusion' for attribute '%{attribute}' must have a non-empty array of allowed values"
           not_included: "Attribute '%{attribute}' must be one of: %{allowed}. Got: '%{value}'"
 
+        format:
+          type_mismatch: "Option 'format' for attribute '%{attribute}' can only be used with String type. Current type: %{type}"
+          unknown_format: "Unknown format '%{format_name}' for attribute '%{attribute}'. Allowed formats: %{allowed}"
+          mismatch: "Attribute '%{attribute}' has invalid %{format_name} format: '%{value}'"
+
         # Nested structures validation
         nested:
           # Orchestrator errors

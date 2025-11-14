@@ -150,6 +150,100 @@ end
 # Error: Attribute 'rating' must be one of: 1, 2, 3, 4, 5. Got: 6
 ```
 
+### Format Validation
+
+Validates that string values match specific formats using patterns and/or validators.
+
+**Supported formats:**
+- `:uuid` - UUID format (8-4-4-4-12 hexadecimal pattern)
+- `:email` - RFC 2822 compliant email address
+- `:password` - Password (8-16 chars, must contain digit, lowercase, and uppercase)
+- `:date` - ISO 8601 date string (e.g., "2025-01-15")
+- `:datetime` - ISO 8601 datetime string (e.g., "2025-01-15T10:30:00Z")
+- `:time` - Time string (e.g., "10:30:00", "10:30 AM")
+- `:duration` - ISO 8601 duration format (e.g., "PT2H" for 2 hours, "P1D" for 1 day, "PT30M" for 30 minutes)
+- `:boolean` - Boolean string ("true", "false", "0", "1")
+
+**Simple mode:**
+```ruby
+request do
+  object :user do
+    string :email, format: :email
+    string :started_on, format: :date
+    string :external_id, format: :uuid
+  end
+end
+```
+
+**Advanced mode with custom message:**
+```ruby
+request do
+  object :user do
+    string :email, format: { is: :email, message: "Invalid email address" }
+
+    string :password, format: {
+      is: :password,
+      message: ->(attribute:, value:, **) {
+        "#{attribute.to_s.capitalize} must be 8-16 characters with at least one digit, lowercase, and uppercase letter"
+      }
+    }
+
+    string :started_on, format: { is: :date, message: "Invalid date format" }
+  end
+end
+```
+
+**Examples:**
+```ruby
+# UUID validation
+{ external_id: "550e8400-e29b-41d4-a716-446655440000" } ✓
+{ external_id: "not-a-uuid" } ✗
+# Error: Attribute 'external_id' has invalid uuid format: 'not-a-uuid'
+
+# Email validation
+{ email: "user@example.com" } ✓
+{ email: "invalid-email" } ✗
+# Error: Attribute 'email' has invalid email format: 'invalid-email'
+
+# Password validation
+{ password: "SecurePass123" } ✓
+{ password: "weak" } ✗
+# Error: Attribute 'password' has invalid password format: 'weak'
+
+# Date validation
+{ started_on: "2025-01-15" } ✓
+{ started_on: "not-a-date" } ✗
+# Error: Attribute 'started_on' has invalid date format: 'not-a-date'
+
+# DateTime validation
+{ last_login_at: "2025-01-15T10:30:00Z" } ✓
+{ last_login_at: "invalid" } ✗
+# Error: Attribute 'last_login_at' has invalid datetime format: 'invalid'
+
+# Time validation
+{ notification_time: "10:30:00" } ✓
+{ notification_time: "not-a-time" } ✗
+# Error: Attribute 'notification_time' has invalid time format: 'not-a-time'
+
+# Duration validation (ISO 8601 format)
+{ session_duration: "PT2H" } ✓  # 2 hours
+{ session_duration: "P1D" } ✓   # 1 day
+{ session_duration: "invalid duration" } ✗
+# Error: Attribute 'session_duration' has invalid duration format: 'invalid duration'
+
+# Boolean validation
+{ email_verified: "true" } ✓
+{ email_verified: "1" } ✓
+{ email_verified: "yes" } ✗
+# Error: Attribute 'email_verified' has invalid boolean format: 'yes'
+```
+
+**Important notes:**
+- Format validation only works with `:string` type attributes
+- Using format with non-string types will raise a validation error
+- Blank/empty values are handled by required/optional validation
+- Custom messages support both static strings and lambda functions
+
 ### Nested Object Validation
 
 Objects (hashes) are validated recursively.

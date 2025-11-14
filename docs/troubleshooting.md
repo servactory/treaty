@@ -83,6 +83,78 @@ string :status, in: %w[draft published archived]
 { "status" => "pending" }  # ✗ Not in list
 ```
 
+### "Attribute 'X' has invalid FORMAT format: 'Y'"
+
+**Problem:** Value doesn't match expected format (format validation).
+
+**Solution:**
+1. Check format requirements in treaty definition
+2. Ensure value matches the specific format
+3. Verify format is supported for the type
+
+**Example:**
+```ruby
+# Treaty expects:
+string :email, format: :email
+string :birth_date, format: :date
+string :external_id, format: :uuid
+string :session_duration, format: :duration
+
+# Email format:
+{ "email" => "user@example.com" }  # ✓ Valid email
+{ "email" => "invalid-email" }  # ✗ Invalid format
+
+# Date format (ISO 8601):
+{ "birth_date" => "2025-01-15" }  # ✓ Valid date
+{ "birth_date" => "01/15/2025" }  # ✗ Wrong format
+{ "birth_date" => "not-a-date" }  # ✗ Invalid
+
+# UUID format:
+{ "external_id" => "550e8400-e29b-41d4-a716-446655440000" }  # ✓ Valid UUID
+{ "external_id" => "not-a-uuid" }  # ✗ Invalid format
+
+# Duration format (ISO 8601):
+{ "session_duration" => "PT2H" }  # ✓ Valid (2 hours)
+{ "session_duration" => "P1D" }  # ✓ Valid (1 day)
+{ "session_duration" => "2 hours" }  # ✗ Wrong format
+
+# Password format:
+{ "password" => "SecurePass123" }  # ✓ Valid (8-16 chars, digit+lowercase+uppercase)
+{ "password" => "weak" }  # ✗ Too short, no uppercase, no digit
+
+# Boolean string format:
+{ "verified" => "true" }  # ✓ Valid
+{ "verified" => "1" }  # ✓ Valid
+{ "verified" => "yes" }  # ✗ Invalid
+```
+
+**Common format issues:**
+- Email: Must be RFC 2822 compliant
+- Date: Must be ISO 8601 (YYYY-MM-DD)
+- DateTime: Must be ISO 8601 (YYYY-MM-DDTHH:MM:SSZ)
+- Time: HH:MM:SS format
+- Duration: ISO 8601 (PT2H for 2 hours, P1D for 1 day)
+- UUID: 8-4-4-4-12 hexadecimal pattern
+- Password: 8-16 characters, at least one digit, lowercase, and uppercase
+- Boolean: "true", "false", "0", or "1"
+
+### "Option 'format' can only be used with String type"
+
+**Problem:** Trying to use format validation on non-string attribute.
+
+**Solution:**
+Format validation only works with string attributes. Use the correct type or remove format option.
+
+**Example:**
+```ruby
+# Correct:
+string :email, format: :email  # ✓ Format works with string
+
+# Incorrect:
+integer :count, format: :number  # ✗ Format doesn't work with integer
+datetime :created_at, format: :datetime  # ✗ Use datetime type, not format
+```
+
 ### "Attribute 'X' must be a Hash (object), got TYPE"
 
 **Problem:** Expected nested object, received primitive value.

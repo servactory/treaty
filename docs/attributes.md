@@ -212,6 +212,36 @@ integer :rating, in: [1, 2, 3, 4, 5]
 
 **Validation:** Value must be one of the specified values.
 
+#### format
+
+Validates that string values match specific formats. **Only works with string type attributes.**
+
+```ruby
+# Simple mode
+string :email, format: :email
+string :birth_date, format: :date
+string :external_id, format: :uuid
+
+# Advanced mode with custom message
+string :email, format: { is: :email, message: "Invalid email address" }
+string :password, format: {
+  is: :password,
+  message: "Password must be 8-16 characters with at least one digit, lowercase, and uppercase"
+}
+```
+
+**Supported formats:**
+- `:uuid` - UUID format (8-4-4-4-12 hexadecimal pattern)
+- `:email` - RFC 2822 compliant email address
+- `:password` - Password (8-16 chars, must contain digit, lowercase, and uppercase)
+- `:date` - ISO 8601 date string (e.g., "2025-01-15")
+- `:datetime` - ISO 8601 datetime string (e.g., "2025-01-15T10:30:00Z")
+- `:time` - Time string (e.g., "10:30:00", "10:30 AM")
+- `:duration` - ISO 8601 duration format (e.g., "PT2H", "P1D", "PT30M")
+- `:boolean` - Boolean string ("true", "false", "0", "1")
+
+**See:** [Format Validation](./validation.md#format-validation) for detailed examples
+
 ### Advanced Mode Options
 
 All simple mode options can be extended with custom error messages using either static strings or dynamic lambda functions:
@@ -252,6 +282,14 @@ integer :rating, required: {
     "Expected #{attribute} to be #{expected_type}, but got #{actual_type}"
   end
 }
+
+# Format validation with lambda
+string :password, format: {
+  is: :password,
+  message: lambda do |attribute:, value:, format_name:, **|
+    "#{attribute.to_s.capitalize} must match #{format_name} format (got: #{value})"
+  end
+}
 ```
 
 **Format:**
@@ -267,6 +305,7 @@ option_name: { value_key: value, message: "String" | lambda }
 - Required: `attribute`, `value`
 - Inclusion: `attribute`, `value`, `allowed_values`
 - Type: `attribute`, `value`, `expected_type`, `actual_type`
+- Format: `attribute`, `value`, `format_name`
 
 ## Default Behavior
 

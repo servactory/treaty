@@ -4,6 +4,10 @@
 
 ## Overview
 
+This comprehensive migration guide helps you safely evolve your API through version changes. Learn migration strategies, handle breaking changes, organize code for multiple versions, and communicate changes to API consumers.
+
+## Migration Overview
+
 This guide helps you migrate your API safely through version changes using Treaty's versioning capabilities.
 
 ## Migration Strategies
@@ -679,8 +683,8 @@ end
 
 ## Next Steps
 
-- [Versioning](./versioning.md) - detailed versioning documentation
-- [Strategies](./strategies.md) - understanding strategies
-- [Examples](./examples.md) - practical examples
+- [Versioning](./versioning.md) - Detailed versioning documentation
+- [Strategies](./strategies.md) - Understanding strategies
+- [Examples](./examples.md) - Practical examples
 
 [← Back to Documentation](./README.md)

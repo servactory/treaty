@@ -4,6 +4,8 @@
 
 ## Overview
 
+This guide covers nested structures in Treaty, including objects (nested hash structures) and arrays (collections of items). Learn how to work with simple and complex arrays, deeply nested objects, and validation rules for nested data.
+
 Treaty supports two types of nested structures:
 - **Objects** - nested hash structures
 - **Arrays** - collections of items
@@ -469,8 +471,8 @@ end
 
 ## Next Steps
 
-- [Validation](./validation.md) - understand validation system
-- [Transformation](./transformation.md) - data transformation
-- [Examples](./examples.md) - more practical examples
+- [Validation](./validation.md) - Understand validation system
+- [Transformation](./transformation.md) - Data transformation
+- [Examples](./examples.md) - More practical examples
 
-[← Back: Attributes](./attributes.md) | [← Back to Documentation](./README.md) | [Next: Validation →](./validation.md)
+[← Back to Documentation](./README.md)

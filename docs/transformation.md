@@ -4,7 +4,7 @@
 
 ## Overview
 
-Transformation is the process of modifying data as it flows through Treaty. It only applies when using the **ADAPTER** strategy. With **DIRECT** strategy, no transformation occurs.
+Transformation modifies data as it flows through Treaty, including applying default values, renaming attributes, and converting keys. This guide covers the transformation pipeline, types of transformations, and best practices. Transformation only applies when using the **ADAPTER** strategy.
 
 ## Transformation Pipeline
 
@@ -824,8 +824,8 @@ end
 
 ## Next Steps
 
-- [Validation](./validation.md) - understand validation system
-- [Strategies](./strategies.md) - DIRECT vs ADAPTER
-- [Examples](./examples.md) - practical examples
+- [Validation](./validation.md) - Understand validation system
+- [Strategies](./strategies.md) - DIRECT vs ADAPTER strategies
+- [Examples](./examples.md) - Practical examples
 
-[← Back: Validation](./validation.md) | [← Back to Documentation](./README.md) | [Next: Examples →](./examples.md)
+[← Back to Documentation](./README.md)

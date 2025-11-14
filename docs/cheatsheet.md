@@ -2,6 +2,12 @@
 
 [← Back to Documentation](./README.md)
 
+## Overview
+
+Quick reference guide for common Treaty patterns and syntax. This cheatsheet covers basic structure, entity classes, strategies, versioning, attribute types and options, objects, arrays, requests, responses, delegation, controller integration, version selection, common patterns, and complete examples.
+
+## Quick Reference
+
 Quick reference for common Treaty patterns and syntax.
 
 ## Basic Structure
@@ -635,8 +641,8 @@ end
 
 ## Next Steps
 
-- [Getting Started](./getting-started.md) - detailed tutorial
-- [API Reference](./api-reference.md) - complete API docs
-- [Examples](./examples.md) - more examples
+- [Getting Started](./getting-started.md) - Detailed tutorial
+- [API Reference](./api-reference.md) - Complete API documentation
+- [Examples](./examples.md) - More examples
 
 [← Back to Documentation](./README.md)

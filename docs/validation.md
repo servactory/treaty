@@ -4,7 +4,7 @@
 
 ## Overview
 
-Treaty provides comprehensive validation for both requests and responses. Validation only applies when using the **ADAPTER** strategy. With **DIRECT** strategy, no validation occurs.
+Treaty provides comprehensive validation for requests and responses, including type checking, required field validation, inclusion validation, and format validation. This guide covers all validation types, error messages, and custom validation messages with both static strings and dynamic lambda functions. Validation only applies when using the **ADAPTER** strategy.
 
 ## Validation Modes
 
@@ -890,8 +890,8 @@ Both happen in ADAPTER strategy, but validation happens **before** transformatio
 
 ## Next Steps
 
-- [Transformation](./transformation.md) - understand data transformation
-- [Strategies](./strategies.md) - DIRECT vs ADAPTER
-- [Examples](./examples.md) - practical examples
+- [Transformation](./transformation.md) - Understand data transformation
+- [Strategies](./strategies.md) - DIRECT vs ADAPTER strategies
+- [Examples](./examples.md) - Practical examples
 
-[← Back: Nested Structures](./nested-structures.md) | [← Back to Documentation](./README.md) | [Next: Transformation →](./transformation.md)
+[← Back to Documentation](./README.md)

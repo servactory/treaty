@@ -4,7 +4,7 @@
 
 ## Overview
 
-Treaty provides powerful versioning capabilities for your API. Each treaty can have multiple versions running simultaneously, allowing you to evolve your API without breaking existing clients.
+This guide covers Treaty's powerful versioning system, allowing multiple API versions to run simultaneously. Learn about version formats, deprecation, version selection, migration strategies, and best practices for evolving your API without breaking existing clients.
 
 ## Version Formats
 
@@ -543,8 +543,8 @@ end
 
 ## Next Steps
 
-- [Strategies](./strategies.md) - understand DIRECT vs ADAPTER strategies
-- [Validation](./validation.md) - validation across versions
-- [Transformation](./transformation.md) - data transformation between versions
+- [Strategies](./strategies.md) - Understand DIRECT vs ADAPTER strategies
+- [Validation](./validation.md) - Validation across versions
+- [Transformation](./transformation.md) - Data transformation between versions
 
-[← Back: Examples](./examples.md) | [← Back to Documentation](./README.md) | [Next: Strategies →](./strategies.md)
+[← Back to Documentation](./README.md)

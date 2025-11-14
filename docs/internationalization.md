@@ -4,7 +4,7 @@
 
 ## Overview
 
-Treaty includes built-in internationalization (I18n) support for all error messages and validation feedback. This enables you to provide localized error messages for users in different languages, improving the user experience for global applications.
+Treaty provides built-in internationalization support for all error messages and validation feedback. This guide covers translation structure, adding new languages, custom error messages, message interpolation, and troubleshooting I18n issues. Deliver localized error messages for global applications with zero performance overhead.
 
 ## How It Works
 
@@ -693,14 +693,9 @@ Treaty handles all of this automatically - you don't need to write validation co
 
 ## Next Steps
 
-- [Validation](./validation.md) - understand validation system
-- [Troubleshooting](./troubleshooting.md) - common issues and solutions
-- [API Reference](./api-reference.md) - complete API documentation
-- [Examples](./examples.md) - practical usage examples
-
-## Additional Resources
-
-- [Rails I18n Guide](https://guides.rubyonrails.org/i18n.html)
-- [Treaty Exception Documentation](../lib/treaty/exceptions/) - see source files for detailed docs
+- [Validation](./validation.md) - Understand validation system
+- [Troubleshooting](./troubleshooting.md) - Common issues and solutions
+- [API Reference](./api-reference.md) - Complete API documentation
+- [Examples](./examples.md) - Practical usage examples
 
 [← Back to Documentation](./README.md)

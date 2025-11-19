@@ -176,6 +176,90 @@ PostsTreaty.call!(version: "1", params: {})
 
 **Solution:** Migrate to a non-deprecated version.
 
+#### VersionDefaultDeprecatedConflict
+
+Raised when a version is configured as both default and deprecated:
+
+```ruby
+class PostsTreaty < ApplicationTreaty
+  version 1, default: true do
+    deprecated true  # ERROR: Cannot be both default and deprecated
+  end
+end
+```
+
+This is a **configuration error** caught during class loading. A default version must be active and usable - it cannot be deprecated.
+
+**HTTP Status:** 500 Internal Server Error
+
+**Solution:** Choose one of:
+- Remove `default: true` if the version should be deprecated
+- Remove the `deprecated` call if the version should be default
+- Create a new version to be the default, and deprecate the old one
+
+**Valid configurations:**
+
+```ruby
+# Option 1: Default version without deprecation
+version 1, default: true do
+  # No deprecated - valid
+end
+
+# Option 2: Deprecated version without default
+version 1 do
+  deprecated true  # Valid
+end
+
+# Option 3: Separate default and deprecated versions
+version 1 do
+  deprecated true
+end
+
+version 2, default: true do
+  # Current default - valid
+end
+```
+
+#### VersionMultipleDefaults
+
+Raised when multiple versions are marked as default:
+
+```ruby
+class PostsTreaty < ApplicationTreaty
+  version 1, default: true do
+    # First default
+  end
+
+  version 2, default: true do
+    # ERROR: Cannot have multiple defaults
+  end
+end
+```
+
+This is a **configuration error** caught during class loading. Only one version can be the default version.
+
+**HTTP Status:** 500 Internal Server Error
+
+**Solution:** Choose which version should truly be the default and remove `default: true` from all others.
+
+**Valid configuration:**
+
+```ruby
+version 1 do
+  deprecated true  # Old version
+end
+
+version 2 do
+  # Stable version, not default
+end
+
+version 3, default: true do
+  # Only one default - valid
+end
+```
+
+**Best practice:** The newest stable version should typically be the default.
+
 ### Exception Handling in Controllers
 
 ```ruby
@@ -186,6 +270,10 @@ class ApplicationController < ActionController::API
               with: :render_version_not_found
   rescue_from Treaty::Exceptions::Deprecated,
               with: :render_version_deprecated
+  rescue_from Treaty::Exceptions::VersionDefaultDeprecatedConflict,
+              with: :render_config_error
+  rescue_from Treaty::Exceptions::VersionMultipleDefaults,
+              with: :render_config_error
 
   private
 
@@ -209,6 +297,13 @@ class ApplicationController < ActionController::API
       error: exception.message,
       hint: "This version is no longer supported. Please upgrade."
     }, status: :gone
+  end
+
+  def render_config_error(exception)
+    render json: {
+      error: exception.message,
+      hint: "This is a configuration error. Please contact the development team."
+    }, status: :internal_server_error
   end
 end
 ```

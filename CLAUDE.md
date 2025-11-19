@@ -17,7 +17,7 @@ This document provides comprehensive guidance for AI assistants working with the
 
 ## Project Overview
 
-**Treaty** is a Ruby gem (v0.9.0) for defining and managing REST API contracts with versioning support in Ruby on Rails applications.
+**Treaty** is a Ruby gem (v0.11.0) for defining and managing REST API contracts with versioning support in Ruby on Rails applications.
 
 ### Key Information
 
@@ -707,10 +707,10 @@ rake
 
 ### Versioning Strategy
 
-- **Current**: 0.9.0 (0.x series)
+- **Current**: 0.11.0 (0.x series)
 - **Breaking Changes**: Allowed between minor versions (0.x)
 - **Stability**: Will stabilize with 1.0 release
-- **Recommendation**: Pin to specific patch versions (e.g., `gem "treaty", "~> 0.9.0"`)
+- **Recommendation**: Pin to specific patch versions (e.g., `gem "treaty", "~> 0.11.0"`)
 
 ## Important Notes for AI Assistants
 
@@ -806,5 +806,5 @@ grep -r "delegate_to" spec/sandbox/app/treaties/
 ---
 
 **Last Updated**: 2025-11-19
-**Treaty Version**: 0.9.0
+**Treaty Version**: 0.11.0
 **Repository**: https://github.com/servactory/treaty

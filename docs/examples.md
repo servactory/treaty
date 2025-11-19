@@ -22,7 +22,6 @@ module Gate
     module Posts
       class IndexTreaty < ApplicationTreaty
         version 1, default: true do
-          strategy Treaty::Strategy::ADAPTER
 
           request do
             object :filters do
@@ -139,7 +138,6 @@ module Gate
       class CreateTreaty < ApplicationTreaty
         version 1 do
           summary "Basic post creation"
-          strategy Treaty::Strategy::ADAPTER
 
           request do
             object :post do
@@ -164,7 +162,6 @@ module Gate
 
         version 2 do
           summary "Added category support"
-          strategy Treaty::Strategy::ADAPTER
 
           request do
             object :post do
@@ -191,7 +188,6 @@ module Gate
 
         version 3, default: true do
           summary "Added author and tags"
-          strategy Treaty::Strategy::ADAPTER
 
           request do
             object :post do
@@ -302,7 +298,6 @@ module Gate
     module Users
       class UpdateProfileTreaty < ApplicationTreaty
         version 1, default: true do
-          strategy Treaty::Strategy::ADAPTER
 
           request do
             object :profile do
@@ -444,7 +439,6 @@ Sometimes you don't need a service - you can process directly in a lambda.
 ```ruby
 class SimpleCalculatorTreaty < ApplicationTreaty
   version 1, default: true do
-    strategy Treaty::Strategy::ADAPTER
 
     request do
       object :calculation do
@@ -486,7 +480,6 @@ class Posts::ShowTreaty < ApplicationTreaty
   version 1 do
     deprecated true  # Mark as deprecated
 
-    strategy Treaty::Strategy::DIRECT
 
     request { object :post }
     response(200) { object :post }
@@ -498,7 +491,6 @@ class Posts::ShowTreaty < ApplicationTreaty
   version 2 do
     deprecated lambda { ENV["RELEASE_VERSION"] >= "3.0.0" }
 
-    strategy Treaty::Strategy::ADAPTER
 
     request do
       object :post do
@@ -519,7 +511,6 @@ class Posts::ShowTreaty < ApplicationTreaty
 
   # Version 3: Added author info
   version 3, default: true do
-    strategy Treaty::Strategy::ADAPTER
 
     request do
       object :post do
@@ -657,7 +648,6 @@ end
 module Posts
   class CreateTreaty < ApplicationTreaty
     version 1 do
-      strategy Treaty::Strategy::ADAPTER
 
       # Use Entity classes instead of inline blocks
       request Deserialization::Posts::CreateDto
@@ -667,7 +657,6 @@ module Posts
     end
 
     version 2 do
-      strategy Treaty::Strategy::ADAPTER
 
       # Reuse the same Entity classes across versions
       request Deserialization::Posts::CreateDto
@@ -800,7 +789,6 @@ module Gate
     module Users
       class RegisterTreaty < ApplicationTreaty
         version 1, default: true do
-          strategy Treaty::Strategy::ADAPTER
 
           request do
             object :user do

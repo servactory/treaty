@@ -24,7 +24,6 @@ module Gate
     module Posts
       class CreateTreaty < ApplicationTreaty
         version 1 do
-          strategy Treaty::Strategy::ADAPTER
 
           request do
             object :post do
@@ -79,7 +78,6 @@ version 3 do
       Gem::Version.new("4.0.0")
   }
 
-  strategy Treaty::Strategy::ADAPTER
 
   # ... rest of definition
 end
@@ -217,7 +215,6 @@ end
 ### When to use DIRECT
 
 ```ruby
-strategy Treaty::Strategy::DIRECT
 ```
 
 **Use DIRECT when:**
@@ -229,7 +226,6 @@ strategy Treaty::Strategy::DIRECT
 **Example:**
 ```ruby
 version 1 do
-  strategy Treaty::Strategy::DIRECT
 
   request { object :post }
   response(201) { object :post }
@@ -241,7 +237,6 @@ end
 ### When to use ADAPTER
 
 ```ruby
-strategy Treaty::Strategy::ADAPTER
 ```
 
 **Use ADAPTER when:**
@@ -253,7 +248,6 @@ strategy Treaty::Strategy::ADAPTER
 **Example:**
 ```ruby
 version 2 do
-  strategy Treaty::Strategy::ADAPTER
 
   request do
     object :post do
@@ -389,13 +383,11 @@ end
 ```ruby
 # Good for production
 version 1 do
-  strategy Treaty::Strategy::ADAPTER
   # Full validation and transformation
 end
 
 # OK for development/prototyping
 version 1 do
-  strategy Treaty::Strategy::DIRECT
   # Quick iteration
 end
 ```
@@ -427,7 +419,6 @@ module Gate
         version 3 do
           summary "Added author and socials to expand post data"
 
-          strategy Treaty::Strategy::ADAPTER
 
           request do
             object :_self do

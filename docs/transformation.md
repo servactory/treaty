@@ -4,7 +4,7 @@
 
 ## Overview
 
-Transformation modifies data as it flows through Treaty, including applying default values, renaming attributes, and converting keys. This guide covers the transformation pipeline, types of transformations, and best practices. Transformation only applies when using the **ADAPTER** strategy.
+Transformation modifies data as it flows through Treaty, including applying default values, renaming attributes, and converting keys. This guide covers the transformation pipeline, types of transformations, and best practices.
 
 ## Transformation Pipeline
 
@@ -356,7 +356,7 @@ end
 
 ## Transformation Order
 
-Within the ADAPTER strategy, transformations happen in this order:
+Transformations happen in this order:
 
 ### Request Transformation
 
@@ -382,7 +382,6 @@ Within the ADAPTER strategy, transformations happen in this order:
 
 ```ruby
 version 1, default: true do
-  strategy Treaty::Strategy::ADAPTER
 
   request do
     object :_self do
@@ -445,7 +444,6 @@ GET /api/posts
 
 ```ruby
 version 1, default: true do
-  strategy Treaty::Strategy::ADAPTER
 
   request do
     object :profile do
@@ -545,7 +543,6 @@ class Posts::ShowTreaty < ApplicationTreaty
   # Version 1: Flat structure
   version 1 do
     deprecated true
-    strategy Treaty::Strategy::ADAPTER
 
     response 200 do
       object :post do
@@ -561,7 +558,6 @@ class Posts::ShowTreaty < ApplicationTreaty
 
   # Version 2: Nested structure
   version 2, default: true do
-    strategy Treaty::Strategy::ADAPTER
 
     response 200 do
       object :post do
@@ -696,7 +692,6 @@ end
 
 ```ruby
 version 1 do
-  strategy Treaty::Strategy::DIRECT
 
   request { object :post }
   response(200) { object :post }
@@ -721,7 +716,6 @@ end
 
 ```ruby
 version 2 do
-  strategy Treaty::Strategy::ADAPTER
 
   request do
     object :post do
@@ -825,7 +819,7 @@ end
 ## Next Steps
 
 - [Validation](./validation.md) - Understand validation system
-- [Strategies](./strategies.md) - DIRECT vs ADAPTER strategies
+- 
 - [Examples](./examples.md) - Practical examples
 
 [← Back to Documentation](./README.md)

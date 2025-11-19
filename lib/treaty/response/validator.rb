@@ -29,7 +29,7 @@ module Treaty
       def validate_response_attributes!
         return @response_data unless response_attributes_exist?
 
-        # Create orchestrator for both DIRECT and ADAPTER strategies
+        # Create orchestrator for response validation
         # Orchestrator filters data by attributes and performs transformation
         orchestrator_class = Class.new(Treaty::Attribute::Validation::Orchestrator::Base) do
           define_method(:collection_of_attributes) do
@@ -41,10 +41,6 @@ module Treaty
           version_factory: @version_factory,
           data: @response_data
         )
-      end
-
-      def adapter_strategy?
-        !@version_factory.strategy_instance.direct?
       end
 
       def response_attributes_exist?

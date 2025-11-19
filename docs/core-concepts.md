@@ -60,7 +60,6 @@ Strategy defines how data is processed.
 Direct data passing without validation and transformation.
 
 ```ruby
-strategy Treaty::Strategy::DIRECT
 ```
 
 **Use cases:**
@@ -73,7 +72,6 @@ strategy Treaty::Strategy::DIRECT
 Full data validation and transformation.
 
 ```ruby
-strategy Treaty::Strategy::ADAPTER
 ```
 
 **Use cases:**

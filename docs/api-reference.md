@@ -27,7 +27,6 @@ Treaty classes provide class methods for introspection and metadata access:
 ```ruby
 class Posts::IndexTreaty < ApplicationTreaty
   version 1 do
-    strategy Treaty::Strategy::ADAPTER
 
     request do
       object :filters do
@@ -164,8 +163,6 @@ Set the processing strategy for the version.
 
 **Syntax:**
 ```ruby
-strategy Treaty::Strategy::DIRECT
-strategy Treaty::Strategy::ADAPTER
 ```
 
 **Options:**
@@ -175,7 +172,6 @@ strategy Treaty::Strategy::ADAPTER
 **Example:**
 ```ruby
 version 1 do
-  strategy Treaty::Strategy::ADAPTER
 end
 ```
 
@@ -1333,7 +1329,6 @@ module Gate
         version 1 do
           summary "Initial release"
           deprecated true
-          strategy Treaty::Strategy::DIRECT
 
           request { object :post }
           response(201) { object :post }
@@ -1344,7 +1339,6 @@ module Gate
         # Version 2: Production-ready
         version 2, default: true do
           summary "Added validation and nested structures"
-          strategy Treaty::Strategy::ADAPTER
 
           request do
             # Root-level attributes

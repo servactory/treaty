@@ -402,7 +402,6 @@ class Posts::CreateTreaty < ApplicationTreaty
     summary "Initial release"
     deprecated true
 
-    strategy Treaty::Strategy::DIRECT
 
     request { object :post }
     response(201) { object :post }
@@ -415,7 +414,6 @@ class Posts::CreateTreaty < ApplicationTreaty
     summary "Added validation and category support"
     deprecated lambda { ENV["APP_VERSION"] >= "3.0" }
 
-    strategy Treaty::Strategy::ADAPTER
 
     request do
       object :post do
@@ -442,7 +440,6 @@ class Posts::CreateTreaty < ApplicationTreaty
   version 3, default: true do
     summary "Added author information and tags"
 
-    strategy Treaty::Strategy::ADAPTER
 
     request do
       object :post do
@@ -484,22 +481,6 @@ class Posts::CreateTreaty < ApplicationTreaty
 
     delegate_to Posts::Stable::CreateService
   end
-end
-```
-
-## Strategies Across Versions
-
-Different versions can use different strategies:
-
-```ruby
-version 1 do
-  strategy Treaty::Strategy::DIRECT
-  # Fast, no validation - for MVP
-end
-
-version 2 do
-  strategy Treaty::Strategy::ADAPTER
-  # Full validation - for production
 end
 ```
 
@@ -657,12 +638,10 @@ Or use the same service with adapters:
 
 ```ruby
 version 1 do
-  strategy Treaty::Strategy::DIRECT
   delegate_to Posts::CreateService
 end
 
 version 2 do
-  strategy Treaty::Strategy::ADAPTER
   delegate_to Posts::CreateService  # Same service, different strategy
 end
 ```
@@ -754,7 +733,6 @@ end
 
 ## Next Steps
 
-- [Strategies](./strategies.md) - Understand DIRECT vs ADAPTER strategies
 - [Validation](./validation.md) - Validation across versions
 - [Transformation](./transformation.md) - Data transformation between versions
 

@@ -64,7 +64,6 @@ Announce breaking changes with deprecation period.
 **Before (Version 1):**
 ```ruby
 version 1, default: true do
-  strategy Treaty::Strategy::ADAPTER
 
   response 200 do
     object :post do
@@ -81,7 +80,6 @@ end
 **After (Version 1 - Updated):**
 ```ruby
 version 1, default: true do
-  strategy Treaty::Strategy::ADAPTER
 
   response 200 do
     object :post do
@@ -106,7 +104,6 @@ end
 **Before (Version 1):**
 ```ruby
 version 1 do
-  strategy Treaty::Strategy::ADAPTER
 
   response 200 do
     object :post do
@@ -126,7 +123,6 @@ end
 # Keep Version 1 for existing clients
 version 1 do
   deprecated true  # Mark as deprecated
-  strategy Treaty::Strategy::ADAPTER
 
   response 200 do
     object :post do
@@ -142,7 +138,6 @@ end
 
 # Add Version 2 with new structure
 version 2, default: true do
-  strategy Treaty::Strategy::ADAPTER
 
   response 200 do
     object :post do
@@ -187,7 +182,6 @@ end
 # Version 1: Keep old field name
 version 1 do
   deprecated true
-  strategy Treaty::Strategy::ADAPTER
 
   request do
     object :post do
@@ -201,7 +195,6 @@ end
 
 # Version 2: Use new field name
 version 2, default: true do
-  strategy Treaty::Strategy::ADAPTER
 
   request do
     object :post do
@@ -684,7 +677,7 @@ end
 ## Next Steps
 
 - [Versioning](./versioning.md) - Detailed versioning documentation
-- [Strategies](./strategies.md) - Understanding strategies
+- 
 - [Examples](./examples.md) - Practical examples
 
 [← Back to Documentation](./README.md)

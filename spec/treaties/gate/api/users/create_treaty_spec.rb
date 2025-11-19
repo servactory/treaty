@@ -9,7 +9,6 @@ RSpec.describe Gate::API::Users::CreateTreaty do
                       version: "1",
                       segments: [1],
                       default: false,
-                      strategy: :adapter,
                       summary: "User creation with format validation examples",
                       deprecated: false,
                       executor: {
@@ -189,7 +188,6 @@ RSpec.describe Gate::API::Users::CreateTreaty do
                       version: "2",
                       segments: [2],
                       default: false,
-                      strategy: :adapter,
                       summary: "Extended user creation with Entity-based definition",
                       deprecated: false,
                       executor: {

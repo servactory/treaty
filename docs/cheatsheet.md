@@ -4,7 +4,7 @@
 
 ## Overview
 
-Quick reference guide for common Treaty patterns and syntax. This cheatsheet covers basic structure, entity classes, strategies, versioning, attribute types and options, objects, arrays, requests, responses, delegation, controller integration, version selection, common patterns, and complete examples.
+Quick reference guide for common Treaty patterns and syntax. This cheatsheet covers basic structure, entity classes, versioning, attribute types and options, objects, arrays, requests, responses, delegation, controller integration, version selection, common patterns, and complete examples.
 
 ## Quick Reference
 
@@ -15,7 +15,6 @@ Quick reference for common Treaty patterns and syntax.
 ```ruby
 class Posts::CreateTreaty < ApplicationTreaty
   version 1, default: true do
-    strategy Treaty::Strategy::ADAPTER
 
     request do
       # Request definition
@@ -77,16 +76,6 @@ app/dtos/
 ```
 
 **Note:** Entity attributes are **required by default** (like request blocks).
-
-## Strategies
-
-```ruby
-# No validation - direct pass-through
-strategy Treaty::Strategy::DIRECT
-
-# Full validation and transformation
-strategy Treaty::Strategy::ADAPTER
-```
 
 ## Version Definition
 
@@ -450,7 +439,6 @@ end
 ```ruby
 class Posts::IndexTreaty < ApplicationTreaty
   version 1, default: true do
-    strategy Treaty::Strategy::ADAPTER
 
     request do
       object :filters do
@@ -483,7 +471,6 @@ end
 ```ruby
 class Posts::CreateTreaty < ApplicationTreaty
   version 1, default: true do
-    strategy Treaty::Strategy::ADAPTER
 
     request do
       object :post do
@@ -536,7 +523,6 @@ class Posts::ShowTreaty < ApplicationTreaty
   # Version 1: Simple, deprecated
   version 1 do
     deprecated true
-    strategy Treaty::Strategy::DIRECT
 
     request { object :post }
     response(200) { object :post }
@@ -546,7 +532,6 @@ class Posts::ShowTreaty < ApplicationTreaty
 
   # Version 2: Current
   version 2, default: true do
-    strategy Treaty::Strategy::ADAPTER
 
     request do
       object :post do

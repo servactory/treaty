@@ -7,8 +7,6 @@ module Gate
         version [1, 0, 0, :rc1] do
           summary "List of movies"
 
-          strategy Treaty::Strategy::DIRECT
-
           request do
             object :filters, :optional do
               integer :year, :optional
@@ -26,8 +24,6 @@ module Gate
 
         version 2 do
           summary "Added genre filter and details"
-
-          strategy Treaty::Strategy::ADAPTER
 
           deprecated(lambda do
             Gem::Version.new(ENV.fetch("RELEASE_VERSION", "0.0.0")) >=
@@ -65,8 +61,6 @@ module Gate
 
         version 3, default: true do
           summary "Added cast and awards"
-
-          strategy Treaty::Strategy::ADAPTER
 
           request do
             object :filters, :optional do

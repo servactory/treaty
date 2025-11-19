@@ -389,7 +389,6 @@ Complete multilingual API with German and English support:
 ```ruby
 class Posts::CreateTreaty < ApplicationTreaty
   version 1, default: true do
-    strategy Treaty::Strategy::ADAPTER
 
     request do
       object :post do

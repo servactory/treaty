@@ -4,7 +4,7 @@
 
 ## Overview
 
-This comprehensive troubleshooting guide helps you diagnose and resolve common issues when working with Treaty. Find solutions for validation errors, version selection, strategy configuration, controller integration, service delegation, performance issues, and internationalization problems.
+This comprehensive troubleshooting guide helps you diagnose and resolve common issues when working with Treaty. Find solutions for validation errors, version selection, controller integration, service delegation, performance issues, and internationalization problems.
 
 ## Common Issues and Solutions
 
@@ -479,89 +479,6 @@ end
 
 **HTTP Status:** 500 Internal Server Error
 
-## Strategy Issues
-
-### No validation happening (DIRECT strategy)
-
-**Problem:** Expecting validation but none occurs.
-
-**Solution:**
-Check if DIRECT strategy is being used. DIRECT strategy skips all validation.
-
-**Example:**
-```ruby
-# DIRECT - no validation
-version 1 do
-  strategy Treaty::Strategy::DIRECT
-  # No validation will occur
-end
-
-# ADAPTER - full validation
-version 2 do
-  strategy Treaty::Strategy::ADAPTER
-  # Full validation will occur
-end
-```
-
-### Defaults not applying
-
-**Problem:** Default values not being set.
-
-**Solution:**
-1. Check if ADAPTER strategy is used (defaults only work with ADAPTER)
-2. Verify attribute definition has `default:` option
-3. Ensure attribute is actually missing (not empty string)
-
-**Example:**
-```ruby
-# ADAPTER required for defaults
-version 1 do
-  strategy Treaty::Strategy::ADAPTER
-
-  request do
-    object :_self do
-      integer :page, default: 1  # Will apply
-    end
-  end
-end
-
-# DIRECT - defaults won't apply
-version 2 do
-  strategy Treaty::Strategy::DIRECT
-  # Defaults won't work
-end
-```
-
-### Attribute renaming not working
-
-**Problem:** `as:` option not renaming attributes.
-
-**Solution:**
-1. Check if ADAPTER strategy is used (renaming only works with ADAPTER)
-2. Verify `as:` option is set correctly
-3. Ensure transformation happens in correct direction
-
-**Example:**
-```ruby
-version 1 do
-  strategy Treaty::Strategy::ADAPTER
-
-  # Request: client 'handle' → service 'value'
-  request do
-    object :social do
-      string :handle, as: :value
-    end
-  end
-
-  # Response: service 'value' → client 'handle'
-  response 200 do
-    object :social do
-      string :value, as: :handle
-    end
-  end
-end
-```
-
 ## Object Issues
 
 ### "Object 'X' not found"
@@ -819,23 +736,9 @@ end
 **Problem:** Treaty processing takes too long.
 
 **Solution:**
-1. Use DIRECT strategy if validation not needed (prototypes only)
-2. Simplify nested structures
-3. Reduce validation complexity
-4. Profile application to find bottleneck
-
-**Comparison:**
-```ruby
-# DIRECT: ~0.1ms - no validation
-version 1 do
-  strategy Treaty::Strategy::DIRECT
-end
-
-# ADAPTER: ~2-5ms - full validation
-version 2 do
-  strategy Treaty::Strategy::ADAPTER
-end
-```
+1. Simplify nested structures
+2. Reduce validation complexity
+3. Profile application to find bottleneck
 
 ## Debugging Tips
 

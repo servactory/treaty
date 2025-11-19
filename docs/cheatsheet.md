@@ -617,7 +617,6 @@ end
 
 - Request attributes are required by default - use `:optional` when needed
 - Response attributes are optional by default - use `:required` when needed
-- ADAPTER for production, DIRECT only for prototypes
 - Always mark one version as `default: true`
 - Use `:_self` object for root-level attributes
 - Keep nesting shallow (max 5 levels recommended)

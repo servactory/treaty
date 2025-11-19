@@ -29,14 +29,6 @@ module Treaty
       # Example usage:
       #   Request::Validation.validate!(version_factory: factory, data: params)
       #
-      # ## Strategy Pattern
-      #
-      # The validation system supports two strategies:
-      # - **Adapter Strategy** - Adapts between different API versions
-      # - **Standard Strategy** - Direct version handling
-      #
-      # This base class provides `adapter_strategy?` helper to check current strategy.
-      #
       # ## Factory Method
       #
       # The `self.validate!(...)` class method provides a convenient factory pattern:
@@ -49,7 +41,7 @@ module Treaty
       # ## Architecture
       #
       # Works with:
-      # - VersionFactory - Provides version and strategy information
+      # - VersionFactory - Provides version information
       # - Orchestrator::Base - Performs actual validation and transformation
       class Base
         # Class-level factory method for validation
@@ -63,7 +55,7 @@ module Treaty
 
         # Creates a new validation instance
         #
-        # @param version_factory [VersionFactory] Factory containing version and strategy
+        # @param version_factory [VersionFactory] Factory containing version information
         def initialize(version_factory:)
           @version_factory = version_factory
         end
@@ -76,15 +68,6 @@ module Treaty
         def validate!
           raise Treaty::Exceptions::Validation,
                 I18n.t("treaty.attributes.validators.nested.orchestrator.collection_not_implemented")
-        end
-
-        private
-
-        # Checks if adapter strategy is active
-        #
-        # @return [Boolean] True if using adapter strategy
-        def adapter_strategy?
-          @version_factory.strategy_instance.adapter?
         end
       end
     end

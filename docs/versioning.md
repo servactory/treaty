@@ -634,18 +634,6 @@ version 3 do
 end
 ```
 
-Or use the same service with adapters:
-
-```ruby
-version 1 do
-  delegate_to Posts::CreateService
-end
-
-version 2 do
-  delegate_to Posts::CreateService  # Same service, different strategy
-end
-```
-
 ## Best Practices
 
 ### 1. Semantic Versioning for Breaking Changes

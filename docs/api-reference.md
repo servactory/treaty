@@ -56,7 +56,6 @@ info.versions
 #     version: "1",
 #     segments: [1],
 #     default: true,
-#     strategy: :adapter,
 #     summary: nil,
 #     deprecated: false,
 #     executor: {
@@ -98,7 +97,6 @@ info.versions
   - `version` (String) - Version number
   - `segments` (Array) - Version segments
   - `default` (Boolean) - Whether this is the default version
-  - `strategy` (Symbol) - Strategy (`:direct` or `:adapter`)
   - `summary` (String|nil) - Version summary text
   - `deprecated` (Boolean) - Deprecation status
   - `executor` (Hash) - Executor class and method
@@ -156,24 +154,6 @@ version [1, 0, 0, :beta1] do; end
 ```
 
 ## Version Configuration
-
-### `strategy`
-
-Set the processing strategy for the version.
-
-**Syntax:**
-```ruby
-```
-
-**Options:**
-- `Treaty::Strategy::DIRECT` - No validation or transformation
-- `Treaty::Strategy::ADAPTER` - Full validation and transformation
-
-**Example:**
-```ruby
-version 1 do
-end
-```
 
 ### `summary`
 
@@ -1425,24 +1405,19 @@ end
 - Deprecate before removing
 - Document changes in summary
 
-### 2. Strategy Selection
-- Use ADAPTER for production APIs
-- Use DIRECT only for prototypes or trusted internal APIs
-- Don't mix strategies without good reason
-
-### 3. Attribute Definition
+### 2. Attribute Definition
 - Use helper mode (`:required`, `:optional`) for clarity
 - Validate input strictly, keep output flexible
 - Use `in:` for enum-like values
 - Provide helpful custom error messages
 
-### 4. Structure Organization
+### 3. Structure Organization
 - Keep nesting shallow (max 5 levels)
 - Use meaningful object names
 - Use `:_self` sparingly
 - Group related attributes in objects
 
-### 5. Transformation
+### 4. Transformation
 - Use defaults for safe, sensible values
 - Document attribute renaming clearly
 - Keep transformations simple

@@ -34,7 +34,7 @@ module Treaty
         end
       end
 
-      def validate_request_attributes! # rubocop:disable Metrics/MethodLength
+      def validate_request_attributes!
         return request_data unless request_attributes_exist?
 
         # Validate request attributes with orchestrator:

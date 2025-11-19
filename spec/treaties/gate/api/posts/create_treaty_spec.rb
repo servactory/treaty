@@ -605,7 +605,7 @@ RSpec.describe Gate::API::Posts::CreateTreaty do
       it :aggregate_failures do
         expect { perform }.to(
           raise_error do |exception|
-            expect(exception).to be_a(Treaty::Exceptions::Validation)
+            expect(exception).to be_a(Treaty::Exceptions::VersionNotFound)
             expect(exception.message).to(
               eq("Version 999 not found in treaty definition")
             )
@@ -624,8 +624,8 @@ RSpec.describe Gate::API::Posts::CreateTreaty do
       it :aggregate_failures do
         expect { perform }.to(
           raise_error do |exception|
-            expect(exception).to be_a(Treaty::Exceptions::Validation)
-            expect(exception.message).to eq("Current version is required for validation")
+            expect(exception).to be_a(Treaty::Exceptions::SpecifiedVersionNotFound)
+            expect(exception.message).to eq("Specified version is required for validation")
           end
         )
       end

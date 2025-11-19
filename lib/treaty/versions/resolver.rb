@@ -7,15 +7,15 @@ module Treaty
         new(...).resolve!
       end
 
-      def initialize(current_version:, collection_of_versions:)
-        @current_version = current_version
+      def initialize(specified_version:, collection_of_versions:)
+        @specified_version = specified_version
         @collection_of_versions = collection_of_versions
       end
 
       def resolve!
         determined_factory =
-          if current_version_blank?
-            default_version_factory || raise_current_version_not_found!
+          if specified_version_blank?
+            default_version_factory || raise_specified_version_not_found!
           else
             version_factory || raise_version_not_found!
           end
@@ -30,7 +30,7 @@ module Treaty
       def version_factory
         @version_factory ||=
           @collection_of_versions.find do |factory|
-            factory.version.version == @current_version
+            factory.version.version == @specified_version
           end
       end
 
@@ -39,22 +39,22 @@ module Treaty
           @collection_of_versions.find(&:default_result)
       end
 
-      def current_version_blank?
-        @current_version.to_s.strip.empty?
+      def specified_version_blank?
+        @specified_version.to_s.strip.empty?
       end
 
       ##########################################################################
 
-      def raise_current_version_not_found!
-        raise Treaty::Exceptions::Validation,
-              I18n.t("treaty.versioning.resolver.current_version_required")
+      def raise_specified_version_not_found!
+        raise Treaty::Exceptions::SpecifiedVersionNotFound,
+              I18n.t("treaty.versioning.resolver.specified_version_required")
       end
 
       def raise_version_not_found!
-        raise Treaty::Exceptions::Validation,
+        raise Treaty::Exceptions::VersionNotFound,
               I18n.t(
                 "treaty.versioning.resolver.version_not_found",
-                version: @current_version
+                version: @specified_version
               )
       end
 
@@ -62,7 +62,7 @@ module Treaty
         raise Treaty::Exceptions::Deprecated,
               I18n.t(
                 "treaty.versioning.resolver.version_deprecated",
-                version: @current_version
+                version: @specified_version
               )
       end
     end

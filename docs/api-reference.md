@@ -1110,6 +1110,115 @@ end
 "Error in array 'authors' at index 1: Attribute 'name' is required but was not provided"
 ```
 
+### Version Resolution Exceptions
+
+**`Treaty::Exceptions::SpecifiedVersionNotFound`**
+
+Raised when no version is specified and no default version is configured.
+
+**HTTP Status:** 400 Bad Request
+
+**Example:**
+```ruby
+class Posts::CreateTreaty < ApplicationTreaty
+  version 1 do; end
+  version 2 do; end
+  # No default version
+end
+
+# Client doesn't specify version
+begin
+  Posts::CreateTreaty.call!(version: nil, params: {})
+rescue Treaty::Exceptions::SpecifiedVersionNotFound => e
+  puts e.message
+  # => "Specified version is required for validation"
+end
+```
+
+**Solutions:**
+- Add a default version: `version 2, default: true do; end`
+- Ensure clients always specify version
+- Handle exception in controller
+
+**`Treaty::Exceptions::VersionNotFound`**
+
+Raised when a specific version is requested but doesn't exist in the treaty.
+
+**HTTP Status:** 404 Not Found
+
+**Example:**
+```ruby
+class Posts::CreateTreaty < ApplicationTreaty
+  version 1 do; end
+  version 2, default: true do; end
+end
+
+# Client requests non-existent version
+begin
+  Posts::CreateTreaty.call!(version: "3", params: {})
+rescue Treaty::Exceptions::VersionNotFound => e
+  puts e.message
+  # => "Version 3 not found in treaty definition"
+end
+```
+
+**Common causes:**
+- Version number mismatch: `version 1` vs `version "1.0.0"`
+- Typos in version number
+- Version removed but still requested
+- Wrong format (integer vs string)
+
+**`Treaty::Exceptions::Deprecated`**
+
+Raised when attempting to use a deprecated API version.
+
+**HTTP Status:** 410 Gone
+
+**Example:**
+```ruby
+class Posts::CreateTreaty < ApplicationTreaty
+  version 1 do
+    deprecated true
+  end
+
+  version 2, default: true do; end
+end
+
+# Client requests deprecated version
+begin
+  Posts::CreateTreaty.call!(version: "1", params: {})
+rescue Treaty::Exceptions::Deprecated => e
+  puts e.message
+  # => "Version 1 is deprecated and cannot be used"
+end
+```
+
+**Controller Integration:**
+```ruby
+class ApplicationController < ActionController::API
+  rescue_from Treaty::Exceptions::SpecifiedVersionNotFound, with: :version_required
+  rescue_from Treaty::Exceptions::VersionNotFound, with: :version_not_found
+  rescue_from Treaty::Exceptions::Deprecated, with: :version_deprecated
+
+  private
+
+  def version_required(exception)
+    render json: { error: exception.message }, status: :bad_request
+  end
+
+  def version_not_found(exception)
+    render json: {
+      error: exception.message,
+      available_versions: extract_versions
+    }, status: :not_found
+  end
+
+  def version_deprecated(exception)
+    render json: { error: exception.message }, status: :gone
+  end
+end
+```
+
 ## Complete Example
 
 ```ruby

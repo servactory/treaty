@@ -2,6 +2,8 @@
 
 class ApplicationController < ActionController::API
   rescue_from Treaty::Exceptions::Deprecated, with: :render_treaty_deprecated_error
+  rescue_from Treaty::Exceptions::SpecifiedVersionNotFound, with: :render_treaty_specified_version_not_found_error
+  rescue_from Treaty::Exceptions::VersionNotFound, with: :render_treaty_version_not_found_error
   rescue_from Treaty::Exceptions::Validation, with: :render_treaty_validation_error
   rescue_from Treaty::Exceptions::NestedAttributes, with: :render_treaty_nested_attributes_error
   # rescue_from Treaty::Exceptions::Strategy,   with: :render_treaty_strategy_error
@@ -16,6 +18,16 @@ class ApplicationController < ActionController::API
   def render_treaty_deprecated_error(exception)
     render json: build_error_response_for(exception),
            status: :gone
+  end
+
+  def render_treaty_specified_version_not_found_error(exception)
+    render json: build_error_response_for(exception),
+           status: :bad_request
+  end
+
+  def render_treaty_version_not_found_error(exception)
+    render json: build_error_response_for(exception),
+           status: :not_found
   end
 
   def render_treaty_validation_error(exception)

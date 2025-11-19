@@ -97,6 +97,122 @@ Treaty can determine the version from several sources (in order of priority):
 3. **Accept header** - `Accept: application/vnd.api+json; version=3`
 4. **Default version** - If none specified
 
+### Version Resolution Exceptions
+
+Treaty raises specific exceptions during version resolution:
+
+#### SpecifiedVersionNotFound
+
+Raised when no version is specified and no default version is configured:
+
+```ruby
+class PostsTreaty < ApplicationTreaty
+  version 1 do
+    # No default: true
+  end
+
+  version 2 do
+    # No default: true
+  end
+end
+
+# Client doesn't specify version
+PostsTreaty.call!(version: nil, params: {})
+# => Raises Treaty::Exceptions::SpecifiedVersionNotFound
+# => "Specified version is required for validation"
+```
+
+**HTTP Status:** 400 Bad Request
+
+**Solution:** Define a default version or ensure clients always specify a version.
+
+#### VersionNotFound
+
+Raised when a specific version is requested but doesn't exist:
+
+```ruby
+class PostsTreaty < ApplicationTreaty
+  version 1 do
+    # Version 1 definition
+  end
+
+  version 2, default: true do
+    # Version 2 definition
+  end
+end
+
+# Client requests non-existent version
+PostsTreaty.call!(version: "3", params: {})
+# => Raises Treaty::Exceptions::VersionNotFound
+# => "Version 3 not found in treaty definition"
+```
+
+**HTTP Status:** 404 Not Found
+
+**Solution:** Use an available version or add the requested version to the treaty.
+
+#### Deprecated
+
+Raised when a deprecated version is requested:
+
+```ruby
+class PostsTreaty < ApplicationTreaty
+  version 1 do
+    deprecated true
+  end
+
+  version 2, default: true do
+    # Current version
+  end
+end
+
+# Client requests deprecated version
+PostsTreaty.call!(version: "1", params: {})
+# => Raises Treaty::Exceptions::Deprecated
+# => "Version 1 is deprecated and cannot be used"
+```
+
+**HTTP Status:** 410 Gone
+
+**Solution:** Migrate to a non-deprecated version.
+
+### Exception Handling in Controllers
+
+```ruby
+class ApplicationController < ActionController::API
+  rescue_from Treaty::Exceptions::SpecifiedVersionNotFound,
+              with: :render_version_required
+  rescue_from Treaty::Exceptions::VersionNotFound,
+              with: :render_version_not_found
+  rescue_from Treaty::Exceptions::Deprecated,
+              with: :render_version_deprecated
+
+  private
+
+  def render_version_required(exception)
+    render json: {
+      error: exception.message,
+      hint: "Please specify an API version"
+    }, status: :bad_request
+  end
+
+  def render_version_not_found(exception)
+    render json: {
+      error: exception.message,
+      available_versions: extract_available_versions,
+      hint: "Please use one of the available versions"
+    }, status: :not_found
+  end
+
+  def render_version_deprecated(exception)
+    render json: {
+      error: exception.message,
+      hint: "This version is no longer supported. Please upgrade."
+    }, status: :gone
+  end
+end
+```
+
 ### URL Parameter
 
 ```bash

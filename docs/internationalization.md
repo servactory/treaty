@@ -172,7 +172,7 @@ de:
 
     versioning:
       resolver:
-        current_version_required: "Aktuelle Version ist für die Validierung erforderlich"
+        specified_version_required: "Aktuelle Version ist für die Validierung erforderlich"
         version_not_found: "Version %{version} wurde in der Treaty-Definition nicht gefunden"
         version_deprecated: "Version %{version} ist veraltet und kann nicht verwendet werden"
 

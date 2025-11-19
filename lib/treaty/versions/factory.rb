@@ -99,7 +99,7 @@ module Treaty
         raise Treaty::Exceptions::VersionDefaultDeprecatedConflict,
               I18n.t(
                 "treaty.versioning.factory.default_deprecated_conflict",
-                version: @version.version.to_s
+                version: @version.version
               )
       end
 

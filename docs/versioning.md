@@ -101,7 +101,7 @@ Treaty can determine the version from several sources (in order of priority):
 
 Treaty raises specific exceptions during version resolution:
 
-#### CurrentVersionNotFound
+#### SpecifiedVersionNotFound
 
 Raised when no version is specified and no default version is configured:
 
@@ -118,8 +118,8 @@ end
 
 # Client doesn't specify version
 PostsTreaty.call!(version: nil, params: {})
-# => Raises Treaty::Exceptions::CurrentVersionNotFound
-# => "Current version is required for validation"
+# => Raises Treaty::Exceptions::SpecifiedVersionNotFound
+# => "Specified version is required for validation"
 ```
 
 **HTTP Status:** 400 Bad Request
@@ -180,7 +180,7 @@ PostsTreaty.call!(version: "1", params: {})
 
 ```ruby
 class ApplicationController < ActionController::API
-  rescue_from Treaty::Exceptions::CurrentVersionNotFound,
+  rescue_from Treaty::Exceptions::SpecifiedVersionNotFound,
               with: :render_version_required
   rescue_from Treaty::Exceptions::VersionNotFound,
               with: :render_version_not_found

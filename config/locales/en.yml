@@ -84,7 +84,7 @@ en:
     versioning:
       # Version resolver
       resolver:
-        current_version_required: "Current version is required for validation"
+        specified_version_required: "Specified version is required for validation"
         version_not_found: "Version %{version} not found in treaty definition"
         version_deprecated: "Version %{version} is deprecated and cannot be used"
 

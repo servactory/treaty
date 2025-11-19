@@ -1112,7 +1112,7 @@ end
 
 ### Version Resolution Exceptions
 
-**`Treaty::Exceptions::CurrentVersionNotFound`**
+**`Treaty::Exceptions::SpecifiedVersionNotFound`**
 
 Raised when no version is specified and no default version is configured.
 
@@ -1129,9 +1129,9 @@ end
 # Client doesn't specify version
 begin
   Posts::CreateTreaty.call!(version: nil, params: {})
-rescue Treaty::Exceptions::CurrentVersionNotFound => e
+rescue Treaty::Exceptions::SpecifiedVersionNotFound => e
   puts e.message
-  # => "Current version is required for validation"
+  # => "Specified version is required for validation"
 end
 ```
 
@@ -1196,7 +1196,7 @@ end
 **Controller Integration:**
 ```ruby
 class ApplicationController < ActionController::API
-  rescue_from Treaty::Exceptions::CurrentVersionNotFound, with: :version_required
+  rescue_from Treaty::Exceptions::SpecifiedVersionNotFound, with: :version_required
   rescue_from Treaty::Exceptions::VersionNotFound, with: :version_not_found
   rescue_from Treaty::Exceptions::Deprecated, with: :version_deprecated
 

@@ -35,7 +35,7 @@ module Treaty
     # - Validation - Attribute validation errors
     # - Execution - Service execution errors
     # - Deprecated - API version deprecation
-    # - CurrentVersionNotFound - No version specified and no default configured
+    # - SpecifiedVersionNotFound - No version specified and no default configured
     # - VersionNotFound - Requested version doesn't exist
     # - Strategy - Invalid strategy specification
     # - ClassName - Treaty class not found

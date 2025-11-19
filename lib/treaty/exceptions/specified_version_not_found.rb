@@ -31,14 +31,14 @@ module Treaty
     #
     # # Client request without version header
     # PostsTreaty.call!(version: nil, params: { title: "Test" })
-    # # => Raises Treaty::Exceptions::CurrentVersionNotFound
-    # # => "Current version is required for validation"
+    # # => Raises Treaty::Exceptions::SpecifiedVersionNotFound
+    # # => "Specified version is required for validation"
     # ```
     #
     # ### Scenario 2: Empty Version String
     # ```ruby
     # PostsTreaty.call!(version: "", params: { title: "Test" })
-    # # => Raises Treaty::Exceptions::CurrentVersionNotFound
+    # # => Raises Treaty::Exceptions::SpecifiedVersionNotFound
     # ```
     #
     # ### Prevention: Define Default Version
@@ -65,7 +65,7 @@ module Treaty
     # Can be rescued by application controllers to return appropriate HTTP status:
     #
     # ```ruby
-    # rescue_from Treaty::Exceptions::CurrentVersionNotFound, with: :render_version_required
+    # rescue_from Treaty::Exceptions::SpecifiedVersionNotFound, with: :render_version_required
     #
     # def render_version_required(exception)
     #   render json: {
@@ -103,15 +103,15 @@ module Treaty
     #
     # ## Difference from VersionNotFound
     #
-    # - **CurrentVersionNotFound**: No version specified (nil/blank)
+    # - **SpecifiedVersionNotFound**: No version specified (nil/blank)
     # - **VersionNotFound**: Specific version specified but doesn't exist
     #
     # ## Version Selection Flow
     #
     # 1. Client provides version → Use specified version
     # 2. Client provides no version → Look for default version
-    # 3. No default version configured → Raise CurrentVersionNotFound
-    class CurrentVersionNotFound < Base
+    # 3. No default version configured → Raise SpecifiedVersionNotFound
+    class SpecifiedVersionNotFound < Base
     end
   end
 end

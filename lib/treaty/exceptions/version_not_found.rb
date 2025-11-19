@@ -138,9 +138,9 @@ module Treaty
     # 3. **Check API documentation** for available versions
     # 4. **Implement version fallback logic** when appropriate
     #
-    # ## Difference from CurrentVersionNotFound
+    # ## Difference from SpecifiedVersionNotFound
     #
-    # - **CurrentVersionNotFound**: No version specified (nil/blank), no default configured
+    # - **SpecifiedVersionNotFound**: No version specified (nil/blank), no default configured
     # - **VersionNotFound**: Specific version specified but doesn't exist in treaty
     #
     # ## Difference from Deprecated

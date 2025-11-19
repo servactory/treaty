@@ -244,9 +244,9 @@ GET /api/posts?version=2
 Headers: API-Version: 2
 ```
 
-### "Current version is required for validation"
+### "Specified version is required for validation"
 
-**Exception:** `Treaty::Exceptions::CurrentVersionNotFound`
+**Exception:** `Treaty::Exceptions::SpecifiedVersionNotFound`
 
 **Problem:** No version was specified and no default version is configured.
 
@@ -266,13 +266,13 @@ end
 
 # Client request without version
 Posts::CreateTreaty.call!(version: nil, params: {})
-# => Raises Treaty::Exceptions::CurrentVersionNotFound
+# => Raises Treaty::Exceptions::SpecifiedVersionNotFound
 
 # Solution 1: Add default version
 version 2, default: true do; end
 
 # Solution 2: Handle in controller
-rescue_from Treaty::Exceptions::CurrentVersionNotFound do |e|
+rescue_from Treaty::Exceptions::SpecifiedVersionNotFound do |e|
   render json: { error: e.message }, status: :bad_request
 end
 ```

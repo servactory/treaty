@@ -9,7 +9,7 @@ module Treaty
         super
 
         version_factory = Resolver.resolve!(
-          current_version: version,
+          specified_version: version,
           collection_of_versions: @collection_of_versions
         )
 

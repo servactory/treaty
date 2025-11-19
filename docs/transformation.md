@@ -751,7 +751,6 @@ end
 ## Next Steps
 
 - [Validation](./validation.md) - Understand validation system
-- 
 - [Examples](./examples.md) - Practical examples
 
 [← Back to Documentation](./README.md)

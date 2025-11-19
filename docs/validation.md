@@ -889,7 +889,6 @@ Validation and transformation both occur, but validation happens **before** tran
 ## Next Steps
 
 - [Transformation](./transformation.md) - Understand data transformation
-- 
 - [Examples](./examples.md) - Practical examples
 
 [← Back to Documentation](./README.md)

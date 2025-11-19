@@ -677,7 +677,6 @@ end
 ## Next Steps
 
 - [Versioning](./versioning.md) - Detailed versioning documentation
-- 
 - [Examples](./examples.md) - Practical examples
 
 [← Back to Documentation](./README.md)

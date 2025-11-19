@@ -3,18 +3,17 @@
 module Treaty
   module Attribute
     module Validation
-      # Base class for validation strategies (adapter vs non-adapter).
+      # Base class for request and response validation.
       #
       # ## Purpose
       #
-      # Provides common interface for validation strategies used in Treaty.
-      # Subclasses implement specific validation logic for different strategies.
+      # Provides common interface for validation used in Treaty.
+      # Subclasses implement specific validation logic for requests and responses.
       #
       # ## Responsibilities
       #
-      # 1. **Strategy Interface** - Defines common validation interface
+      # 1. **Validation Interface** - Defines common validation interface
       # 2. **Factory Pattern** - Provides class-level validate! method
-      # 3. **Strategy Detection** - Checks if adapter strategy is active
       #
       # ## Subclasses
       #

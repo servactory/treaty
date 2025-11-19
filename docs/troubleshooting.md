@@ -374,6 +374,111 @@ end
 
 **HTTP Status:** 410 Gone
 
+### "Version X cannot be both default and deprecated"
+
+**Exception:** `Treaty::Exceptions::VersionDefaultDeprecatedConflict`
+
+**Problem:** A version is configured with both `default: true` and `deprecated` - a logical contradiction.
+
+**Solution:**
+1. Remove `default: true` if the version should be deprecated
+2. Remove the `deprecated` call if the version should be default
+3. Create a new version to be the default, and deprecate the old one
+
+**Example:**
+```ruby
+# ✗ INVALID: Version cannot be both default and deprecated
+class Posts::CreateTreaty < ApplicationTreaty
+  version 1, default: true do
+    deprecated true  # ERROR: Conflict!
+  end
+end
+# => Raises Treaty::Exceptions::VersionDefaultDeprecatedConflict
+
+# ✓ VALID: Option 1 - Default without deprecation
+class Posts::CreateTreaty < ApplicationTreaty
+  version 1, default: true do
+    # No deprecated - correct
+  end
+end
+
+# ✓ VALID: Option 2 - Deprecated without default
+class Posts::CreateTreaty < ApplicationTreaty
+  version 1 do
+    deprecated true  # Correct
+  end
+
+  version 2, default: true do
+    # New default version
+  end
+end
+
+# Handle in controller (configuration error)
+rescue_from Treaty::Exceptions::VersionDefaultDeprecatedConflict do |e|
+  render json: {
+    error: e.message,
+    hint: "Contact the development team to fix the configuration"
+  }, status: :internal_server_error
+end
+```
+
+**Why this error exists:** A default version is used when clients don't specify a version. It must be active and usable. A deprecated version should not be used. These requirements are mutually exclusive.
+
+**HTTP Status:** 500 Internal Server Error
+
+### "Cannot have multiple versions marked as default"
+
+**Exception:** `Treaty::Exceptions::VersionMultipleDefaults`
+
+**Problem:** Multiple versions in the same treaty have `default: true`.
+
+**Solution:**
+1. Identify which version should truly be the default
+2. Remove `default: true` from all other versions
+3. Keep only one `default: true` declaration
+
+**Example:**
+```ruby
+# ✗ INVALID: Multiple default versions
+class Posts::CreateTreaty < ApplicationTreaty
+  version 1, default: true do  # First default
+  end
+
+  version 2, default: true do  # ERROR: Second default!
+  end
+end
+# => Raises Treaty::Exceptions::VersionMultipleDefaults
+
+# ✓ VALID: Single default version
+class Posts::CreateTreaty < ApplicationTreaty
+  version 1 do
+    deprecated true  # Old version
+  end
+
+  version 2 do
+    # Stable version, not default
+  end
+
+  version 3, default: true do
+    # Only one default - correct
+  end
+end
+
+# Handle in controller (configuration error)
+rescue_from Treaty::Exceptions::VersionMultipleDefaults do |e|
+  render json: {
+    error: e.message,
+    hint: "Contact the development team to fix the configuration"
+  }, status: :internal_server_error
+end
+```
+
+**Best practice:** The newest stable version should typically be the default.
+
+**Why this error exists:** When a client doesn't specify a version, Treaty needs to know which single version to use. Having multiple defaults creates ambiguity.
+
+**HTTP Status:** 500 Internal Server Error
+
 ## Strategy Issues
 
 ### No validation happening (DIRECT strategy)

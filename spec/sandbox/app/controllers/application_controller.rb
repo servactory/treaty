@@ -12,6 +12,9 @@ class ApplicationController < ActionController::API
   rescue_from Treaty::Exceptions::ClassName,  with: :render_treaty_class_name_error
   rescue_from Treaty::Exceptions::NotImplemented, with: :render_treaty_not_implemented_error
   rescue_from Treaty::Exceptions::Unexpected, with: :render_treaty_unexpected_error
+  rescue_from Treaty::Exceptions::VersionDefaultDeprecatedConflict,
+              with: :render_treaty_version_default_deprecated_conflict_error
+  rescue_from Treaty::Exceptions::VersionMultipleDefaults, with: :render_treaty_version_multiple_defaults_error
 
   private
 
@@ -66,6 +69,16 @@ class ApplicationController < ActionController::API
   end
 
   def render_treaty_unexpected_error(exception)
+    render json: build_error_response_for(exception),
+           status: :internal_server_error
+  end
+
+  def render_treaty_version_default_deprecated_conflict_error(exception)
+    render json: build_error_response_for(exception),
+           status: :internal_server_error
+  end
+
+  def render_treaty_version_multiple_defaults_error(exception)
     render json: build_error_response_for(exception),
            status: :internal_server_error
   end

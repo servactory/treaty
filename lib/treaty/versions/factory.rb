@@ -27,6 +27,10 @@ module Treaty
         validate_default_option!
       end
 
+      def validate_after_block!
+        validate_default_deprecated_conflict!
+      end
+
       def summary(text)
         @summary_text = text
       end
@@ -85,6 +89,17 @@ module Treaty
               I18n.t(
                 "treaty.versioning.factory.invalid_default_option",
                 type: @default_result.class
+              )
+      end
+
+      def validate_default_deprecated_conflict!
+        return unless @default_result == true
+        return unless @deprecated_result == true
+
+        raise Treaty::Exceptions::VersionDefaultDeprecatedConflict,
+              I18n.t(
+                "treaty.versioning.factory.default_deprecated_conflict",
+                version: @version.version.to_s
               )
       end
 

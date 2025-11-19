@@ -1193,12 +1193,108 @@ rescue Treaty::Exceptions::Deprecated => e
 end
 ```
 
+**`Treaty::Exceptions::VersionDefaultDeprecatedConflict`**
+
+Raised when a version is configured with both `default: true` and `deprecated` - a logical contradiction.
+
+**HTTP Status:** 500 Internal Server Error
+
+**Example:**
+```ruby
+# INVALID CONFIGURATION - Will raise exception when class loads
+class Posts::CreateTreaty < ApplicationTreaty
+  version 1, default: true do
+    deprecated true  # ERROR: Cannot be both default and deprecated
+  end
+end
+# => Raises Treaty::Exceptions::VersionDefaultDeprecatedConflict
+# => "Version 1.0.0 cannot be both default and deprecated. A default version
+#     must be active and usable. Either remove 'default: true' or remove
+#     the 'deprecated' declaration."
+```
+
+**Why this error exists:** A default version is used when clients don't specify a version, so it must be active and usable. A deprecated version should not be used. These requirements are mutually exclusive.
+
+**Solutions:**
+- Remove `default: true` if the version should be deprecated
+- Remove the `deprecated` call if the version should be default
+- Create a new version to be the default, and deprecate the old one
+
+**Valid configurations:**
+```ruby
+# Option 1: Default without deprecation
+version 1, default: true do
+  # No deprecated - valid
+end
+
+# Option 2: Deprecated without default
+version 1 do
+  deprecated true
+end
+version 2, default: true do; end
+
+# Option 3: Neither
+version 1 do
+  # Regular version
+end
+```
+
+**`Treaty::Exceptions::VersionMultipleDefaults`**
+
+Raised when multiple versions in the same treaty are marked as default.
+
+**HTTP Status:** 500 Internal Server Error
+
+**Example:**
+```ruby
+# INVALID CONFIGURATION - Will raise exception when class loads
+class Posts::CreateTreaty < ApplicationTreaty
+  version 1, default: true do
+    # First default
+  end
+
+  version 2, default: true do
+    # ERROR: Second default
+  end
+end
+# => Raises Treaty::Exceptions::VersionMultipleDefaults
+# => "Cannot have multiple versions marked as default. Only one version
+#     can be the default. Please review your treaty definition and ensure
+#     only one version has 'default: true'."
+```
+
+**Why this error exists:** When a client doesn't specify a version, Treaty needs to know which single version to use. Having multiple defaults creates ambiguity.
+
+**Solutions:**
+- Identify which version should truly be the default
+- Remove `default: true` from all other versions
+- Keep only one `default: true` declaration
+
+**Best practice:** The newest stable version should typically be the default.
+
+**Valid configuration:**
+```ruby
+version 1 do
+  deprecated true  # Old version
+end
+
+version 2 do
+  # Stable version, not default
+end
+
+version 3, default: true do
+  # Only one default - valid
+end
+```
+
 **Controller Integration:**
 ```ruby
 class ApplicationController < ActionController::API
   rescue_from Treaty::Exceptions::SpecifiedVersionNotFound, with: :version_required
   rescue_from Treaty::Exceptions::VersionNotFound, with: :version_not_found
   rescue_from Treaty::Exceptions::Deprecated, with: :version_deprecated
+  rescue_from Treaty::Exceptions::VersionDefaultDeprecatedConflict, with: :config_error
+  rescue_from Treaty::Exceptions::VersionMultipleDefaults, with: :config_error
 
   private
 
@@ -1215,6 +1311,13 @@ class ApplicationController < ActionController::API
 
   def version_deprecated(exception)
     render json: { error: exception.message }, status: :gone
+  end
+
+  def config_error(exception)
+    render json: {
+      error: exception.message,
+      hint: "This is a configuration error. Contact the development team."
+    }, status: :internal_server_error
   end
 end
 ```

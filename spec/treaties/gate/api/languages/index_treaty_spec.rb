@@ -455,7 +455,7 @@ RSpec.describe Gate::API::Languages::IndexTreaty do
       it :aggregate_failures do
         expect { perform }.to(
           raise_error do |exception|
-            expect(exception).to be_a(Treaty::Exceptions::Validation)
+            expect(exception).to be_a(Treaty::Exceptions::VersionNotFound)
             expect(exception.message).to eq("Version 999 not found in treaty definition")
           end
         )

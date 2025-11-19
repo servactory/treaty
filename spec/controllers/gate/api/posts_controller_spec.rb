@@ -274,9 +274,9 @@ RSpec.describe Gate::API::PostsController do
         }
       end
 
-      it "renders HTTP 422 Unprocessable Entity" do
+      it "renders HTTP 404 Not Found" do
         expect(perform).to(
-          have_http_status(:unprocessable_content) &
+          have_http_status(:not_found) &
           have_json_body(expectation)
         )
       end

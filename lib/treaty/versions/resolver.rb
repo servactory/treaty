@@ -46,12 +46,12 @@ module Treaty
       ##########################################################################
 
       def raise_current_version_not_found!
-        raise Treaty::Exceptions::Validation,
+        raise Treaty::Exceptions::CurrentVersionNotFound,
               I18n.t("treaty.versioning.resolver.current_version_required")
       end
 
       def raise_version_not_found!
-        raise Treaty::Exceptions::Validation,
+        raise Treaty::Exceptions::VersionNotFound,
               I18n.t(
                 "treaty.versioning.resolver.version_not_found",
                 version: @current_version

@@ -244,25 +244,135 @@ GET /api/posts?version=2
 Headers: API-Version: 2
 ```
 
-### "Version X not found"
+### "Current version is required for validation"
 
-**Problem:** Requested version doesn't exist.
+**Exception:** `Treaty::Exceptions::CurrentVersionNotFound`
+
+**Problem:** No version was specified and no default version is configured.
+
+**Solution:**
+1. Add a default version to your treaty
+2. OR ensure clients always specify a version
+3. OR handle the exception in your controller
+
+**Example:**
+```ruby
+# Problem: No default version
+class Posts::CreateTreaty < ApplicationTreaty
+  version 1 do; end
+  version 2 do; end
+  # No default specified
+end
+
+# Client request without version
+Posts::CreateTreaty.call!(version: nil, params: {})
+# => Raises Treaty::Exceptions::CurrentVersionNotFound
+
+# Solution 1: Add default version
+version 2, default: true do; end
+
+# Solution 2: Handle in controller
+rescue_from Treaty::Exceptions::CurrentVersionNotFound do |e|
+  render json: { error: e.message }, status: :bad_request
+end
+```
+
+**HTTP Status:** 400 Bad Request
+
+### "Version X not found in treaty definition"
+
+**Exception:** `Treaty::Exceptions::VersionNotFound`
+
+**Problem:** Requested version doesn't exist in the treaty.
 
 **Solution:**
 1. Check available versions in treaty
-2. Verify version number format
+2. Verify version number format matches
 3. Ensure version is defined
+4. Check for typos in version number
 
 **Example:**
 ```ruby
 # Treaty has:
-version 1 do; end
-version 2 do; end
+class Posts::CreateTreaty < ApplicationTreaty
+  version 1 do; end
+  version 2 do; end
+end
 
-# Client requests:
-?version=3  # ✗ Version 3 doesn't exist
+# Client requests non-existent version:
+Posts::CreateTreaty.call!(version: "3", params: {})
+# => Raises Treaty::Exceptions::VersionNotFound
+# => "Version 3 not found in treaty definition"
+
+# Solutions:
+# 1. Use existing version
 ?version=2  # ✓ Version 2 exists
+
+# 2. Add the version to treaty
+version 3 do
+  # ...
+end
+
+# 3. Handle in controller
+rescue_from Treaty::Exceptions::VersionNotFound do |e|
+  render json: {
+    error: e.message,
+    available_versions: ["1", "2"]
+  }, status: :not_found
+end
 ```
+
+**Common causes:**
+- Version number mismatch: `version 1` vs `version "1.0.0"`
+- Typos: `version "v2"` instead of `version "2"`
+- Version removed but still requested by clients
+- Wrong format: sending integer when string expected or vice versa
+
+**HTTP Status:** 404 Not Found
+
+### "Version X is deprecated and cannot be used"
+
+**Exception:** `Treaty::Exceptions::Deprecated`
+
+**Problem:** Requested version is marked as deprecated.
+
+**Solution:**
+1. Migrate to a non-deprecated version
+2. Contact API provider for migration guide
+3. Check deprecation timeline
+
+**Example:**
+```ruby
+# Treaty definition
+class Posts::CreateTreaty < ApplicationTreaty
+  version 1 do
+    deprecated true  # Version 1 is deprecated
+  end
+
+  version 2, default: true do
+    # Current version
+  end
+end
+
+# Client requests deprecated version:
+Posts::CreateTreaty.call!(version: "1", params: {})
+# => Raises Treaty::Exceptions::Deprecated
+# => "Version 1 is deprecated and cannot be used"
+
+# Solution: Use non-deprecated version
+?version=2  # ✓ Version 2 is active
+
+# Handle in controller
+rescue_from Treaty::Exceptions::Deprecated do |e|
+  render json: {
+    error: e.message,
+    recommended_version: "2",
+    migration_guide: "/docs/v1-to-v2"
+  }, status: :gone
+end
+```
+
+**HTTP Status:** 410 Gone
 
 ## Strategy Issues
 

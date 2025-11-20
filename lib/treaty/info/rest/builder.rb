@@ -36,7 +36,6 @@ module Treaty
               segments: gem_version.segments,
               default: version.default_result,
               summary: version.summary_text,
-              strategy: version.strategy_instance.code,
               deprecated: version.deprecated_result,
               executor: build_executor_with(version),
               request: build_request_with(version),

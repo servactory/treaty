@@ -7,8 +7,6 @@ module Gate
         version 1 do
           summary "Show movie details"
 
-          strategy Treaty::Strategy::DIRECT
-
           request do
             string :id
           end
@@ -29,8 +27,6 @@ module Gate
 
         version 2 do
           summary "Added cast and memorable scenes"
-
-          strategy Treaty::Strategy::ADAPTER
 
           deprecated false
 
@@ -70,8 +66,6 @@ module Gate
 
         version 3, default: true do
           summary "Added soundtrack and trivia"
-
-          strategy Treaty::Strategy::ADAPTER
 
           request do
             object :_self do

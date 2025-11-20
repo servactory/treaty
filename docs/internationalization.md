@@ -44,7 +44,6 @@ en:
     versioning:        # Version management
       resolver:
       factory:
-      strategy:
 
     execution:         # Service execution errors
 
@@ -178,10 +177,7 @@ de:
 
       factory:
         invalid_default_option: "Standard-Option für Version muss true, false oder ein Proc sein, erhalten: %{type}"
-        unknown_method: "Unbekannte Methode '%{method}' in Version-Definition. Verfügbare Methoden: summary, strategy, deprecated, request, response, delegate_to"
-
-      strategy:
-        unknown: "Unbekannte Strategie: %{strategy}"
+        unknown_method: "Unbekannte Methode '%{method}' in Version-Definition. Verfügbare Methoden: summary, deprecated, request, response, delegate_to"
 
     execution:
       executor_missing: "Executor ist nicht definiert für Version %{version}"
@@ -371,7 +367,6 @@ All Treaty exceptions support I18n. See the complete list in `lib/treaty/excepti
 - **Validation** - Validation errors (most common)
 - **Execution** - Service execution errors
 - **Deprecated** - Deprecated version usage
-- **Strategy** - Invalid strategy specification
 - **ClassName** - Treaty class not found
 - **MethodName** - Unknown DSL method
 - **NestedAttributes** - Nesting depth exceeded
@@ -389,7 +384,6 @@ Complete multilingual API with German and English support:
 ```ruby
 class Posts::CreateTreaty < ApplicationTreaty
   version 1, default: true do
-    strategy Treaty::Strategy::ADAPTER
 
     request do
       object :post do

@@ -15,7 +15,6 @@ module Treaty
     #
     # ```ruby
     # version 1 do
-    #   strategy Treaty::Strategy::ADAPTER  # Valid
     #   deprecated true                     # Valid
     #   summary "Version 1"                 # Valid
     #
@@ -38,7 +37,6 @@ module Treaty
     # ## Valid DSL Methods
     #
     # Within a version block, these methods are valid:
-    # - strategy(code) - Set version strategy (DIRECT/ADAPTER)
     # - deprecated(condition) - Mark version as deprecated
     # - summary(text) - Add version description
     # - request(&block) - Define request schema

@@ -91,13 +91,9 @@ en:
       # Version factory
       factory:
         invalid_default_option: "Default option for version must be true, false, or a Proc, got: %{type}"
-        unknown_method: "Unknown method '%{method}' in version definition. Available methods: summary, strategy, deprecated, request, response, delegate_to"
+        unknown_method: "Unknown method '%{method}' in version definition. Available methods: summary, deprecated, request, response, delegate_to"
         default_deprecated_conflict: "Version %{version} cannot be both default and deprecated. A default version must be active and usable. Either remove 'default: true' or remove the 'deprecated' declaration."
         multiple_defaults: "Cannot have multiple versions marked as default. Only one version can be the default. Please review your treaty definition and ensure only one version has 'default: true'."
-
-      # Strategy validation
-      strategy:
-        unknown: "Unknown strategy: %{strategy}"
 
     # ============================================================================
     # Execution: Service and executor invocation

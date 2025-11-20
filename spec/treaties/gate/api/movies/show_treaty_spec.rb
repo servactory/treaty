@@ -9,7 +9,6 @@ RSpec.describe Gate::API::Movies::ShowTreaty do
                       version: "1",
                       segments: [1],
                       default: false,
-                      strategy: :direct,
                       summary: "Show movie details",
                       deprecated: false,
                       executor: {
@@ -87,7 +86,6 @@ RSpec.describe Gate::API::Movies::ShowTreaty do
                       version: "2",
                       segments: [2],
                       default: false,
-                      strategy: :adapter,
                       summary: "Added cast and memorable scenes",
                       deprecated: false,
                       executor: {
@@ -251,7 +249,6 @@ RSpec.describe Gate::API::Movies::ShowTreaty do
                       version: "3",
                       segments: [3],
                       default: true,
-                      strategy: :adapter,
                       summary: "Added soundtrack and trivia",
                       deprecated: false,
                       executor: {

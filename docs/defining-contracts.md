@@ -4,7 +4,7 @@
 
 ## Overview
 
-Learn how to define Treaty contracts, including request and response definitions, strategy selection, and service delegation. This guide covers the complete structure of a contract and best practices for organizing your API definitions.
+Learn how to define Treaty contracts, including request and response definitions, and service delegation. This guide covers the complete structure of a contract and best practices for organizing your API definitions.
 
 ## Contract Structure
 
@@ -24,7 +24,6 @@ module Gate
     module Posts
       class CreateTreaty < ApplicationTreaty
         version 1 do
-          strategy Treaty::Strategy::ADAPTER
 
           request do
             object :post do
@@ -79,7 +78,6 @@ version 3 do
       Gem::Version.new("4.0.0")
   }
 
-  strategy Treaty::Strategy::ADAPTER
 
   # ... rest of definition
 end
@@ -166,7 +164,6 @@ request do
 end
 
 # Just declares that these objects exist
-# Useful with DIRECT strategy
 ```
 
 ## Response Definition
@@ -209,75 +206,6 @@ response 422 do
   object :errors do
     string :message
   end
-end
-```
-
-## Strategy Selection
-
-### When to use DIRECT
-
-```ruby
-strategy Treaty::Strategy::DIRECT
-```
-
-**Use DIRECT when:**
-- Building a prototype or MVP
-- The service already handles validation
-- You don't need data transformation
-- Performance is critical and you trust your data
-
-**Example:**
-```ruby
-version 1 do
-  strategy Treaty::Strategy::DIRECT
-
-  request { object :post }
-  response(201) { object :post }
-
-  delegate_to Posts::V1::CreateService
-end
-```
-
-### When to use ADAPTER
-
-```ruby
-strategy Treaty::Strategy::ADAPTER
-```
-
-**Use ADAPTER when:**
-- You need strict validation
-- You're managing multiple API versions
-- You need data transformation between versions
-- You want to ensure data consistency
-
-**Example:**
-```ruby
-version 2 do
-  strategy Treaty::Strategy::ADAPTER
-
-  request do
-    object :post do
-      string :title
-      string :content
-      array :tags, :optional do
-        string :_self
-      end
-    end
-  end
-
-  response 201 do
-    object :post do
-      string :id
-      string :title
-      string :content
-      array :tags do
-        string :_self
-      end
-      datetime :created_at
-    end
-  end
-
-  delegate_to Posts::Stable::CreateService
 end
 ```
 
@@ -384,23 +312,7 @@ version 3, default: true do
 end
 ```
 
-### 4. Use ADAPTER in Production
-
-```ruby
-# Good for production
-version 1 do
-  strategy Treaty::Strategy::ADAPTER
-  # Full validation and transformation
-end
-
-# OK for development/prototyping
-version 1 do
-  strategy Treaty::Strategy::DIRECT
-  # Quick iteration
-end
-```
-
-### 5. Document Deprecation
+### 4. Document Deprecation
 
 ```ruby
 version 1 do
@@ -427,7 +339,6 @@ module Gate
         version 3 do
           summary "Added author and socials to expand post data"
 
-          strategy Treaty::Strategy::ADAPTER
 
           request do
             object :_self do

@@ -138,7 +138,6 @@ Manages multiple concurrent API versions.
 ```ruby
 version 1, default: true do
   summary "Description of this version"
-  strategy Treaty::Strategy::ADAPTER
   deprecated { condition }
   request { ... }
   response(201) { ... }
@@ -192,7 +191,6 @@ end
 - Context DSL (`lib/treaty/context/`)
 - Info (`lib/treaty/info/`)
 - Exceptions (`lib/treaty/exceptions/`)
-- Strategy (`lib/treaty/strategy/`)
 
 ## Development Workflow
 
@@ -400,8 +398,6 @@ assign_json_headers_with(version: 1)
    module Posts
      class CreateTreaty < ApplicationTreaty
        version 1, default: true do
-         strategy Treaty::Strategy::ADAPTER
-
          request do
            object :post do
              string :title
@@ -593,16 +589,6 @@ class FlexibleDto < Treaty::Entity
 end
 ```
 
-### Strategy Patterns
-
-```ruby
-# Direct strategy - passes params directly to service
-strategy Treaty::Strategy::DIRECT
-
-# Adapter strategy - transforms data
-strategy Treaty::Strategy::ADAPTER
-```
-
 ### Delegation Patterns
 
 ```ruby
@@ -633,7 +619,6 @@ All documentation is in `/home/user/treaty/docs/`:
 - `transformation.md` - Data transformation
 - `entities.md` - Entity/DTO classes
 - `versioning.md` - Version management
-- `strategies.md` - Strategy patterns
 - `examples.md` - Real-world examples
 - `internationalization.md` - I18n support
 - `api-reference.md` - Complete API documentation
@@ -730,12 +715,9 @@ rake
 1. **Default attribute behavior differs**:
    - In request/response blocks: attributes are optional by default
    - In Entity classes: attributes are required by default
-2. **Use appropriate strategy**:
-   - `DIRECT` - minimal transformation
-   - `ADAPTER` - data transformation between versions
-3. **Version numbers** can be integer or semantic versioning string
-4. **Test all versions** of your treaty
-5. **Document version changes** in summary
+2. **Version numbers** can be integer or semantic versioning string
+3. **Test all versions** of your treaty
+4. **Document version changes** in summary
 
 ### When Writing Tests
 

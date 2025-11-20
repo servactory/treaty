@@ -9,7 +9,6 @@ RSpec.describe Gate::API::Movies::IndexTreaty do
                       version: "1.0.0.rc1",
                       segments: [1, 0, 0, "rc", 1],
                       default: false,
-                      strategy: :direct,
                       summary: "List of movies",
                       deprecated: false,
                       executor: {
@@ -66,7 +65,6 @@ RSpec.describe Gate::API::Movies::IndexTreaty do
                       version: "2",
                       segments: [2],
                       default: false,
-                      strategy: :adapter,
                       summary: "Added genre filter and details",
                       deprecated: false,
                       executor: {
@@ -203,7 +201,6 @@ RSpec.describe Gate::API::Movies::IndexTreaty do
                       version: "3",
                       segments: [3],
                       default: true,
-                      strategy: :adapter,
                       summary: "Added cast and awards",
                       deprecated: false,
                       executor: {

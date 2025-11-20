@@ -372,7 +372,7 @@ end
 
 ## Type Validation
 
-Type validation happens automatically with ADAPTER strategy:
+Type validation happens automatically:
 
 ```ruby
 # If client sends: { "age": "25" } (string instead of integer)

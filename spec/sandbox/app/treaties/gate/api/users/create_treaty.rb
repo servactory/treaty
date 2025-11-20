@@ -7,8 +7,6 @@ module Gate
         version 1 do
           summary "User creation with format validation examples"
 
-          strategy Treaty::Strategy::ADAPTER
-
           request do
             object :user do
               # Example: email format validation
@@ -60,8 +58,6 @@ module Gate
 
         version 2 do
           summary "Extended user creation with Entity-based definition"
-
-          strategy Treaty::Strategy::ADAPTER
 
           request do
             use_entity Deserialization::UserDto

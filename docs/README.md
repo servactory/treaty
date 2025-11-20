@@ -40,15 +40,16 @@ Treaty allows you to:
 9. [Transformation](./transformation.md) - Data transformation pipeline
 10. [Strategies](./strategies.md) - DIRECT vs ADAPTER strategies
 11. [Versioning](./versioning.md) - API version management
+12. [Inventory System](./inventory.md) - Passing controller data to services
 
 ### Additional Resources
 
-12. [Examples](./examples.md) - Real-world usage examples
-13. [API Reference](./api-reference.md) - Complete API documentation
-14. [Cheatsheet](./cheatsheet.md) - Quick reference guide
-15. [Migration Guide](./migration-guide.md) - API version migration strategies
-16. [Internationalization](./internationalization.md) - I18n and multilingual support
-17. [Troubleshooting](./troubleshooting.md) - Common issues and solutions
+13. [Examples](./examples.md) - Real-world usage examples
+14. [API Reference](./api-reference.md) - Complete API documentation
+15. [Cheatsheet](./cheatsheet.md) - Quick reference guide
+16. [Migration Guide](./migration-guide.md) - API version migration strategies
+17. [Internationalization](./internationalization.md) - I18n and multilingual support
+18. [Troubleshooting](./troubleshooting.md) - Common issues and solutions
 
 ## Quick Example
 

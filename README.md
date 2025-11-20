@@ -36,6 +36,7 @@ Treaty provides a complete solution for building versioned APIs in Ruby on Rails
 - **Entity Classes (DTOs)** - Define reusable data transfer objects for better code organization
 - **Built-in Validation** - Validate incoming requests and outgoing responses automatically
 - **Data Transformation** - Transform data seamlessly between different API versions
+- **Inventory System** - Pass controller-specific data to services efficiently
 - **Deprecation Management** - Mark versions as deprecated with flexible conditions
 - **Internationalization** - Full I18n support for multilingual error messages
 - **Well-documented** - Comprehensive guides and examples for every feature
@@ -102,6 +103,18 @@ class PostsController < ApplicationController
   # 3. Validates service response according to response definition
   # 4. Returns transformed data to client
   treaty :create
+
+  # Optional: Provide additional data from controller to service
+  treaty :index do
+    provide :current_user, from: :current_user
+    provide :posts, from: :load_posts
+  end
+
+  private
+
+  def load_posts
+    Post.published.limit(10)
+  end
 end
 ```
 

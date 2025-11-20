@@ -8,7 +8,9 @@ module Treaty
           new(...).execute!
         end
 
-        def initialize(version_factory:, validated_params:)
+        def initialize(version_factory:, validated_params:, inventory: nil, controller_context: nil)
+          @inventory = inventory || Treaty::Inventory::Collection.new
+          @controller_context = controller_context
           @version_factory = version_factory
           @validated_params = validated_params
         end
@@ -89,15 +91,39 @@ module Treaty
         ########################################################################
         ########################################################################
 
+        # Evaluates inventory collection with controller context
+        #
+        # @return [Hash{Symbol => Object}] Hash of inventory name => resolved value
+        def evaluated_inventory
+          @evaluated_inventory ||= @inventory.evaluate(@controller_context)
+        end
+
+        ########################################################################
+
         def execute_proc
-          executor.call(params: @validated_params)
+          # For Proc executors, always pass inventory if collection exists
+          if @inventory.exists?
+            executor.call(params: @validated_params, inventory: evaluated_inventory)
+          else
+            executor.call(params: @validated_params)
+          end
         rescue StandardError => e
           raise Treaty::Exceptions::Execution,
                 I18n.t("treaty.execution.proc_error", message: e.message)
         end
 
-        def execute_servactory # rubocop:disable Metrics/MethodLength
-          executor.call!(params: @validated_params)
+        def execute_servactory # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+          # For Servactory services, only pass inventory if:
+          # 1. Inventory collection exists AND
+          # 2. Service has inventory input defined
+          call_params =
+            if @inventory.exists? && service_accepts_inventory?
+              { params: @validated_params, inventory: evaluated_inventory }
+            else
+              { params: @validated_params }
+            end
+
+          executor.call!(**call_params)
         rescue Servactory::Exceptions::Input => e
           raise Treaty::Exceptions::Execution,
                 I18n.t("treaty.execution.servactory_input_error", message: e.message)
@@ -124,10 +150,32 @@ module Treaty
                   )
           end
 
-          executor.public_send(method_name, params: @validated_params)
+          # For regular classes, pass inventory if collection exists
+          call_params =
+            if @inventory.exists?
+              { params: @validated_params, inventory: evaluated_inventory }
+            else
+              { params: @validated_params }
+            end
+
+          executor.public_send(method_name, **call_params)
         rescue StandardError => e
           raise Treaty::Exceptions::Execution,
                 I18n.t("treaty.execution.regular_service_error", message: e.message)
+        end
+
+        ########################################################################
+
+        # Checks if Servactory service accepts inventory input
+        #
+        # @return [Boolean] True if service has inventory input defined
+        def service_accepts_inventory?
+          return false unless executor.respond_to?(:service_info)
+
+          service_info = executor.service_info
+          return false unless service_info.respond_to?(:inputs)
+
+          service_info.inputs.collection_of_inputs.any? { |input| input.name == :inventory }
         end
 
         ########################################################################

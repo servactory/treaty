@@ -144,14 +144,14 @@ module Treaty
         # Resolves custom message with lambda support
         # If message is a lambda, calls it with provided named arguments
         #
-        # @param context [Hash] Named arguments to pass to lambda
+        # @param attributes [Hash] Named arguments to pass to lambda
         # @return [String, nil] Resolved message string or nil
-        def resolve_custom_message(**context)
+        def resolve_custom_message(**attributes)
           message = custom_message
           return nil if message.nil?
 
           if message.respond_to?(:call)
-            message.call(**context)
+            message.call(**attributes)
           else
             message
           end

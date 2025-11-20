@@ -30,14 +30,14 @@ module Treaty
         @source = source
       end
 
-      # Evaluates the inventory source with the given controller context
+      # Evaluates the inventory source with the given context
       #
-      # @param controller_context [Object] The controller instance to call methods on
+      # @param context [Object] The controller instance to call methods on
       # @return [Object] The resolved value
-      def evaluate(controller_context)
+      def evaluate(context)
         case source
         when Symbol
-          controller_context.send(source)
+          context.send(source)
         when Proc
           source.call
         else

@@ -3,22 +3,19 @@
 module Treaty
   module Context
     module Callable
-      def call!(version:, params:, inventory: nil, controller_context: nil)
-        # Provide default empty inventory collection if not provided
-        inventory ||= Treaty::Inventory::Collection.new
+      def call!(version:, params:, inventory: nil, context: nil)
+        treaty_instance = send(:new)
 
-        instance = send(:new)
-
-        _call!(instance, inventory:, controller_context:, version:, params:)
+        _call!(treaty_instance, inventory:, context:, version:, params:)
       end
 
       private
 
-      def _call!(instance, inventory:, controller_context:, version:, params:)
-        instance.send(
+      def _call!(treaty_instance, inventory:, context:, version:, params:)
+        treaty_instance.send(
           :_call!,
           inventory:,
-          controller_context:,
+          context:,
           version:,
           params:,
           collection_of_versions:

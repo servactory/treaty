@@ -62,13 +62,13 @@ module Treaty
         !empty?
       end
 
-      # Evaluates all inventory items with the given controller context
+      # Evaluates all inventory items with the given context
       #
-      # @param controller_context [Object] The controller instance to evaluate against
+      # @param context [Object] The controller instance to evaluate against
       # @return [Hash{Symbol => Object}] Hash of name => resolved value
-      def evaluate(controller_context)
+      def evaluate(context)
         each_with_object({}) do |inventory_item, result|
-          result[inventory_item.name] = inventory_item.evaluate(controller_context)
+          result[inventory_item.name] = inventory_item.evaluate(context)
         end
       end
     end

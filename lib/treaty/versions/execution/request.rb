@@ -8,9 +8,9 @@ module Treaty
           new(...).execute!
         end
 
-        def initialize(version_factory:, validated_params:, inventory: nil, controller_context: nil)
-          @inventory = inventory || Treaty::Inventory::Collection.new
-          @controller_context = controller_context
+        def initialize(version_factory:, validated_params:, inventory: nil, context: nil)
+          @inventory = inventory
+          @context = context
           @version_factory = version_factory
           @validated_params = validated_params
         end
@@ -91,18 +91,18 @@ module Treaty
         ########################################################################
         ########################################################################
 
-        # Evaluates inventory collection with controller context
+        # Evaluates inventory collection with context
         #
         # @return [Hash{Symbol => Object}] Hash of inventory name => resolved value
         def evaluated_inventory
-          @evaluated_inventory ||= @inventory.evaluate(@controller_context)
+          @evaluated_inventory ||= @inventory&.evaluate(@context) || {}
         end
 
         ########################################################################
 
         def execute_proc
           # For Proc executors, always pass inventory if collection exists
-          if @inventory.exists?
+          if @inventory&.exists?
             executor.call(params: @validated_params, inventory: evaluated_inventory)
           else
             executor.call(params: @validated_params)
@@ -117,7 +117,7 @@ module Treaty
           # 1. Inventory collection exists AND
           # 2. Service has inventory input defined
           call_params =
-            if @inventory.exists? && service_accepts_inventory?
+            if @inventory&.exists? && service_accepts_inventory?
               { params: @validated_params, inventory: evaluated_inventory }
             else
               { params: @validated_params }
@@ -152,7 +152,7 @@ module Treaty
 
           # For regular classes, pass inventory if collection exists
           call_params =
-            if @inventory.exists?
+            if @inventory&.exists?
               { params: @validated_params, inventory: evaluated_inventory }
             else
               { params: @validated_params }

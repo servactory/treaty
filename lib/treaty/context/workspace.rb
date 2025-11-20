@@ -7,14 +7,14 @@ module Treaty
 
       def _call!(
         inventory:,
-        controller_context:,
+        context:,
         version:,
         params:,
         collection_of_versions:
       )
         call!(
           inventory:,
-          controller_context:,
+          context:,
           version:,
           params:,
           collection_of_versions:

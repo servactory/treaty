@@ -20,14 +20,12 @@ module Treaty
                 factory = Treaty::Inventory::Factory.new(action_name)
                 factory.instance_eval(&block)
                 factory.collection
-              else
-                Treaty::Inventory::Collection.new
               end
 
             # Call treaty with inventory collection
             treaty = treaty_class.call!(
               inventory: inventory_collection,
-              controller_context: self,
+              context: self,
               version: treaty_version,
               params:
             )

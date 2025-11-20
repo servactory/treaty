@@ -47,7 +47,7 @@ treaty :index do
   # Simple lambda
   provide :meta, from: -> { { count: 10 } }
 
-  # Lambda with controller context
+  # Lambda with context (controller)
   provide :posts, from: -> { load_posts }
 
   # Lambda accessing request

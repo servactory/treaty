@@ -51,38 +51,7 @@ end
 - Semantic: `"1.0.0"`, `"2.1.0"`
 - With labels: `"1.0.0.rc1"`, `[1, 0, 0, :rc1]`
 
-### 3. Strategy
-
-Strategy defines how data is processed.
-
-#### DIRECT Strategy
-
-Direct data passing without validation and transformation.
-
-```ruby
-strategy Treaty::Strategy::DIRECT
-```
-
-**Use cases:**
-- Quick prototypes
-- Simple endpoints without complex logic
-- When service validates data itself
-
-#### ADAPTER Strategy
-
-Full data validation and transformation.
-
-```ruby
-strategy Treaty::Strategy::ADAPTER
-```
-
-**Use cases:**
-- Production API
-- When strict validation is needed
-- Working with multiple versions
-- Data transformation between versions
-
-### 4. Request
+### 3. Request
 
 Defines incoming data structure. Can be defined using a block or an Entity class.
 
@@ -110,7 +79,7 @@ request PostRequestEntity
 **Internal Architecture:**
 When using a block, Treaty creates an anonymous `Request::Entity` class dynamically and evaluates the block within it. This means request blocks and Entity classes use the same underlying system, ensuring consistent behavior.
 
-### 5. Response
+### 4. Response
 
 Defines outgoing data structure for a specific HTTP status. Can be defined using a block or an Entity class.
 
@@ -144,7 +113,7 @@ response 201, PostResponseEntity
 **Internal Architecture:**
 When using a block, Treaty creates an anonymous `Response::Entity` class dynamically and evaluates the block within it. This unified architecture means both blocks and Entity classes share the same validation and transformation logic.
 
-### 6. Objects
+### 5. Objects
 
 Groups related attributes.
 
@@ -170,7 +139,7 @@ end
 
 Attributes from `:_self` are merged into parent level (root).
 
-### 7. Entity Classes (DTOs)
+### 6. Entity Classes (DTOs)
 
 Reusable data structure definitions that can be used across multiple treaties and versions.
 
@@ -199,7 +168,7 @@ end
 
 See [Entity Classes (DTOs)](./entities.md) for detailed documentation.
 
-### 8. Delegate To
+### 7. Delegate To
 
 Specifies where to pass request processing.
 

@@ -6,7 +6,6 @@ module Treaty
       attr_reader :version,
                   :default_result,
                   :summary_text,
-                  :strategy_instance,
                   :deprecated_result,
                   :executor,
                   :request_factory,
@@ -16,7 +15,6 @@ module Treaty
         @version = Semantic.new(version)
         @default_result = default.is_a?(Proc) ? default.call : default
         @summary_text = nil
-        @strategy_instance = Strategy.new(Strategy::ADAPTER) # without .validate!
         @deprecated_result = false
         @executor = nil
 
@@ -33,10 +31,6 @@ module Treaty
 
       def summary(text)
         @summary_text = text
-      end
-
-      def strategy(code)
-        @strategy_instance = Strategy.new(code).validate!
       end
 
       def deprecated(condition = nil)

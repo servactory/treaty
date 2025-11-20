@@ -11,7 +11,6 @@ RSpec.describe Gate::API::Posts::IndexTreaty do
                       version: "1.0.0.rc1",
                       segments: [1, 0, 0, "rc", 1],
                       default: false,
-                      strategy: :direct,
                       summary: nil,
                       deprecated: true,
                       executor: {
@@ -75,7 +74,6 @@ RSpec.describe Gate::API::Posts::IndexTreaty do
                       version: "1.0.0.rc2",
                       segments: [1, 0, 0, "rc", 2],
                       default: false,
-                      strategy: :direct,
                       summary: nil,
                       deprecated: true,
                       executor: {
@@ -139,7 +137,6 @@ RSpec.describe Gate::API::Posts::IndexTreaty do
                       version: "1",
                       segments: [1],
                       default: false,
-                      strategy: :direct,
                       summary: nil,
                       deprecated: false,
                       executor: {
@@ -203,7 +200,6 @@ RSpec.describe Gate::API::Posts::IndexTreaty do
                       version: "2",
                       segments: [2],
                       default: false,
-                      strategy: :adapter,
                       summary: nil,
                       deprecated: false,
                       executor: {
@@ -325,7 +321,6 @@ RSpec.describe Gate::API::Posts::IndexTreaty do
                       version: "3",
                       segments: [3],
                       default: false,
-                      strategy: :adapter,
                       summary: nil,
                       deprecated: false,
                       executor: {
@@ -448,7 +443,6 @@ RSpec.describe Gate::API::Posts::IndexTreaty do
                       version: "4",
                       segments: [4],
                       default: true,
-                      strategy: :adapter,
                       summary: nil,
                       deprecated: false,
                       executor: {

@@ -60,7 +60,6 @@ module Gate
     module Posts
       class IndexTreaty < ApplicationTreaty
         version 1, default: true do
-          strategy Treaty::Strategy::ADAPTER
 
           request do
             object :filters do

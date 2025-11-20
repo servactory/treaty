@@ -58,7 +58,6 @@ Entity classes can be used directly in request and response definitions:
 ```ruby
 class Posts::CreateTreaty < ApplicationTreaty
   version 1 do
-    strategy Treaty::Strategy::ADAPTER
 
     request PostRequestEntity
     response 201, PostResponseEntity
@@ -184,7 +183,6 @@ You can mix entity classes with inline block definitions:
 
 ```ruby
 version 1 do
-  strategy Treaty::Strategy::ADAPTER
 
   # Use entity class for request
   request PostRequestEntity
@@ -306,7 +304,6 @@ end
 # app/treaties/posts/create_treaty.rb
 class Posts::CreateTreaty < ApplicationTreaty
   version 1 do
-    strategy Treaty::Strategy::ADAPTER
 
     request Deserialization::Posts::CreateDto
     response 201, Serialization::Posts::CreateDto
@@ -315,7 +312,6 @@ class Posts::CreateTreaty < ApplicationTreaty
   end
 
   version 2 do
-    strategy Treaty::Strategy::ADAPTER
 
     # Reuse the same DTOs in multiple versions
     request Deserialization::Posts::CreateDto
@@ -542,14 +538,13 @@ While `Treaty::Entity.info` returns entity attribute metadata, `Treaty::Base.inf
 | **Returns** | `Treaty::Info::Entity::Result` | `Treaty::Info::Rest::Result` |
 | **Primary attribute** | `.attributes` (Hash) | `.versions` (Array) |
 | **Use case** | DTO structure introspection | API version and contract details |
-| **Contains** | Attribute types, options, nesting | Versions, strategies, executors, request/response specs |
+| **Contains** | Attribute types, options, nesting | Versions, executors, request/response specs |
 
 **Example of Treaty::Base.info:**
 
 ```ruby
 class Posts::IndexTreaty < ApplicationTreaty
   version 1 do
-    strategy Treaty::Strategy::ADAPTER
     request { object :filters }
     response(200) { array :posts }
     delegate_to Posts::IndexService
@@ -565,7 +560,6 @@ info.versions
 #     version: "1",
 #     segments: [1],
 #     default: true,
-#     strategy: :adapter,
 #     summary: nil,
 #     deprecated: false,
 #     executor: { executor: Posts::IndexService, method: :call },

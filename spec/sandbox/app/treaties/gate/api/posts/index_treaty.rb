@@ -5,8 +5,6 @@ module Gate
     module Posts
       class IndexTreaty < ApplicationTreaty # rubocop:disable Metrics/ClassLength
         version [1, 0, 0, :rc1] do # Just to keep the idea going.
-          strategy Treaty::Strategy::DIRECT
-
           deprecated true # as boolean
 
           request do
@@ -31,8 +29,6 @@ module Gate
         end
 
         version "1.0.0.rc2" do # Just to keep the idea going.
-          strategy Treaty::Strategy::DIRECT
-
           deprecated true # as boolean
 
           request do
@@ -57,8 +53,6 @@ module Gate
         end
 
         version 1 do # Also supported: 1.0, 1.0.0.rc1
-          strategy Treaty::Strategy::DIRECT
-
           deprecated( # as boolean
             Gem::Version.new(ENV.fetch("RELEASE_VERSION", "0.0.0")) >=
               Gem::Version.new("17.0.0")
@@ -92,8 +86,6 @@ module Gate
         end
 
         version 2 do # Also supported: 2.0, 2.0.0.rc1
-          strategy Treaty::Strategy::ADAPTER
-
           request do
             # Query: filters[title], filters[middle_name], filters[summary]
             object :filters, :optional do
@@ -126,8 +118,6 @@ module Gate
         end
 
         version 3 do # Also supported: 2.0, 2.0.0.rc1
-          strategy Treaty::Strategy::ADAPTER
-
           request do
             # Query: filters[title], filters[middle_name], filters[summary]
             object :filters, :optional do
@@ -160,8 +150,6 @@ module Gate
         end
 
         version 4, default: true do
-          strategy Treaty::Strategy::ADAPTER
-
           request Deserialization::Gate::API::Posts::IndexDto
 
           response 200, Serialization::Gate::API::Posts::IndexDto

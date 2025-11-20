@@ -34,11 +34,10 @@ module Treaty
         end
       end
 
-      def validate_request_attributes! # rubocop:disable Metrics/MethodLength
-        return request_data unless adapter_strategy?
+      def validate_request_attributes!
         return request_data unless request_attributes_exist?
 
-        # For adapter strategy with attributes defined:
+        # Validate request attributes with orchestrator:
         orchestrator_class = Class.new(Treaty::Attribute::Validation::Orchestrator::Base) do
           define_method(:collection_of_attributes) do
             @version_factory.request_factory.collection_of_attributes
@@ -49,10 +48,6 @@ module Treaty
           version_factory: @version_factory,
           data: request_data
         )
-      end
-
-      def adapter_strategy?
-        !@version_factory.strategy_instance.direct?
       end
 
       def request_attributes_exist?

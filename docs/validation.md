@@ -4,7 +4,7 @@
 
 ## Overview
 
-Treaty provides comprehensive validation for requests and responses, including type checking, required field validation, inclusion validation, and format validation. This guide covers all validation types, error messages, and custom validation messages with both static strings and dynamic lambda functions. Validation only applies when using the **ADAPTER** strategy.
+Treaty provides comprehensive validation for requests and responses, including type checking, required field validation, inclusion validation, and format validation. This guide covers all validation types, error messages, and custom validation messages with both static strings and dynamic lambda functions.
 
 ## Validation Modes
 
@@ -681,7 +681,6 @@ message: ->(attribute:, value) { "Error in #{attribute}: #{value}" }
 
 ```ruby
 version 1, default: true do
-  strategy Treaty::Strategy::ADAPTER
 
   request do
     object :post do
@@ -744,7 +743,6 @@ end
 
 ```ruby
 version 1, default: true do
-  strategy Treaty::Strategy::ADAPTER
 
   request do
     # Pagination at root level
@@ -886,12 +884,11 @@ integer :age, inclusion: {
 - Attribute renaming
 - Key conversion (string → symbol)
 
-Both happen in ADAPTER strategy, but validation happens **before** transformation.
+Validation and transformation both occur, but validation happens **before** transformation.
 
 ## Next Steps
 
 - [Transformation](./transformation.md) - Understand data transformation
-- [Strategies](./strategies.md) - DIRECT vs ADAPTER strategies
 - [Examples](./examples.md) - Practical examples
 
 [← Back to Documentation](./README.md)

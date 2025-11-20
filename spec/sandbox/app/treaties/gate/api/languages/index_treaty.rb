@@ -7,8 +7,6 @@ module Gate
         version 1 do
           summary "List Ruby language features"
 
-          strategy Treaty::Strategy::DIRECT
-
           request do
             object :filters, :optional do
               string :name, :optional
@@ -26,8 +24,6 @@ module Gate
 
         version 2 do
           summary "Added version filter and gems"
-
-          strategy Treaty::Strategy::ADAPTER
 
           deprecated false
 
@@ -62,8 +58,6 @@ module Gate
 
         version 3, default: true do
           summary "Added paradigm and statistics"
-
-          strategy Treaty::Strategy::ADAPTER
 
           request do
             object :filters, :optional do

@@ -65,8 +65,6 @@ Create your first API contract in `app/treaties/posts/create_treaty.rb`:
 module Posts
   class CreateTreaty < ApplicationTreaty
     version 1, default: true do
-      strategy Treaty::Strategy::ADAPTER
-
       request do
         object :post do
           string :title

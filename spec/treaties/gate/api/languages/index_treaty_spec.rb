@@ -11,7 +11,6 @@ RSpec.describe Gate::API::Languages::IndexTreaty do
                       version: "1",
                       segments: [1],
                       default: false,
-                      strategy: :direct,
                       summary: "List Ruby language features",
                       deprecated: false,
                       executor: {
@@ -68,7 +67,6 @@ RSpec.describe Gate::API::Languages::IndexTreaty do
                       version: "2",
                       segments: [2],
                       default: false,
-                      strategy: :adapter,
                       summary: "Added version filter and gems",
                       deprecated: false,
                       executor: {
@@ -191,7 +189,6 @@ RSpec.describe Gate::API::Languages::IndexTreaty do
                       version: "3",
                       segments: [3],
                       default: true,
-                      strategy: :adapter,
                       summary: "Added paradigm and statistics",
                       deprecated: false,
                       executor: {

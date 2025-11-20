@@ -167,7 +167,6 @@ end
 ```
 
 **Use cases:**
-- With DIRECT strategy (no validation needed)
 - When structure is validated elsewhere
 - Placeholder for future definitions
 

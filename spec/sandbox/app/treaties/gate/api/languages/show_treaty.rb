@@ -7,8 +7,6 @@ module Gate
         version "1.0.0" do
           summary "Show Ruby feature details"
 
-          strategy Treaty::Strategy::DIRECT
-
           deprecated true
 
           request do
@@ -24,8 +22,6 @@ module Gate
 
         version 2 do
           summary "Added usage examples"
-
-          strategy Treaty::Strategy::ADAPTER
 
           deprecated do
             Gem::Version.new(ENV.fetch("RELEASE_VERSION", "0.0.0")) >=
@@ -58,8 +54,6 @@ module Gate
 
         version 3, default: true do
           summary "Added gems and frameworks"
-
-          strategy Treaty::Strategy::ADAPTER
 
           request do
             object :_self do

@@ -11,7 +11,6 @@ RSpec.describe Gate::API::Languages::ShowTreaty do
                       version: "1.0.0",
                       segments: [1, 0, 0],
                       default: false,
-                      strategy: :direct,
                       summary: "Show Ruby feature details",
                       deprecated: true,
                       executor: {
@@ -46,7 +45,6 @@ RSpec.describe Gate::API::Languages::ShowTreaty do
                       version: "2",
                       segments: [2],
                       default: false,
-                      strategy: :adapter,
                       summary: "Added usage examples",
                       deprecated: false,
                       executor: {
@@ -153,7 +151,6 @@ RSpec.describe Gate::API::Languages::ShowTreaty do
                       version: "3",
                       segments: [3],
                       default: true,
-                      strategy: :adapter,
                       summary: "Added gems and frameworks",
                       deprecated: false,
                       executor: {

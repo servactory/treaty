@@ -11,9 +11,16 @@ module Treaty
       module ClassMethods
         private
 
-        def treaty(action_name)
+        def treaty(action_name, &block)
           define_method(action_name) do
-            treaty = treaty_class.call!(version: treaty_version, params:)
+            factory = Inventory::Factory.new(action_name)
+
+            if block_given?
+              inventory = factory.instance_eval(&block)
+            end
+
+            # Inventory, Materials, Resources, Assets.
+            treaty = treaty_class.call!(inventory:, version: treaty_version, params:)
 
             render json: treaty.data, status: treaty.status
           end

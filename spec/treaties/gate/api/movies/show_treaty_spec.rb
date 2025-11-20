@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
 RSpec.describe Gate::API::Movies::ShowTreaty do
-  subject(:perform) { described_class.call!(version:, params:) }
+  subject(:perform) { described_class.call!(inventory:, version:, params:) }
+
+  let(:inventory) { Treaty::Inventory::Collection.new }
 
   it_behaves_like "check treaty class info",
                   versions: [

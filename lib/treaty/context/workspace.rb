@@ -6,11 +6,13 @@ module Treaty
       private
 
       def _call!(
+        inventory:,
         version:,
         params:,
         collection_of_versions:
       )
         call!(
+          inventory:,
           version:,
           params:,
           collection_of_versions:

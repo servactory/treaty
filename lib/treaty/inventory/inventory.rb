@@ -34,18 +34,43 @@ module Treaty
       #
       # @param context [Object] The controller instance to call methods on
       # @return [Object] The resolved value
-      def evaluate(context)
+      # @raise [Treaty::Exceptions::Inventory] If evaluation fails
+      def evaluate(context) # rubocop:disable Metrics/MethodLength
         case source
         when Symbol
-          context.send(source)
+          evaluate_symbol(context)
         when Proc
-          source.call
+          evaluate_proc(context)
         else
           source
         end
+      rescue StandardError => e
+        raise Treaty::Exceptions::Inventory,
+              I18n.t(
+                "treaty.inventory.evaluation_error",
+                name: @name,
+                error: e.message
+              )
       end
 
       private
+
+      # Evaluates Symbol source by calling method on context
+      #
+      # @param context [Object] The controller instance
+      # @return [Object] The method return value
+      def evaluate_symbol(context)
+        context.send(source)
+      end
+
+      # Evaluates Proc source within controller context
+      #
+      # @param context [Object] The controller instance
+      # @return [Object] The proc return value
+      def evaluate_proc(context)
+        # Execute proc in controller context to access instance variables and methods
+        context.instance_exec(&source)
+      end
 
       def validate_name!(name)
         return if name.is_a?(Symbol) && !name.to_s.empty?

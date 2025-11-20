@@ -93,9 +93,12 @@ module Treaty
 
         # Evaluates inventory collection with context
         #
-        # @return [Hash{Symbol => Object}] Hash of inventory name => resolved value
+        # @return [Treaty::Executor::Inventory] Inventory wrapper with method-based access
         def evaluated_inventory
-          @evaluated_inventory ||= @inventory&.evaluate(@context) || {}
+          @evaluated_inventory ||= begin
+            data = @inventory&.evaluate(@context) || {}
+            Treaty::Executor::Inventory.new(data)
+          end
         end
 
         ########################################################################

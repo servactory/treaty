@@ -128,3 +128,11 @@ en:
       # Inventory validation errors
       invalid_name: "Inventory name must be a non-empty Symbol, got %{name}"
       source_required: "Inventory source cannot be nil. Provide a Symbol (method name), Proc/Lambda, or direct value"
+      evaluation_error: "Failed to evaluate inventory item '%{name}': %{error}"
+
+    # ============================================================================
+    # Executor: Inventory executor wrapper
+    # ============================================================================
+    executor:
+      inventory:
+        item_not_found: "Inventory item '%{name}' not found. Available items: %{available}"

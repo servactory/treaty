@@ -100,6 +100,36 @@ This shorthand is particularly useful when the inventory name matches the contro
 
 ## Accessing Inventory in Services
 
+Inventory is passed to services as a `Treaty::Executor::Inventory` instance, which provides both **method-based** and **hash-based** access to inventory items.
+
+### Method-Based Access (Recommended)
+
+The inventory object supports method calls for accessing items:
+
+```ruby
+# In service
+def call
+  posts = inventory.posts          # Method call
+  user = inventory.current_user    # Method call
+  meta = inventory.meta            # Method call
+end
+```
+
+If an inventory item is not found, `Treaty::Exceptions::Inventory` is raised with a helpful error message listing available items.
+
+### Hash-Based Access (Alternative)
+
+For backward compatibility or dynamic access, you can convert inventory to a hash:
+
+```ruby
+# In service
+def call
+  data = inventory.to_h            # Convert to hash
+  posts = data[:posts]             # Hash access
+  user = data[:current_user]       # Hash access
+end
+```
+
 ### Servactory Services
 
 For Servactory services, declare an `inventory` input to receive the inventory data:
@@ -107,14 +137,15 @@ For Servactory services, declare an `inventory` input to receive the inventory d
 ```ruby
 class Posts::IndexService < ApplicationService::Base
   input :params, type: Hash
-  input :inventory, type: Hash, required: false
+  input :inventory, required: false
 
   output :data, type: Hash
 
   private
 
   def call
-    posts = inventory[:posts] || Post.all
+    # Use method-based access
+    posts = inputs.inventory&.posts || Post.all
 
     outputs.data = {
       posts: posts.map(&:to_h),
@@ -124,7 +155,7 @@ class Posts::IndexService < ApplicationService::Base
 end
 ```
 
-The `inventory` input receives a hash where keys are the inventory names (symbols) and values are the evaluated results.
+The `inventory` input receives a `Treaty::Executor::Inventory` instance providing method-based access to evaluated inventory items.
 
 ### Proc Executors
 
@@ -133,7 +164,8 @@ For Proc executors, inventory is passed as a keyword argument:
 ```ruby
 version 1 do
   delegate_to(lambda do |params:, inventory:|
-    posts = inventory[:posts]
+    # Use method-based access
+    posts = inventory.posts
     { posts: posts, meta: { count: posts.size } }
   end)
 end
@@ -146,7 +178,8 @@ For regular Ruby classes, inventory is passed as a keyword argument to the speci
 ```ruby
 class Posts::IndexService
   def self.call(params:, inventory:)
-    posts = inventory[:posts] || Post.all
+    # Use method-based access
+    posts = inventory.posts
     { posts: posts.map(&:to_h) }
   end
 end
@@ -220,17 +253,17 @@ end
 module Posts
   class IndexService < ApplicationService::Base
     input :params, type: Hash
-    input :inventory, type: Hash, required: false
+    input :inventory, required: false
 
     output :data, type: Hash
 
     private
 
     def call
-      # Access pre-loaded data from inventory
-      posts = inventory[:posts]
-      current_user = inventory[:current_user]
-      meta = inventory[:meta]
+      # Access pre-loaded data from inventory using method calls
+      posts = inputs.inventory.posts
+      current_user = inputs.inventory.current_user
+      meta = inputs.inventory.meta
 
       # Apply filters from params if needed
       posts = apply_filters(posts, inputs.params[:filters]) if inputs.params[:filters]
@@ -325,25 +358,33 @@ When using inventory in Servactory services, you must declare it as an input. Th
 
 ```ruby
 # Make inventory optional if service works both with and without it
-input :inventory, type: Hash, required: false
+input :inventory, required: false
 
 # Or make it required if service always needs inventory
-input :inventory, type: Hash
+input :inventory
 ```
+
+**Note**: The inventory is a `Treaty::Executor::Inventory` instance. Servactory's type checking is flexible and will accept it.
 
 If a Servactory service receives inventory but hasn't declared the input, Servactory will raise `Servactory::Exceptions::Input` error.
 
 ### 4. Document Inventory Dependencies
 
 ```ruby
-# Expects inventory to contain:
-# - :current_user (User) - The authenticated user
-# - :posts (Array<Post>) - Pre-loaded and filtered posts
+# Expects inventory to provide:
+# - current_user (User) - The authenticated user via inventory.current_user
+# - posts (Array<Post>) - Pre-loaded posts via inventory.posts
 class Posts::IndexService < ApplicationService::Base
   input :params, type: Hash
-  input :inventory, type: Hash, required: false
+  input :inventory, required: false
 
-  # ...
+  private
+
+  def call
+    user = inputs.inventory.current_user
+    posts = inputs.inventory.posts
+    # ...
+  end
 end
 ```
 

@@ -122,9 +122,8 @@ en:
     # ============================================================================
     inventory:
       # Factory DSL errors
-      unknown_method: "Unknown method '%{method}' in treaty block for action '%{action}'. Only 'provide' method is supported. Use: provide :name, from: :source"
-      name_must_be_symbol: "Inventory name must be a Symbol, got %{name}. Use: provide :name, from: :source"
-      from_required: "Inventory '%{name}' requires 'from' parameter. Use: provide :name, from: :source"
+      unknown_method: "Unknown method '%{method}' in treaty block for action '%{action}'. Only 'provide' method is supported. Use: provide :name, from: :source OR provide :name"
+      name_must_be_symbol: "Inventory name must be a Symbol, got %{name}. Use: provide :name, from: :source OR provide :name"
 
       # Inventory validation errors
       invalid_name: "Inventory name must be a non-empty Symbol, got %{name}"

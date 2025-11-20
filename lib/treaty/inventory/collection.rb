@@ -13,20 +13,16 @@ module Treaty
     #
     # Used internally by:
     # - Inventory::Factory (to store inventory items during DSL processing)
-    # - Controller::DSL (to pass inventory to treaty execution)
     #
     # ## Methods
     #
     # Delegates common collection methods to internal Set:
     # - `<<` - Add inventory item
-    # - `each`, `map`, `select`, `reject` - Iteration
-    # - `find`, `first` - Access
-    # - `size`, `empty?` - Size checks
-    # - `to_h` - Convert to hash
+    # - `empty?` - Check if collection is empty
     #
     # Custom methods:
     # - `exists?` - Returns true if collection is not empty
-    # - `evaluate` - Evaluates all inventory items with controller context
+    # - `evaluate` - Evaluates all inventory items with context
     #
     # ## Example
     #
@@ -38,7 +34,7 @@ module Treaty
     class Collection
       extend Forwardable
 
-      def_delegators :@collection, :<<, :empty?
+      def_delegators :@collection, :<<, :empty?, :each_with_object
 
       # Creates a new collection instance
       #

@@ -9,7 +9,7 @@ module Gate
         # Examples:
         provide :meta_string, from: "String"
         provide :meta_integer, from: 1
-        provide :meta_proc, from: -> { nil }
+        provide :meta_proc, from: -> {}
       end
 
       treaty :create do

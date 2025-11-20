@@ -13,16 +13,17 @@ Use the `provide` method within a block passed to the `treaty` method to define 
 ```ruby
 class PostsController < ApplicationController
   treaty :index do
-    provide :current_user, from: :current_user_method
-    provide :request_id, from: -> { request.uuid }
-    provide :static_value, from: "Welcome"
+    provide :current_user, from: :current_user_method  # Explicit source
+    provide :request_id, from: -> { request.uuid }     # Lambda source
+    provide :static_value, from: "Welcome"             # Direct value
+    provide :current_user                              # Shorthand: uses :current_user as source
   end
 end
 ```
 
 ## Inventory Sources
 
-The `from:` parameter accepts three types of sources:
+The `from:` parameter is optional and accepts three types of sources. When omitted, the inventory name itself is used as the source.
 
 ### 1. Symbol - Controller Method
 
@@ -68,6 +69,34 @@ end
 ```
 
 Direct values are passed through unchanged.
+
+### 4. Shorthand Syntax - Optional `from`
+
+When the `from:` parameter is omitted, the inventory name is used as the source:
+
+```ruby
+treaty :index do
+  # These are equivalent:
+  provide :current_user, from: :current_user
+  provide :current_user  # Shorthand
+
+  # These are equivalent:
+  provide :posts, from: :posts
+  provide :posts  # Shorthand
+end
+
+private
+
+def current_user
+  @current_user ||= User.find(session[:user_id])
+end
+
+def posts
+  Post.where(user: current_user).published
+end
+```
+
+This shorthand is particularly useful when the inventory name matches the controller method name, making the code more concise and readable.
 
 ## Accessing Inventory in Services
 
@@ -130,12 +159,16 @@ end
 ```ruby
 class PostsController < ApplicationController
   treaty :index do
-    provide :current_user, from: :current_user
-    provide :posts, from: :load_posts
+    provide :current_user              # Shorthand: calls current_user method
+    provide :posts, from: :load_posts  # Explicit: calls load_posts method
     provide :meta, from: -> { build_meta }
   end
 
   private
+
+  def current_user
+    @current_user ||= User.find(session[:user_id])
+  end
 
   def load_posts
     Post.where(published: true).limit(10)
@@ -261,7 +294,8 @@ Mix and match different data sources without cluttering your request parameters.
 
 ```ruby
 # Good
-provide :current_user, from: :current_user
+provide :current_user              # Shorthand when name matches method
+provide :current_user, from: :current_user  # Explicit, same result
 provide :filtered_posts, from: :load_filtered_posts
 
 # Avoid
@@ -327,18 +361,14 @@ end
 ### 2. Passing Nil as Source
 
 ```ruby
-# FORBIDDEN
+# FORBIDDEN - Explicitly passing nil is not allowed
 treaty :index do
   provide :posts, from: nil  # Error!
 end
-```
 
-### 3. Missing `from` Parameter
-
-```ruby
-# FORBIDDEN
+# ALLOWED - Omitting from parameter uses inventory name as source
 treaty :index do
-  provide :posts  # Error: missing from parameter
+  provide :posts  # OK: equivalent to provide :posts, from: :posts
 end
 ```
 
@@ -348,21 +378,14 @@ end
 
 ```
 Unknown method 'unknown_method' in treaty block for action 'index'.
-Only 'provide' method is supported. Use: provide :name, from: :source
+Only 'provide' method is supported. Use: provide :name, from: :source OR provide :name
 ```
 
 ### Invalid Inventory Name
 
 ```
 Inventory name must be a Symbol, got "posts".
-Use: provide :name, from: :source
-```
-
-### Missing `from` Parameter
-
-```
-Inventory 'posts' requires 'from' parameter.
-Use: provide :name, from: :source
+Use: provide :name, from: :source OR provide :name
 ```
 
 ### Source Cannot Be Nil
@@ -400,7 +423,10 @@ end
 
 ```ruby
 treaty :index do
-  # Controller method
+  # Shorthand - calls current_user method
+  provide :current_user
+
+  # Controller method with explicit source
   provide :user, from: :current_user
 
   # Lambda

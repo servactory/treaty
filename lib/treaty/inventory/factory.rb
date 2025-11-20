@@ -15,8 +15,9 @@ module Treaty
     #
     # ```ruby
     # treaty :index do
-    #   provide :posts, from: :load_posts
-    #   provide :meta, from: -> { { count: 10 } }
+    #   provide :posts, from: :load_posts       # Explicit source
+    #   provide :meta, from: -> { { count: 10 } } # Lambda source
+    #   provide :current_user                   # Shorthand: uses :current_user as source
     # end
     # ```
     #
@@ -25,11 +26,12 @@ module Treaty
     # - Symbol: Method name to call on controller (e.g., `:load_posts`)
     # - Proc/Lambda: Callable object (e.g., `-> { Post.all }`)
     # - Direct value: String, number, or any other value (e.g., `"Welcome"`)
+    # - Omitted: Uses inventory name as source (e.g., `provide :posts` → `from: :posts`)
     #
     # ## Invalid Sources
     #
     # - Direct method calls without symbol/proc (e.g., `from: load_posts`)
-    # - Nil values (must provide a source)
+    # - Explicit nil values (e.g., `from: nil`)
     class Factory
       attr_reader :collection
 
@@ -42,7 +44,7 @@ module Treaty
       #
       # @param method_name [Symbol] Should be :provide
       # @param args [Array] First argument is the inventory name
-      # @param options [Hash] Should contain :from key with source
+      # @param options [Hash] Optional :from key with source (defaults to inventory name)
       # @return [Collection] The collection being built
       # @raise [Treaty::Exceptions::Inventory] For invalid method or missing parameters
       def method_missing(method_name, *args, **options, &_block) # rubocop:disable Metrics/MethodLength
@@ -67,16 +69,12 @@ module Treaty
                 )
         end
 
-        # Extract source from options
-        unless options.key?(:from)
-          raise Treaty::Exceptions::Inventory,
-                I18n.t(
-                  "treaty.inventory.from_required",
-                  name: inventory_name
-                )
-        end
-
-        source = options[:from]
+        # Extract source from options (default to inventory name if not provided)
+        source = if options.key?(:from)
+                   options.fetch(:from)
+                 else
+                   inventory_name
+                 end
 
         # Create and add inventory item to collection
         @collection << Inventory.new(name: inventory_name, source:)

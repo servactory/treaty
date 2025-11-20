@@ -11,29 +11,23 @@ module Treaty
       module ClassMethods
         private
 
-        # rubocop:disable Metrics/MethodLength
-        def treaty(action_name, &block)
-          define_method(action_name) do
-            # Build inventory collection if block is provided
-            inventory_collection =
-              if block_given?
-                factory = Treaty::Inventory::Factory.new(action_name)
-                factory.instance_eval(&block)
-                factory.collection
-              end
+        def treaty(action_name, &block) # rubocop:disable Metrics/MethodLength
+          # Capture block in a variable to pass it to instance method
+          inventory_block = block
 
-            # Call treaty with inventory collection
-            treaty = treaty_class.call!(
-              inventory: inventory_collection,
+          define_method(action_name) do
+            inventory_collection = treaty_build_inventory_for(action_name, inventory_block)
+
+            treaty_result = treaty_class.call!(
               context: self,
+              inventory: inventory_collection,
               version: treaty_version,
               params:
             )
 
-            render json: treaty.data, status: treaty.status
+            render json: treaty_result.data, status: treaty_result.status
           end
         end
-        # rubocop:enable Metrics/MethodLength
       end
 
       module InstanceMethods
@@ -54,6 +48,16 @@ module Treaty
 
         def treaty_version
           Treaty::Engine.config.treaty.version.call(self)
+        end
+
+        private
+
+        def treaty_build_inventory_for(action_name, block)
+          return nil unless block
+
+          factory = Treaty::Inventory::Factory.new(action_name)
+          factory.instance_eval(&block)
+          factory.collection
         end
       end
     end

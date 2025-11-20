@@ -45,8 +45,8 @@ This document provides comprehensive guidance for AI assistants working with the
 treaty/
 ├── .github/
 │   └── workflows/          # CI/CD workflows (test, rubocop, code-review)
-├── docs/                   # Comprehensive documentation (18+ files)
-├── lib/                    # Main source code (70 files, 2,343 LOC)
+├── docs/                   # Comprehensive documentation (17 files)
+├── lib/                    # Main source code (72 files)
 │   └── treaty/
 │       ├── attribute/      # Core attribute system (DSL, validation, transformation)
 │       ├── controller/     # Rails controller integration
@@ -615,6 +615,8 @@ All documentation is in `/home/user/treaty/docs/`:
 - `core-concepts.md` - Fundamental concepts
 - `defining-contracts.md` - How to define treaties
 - `attributes.md` - Attribute types and options
+- `objects.md` - Object grouping and the `:_self` object
+- `nested-structures.md` - Nested objects and arrays guide
 - `validation.md` - Validation system
 - `transformation.md` - Data transformation
 - `entities.md` - Entity/DTO classes
@@ -787,6 +789,6 @@ grep -r "delegate_to" spec/sandbox/app/treaties/
 
 ---
 
-**Last Updated**: 2025-11-19
+**Last Updated**: 2025-11-20
 **Treaty Version**: 0.11.0
 **Repository**: https://github.com/servactory/treaty

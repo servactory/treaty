@@ -271,8 +271,6 @@ end
 module Posts
   class IndexTreaty < ApplicationTreaty
     version 3, default: true do
-      strategy Treaty::Strategy::ADAPTER
-
       request do
         object :filters, :optional do
           string :title, :optional

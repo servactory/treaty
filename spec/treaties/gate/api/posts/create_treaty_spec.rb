@@ -4,7 +4,7 @@ RSpec.describe Gate::API::Posts::CreateTreaty do
   subject(:perform) { described_class.call!(inventory:, version:, params:) }
 
   let(:inventory_collection) { Treaty::Inventory::Collection.new }
-  let(:context) { double("controller") }
+  let(:context) { instance_double(ApplicationController) }
   let(:inventory) do
     Treaty::Executor::Inventory.new(inventory_collection, context).tap do |inv|
       allow(inv).to receive(:exists?).and_return(inventory_collection.exists?)

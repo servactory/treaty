@@ -16,7 +16,7 @@ module Treaty
           define_method(action_name) do
             # Build inventory collection if block is provided
             inventory_collection =
-              if block
+              if block_given?
                 factory = Treaty::Inventory::Factory.new(action_name)
                 factory.instance_eval(&block)
                 factory.collection

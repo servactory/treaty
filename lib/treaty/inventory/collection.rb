@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "forwardable"
-
 module Treaty
   module Inventory
     # Collection wrapper for sets of inventory items.
@@ -40,13 +38,7 @@ module Treaty
     class Collection
       extend Forwardable
 
-      def_delegators :@collection,
-                     :<<,
-                     :to_h, :map,
-                     :each_with_object, :each,
-                     :select, :reject, :size,
-                     :find, :first,
-                     :empty?
+      def_delegators :@collection, :<<, :empty?
 
       # Creates a new collection instance
       #
@@ -60,16 +52,6 @@ module Treaty
       # @return [Boolean] True if collection is not empty
       def exists?
         !empty?
-      end
-
-      # Evaluates all inventory items with the given context
-      #
-      # @param context [Object] The controller instance to evaluate against
-      # @return [Hash{Symbol => Object}] Hash of name => resolved value
-      def evaluate(context)
-        each_with_object({}) do |inventory_item, result|
-          result[inventory_item.name] = inventory_item.evaluate(context)
-        end
       end
     end
   end

@@ -6,14 +6,10 @@ module Gate
       treaty :index do
         provide :posts, from: :load_posts
 
-        # Or
-        # provide :posts, from: -> { load_posts }
-        # provide :posts, from: -> { Post.all }
-        # provide :some_value, from: "Text"
-        # provide :some_value, from: -> { "Text" }
-
-        # Forbidden (because it will be loaded with the application):
-        # provide :posts, from: load_posts
+        # Examples:
+        provide :meta_string, from: "String"
+        provide :meta_integer, from: 1
+        provide :meta_proc, from: -> { nil }
       end
 
       treaty :create do

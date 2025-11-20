@@ -6,15 +6,15 @@ module Treaty
       private
 
       def _call!(
-        inventory:,
         context:,
+        inventory:,
         version:,
         params:,
         collection_of_versions:
       )
         call!(
-          inventory:,
           context:,
+          inventory:,
           version:,
           params:,
           collection_of_versions:

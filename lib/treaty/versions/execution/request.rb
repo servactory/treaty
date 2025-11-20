@@ -91,14 +91,11 @@ module Treaty
         ########################################################################
         ########################################################################
 
-        # Evaluates inventory collection with context
+        # Creates inventory wrapper with lazy evaluation
         #
         # @return [Treaty::Executor::Inventory] Inventory wrapper with method-based access
         def evaluated_inventory
-          @evaluated_inventory ||= begin
-            data = @inventory&.evaluate(@context) || {}
-            Treaty::Executor::Inventory.new(data)
-          end
+          @evaluated_inventory ||= Treaty::Executor::Inventory.new(@inventory, @context)
         end
 
         ########################################################################

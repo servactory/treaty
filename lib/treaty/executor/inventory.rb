@@ -6,57 +6,64 @@ module Treaty
     #
     # ## Purpose
     #
-    # Wraps a hash of inventory data and allows accessing items through method calls
-    # instead of hash key access. This provides a more intuitive API for services.
+    # Wraps inventory collection and controller context, providing lazy evaluation
+    # of inventory items through method calls. This encapsulates all inventory logic
+    # within the class and provides a clean API for services.
     #
     # ## Usage
     #
     # ```ruby
-    # inventory = Treaty::Executor::Inventory.new({ posts: [Post.all], current_user: user })
+    # # Created internally by Treaty
+    # inventory = Treaty::Executor::Inventory.new(inventory_collection, controller_context)
     #
-    # # Access via method calls
-    # inventory.posts          # => [Post.all]
-    # inventory.current_user   # => user
+    # # Access via method calls - evaluates lazily
+    # inventory.posts          # => Calls controller method or evaluates proc
+    # inventory.current_user   # => Returns evaluated value
     #
     # # Raises exception for missing items
     # inventory.missing_item   # => Treaty::Exceptions::Inventory
     #
-    # # Convert back to hash
-    # inventory.to_h           # => { posts: [...], current_user: user }
+    # # Convert to hash - evaluates all items
+    # inventory.to_h           # => { posts: [...], current_user: ... }
     # ```
     #
-    # ## Method Access
+    # ## Architecture
     #
-    # The class uses `method_missing` to provide dynamic method access to inventory items.
-    # Method names are converted to symbols and looked up in the internal data hash.
+    # The class encapsulates:
+    # - Inventory collection (from controller's treaty block)
+    # - Controller context (for method calls and proc evaluation)
+    # - Lazy evaluation logic (items evaluated on access)
     #
     # ## Error Handling
     #
     # If an inventory item is not found, raises `Treaty::Exceptions::Inventory` with
-    # an I18n-translated error message.
+    # an I18n-translated error message listing available items.
     class Inventory
       # Creates a new inventory instance
       #
-      # @param data [Hash] Hash of inventory items (symbol keys => values)
-      def initialize(data = {})
-        @data = data.freeze
+      # @param inventory [Treaty::Inventory::Collection] Collection of inventory items
+      # @param context [Object] Controller instance for evaluation
+      def initialize(inventory, context)
+        @inventory = inventory
+        @context = context
+        @evaluated_cache = {}
       end
 
-      # Provides method-based access to inventory items
+      # Provides method-based access to inventory items with lazy evaluation
       #
       # @param method_name [Symbol] The inventory item name
       # @param args [Array] Arguments (not used, for compatibility)
-      # @return [Object] The inventory item value
+      # @return [Object] The evaluated inventory item value
       # @raise [Treaty::Exceptions::Inventory] If item not found
       def method_missing(method_name, *_args)
-        return @data.fetch(method_name) if @data.key?(method_name)
+        # Check cache first
+        return @evaluated_cache[method_name] if @evaluated_cache.key?(method_name)
 
-        raise Treaty::Exceptions::Inventory,
-              I18n.t(
-                "treaty.executor.inventory.item_not_found",
-                name: method_name,
-                available: @data.keys.join(", ")
-              )
+        # Find inventory item
+        item = find_inventory_item(method_name)
+
+        # Evaluate and cache
+        @evaluated_cache[method_name] = item.evaluate(@context)
       end
 
       # Checks if inventory responds to a method
@@ -65,21 +72,51 @@ module Treaty
       # @param include_private [Boolean] Whether to include private methods
       # @return [Boolean] True if inventory has the item
       def respond_to_missing?(method_name, include_private = false)
-        @data.key?(method_name) || super
+        return true if @inventory.nil?
+
+        @inventory.each_with_object([]) { |item, names| names << item.name }.include?(method_name) || super
       end
 
-      # Converts inventory back to hash
+      # Converts inventory to hash, evaluating all items
       #
-      # @return [Hash] The internal data hash
+      # @return [Hash] Hash of all evaluated inventory items
       def to_h
-        @data
+        return {} if @inventory.nil?
+
+        @inventory.evaluate(@context)
       end
 
       # Returns string representation
       #
       # @return [String] Inventory description
       def inspect
-        "#<Treaty::Executor::Inventory items=#{@data.keys.inspect}>"
+        items = @inventory.nil? ? [] : @inventory.each_with_object([]) { |item, names| names << item.name }
+        "#<Treaty::Executor::Inventory items=#{items.inspect}>"
+      end
+
+      private
+
+      # Finds inventory item by name
+      #
+      # @param name [Symbol] Inventory item name
+      # @return [Treaty::Inventory::Inventory] The inventory item
+      # @raise [Treaty::Exceptions::Inventory] If not found
+      def find_inventory_item(name) # rubocop:disable Metrics/MethodLength
+        return nil if @inventory.nil?
+
+        @inventory.each_with_object([]) do |item, _acc|
+          return item if item.name == name
+        end
+
+        # Item not found - list available items
+        available = @inventory.each_with_object([]) { |item, names| names << item.name }
+
+        raise Treaty::Exceptions::Inventory,
+              I18n.t(
+                "treaty.executor.inventory.item_not_found",
+                name:,
+                available: available.join(", ")
+              )
       end
     end
   end

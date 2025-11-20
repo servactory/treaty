@@ -98,6 +98,58 @@ end
 
 This shorthand is particularly useful when the inventory name matches the controller method name, making the code more concise and readable.
 
+## Internal Architecture
+
+### Lazy Evaluation
+
+The inventory system uses **lazy evaluation** to optimize performance. Inventory items are not evaluated until they are actually accessed in your service.
+
+**How it works:**
+
+1. When a treaty executes, a `Treaty::Executor::Inventory` instance is created with:
+   - The inventory collection (definitions from your `provide` calls)
+   - The controller context (for method calls and proc evaluation)
+
+2. Items are evaluated **only when accessed** via method calls:
+   ```ruby
+   # This triggers evaluation of the :posts inventory item
+   posts = inventory.posts
+
+   # This triggers evaluation of the :current_user inventory item
+   user = inventory.current_user
+   ```
+
+3. Once evaluated, results are **cached** for the duration of the request:
+   ```ruby
+   posts1 = inventory.posts  # Evaluates and caches
+   posts2 = inventory.posts  # Returns cached value, no re-evaluation
+   ```
+
+4. Calling `inventory.to_h` evaluates **all** inventory items at once and returns a hash.
+
+**Benefits:**
+
+- **Performance**: Only evaluates data that is actually used
+- **Efficiency**: Expensive operations (database queries, API calls) are skipped if not needed
+- **Caching**: Each item is evaluated once per request, preventing redundant work
+
+**Example:**
+
+```ruby
+# Controller defines 3 inventory items
+treaty :index do
+  provide :current_user                    # Might call database
+  provide :posts, from: :load_posts        # Might call database
+  provide :meta, from: -> { build_meta }   # Computation
+end
+
+# Service only uses current_user
+def call
+  user = inputs.inventory.current_user  # Only this is evaluated
+  # posts and meta are never evaluated - performance win!
+end
+```
+
 ## Accessing Inventory in Services
 
 Inventory is passed to services as a `Treaty::Executor::Inventory` instance, which provides both **method-based** and **hash-based** access to inventory items.
@@ -289,15 +341,23 @@ end
 
 ## Benefits
 
-### 1. Separation of Concerns
+### 1. Lazy Evaluation
+
+Inventory items are evaluated only when accessed, providing significant performance benefits:
+
+- Expensive operations (database queries, API calls) are skipped if not needed
+- Each item is evaluated once and cached for the request duration
+- Services can define many inventory sources without performance penalty
+
+### 2. Separation of Concerns
 
 Keep controller-specific logic (like loading current user, checking permissions) in the controller, while keeping services focused on business logic.
 
-### 2. Performance Optimization
+### 3. Performance Optimization
 
 Pre-load expensive data once in the controller and reuse it across multiple service calls or in different parts of your treaty processing.
 
-### 3. Testing Simplification
+### 4. Testing Simplification
 
 Services can be tested independently by passing inventory directly:
 
@@ -317,7 +377,7 @@ RSpec.describe Posts::IndexService do
 end
 ```
 
-### 4. Flexibility
+### 5. Flexibility
 
 Mix and match different data sources without cluttering your request parameters.
 

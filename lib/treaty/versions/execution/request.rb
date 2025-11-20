@@ -113,11 +113,9 @@ module Treaty
         end
 
         def execute_servactory # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
-          # For Servactory services, only pass inventory if:
-          # 1. Inventory collection exists AND
-          # 2. Service has inventory input defined
+          # For Servactory services, pass inventory if collection exists
           call_params =
-            if @inventory&.exists? && service_accepts_inventory?
+            if @inventory&.exists?
               { params: @validated_params, inventory: evaluated_inventory }
             else
               { params: @validated_params }
@@ -162,20 +160,6 @@ module Treaty
         rescue StandardError => e
           raise Treaty::Exceptions::Execution,
                 I18n.t("treaty.execution.regular_service_error", message: e.message)
-        end
-
-        ########################################################################
-
-        # Checks if Servactory service accepts inventory input
-        #
-        # @return [Boolean] True if service has inventory input defined
-        def service_accepts_inventory?
-          return false unless executor.respond_to?(:service_info)
-
-          service_info = executor.service_info
-          return false unless service_info.respond_to?(:inputs)
-
-          service_info.inputs.collection_of_inputs.any? { |input| input.name == :inventory }
         end
 
         ########################################################################

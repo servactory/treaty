@@ -3,6 +3,7 @@
 module Posts
   module Stable
     class CreateService < ApplicationService::Base
+      input :inventory, type: Hash, required: false
       input :params, type: Hash
 
       output :data, type: Hash

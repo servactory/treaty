@@ -3,6 +3,7 @@
 module Posts
   module V1
     class IndexService < ApplicationService::Base
+      input :inventory, type: Hash, required: false
       input :params, type: Hash, required: false, default: {}
 
       output :data, type: Hash

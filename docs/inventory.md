@@ -319,13 +319,19 @@ provide :data, from: -> do
 end
 ```
 
-### 3. Make Inventory Optional in Services
+### 3. Declare Inventory Input in Servactory Services
 
-Always make the inventory input optional in Servactory services to maintain backward compatibility:
+When using inventory in Servactory services, you must declare it as an input. The inventory is always passed to services when it exists, so services should be prepared to receive it:
 
 ```ruby
+# Make inventory optional if service works both with and without it
 input :inventory, type: Hash, required: false
+
+# Or make it required if service always needs inventory
+input :inventory, type: Hash
 ```
+
+If a Servactory service receives inventory but hasn't declared the input, Servactory will raise `Servactory::Exceptions::Input` error.
 
 ### 4. Document Inventory Dependencies
 

@@ -49,6 +49,16 @@ module Treaty
       def exists?
         !empty?
       end
+
+      # Evaluates all inventory items with the given context
+      #
+      # @param context [Object] The controller instance to call methods on
+      # @return [Hash{Symbol => Object}] Hash of inventory name => resolved value
+      def evaluate(context)
+        @collection.each_with_object({}) do |inventory_item, hash|
+          hash[inventory_item.name] = inventory_item.evaluate(context)
+        end
+      end
     end
   end
 end

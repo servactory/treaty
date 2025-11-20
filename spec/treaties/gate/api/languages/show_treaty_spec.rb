@@ -3,7 +3,13 @@
 RSpec.describe Gate::API::Languages::ShowTreaty do
   subject(:perform) { described_class.call!(inventory:, version:, params:) }
 
-  let(:inventory) { Treaty::Inventory::Collection.new }
+  let(:inventory_collection) { Treaty::Inventory::Collection.new }
+  let(:context) { double("controller") }
+  let(:inventory) do
+    Treaty::Executor::Inventory.new(inventory_collection, context).tap do |inv|
+      allow(inv).to receive(:exists?).and_return(inventory_collection.exists?)
+    end
+  end
 
   it_behaves_like "check treaty class info",
                   versions: [

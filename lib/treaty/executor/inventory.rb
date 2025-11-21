@@ -52,7 +52,7 @@ module Treaty
       # Provides method-based access to inventory items with lazy evaluation
       #
       # @param method_name [Symbol] The inventory item name
-      # @param args [Array] Arguments (not used, for compatibility)
+      # @param _args [Array] Arguments (not used, for compatibility)
       # @return [Object] The evaluated inventory item value
       # @raise [Treaty::Exceptions::Inventory] If item not found
       def method_missing(method_name, *_args)
@@ -74,7 +74,7 @@ module Treaty
       def respond_to_missing?(method_name, include_private = false)
         return true if @inventory.nil?
 
-        @inventory.each_with_object([]) { |item, names| names << item.name }.include?(method_name) || super
+        @inventory.names.include?(method_name) || super
       end
 
       # Converts inventory to hash, evaluating all items
@@ -90,7 +90,7 @@ module Treaty
       #
       # @return [String] Inventory description
       def inspect
-        items = @inventory.nil? ? [] : @inventory.each_with_object([]) { |item, names| names << item.name }
+        items = @inventory&.names || []
         "#<Treaty::Executor::Inventory items=#{items.inspect}>"
       end
 
@@ -100,16 +100,15 @@ module Treaty
       #
       # @param name [Symbol] Inventory item name
       # @return [Treaty::Inventory::Inventory] The inventory item
-      # @raise [Treaty::Exceptions::Inventory] If not found
-      def find_inventory_item(name) # rubocop:disable Metrics/MethodLength
-        return nil if @inventory.nil?
+      # @raise [Treaty::Exceptions::Inventory] If not found or inventory is nil
+      def find_inventory_item(name)
+        # Use find method for cleaner search
+        item = @inventory&.find { |item| item.name == name }
 
-        @inventory.each_with_object([]) do |item, _acc|
-          return item if item.name == name
-        end
+        return item if item
 
         # Item not found - list available items
-        available = @inventory.each_with_object([]) { |item, names| names << item.name }
+        available = @inventory&.names || []
 
         raise Treaty::Exceptions::Inventory,
               I18n.t(

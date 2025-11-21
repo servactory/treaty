@@ -34,7 +34,7 @@ module Treaty
     class Collection
       extend Forwardable
 
-      def_delegators :@collection, :<<, :empty?, :each_with_object
+      def_delegators :@collection, :<<, :each_with_object, :find, :empty?
 
       # Creates a new collection instance
       #
@@ -48,6 +48,13 @@ module Treaty
       # @return [Boolean] True if collection is not empty
       def exists?
         !empty?
+      end
+
+      # Returns array of all inventory item names
+      #
+      # @return [Array<Symbol>] Array of inventory item names
+      def names
+        @collection.each_with_object([]) { |item, names| names << item.name }
       end
 
       # Evaluates all inventory items with the given context

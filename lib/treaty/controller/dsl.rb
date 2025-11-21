@@ -12,7 +12,9 @@ module Treaty
         private
 
         def treaty(action_name, &block) # rubocop:disable Metrics/MethodLength
-          # Capture block in a variable to pass it to instance method
+          # Capture block in a local variable before using in define_method.
+          # This is necessary because define_method creates a new closure,
+          # and the block parameter might not be accessible without explicit capture.
           inventory_block = block
 
           define_method(action_name) do

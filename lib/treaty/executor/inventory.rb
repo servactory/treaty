@@ -72,7 +72,7 @@ module Treaty
       # @param include_private [Boolean] Whether to include private methods
       # @return [Boolean] True if inventory has the item
       def respond_to_missing?(method_name, include_private = false)
-        return true if @inventory.nil?
+        return false if @inventory.nil?
 
         @inventory.names.include?(method_name) || super
       end

@@ -745,7 +745,7 @@ end
 # Controller
 class PostsController < ApplicationController
   treaty :index do
-    provide :current_user, from: :current_user
+    provide :current_user
   end
 end
 
@@ -759,7 +759,7 @@ end
 
 # Solution: Add missing inventory item
 treaty :index do
-  provide :current_user, from: :current_user
+  provide :current_user
   provide :posts, from: :load_posts
 end
 ```
@@ -774,10 +774,10 @@ Inventory names must be symbols.
 **Example:**
 ```ruby
 # Correct:
-provide :current_user, from: :current_user  # ✓ Symbol
+provide :current_user   # ✓ Symbol
 
 # Incorrect:
-provide "current_user", from: :current_user  # ✗ String
+provide "current_user"  # ✗ String
 ```
 
 ### "Inventory source cannot be nil"
@@ -813,7 +813,7 @@ provide :user, from: nil  # ✗ Nil source
 # Controller
 class PostsController < ApplicationController
   treaty :index do
-    provide :current_user, from: :current_user
+    provide :current_user
   end
 
   private

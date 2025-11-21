@@ -104,7 +104,7 @@ class PostsController < ApplicationController
 
   # Optional: Provide additional data from controller to service
   treaty :index do
-    provide :current_user, from: :current_user
+    provide :current_user
     provide :posts, from: :load_posts
   end
 

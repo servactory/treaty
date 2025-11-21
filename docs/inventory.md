@@ -13,10 +13,10 @@ Use the `provide` method within a block passed to the `treaty` method to define 
 ```ruby
 class PostsController < ApplicationController
   treaty :index do
+    provide :current_user                              # Shorthand: uses :current_user as source
     provide :current_user, from: :current_user_method  # Explicit source
     provide :request_id, from: -> { request.uuid }     # Lambda source
     provide :static_value, from: "Welcome"             # Direct value
-    provide :current_user                              # Shorthand: uses :current_user as source
   end
 end
 ```
@@ -385,8 +385,8 @@ Mix and match different data sources without cluttering your request parameters.
 
 ```ruby
 # Good
-provide :current_user              # Shorthand when name matches method
-provide :current_user, from: :current_user  # Explicit, same result
+provide :current_user                        # Shorthand when name matches method
+provide :current_user, from: :current_user   # Explicit, same result
 provide :filtered_posts, from: :load_filtered_posts
 
 # Avoid

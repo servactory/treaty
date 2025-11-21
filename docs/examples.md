@@ -975,7 +975,7 @@ module Gate
   module API
     class PostsController < ApplicationController
       treaty :index do
-        provide :current_user, from: :current_user
+        provide :current_user
         provide :permissions, from: :load_permissions
       end
 

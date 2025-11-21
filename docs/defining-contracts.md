@@ -252,7 +252,7 @@ Provide controller-specific data to services:
 ```ruby
 class PostsController < ApplicationController
   treaty :index do
-    provide :current_user, from: :current_user
+    provide :current_user
     provide :posts, from: :load_posts
     provide :meta, from: -> { { timestamp: Time.current } }
   end

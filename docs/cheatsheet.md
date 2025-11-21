@@ -382,10 +382,10 @@ end
 class PostsController < ApplicationController
   treaty :index do
     provide :current_user, from: :current_user  # Method source
+    provide :current_user                       # Shorthand
     provide :posts, from: :load_posts           # Method source
     provide :meta, from: -> { build_meta }      # Lambda source
     provide :message, from: "Welcome"           # Direct value
-    provide :current_user                       # Shorthand
   end
 
   private

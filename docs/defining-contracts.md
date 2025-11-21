@@ -245,6 +245,40 @@ delegate_to Posts::CreateService => :call, return: lambda(&:data)
 # result = return_lambda.call(service)
 ```
 
+## Inventory
+
+Provide controller-specific data to services:
+
+```ruby
+class PostsController < ApplicationController
+  treaty :index do
+    provide :current_user, from: :current_user
+    provide :posts, from: :load_posts
+    provide :meta, from: -> { { timestamp: Time.current } }
+  end
+
+  private
+
+  def load_posts
+    Post.where(user: current_user).published
+  end
+end
+```
+
+Services receive inventory as a parameter:
+
+```ruby
+class Posts::IndexService
+  def self.call(params:, inventory:)
+    current_user = inventory.current_user
+    posts = inventory.posts
+    # ...
+  end
+end
+```
+
+See [Inventory System](./inventory.md) for detailed documentation.
+
 ## Multiple Requests
 
 You can define multiple request blocks that will be merged:

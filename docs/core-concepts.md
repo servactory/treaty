@@ -192,18 +192,39 @@ delegate_to lambda { |params:|
 delegate_to Posts::CreateService => :call, return: lambda(&:data)
 ```
 
+### 8. Inventory
+
+Passes controller-specific data to services.
+
+```ruby
+class PostsController < ApplicationController
+  treaty :index do
+    provide :current_user, from: :current_user
+    provide :posts, from: :load_posts
+  end
+end
+```
+
+**Sources:**
+- Symbol - calls controller method
+- Proc/Lambda - evaluates in controller context
+- Direct value - passes data unchanged
+
+See [Inventory System](./inventory.md) for detailed documentation.
+
 ## Request Lifecycle
 
 ```
 1. HTTP Request → Controller
 2. Treaty determines version
-3. Request Validation (validate incoming data)
-4. Request Transformation (transform incoming data)
-5. Delegate To Service (pass to service)
-6. Service Execution (service processes request)
-7. Response Validation (validate service output)
-8. Response Transformation (transform output data)
-9. HTTP Response → Client
+3. Inventory Preparation (prepare controller data)
+4. Request Validation (validate incoming data)
+5. Request Transformation (transform incoming data)
+6. Delegate To Service (pass to service with inventory)
+7. Service Execution (service processes request)
+8. Response Validation (validate service output)
+9. Response Transformation (transform output data)
+10. HTTP Response → Client
 ```
 
 ## Deprecation

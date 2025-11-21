@@ -376,6 +376,38 @@ class PostsController < ApplicationController
 end
 ```
 
+## Inventory
+
+```ruby
+class PostsController < ApplicationController
+  treaty :index do
+    provide :current_user, from: :current_user  # Method source
+    provide :posts, from: :load_posts           # Method source
+    provide :meta, from: -> { build_meta }      # Lambda source
+    provide :message, from: "Welcome"           # Direct value
+    provide :current_user                       # Shorthand
+  end
+
+  private
+
+  def load_posts
+    Post.where(user: current_user).published
+  end
+end
+```
+
+Service receives inventory:
+
+```ruby
+class Posts::IndexService
+  def self.call(params:, inventory:)
+    current_user = inventory.current_user
+    posts = inventory.posts
+    # ...
+  end
+end
+```
+
 ## Version Selection
 
 ```ruby

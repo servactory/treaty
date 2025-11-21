@@ -48,6 +48,11 @@ en:
     execution:         # Service execution errors
 
     controller:        # Controller DSL errors
+
+    inventory:         # Inventory system errors
+
+    executor:          # Executor wrapper errors
+      inventory:       # Inventory executor errors
 ```
 
 ## Default Messages (English)
@@ -98,6 +103,17 @@ treaty:
     factory:
       unknown_method: "Unknown method '%{method}' in response definition. Use 'object :name do ... end' to define response structure"
       invalid_entity_class: "Response expects a Treaty::Entity subclass, got %{type}: %{value}"
+
+  inventory:
+    unknown_method: "Unknown method '%{method}' in treaty block for action '%{action}'. Only 'provide' method is supported. Use: provide :name, from: :source OR provide :name"
+    name_must_be_symbol: "Inventory name must be a Symbol, got %{name}. Use: provide :name, from: :source OR provide :name"
+    invalid_name: "Inventory name must be a non-empty Symbol, got %{name}"
+    source_required: "Inventory source cannot be nil. Provide a Symbol (method name), Proc/Lambda, or direct value"
+    evaluation_error: "Failed to evaluate inventory item '%{name}': %{error}"
+
+  executor:
+    inventory:
+      item_not_found: "Inventory item '%{name}' not found. Available items: %{available}"
 ```
 
 ## Adding New Languages
@@ -194,6 +210,17 @@ de:
 
     controller:
       treaty_class_not_found: "%{class_name}"
+
+    inventory:
+      unknown_method: "Unbekannte Methode '%{method}' im Treaty-Block für Aktion '%{action}'. Nur 'provide'-Methode wird unterstützt. Verwenden Sie: provide :name, from: :source ODER provide :name"
+      name_must_be_symbol: "Inventory-Name muss ein Symbol sein, erhalten: %{name}. Verwenden Sie: provide :name, from: :source ODER provide :name"
+      invalid_name: "Inventory-Name muss ein nicht-leeres Symbol sein, erhalten: %{name}"
+      source_required: "Inventory-Quelle kann nicht nil sein. Geben Sie ein Symbol (Methodenname), Proc/Lambda oder direkten Wert an"
+      evaluation_error: "Fehler beim Auswerten des Inventory-Elements '%{name}': %{error}"
+
+    executor:
+      inventory:
+        item_not_found: "Inventory-Element '%{name}' nicht gefunden. Verfügbare Elemente: %{available}"
 ```
 
 ### 2. Configure Locale
@@ -342,6 +369,13 @@ Different validators provide different interpolation variables:
 - `%{method}` - method name
 - `%{message}` - error message
 
+**Inventory:**
+- `%{method}` - the unknown method name that was called
+- `%{action}` - the controller action name
+- `%{name}` - the inventory item name
+- `%{error}` - the error message from evaluation
+- `%{available}` - comma-separated list of available inventory items
+
 ### Example: German Customization
 
 ```yaml
@@ -371,6 +405,7 @@ All Treaty exceptions support I18n. See the complete list in `lib/treaty/excepti
 - **MethodName** - Unknown DSL method
 - **NestedAttributes** - Nesting depth exceeded
 - **NotImplemented** - Abstract method not implemented
+- **Inventory** - Inventory system errors
 - **Unexpected** - General unexpected errors
 
 Each exception has comprehensive documentation in its source file.

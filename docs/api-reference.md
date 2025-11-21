@@ -991,6 +991,9 @@ Define which action uses a treaty.
 **Syntax:**
 ```ruby
 treaty :action_name
+treaty :action_name do
+  # Inventory configuration
+end
 ```
 
 **Examples:**
@@ -1003,8 +1006,68 @@ class PostsController < ApplicationController
   # Uses Posts::CreateTreaty
   # Automatically creates the create action
   treaty :create
+
+  # With inventory
+  treaty :show do
+    provide :current_user, from: :current_user
+    provide :permissions, from: :load_permissions
+  end
 end
 ```
+
+### `provide`
+
+Provide controller-specific data to services (used within `treaty` block).
+
+**Syntax:**
+```ruby
+provide :name, from: source
+provide :name  # Shorthand: uses :name as source
+```
+
+**Parameters:**
+- `:name` - Symbol representing the inventory item name
+- `from:` - Optional source (Symbol, Proc/Lambda, or direct value)
+
+**Source Types:**
+
+**Symbol (Controller Method):**
+```ruby
+treaty :index do
+  provide :posts, from: :load_posts
+end
+
+private
+
+def load_posts
+  Post.where(user: current_user).limit(10)
+end
+```
+
+**Proc/Lambda (Callable):**
+```ruby
+treaty :index do
+  provide :meta, from: -> { { timestamp: Time.current } }
+  provide :request_id, from: -> { request.uuid }
+end
+```
+
+**Direct Value:**
+```ruby
+treaty :index do
+  provide :welcome_message, from: "Welcome to our API"
+  provide :api_version, from: 3
+end
+```
+
+**Shorthand (omit `from:`):**
+```ruby
+treaty :index do
+  provide :current_user  # Calls current_user method
+end
+```
+
+See [Inventory System](./inventory.md) for detailed documentation.
 
 ## Version Selection
 

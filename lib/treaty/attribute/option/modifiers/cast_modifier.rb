@@ -154,20 +154,18 @@ module Treaty
             # Call conversion lambda
             conversion_lambda.call(value:)
           rescue StandardError => e
+            attributes = {
+              attribute: @attribute_name,
+              from: @attribute_type,
+              to: target_type,
+              value:,
+              error: e.message
+            }
+
             # Catch all exceptions from conversion execution
-            error_message = resolve_custom_message(
-              attribute: @attribute_name,
-              from: @attribute_type,
-              to: target_type,
-              value:,
-              error: e.message
-            ) || I18n.t(
+            error_message = resolve_custom_message(**attributes) || I18n.t(
               "treaty.attributes.modifiers.cast.conversion_error",
-              attribute: @attribute_name,
-              from: @attribute_type,
-              to: target_type,
-              value:,
-              error: e.message
+              **attributes
             )
 
             raise Treaty::Exceptions::Validation, error_message

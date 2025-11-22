@@ -238,6 +238,11 @@ RSpec.describe Treaty::Attribute::Option::Validators::FormatValidator do
         expect { validator.validate_value!("2024-12-31") }.not_to raise_error
       end
 
+      it "accepts various date formats" do
+        expect { validator.validate_value!("15/01/2025") }.not_to raise_error  # DD/MM/YYYY
+        expect { validator.validate_value!("2025/01/15") }.not_to raise_error  # YYYY/MM/DD
+      end
+
       it "accepts nil" do
         expect { validator.validate_value!(nil) }.not_to raise_error
       end
@@ -248,12 +253,6 @@ RSpec.describe Treaty::Attribute::Option::Validators::FormatValidator do
             expect(exception.message).to include("test_attr")
             expect(exception.message).to include("not-a-date")
           end
-        )
-      end
-
-      it "rejects invalid date format" do
-        expect { validator.validate_value!("15/01/2025") }.to(
-          raise_error(Treaty::Exceptions::Validation)
         )
       end
     end
@@ -307,9 +306,11 @@ RSpec.describe Treaty::Attribute::Option::Validators::FormatValidator do
       let(:option_schema) { { is: :duration, message: nil } }
 
       it "accepts valid duration" do
-        expect { validator.validate_value!("1 day") }.not_to raise_error
-        expect { validator.validate_value!("2 hours") }.not_to raise_error
-        expect { validator.validate_value!("30 minutes") }.not_to raise_error
+        expect { validator.validate_value!("P1D") }.not_to raise_error      # 1 day
+        expect { validator.validate_value!("PT2H") }.not_to raise_error     # 2 hours
+        expect { validator.validate_value!("PT30M") }.not_to raise_error    # 30 minutes
+        expect { validator.validate_value!("P1W") }.not_to raise_error      # 1 week
+        expect { validator.validate_value!("PT1H30M") }.not_to raise_error  # 1 hour 30 minutes
       end
 
       it "accepts nil" do
@@ -322,6 +323,12 @@ RSpec.describe Treaty::Attribute::Option::Validators::FormatValidator do
             expect(exception.message).to include("test_attr")
             expect(exception.message).to include("not-a-duration")
           end
+        )
+      end
+
+      it "rejects non-ISO 8601 duration format" do
+        expect { validator.validate_value!("1 day") }.to(
+          raise_error(Treaty::Exceptions::Validation)
         )
       end
     end

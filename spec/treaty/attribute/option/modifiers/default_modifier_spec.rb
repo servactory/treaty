@@ -165,7 +165,7 @@ RSpec.describe Treaty::Attribute::Option::Modifiers::DefaultModifier do
       end
 
       context "when Proc default returns nil" do
-        let(:option_schema) { { is: -> { nil }, message: nil } }
+        let(:option_schema) { { is: -> {}, message: nil } }
 
         it "returns nil from Proc" do
           result = modifier.transform_value(nil)

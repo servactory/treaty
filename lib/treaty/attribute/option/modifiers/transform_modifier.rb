@@ -86,7 +86,7 @@ module Treaty
             transform_lambda = option_value
 
             # Call lambda with named argument
-            transform_lambda.call(value: value)
+            transform_lambda.call(value:)
           rescue StandardError => e
             # Catch all exceptions from lambda execution
             error_message = resolve_custom_message(

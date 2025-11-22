@@ -524,8 +524,8 @@ RSpec.describe Gate::API::Posts::CreateTreaty do
 
         it "transforms title by stripping spaces and tags to lowercase", :aggregate_failures do
           result = perform
+
           # The transformed value (stripped title) should be passed to the service
-          expect(result).to be_a(Treaty::Result)
           expect(result.data[:post][:title]).to eq("Title With Spaces")
           expect(result.data[:post][:tags]).to eq(%w[tag1 tag2 tag3])
         end

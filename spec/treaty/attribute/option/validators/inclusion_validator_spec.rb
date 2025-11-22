@@ -29,7 +29,7 @@ RSpec.describe Treaty::Attribute::Option::Validators::InclusionValidator do
     context "with empty array" do
       let(:option_schema) { { in: [], message: nil } }
 
-      it "raises validation error" do
+      it "raises validation error", :aggregate_failures do
         expect { validator.validate_schema! }.to(
           raise_error(Treaty::Exceptions::Validation) do |exception|
             expect(exception.message).to include("provider")
@@ -41,7 +41,7 @@ RSpec.describe Treaty::Attribute::Option::Validators::InclusionValidator do
     context "with nil value" do
       let(:option_schema) { { in: nil, message: nil } }
 
-      it "raises validation error" do
+      it "raises validation error", :aggregate_failures do
         expect { validator.validate_schema! }.to(
           raise_error(Treaty::Exceptions::Validation) do |exception|
             expect(exception.message).to include("provider")
@@ -53,7 +53,7 @@ RSpec.describe Treaty::Attribute::Option::Validators::InclusionValidator do
     context "with String value" do
       let(:option_schema) { { in: "twitter,linkedin,github", message: nil } }
 
-      it "raises validation error" do
+      it "raises validation error", :aggregate_failures do
         expect { validator.validate_schema! }.to(
           raise_error(Treaty::Exceptions::Validation) do |exception|
             expect(exception.message).to include("provider")
@@ -65,7 +65,7 @@ RSpec.describe Treaty::Attribute::Option::Validators::InclusionValidator do
     context "with Integer value" do
       let(:option_schema) { { in: 123, message: nil } }
 
-      it "raises validation error" do
+      it "raises validation error", :aggregate_failures do
         expect { validator.validate_schema! }.to(
           raise_error(Treaty::Exceptions::Validation) do |exception|
             expect(exception.message).to include("provider")
@@ -79,7 +79,7 @@ RSpec.describe Treaty::Attribute::Option::Validators::InclusionValidator do
     context "with string values" do
       let(:option_schema) { { in: %w[twitter linkedin github], message: nil } }
 
-      it "accepts value in the list" do
+      it "accepts value in the list", :aggregate_failures do
         expect { validator.validate_value!("twitter") }.not_to raise_error
         expect { validator.validate_value!("linkedin") }.not_to raise_error
         expect { validator.validate_value!("github") }.not_to raise_error
@@ -89,7 +89,7 @@ RSpec.describe Treaty::Attribute::Option::Validators::InclusionValidator do
         expect { validator.validate_value!(nil) }.not_to raise_error
       end
 
-      it "rejects value not in the list" do
+      it "rejects value not in the list", :aggregate_failures do
         expect { validator.validate_value!("facebook") }.to(
           raise_error(Treaty::Exceptions::Validation) do |exception|
             expect(exception.message).to include("provider")
@@ -99,7 +99,7 @@ RSpec.describe Treaty::Attribute::Option::Validators::InclusionValidator do
         )
       end
 
-      it "rejects empty string if not in the list" do
+      it "rejects empty string if not in the list", :aggregate_failures do
         expect { validator.validate_value!("") }.to(
           raise_error(Treaty::Exceptions::Validation) do |exception|
             expect(exception.message).to include("provider")
@@ -112,13 +112,13 @@ RSpec.describe Treaty::Attribute::Option::Validators::InclusionValidator do
     context "with integer values" do
       let(:option_schema) { { in: [1, 2, 3, 5, 10], message: nil } }
 
-      it "accepts value in the list" do
+      it "accepts value in the list", :aggregate_failures do
         expect { validator.validate_value!(1) }.not_to raise_error
         expect { validator.validate_value!(5) }.not_to raise_error
         expect { validator.validate_value!(10) }.not_to raise_error
       end
 
-      it "rejects value not in the list" do
+      it "rejects value not in the list", :aggregate_failures do
         expect { validator.validate_value!(4) }.to(
           raise_error(Treaty::Exceptions::Validation) do |exception|
             expect(exception.message).to include("provider")
@@ -132,13 +132,13 @@ RSpec.describe Treaty::Attribute::Option::Validators::InclusionValidator do
     context "with symbol values" do
       let(:option_schema) { { in: %i[active inactive pending], message: nil } }
 
-      it "accepts value in the list" do
+      it "accepts value in the list", :aggregate_failures do
         expect { validator.validate_value!(:active) }.not_to raise_error
         expect { validator.validate_value!(:inactive) }.not_to raise_error
         expect { validator.validate_value!(:pending) }.not_to raise_error
       end
 
-      it "rejects value not in the list" do
+      it "rejects value not in the list", :aggregate_failures do
         expect { validator.validate_value!(:deleted) }.to(
           raise_error(Treaty::Exceptions::Validation) do |exception|
             expect(exception.message).to include("provider")
@@ -168,7 +168,7 @@ RSpec.describe Treaty::Attribute::Option::Validators::InclusionValidator do
         expect { validator.validate_value!(true) }.not_to raise_error
       end
 
-      it "rejects value not in the list" do
+      it "rejects value not in the list", :aggregate_failures do
         expect { validator.validate_value!(false) }.to(
           raise_error(Treaty::Exceptions::Validation) do |exception|
             expect(exception.message).to include("provider")
@@ -188,7 +188,7 @@ RSpec.describe Treaty::Attribute::Option::Validators::InclusionValidator do
       end
     end
 
-    context "edge cases" do
+    describe "edge cases" do
       context "with boolean values" do
         let(:option_schema) { { in: [true, false], message: nil } }
 

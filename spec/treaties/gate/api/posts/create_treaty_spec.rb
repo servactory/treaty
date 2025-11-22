@@ -522,7 +522,7 @@ RSpec.describe Gate::API::Posts::CreateTreaty do
           }
         end
 
-        it "transforms title by stripping spaces and tags to lowercase" do
+        it "transforms title by stripping spaces and tags to lowercase", :aggregate_failures do
           result = perform
           # The transformed value (stripped title) should be passed to the service
           expect(result).to be_a(Treaty::Result)

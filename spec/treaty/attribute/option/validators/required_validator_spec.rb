@@ -58,7 +58,7 @@ RSpec.describe Treaty::Attribute::Option::Validators::RequiredValidator do
       end
 
       context "with nil value" do
-        it "raises validation error" do
+        it "raises validation error", :aggregate_failures do
           expect { validator.validate_value!(nil) }.to(
             raise_error(Treaty::Exceptions::Validation) do |exception|
               expect(exception.message).to eq(
@@ -70,7 +70,7 @@ RSpec.describe Treaty::Attribute::Option::Validators::RequiredValidator do
       end
 
       context "with empty string" do
-        it "raises validation error" do
+        it "raises validation error", :aggregate_failures do
           expect { validator.validate_value!("") }.to(
             raise_error(Treaty::Exceptions::Validation) do |exception|
               expect(exception.message).to eq(
@@ -82,7 +82,7 @@ RSpec.describe Treaty::Attribute::Option::Validators::RequiredValidator do
       end
 
       context "with empty array" do
-        it "raises validation error" do
+        it "raises validation error", :aggregate_failures do
           expect { validator.validate_value!([]) }.to(
             raise_error(Treaty::Exceptions::Validation) do |exception|
               expect(exception.message).to eq(
@@ -94,7 +94,7 @@ RSpec.describe Treaty::Attribute::Option::Validators::RequiredValidator do
       end
 
       context "with empty hash" do
-        it "raises validation error" do
+        it "raises validation error", :aggregate_failures do
           expect { validator.validate_value!({}) }.to(
             raise_error(Treaty::Exceptions::Validation) do |exception|
               expect(exception.message).to eq(
@@ -152,7 +152,7 @@ RSpec.describe Treaty::Attribute::Option::Validators::RequiredValidator do
       end
     end
 
-    context "edge cases" do
+    describe "edge cases" do
       let(:option_schema) { { is: true, message: nil } }
 
       it "does not raise error for whitespace string (not empty)" do

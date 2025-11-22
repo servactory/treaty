@@ -82,7 +82,7 @@ module Treaty
           #
           # @param value [Object] The current value
           # @return [Object] Transformed value
-          def transform_value(value)
+          def transform_value(value) # rubocop:disable Metrics/MethodLength
             transform_lambda = option_value
 
             # Call lambda with named argument

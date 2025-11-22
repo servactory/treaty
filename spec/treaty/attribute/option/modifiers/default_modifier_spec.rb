@@ -154,7 +154,7 @@ RSpec.describe Treaty::Attribute::Option::Modifiers::DefaultModifier do
       end
     end
 
-    context "edge cases" do
+    describe "edge cases" do
       context "when default is nil and value is nil" do
         let(:option_schema) { { is: nil, message: nil } }
 
@@ -177,7 +177,7 @@ RSpec.describe Treaty::Attribute::Option::Modifiers::DefaultModifier do
         let(:counter) { [0] }
         let(:option_schema) { { is: -> { counter[0] += 1 }, message: nil } }
 
-        it "executes the Proc each time" do
+        it "executes the Proc each time", :aggregate_failures do
           expect(modifier.transform_value(nil)).to eq(1)
           expect(modifier.transform_value(nil)).to eq(2)
           expect(modifier.transform_value(nil)).to eq(3)

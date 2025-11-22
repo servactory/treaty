@@ -23,7 +23,7 @@ RSpec.describe Treaty::Attribute::Option::Modifiers::AsModifier do
     context "when option value is a String" do
       let(:option_schema) { { is: "username", message: nil } }
 
-      it "raises a validation error" do
+      it "raises a validation error", :aggregate_failures do
         expect { modifier.validate_schema! }.to(
           raise_error(Treaty::Exceptions::Validation) do |exception|
             expect(exception.message).to include("user_handle")
@@ -36,7 +36,7 @@ RSpec.describe Treaty::Attribute::Option::Modifiers::AsModifier do
     context "when option value is an Integer" do
       let(:option_schema) { { is: 123, message: nil } }
 
-      it "raises a validation error" do
+      it "raises a validation error", :aggregate_failures do
         expect { modifier.validate_schema! }.to(
           raise_error(Treaty::Exceptions::Validation) do |exception|
             expect(exception.message).to include("user_handle")
@@ -49,7 +49,7 @@ RSpec.describe Treaty::Attribute::Option::Modifiers::AsModifier do
     context "when option value is nil" do
       let(:option_schema) { { is: nil, message: nil } }
 
-      it "raises a validation error" do
+      it "raises a validation error", :aggregate_failures do
         expect { modifier.validate_schema! }.to(
           raise_error(Treaty::Exceptions::Validation) do |exception|
             expect(exception.message).to include("user_handle")

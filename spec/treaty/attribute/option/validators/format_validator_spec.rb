@@ -80,7 +80,7 @@ RSpec.describe Treaty::Attribute::Option::Validators::FormatValidator do
       context "with unknown format" do
         let(:option_schema) { { is: :unknown_format, message: nil } }
 
-        it "raises validation error" do
+        it "raises validation error", :aggregate_failures do
           expect { validator.validate_schema! }.to(
             raise_error(Treaty::Exceptions::Validation) do |exception|
               expect(exception.message).to include("test_attr")
@@ -97,7 +97,7 @@ RSpec.describe Treaty::Attribute::Option::Validators::FormatValidator do
       context "with integer type" do
         let(:attribute_type) { :integer }
 
-        it "raises validation error" do
+        it "raises validation error", :aggregate_failures do
           expect { validator.validate_schema! }.to(
             raise_error(Treaty::Exceptions::Validation) do |exception|
               expect(exception.message).to include("test_attr")
@@ -110,7 +110,7 @@ RSpec.describe Treaty::Attribute::Option::Validators::FormatValidator do
       context "with boolean type" do
         let(:attribute_type) { :boolean }
 
-        it "raises validation error" do
+        it "raises validation error", :aggregate_failures do
           expect { validator.validate_schema! }.to(
             raise_error(Treaty::Exceptions::Validation) do |exception|
               expect(exception.message).to include("test_attr")
@@ -128,7 +128,7 @@ RSpec.describe Treaty::Attribute::Option::Validators::FormatValidator do
     context "with format :uuid" do
       let(:option_schema) { { is: :uuid, message: nil } }
 
-      it "accepts valid UUID" do
+      it "accepts valid UUID", :aggregate_failures do
         expect { validator.validate_value!("550e8400-e29b-41d4-a716-446655440000") }.not_to raise_error
         expect { validator.validate_value!("6ba7b810-9dad-11d1-80b4-00c04fd430c8") }.not_to raise_error
       end
@@ -137,12 +137,12 @@ RSpec.describe Treaty::Attribute::Option::Validators::FormatValidator do
         expect { validator.validate_value!(nil) }.not_to raise_error
       end
 
-      it "accepts empty string" do
+      it "accepts empty string", :aggregate_failures do
         expect { validator.validate_value!("") }.not_to raise_error
         expect { validator.validate_value!("   ") }.not_to raise_error
       end
 
-      it "rejects invalid UUID" do
+      it "rejects invalid UUID", :aggregate_failures do
         expect { validator.validate_value!("not-a-uuid") }.to(
           raise_error(Treaty::Exceptions::Validation) do |exception|
             expect(exception.message).to include("test_attr")
@@ -161,7 +161,7 @@ RSpec.describe Treaty::Attribute::Option::Validators::FormatValidator do
     context "with format :email" do
       let(:option_schema) { { is: :email, message: nil } }
 
-      it "accepts valid email" do
+      it "accepts valid email", :aggregate_failures do
         expect { validator.validate_value!("user@example.com") }.not_to raise_error
         expect { validator.validate_value!("john.doe@company.co.uk") }.not_to raise_error
       end
@@ -170,7 +170,7 @@ RSpec.describe Treaty::Attribute::Option::Validators::FormatValidator do
         expect { validator.validate_value!(nil) }.not_to raise_error
       end
 
-      it "rejects invalid email" do
+      it "rejects invalid email", :aggregate_failures do
         expect { validator.validate_value!("not-an-email") }.to(
           raise_error(Treaty::Exceptions::Validation) do |exception|
             expect(exception.message).to include("test_attr")
@@ -189,7 +189,7 @@ RSpec.describe Treaty::Attribute::Option::Validators::FormatValidator do
     context "with format :password" do
       let(:option_schema) { { is: :password, message: nil } }
 
-      it "accepts valid password" do
+      it "accepts valid password", :aggregate_failures do
         expect { validator.validate_value!("Password1") }.not_to raise_error
         expect { validator.validate_value!("Abcd1234") }.not_to raise_error
         expect { validator.validate_value!("Test1234Pass") }.not_to raise_error
@@ -233,12 +233,12 @@ RSpec.describe Treaty::Attribute::Option::Validators::FormatValidator do
     context "with format :date" do
       let(:option_schema) { { is: :date, message: nil } }
 
-      it "accepts valid date" do
+      it "accepts valid date", :aggregate_failures do
         expect { validator.validate_value!("2025-01-15") }.not_to raise_error
         expect { validator.validate_value!("2024-12-31") }.not_to raise_error
       end
 
-      it "accepts various date formats" do
+      it "accepts various date formats", :aggregate_failures do
         expect { validator.validate_value!("15/01/2025") }.not_to raise_error  # DD/MM/YYYY
         expect { validator.validate_value!("2025/01/15") }.not_to raise_error  # YYYY/MM/DD
       end
@@ -247,7 +247,7 @@ RSpec.describe Treaty::Attribute::Option::Validators::FormatValidator do
         expect { validator.validate_value!(nil) }.not_to raise_error
       end
 
-      it "rejects invalid date" do
+      it "rejects invalid date", :aggregate_failures do
         expect { validator.validate_value!("not-a-date") }.to(
           raise_error(Treaty::Exceptions::Validation) do |exception|
             expect(exception.message).to include("test_attr")
@@ -260,7 +260,7 @@ RSpec.describe Treaty::Attribute::Option::Validators::FormatValidator do
     context "with format :datetime" do
       let(:option_schema) { { is: :datetime, message: nil } }
 
-      it "accepts valid datetime" do
+      it "accepts valid datetime", :aggregate_failures do
         expect { validator.validate_value!("2025-01-15T10:30:00Z") }.not_to raise_error
         expect { validator.validate_value!("2024-12-31 23:59:59") }.not_to raise_error
       end
@@ -269,7 +269,7 @@ RSpec.describe Treaty::Attribute::Option::Validators::FormatValidator do
         expect { validator.validate_value!(nil) }.not_to raise_error
       end
 
-      it "rejects invalid datetime" do
+      it "rejects invalid datetime", :aggregate_failures do
         expect { validator.validate_value!("not-a-datetime") }.to(
           raise_error(Treaty::Exceptions::Validation) do |exception|
             expect(exception.message).to include("test_attr")
@@ -282,7 +282,7 @@ RSpec.describe Treaty::Attribute::Option::Validators::FormatValidator do
     context "with format :time" do
       let(:option_schema) { { is: :time, message: nil } }
 
-      it "accepts valid time" do
+      it "accepts valid time", :aggregate_failures do
         expect { validator.validate_value!("10:30:00") }.not_to raise_error
         expect { validator.validate_value!("23:59:59") }.not_to raise_error
         expect { validator.validate_value!("10:30 AM") }.not_to raise_error
@@ -292,7 +292,7 @@ RSpec.describe Treaty::Attribute::Option::Validators::FormatValidator do
         expect { validator.validate_value!(nil) }.not_to raise_error
       end
 
-      it "rejects invalid time" do
+      it "rejects invalid time", :aggregate_failures do
         expect { validator.validate_value!("not-a-time") }.to(
           raise_error(Treaty::Exceptions::Validation) do |exception|
             expect(exception.message).to include("test_attr")
@@ -305,7 +305,7 @@ RSpec.describe Treaty::Attribute::Option::Validators::FormatValidator do
     context "with format :duration" do
       let(:option_schema) { { is: :duration, message: nil } }
 
-      it "accepts valid duration" do
+      it "accepts valid duration", :aggregate_failures do
         expect { validator.validate_value!("P1D") }.not_to raise_error      # 1 day
         expect { validator.validate_value!("PT2H") }.not_to raise_error     # 2 hours
         expect { validator.validate_value!("PT30M") }.not_to raise_error    # 30 minutes
@@ -317,7 +317,7 @@ RSpec.describe Treaty::Attribute::Option::Validators::FormatValidator do
         expect { validator.validate_value!(nil) }.not_to raise_error
       end
 
-      it "rejects invalid duration" do
+      it "rejects invalid duration", :aggregate_failures do
         expect { validator.validate_value!("not-a-duration") }.to(
           raise_error(Treaty::Exceptions::Validation) do |exception|
             expect(exception.message).to include("test_attr")
@@ -336,7 +336,7 @@ RSpec.describe Treaty::Attribute::Option::Validators::FormatValidator do
     context "with format :boolean" do
       let(:option_schema) { { is: :boolean, message: nil } }
 
-      it "accepts valid boolean strings" do
+      it "accepts valid boolean strings", :aggregate_failures do
         expect { validator.validate_value!("true") }.not_to raise_error
         expect { validator.validate_value!("false") }.not_to raise_error
         expect { validator.validate_value!("0") }.not_to raise_error
@@ -349,7 +349,7 @@ RSpec.describe Treaty::Attribute::Option::Validators::FormatValidator do
         expect { validator.validate_value!(nil) }.not_to raise_error
       end
 
-      it "rejects invalid boolean strings" do
+      it "rejects invalid boolean strings", :aggregate_failures do
         expect { validator.validate_value!("yes") }.to(
           raise_error(Treaty::Exceptions::Validation)
         )

@@ -63,7 +63,7 @@ RSpec.describe Treaty::Attribute::Option::Validators::TypeValidator do
     context "with unknown type :unknown" do
       let(:attribute_type) { :unknown }
 
-      it "raises validation error" do
+      it "raises validation error", :aggregate_failures do
         expect { validator.validate_schema! }.to(
           raise_error(Treaty::Exceptions::Validation) do |exception|
             expect(exception.message).to include("unknown")
@@ -94,7 +94,7 @@ RSpec.describe Treaty::Attribute::Option::Validators::TypeValidator do
         expect { validator.validate_value!(nil) }.not_to raise_error
       end
 
-      it "rejects String" do
+      it "rejects String", :aggregate_failures do
         expect { validator.validate_value!("123") }.to(
           raise_error(Treaty::Exceptions::Validation) do |exception|
             expect(exception.message).to include("test_attr")
@@ -103,7 +103,7 @@ RSpec.describe Treaty::Attribute::Option::Validators::TypeValidator do
         )
       end
 
-      it "rejects Float" do
+      it "rejects Float", :aggregate_failures do
         expect { validator.validate_value!(123.45) }.to(
           raise_error(Treaty::Exceptions::Validation) do |exception|
             expect(exception.message).to include("test_attr")
@@ -128,7 +128,7 @@ RSpec.describe Treaty::Attribute::Option::Validators::TypeValidator do
         expect { validator.validate_value!(nil) }.not_to raise_error
       end
 
-      it "rejects Integer" do
+      it "rejects Integer", :aggregate_failures do
         expect { validator.validate_value!(123) }.to(
           raise_error(Treaty::Exceptions::Validation) do |exception|
             expect(exception.message).to include("test_attr")
@@ -137,7 +137,7 @@ RSpec.describe Treaty::Attribute::Option::Validators::TypeValidator do
         )
       end
 
-      it "rejects Symbol" do
+      it "rejects Symbol", :aggregate_failures do
         expect { validator.validate_value!(:symbol) }.to(
           raise_error(Treaty::Exceptions::Validation) do |exception|
             expect(exception.message).to include("test_attr")
@@ -162,7 +162,7 @@ RSpec.describe Treaty::Attribute::Option::Validators::TypeValidator do
         expect { validator.validate_value!(nil) }.not_to raise_error
       end
 
-      it "rejects Integer 1" do
+      it "rejects Integer 1", :aggregate_failures do
         expect { validator.validate_value!(1) }.to(
           raise_error(Treaty::Exceptions::Validation) do |exception|
             expect(exception.message).to include("test_attr")
@@ -171,7 +171,7 @@ RSpec.describe Treaty::Attribute::Option::Validators::TypeValidator do
         )
       end
 
-      it "rejects Integer 0" do
+      it "rejects Integer 0", :aggregate_failures do
         expect { validator.validate_value!(0) }.to(
           raise_error(Treaty::Exceptions::Validation) do |exception|
             expect(exception.message).to include("test_attr")
@@ -180,7 +180,7 @@ RSpec.describe Treaty::Attribute::Option::Validators::TypeValidator do
         )
       end
 
-      it "rejects String 'true'" do
+      it "rejects String 'true'", :aggregate_failures do
         expect { validator.validate_value!("true") }.to(
           raise_error(Treaty::Exceptions::Validation) do |exception|
             expect(exception.message).to include("test_attr")
@@ -205,7 +205,7 @@ RSpec.describe Treaty::Attribute::Option::Validators::TypeValidator do
         expect { validator.validate_value!(nil) }.not_to raise_error
       end
 
-      it "rejects Array" do
+      it "rejects Array", :aggregate_failures do
         expect { validator.validate_value!([1, 2, 3]) }.to(
           raise_error(Treaty::Exceptions::Validation) do |exception|
             expect(exception.message).to include("test_attr")
@@ -214,7 +214,7 @@ RSpec.describe Treaty::Attribute::Option::Validators::TypeValidator do
         )
       end
 
-      it "rejects String" do
+      it "rejects String", :aggregate_failures do
         expect { validator.validate_value!("{}") }.to(
           raise_error(Treaty::Exceptions::Validation) do |exception|
             expect(exception.message).to include("test_attr")
@@ -239,7 +239,7 @@ RSpec.describe Treaty::Attribute::Option::Validators::TypeValidator do
         expect { validator.validate_value!(nil) }.not_to raise_error
       end
 
-      it "rejects Hash" do
+      it "rejects Hash", :aggregate_failures do
         expect { validator.validate_value!({ key: "value" }) }.to(
           raise_error(Treaty::Exceptions::Validation) do |exception|
             expect(exception.message).to include("test_attr")
@@ -248,7 +248,7 @@ RSpec.describe Treaty::Attribute::Option::Validators::TypeValidator do
         )
       end
 
-      it "rejects String" do
+      it "rejects String", :aggregate_failures do
         expect { validator.validate_value!("[]") }.to(
           raise_error(Treaty::Exceptions::Validation) do |exception|
             expect(exception.message).to include("test_attr")
@@ -277,7 +277,7 @@ RSpec.describe Treaty::Attribute::Option::Validators::TypeValidator do
         expect { validator.validate_value!(nil) }.not_to raise_error
       end
 
-      it "rejects String" do
+      it "rejects String", :aggregate_failures do
         expect { validator.validate_value!("2025-01-15") }.to(
           raise_error(Treaty::Exceptions::Validation) do |exception|
             expect(exception.message).to include("test_attr")
@@ -286,7 +286,7 @@ RSpec.describe Treaty::Attribute::Option::Validators::TypeValidator do
         )
       end
 
-      it "rejects Integer" do
+      it "rejects Integer", :aggregate_failures do
         expect { validator.validate_value!(1_673_788_800) }.to(
           raise_error(Treaty::Exceptions::Validation) do |exception|
             expect(exception.message).to include("test_attr")

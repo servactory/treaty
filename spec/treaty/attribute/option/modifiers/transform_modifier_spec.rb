@@ -29,7 +29,7 @@ RSpec.describe Treaty::Attribute::Option::Modifiers::TransformModifier do
     context "when transform is not a Proc" do
       let(:option_schema) { { is: "not a proc", message: nil } }
 
-      it "raises a validation error" do
+      it "raises a validation error", :aggregate_failures do
         expect { modifier.validate_schema! }.to(
           raise_error(Treaty::Exceptions::Validation) do |exception|
             expect(exception.message).to eq(
@@ -54,7 +54,7 @@ RSpec.describe Treaty::Attribute::Option::Modifiers::TransformModifier do
     context "when lambda raises an error" do
       let(:option_schema) { { is: ->(value:) { value.some_undefined_method }, message: nil } }
 
-      it "catches the error and raises Treaty::Exceptions::Validation" do
+      it "catches the error and raises Treaty::Exceptions::Validation", :aggregate_failures do
         expect { modifier.transform_value("test") }.to(
           raise_error(Treaty::Exceptions::Validation) do |exception|
             expect(exception.message).to include("Transform failed for attribute 'test_attr'")
@@ -67,7 +67,7 @@ RSpec.describe Treaty::Attribute::Option::Modifiers::TransformModifier do
     context "when custom error message is provided" do
       let(:option_schema) do
         {
-          is: ->(value:) { raise StandardError, "Custom error" },
+          is: ->(**) { raise StandardError, "Custom error" },
           message: "Custom transform error for test_attr"
         }
       end

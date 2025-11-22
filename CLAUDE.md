@@ -571,12 +571,12 @@ string :uuid, format: :uuid
 string :username,
        required: { is: true, message: "Username is required" }
 
-# With custom transformation (v0.12+)
+# With custom transformation
 string :title, transform: ->(value:) { value.strip.titleize }
 string :email, transform: ->(value:) { value.downcase.strip }
 integer :amount_cents, transform: ->(value:) { value * 100 }
 
-# With type casting (v0.13+)
+# With type casting
 # Request: Convert client data to service-friendly types
 string :published_at, cast: :datetime    # String → DateTime
 string :featured, cast: :boolean         # String → Boolean

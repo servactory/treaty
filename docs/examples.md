@@ -998,7 +998,7 @@ end
 ```ruby
 module Posts
   class IndexService
-    def self.call(params:, inventory:)
+    def self.call(inventory:, params:)
       current_user = inventory.current_user
       permissions = inventory.permissions
 

@@ -400,7 +400,7 @@ Service receives inventory:
 
 ```ruby
 class Posts::IndexService
-  def self.call(params:, inventory:)
+  def self.call(inventory:, params:)
     current_user = inventory.current_user
     posts = inventory.posts
     # ...

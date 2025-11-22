@@ -215,7 +215,7 @@ For Proc executors, inventory is passed as a keyword argument:
 
 ```ruby
 version 1 do
-  delegate_to(lambda do |params:, inventory:|
+  delegate_to(lambda do |inventory:, params:|
     # Use method-based access
     posts = inventory.posts
     { posts: posts, meta: { count: posts.size } }
@@ -229,7 +229,7 @@ For regular Ruby classes, inventory is passed as a keyword argument to the speci
 
 ```ruby
 class Posts::IndexService
-  def self.call(params:, inventory:)
+  def self.call(inventory:, params:)
     # Use method-based access
     posts = inventory.posts
     { posts: posts.map(&:to_h) }

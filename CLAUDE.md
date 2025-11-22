@@ -203,7 +203,7 @@ end
 **Service Integration**:
 ```ruby
 class Posts::IndexService
-  def self.call(params:, inventory:)
+  def self.call(inventory:, params:)
     current_user = inventory.current_user  # Lazy evaluation
     posts = inventory.posts
     # ...
@@ -671,7 +671,7 @@ end
 
 # Service receives inventory
 class Posts::IndexService
-  def self.call(params:, inventory:)
+  def self.call(inventory:, params:)
     # Access inventory items (lazy evaluation)
     current_user = inventory.current_user
     posts = inventory.posts

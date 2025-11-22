@@ -751,7 +751,7 @@ end
 
 # Service
 class Posts::IndexService
-  def self.call(params:, inventory:)
+  def self.call(inventory:, params:)
     user = inventory.current_user  # ✓ Correct
     posts = inventory.posts  # ✗ Error: 'posts' not provided
   end

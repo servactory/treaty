@@ -568,6 +568,153 @@ RSpec.describe Gate::API::Posts::IndexTreaty do
                           }
                         }
                       }
+                    },
+                    {
+                      version: "5",
+                      segments: [5],
+                      default: false,
+                      summary: "Demonstrates type casting functionality",
+                      deprecated: false,
+                      executor: {
+                        executor: Posts::Stable::IndexService,
+                        method: :call
+                      },
+                      request: {
+                        attributes: {
+                          filters: {
+                            type: :object,
+                            options: {
+                              required: { is: false, message: nil }
+                            },
+                            attributes: {
+                              title: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil },
+                                  transform: { is: Proc, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              summary: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              description: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              published: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil },
+                                  cast: { to: :boolean, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              created_after: {
+                                type: :integer,
+                                options: {
+                                  required: { is: false, message: nil },
+                                  cast: { to: :datetime, message: nil }
+                                },
+                                attributes: {}
+                              }
+                            }
+                          }
+                        }
+                      },
+                      response: {
+                        status: 200,
+                        attributes: {
+                          meta: {
+                            type: :object,
+                            options: {
+                              required: { is: false, message: nil }
+                            },
+                            attributes: {
+                              count: {
+                                type: :integer,
+                                options: {
+                                  required: { is: false, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              page: {
+                                type: :integer,
+                                options: {
+                                  required: { is: false, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              limit: {
+                                type: :integer,
+                                options: {
+                                  required: { is: false, message: nil },
+                                  default: { is: 12, message: nil }
+                                },
+                                attributes: {}
+                              }
+                            }
+                          },
+                          posts: {
+                            type: :array,
+                            options: {
+                              required: { is: false, message: nil }
+                            },
+                            attributes: {
+                              id: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              title: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              summary: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              description: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              content: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              created_at: {
+                                type: :datetime,
+                                options: {
+                                  required: { is: false, message: nil },
+                                  cast: { to: :integer, message: nil }
+                                },
+                                attributes: {}
+                              }
+                            }
+                          }
+                        }
+                      }
                     }
                   ]
 
@@ -604,6 +751,16 @@ RSpec.describe Gate::API::Posts::IndexTreaty do
 
     context "when version is 4" do
       let(:version) { "4" }
+
+      let(:params) do
+        {}
+      end
+
+      it { expect { perform }.not_to raise_error }
+    end
+
+    context "when version is 5" do
+      let(:version) { "5" }
 
       let(:params) do
         {}

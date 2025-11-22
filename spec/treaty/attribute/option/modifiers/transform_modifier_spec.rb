@@ -42,6 +42,15 @@ RSpec.describe Treaty::Attribute::Option::Modifiers::TransformModifier do
   end
 
   describe "#transform_value" do
+    context "when value is nil" do
+      let(:option_schema) { { is: ->(value:) { value.strip.upcase }, message: nil } }
+
+      it "returns nil without calling lambda" do
+        result = modifier.transform_value(nil)
+        expect(result).to be_nil
+      end
+    end
+
     context "when lambda executes successfully" do
       let(:option_schema) { { is: ->(value:) { value.strip.upcase }, message: nil } }
 

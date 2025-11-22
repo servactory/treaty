@@ -351,6 +351,11 @@ If JSON parsing fails, Treaty raises:
 Treaty::Exceptions::Validation: Transform failed for attribute 'data': unexpected token at '...'
 ```
 
+**Important Notes:**
+- Transform is only applied to non-nil values
+- Nil values are passed through unchanged (handled by `required` validation)
+- This prevents unnecessary lambda execution and potential errors
+
 ## Transformation in Nested Structures
 
 ### Objects

@@ -265,6 +265,7 @@ string :slug, transform: {
 **Important:**
 - Lambda must accept a named `value:` parameter
 - All exceptions raised in lambda are caught and converted to `Treaty::Exceptions::Validation`
+- Only applied to non-nil values (nil values pass through unchanged)
 - Applied after validation but before final output
 
 **See:** [Transformation](./transformation.md#custom-transformations) for detailed examples

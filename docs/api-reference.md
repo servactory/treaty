@@ -834,6 +834,7 @@ string :email, transform: ->(value:) { value.downcase }
 **Requirements:**
 - Lambda must accept a named `value:` parameter
 - All exceptions are caught and converted to `Treaty::Exceptions::Validation`
+- Only applied to non-nil values (nil values pass through unchanged)
 
 ### Advanced Mode Options
 

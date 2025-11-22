@@ -79,10 +79,13 @@ module Treaty
 
           # Applies transformation to the value using the provided lambda
           # Catches all exceptions and re-raises as Validation errors
+          # Skips transformation for nil values (handled by RequiredValidator)
           #
           # @param value [Object] The current value
           # @return [Object] Transformed value
           def transform_value(value) # rubocop:disable Metrics/MethodLength
+            return value if value.nil? # Transform doesn't modify nil, required validator handles it.
+
             transform_lambda = option_value
 
             # Call lambda with named argument

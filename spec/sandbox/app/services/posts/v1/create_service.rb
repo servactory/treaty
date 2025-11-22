@@ -3,6 +3,7 @@
 module Posts
   module V1
     class CreateService < ApplicationService::Base
+      input :inventory, type: Treaty::Executor::Inventory, required: false
       input :params, type: Hash, required: false, default: {}
 
       output :data, type: Hash

@@ -3,17 +3,19 @@
 module Treaty
   module Context
     module Callable
-      def call!(version:, params:)
-        context = send(:new)
+      def call!(version:, params:, context: nil, inventory: nil)
+        treaty_instance = send(:new)
 
-        _call!(context, version:, params:)
+        _call!(treaty_instance, context:, inventory:, version:, params:)
       end
 
       private
 
-      def _call!(context, version:, params:)
-        context.send(
+      def _call!(treaty_instance, context:, inventory:, version:, params:)
+        treaty_instance.send(
           :_call!,
+          context:,
+          inventory:,
           version:,
           params:,
           collection_of_versions:

@@ -9,7 +9,7 @@ module Treaty
     attr_reader :attribute_nesting_level
 
     def initialize
-      @version = ->(context) { context }
+      @version = ->(controller) { controller }
 
       @attribute_nesting_level = 5
     end

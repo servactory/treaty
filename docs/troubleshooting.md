@@ -729,6 +729,106 @@ def self.call(params:)
 end
 ```
 
+## Inventory Issues
+
+### "Inventory item 'X' not found"
+
+**Problem:** Service tries to access inventory item that wasn't provided.
+
+**Solution:**
+1. Check inventory items defined in controller
+2. Verify inventory item names match
+3. Ensure `provide` is called for required items
+
+**Example:**
+```ruby
+# Controller
+class PostsController < ApplicationController
+  treaty :index do
+    provide :current_user
+  end
+end
+
+# Service
+class Posts::IndexService
+  def self.call(inventory:, params:)
+    user = inventory.current_user  # ✓ Correct
+    posts = inventory.posts  # ✗ Error: 'posts' not provided
+  end
+end
+
+# Solution: Add missing inventory item
+treaty :index do
+  provide :current_user
+  provide :posts, from: :load_posts
+end
+```
+
+### "Invalid inventory name"
+
+**Problem:** Inventory name is not a Symbol.
+
+**Solution:**
+Inventory names must be symbols.
+
+**Example:**
+```ruby
+# Correct:
+provide :current_user   # ✓ Symbol
+
+# Incorrect:
+provide "current_user"  # ✗ String
+```
+
+### "Inventory source cannot be nil"
+
+**Problem:** Source for inventory item is nil or missing.
+
+**Solution:**
+1. Ensure source method exists in controller
+2. Verify lambda is defined correctly
+3. Check that direct values are not nil
+
+**Example:**
+```ruby
+# Correct:
+provide :user, from: :current_user  # ✓ Method exists
+
+# Incorrect:
+provide :user, from: :nonexistent_method  # ✗ Method not found
+provide :user, from: nil  # ✗ Nil source
+```
+
+### Inventory evaluation errors
+
+**Problem:** Error occurs when evaluating inventory source.
+
+**Solution:**
+1. Check that controller methods don't raise errors
+2. Verify lambda executes without errors
+3. Ensure dependencies are available
+
+**Example:**
+```ruby
+# Controller
+class PostsController < ApplicationController
+  treaty :index do
+    provide :current_user
+  end
+
+  private
+
+  def current_user
+    raise "User not authenticated"  # ✗ Raises error during evaluation
+  end
+end
+
+# Solution: Handle errors properly
+def current_user
+  User.find_by(id: session[:user_id]) || Guest.new
+end
+```
+
 ## Performance Issues
 
 ### Slow request processing
@@ -739,6 +839,7 @@ end
 1. Simplify nested structures
 2. Reduce validation complexity
 3. Profile application to find bottleneck
+4. Use inventory for expensive operations to benefit from lazy evaluation
 
 ## Debugging Tips
 

@@ -926,10 +926,124 @@ POST /api/users/register
 
 See [Format Validation](./validation.md#format-validation) for complete documentation.
 
+## Example 9: Using Inventory for Controller Data
+
+Demonstrates passing controller-specific data to services.
+
+### Treaty Definition
+
+```ruby
+module Gate
+  module API
+    module Posts
+      class IndexTreaty < ApplicationTreaty
+        version 1, default: true do
+
+          request do
+            object :filters do
+              string :category, :optional
+              string :status, :optional
+            end
+          end
+
+          response 200 do
+            array :posts do
+              string :id
+              string :title
+              string :category
+              boolean :can_edit
+            end
+
+            object :meta do
+              integer :total
+              string :user_role
+            end
+          end
+
+          delegate_to Posts::IndexService
+        end
+      end
+    end
+  end
+end
+```
+
+### Controller
+
+```ruby
+module Gate
+  module API
+    class PostsController < ApplicationController
+      treaty :index do
+        provide :current_user
+        provide :permissions, from: :load_permissions
+      end
+
+      private
+
+      def current_user
+        @current_user ||= User.find(session[:user_id])
+      end
+
+      def load_permissions
+        Permission.for_user(current_user)
+      end
+    end
+  end
+end
+```
+
+### Service
+
+```ruby
+module Posts
+  class IndexService
+    def self.call(inventory:, params:)
+      current_user = inventory.current_user
+      permissions = inventory.permissions
+
+      posts = Post.all
+      posts = posts.where(category: params[:filters][:category]) if params[:filters][:category]
+      posts = posts.where(status: params[:filters][:status]) if params[:filters][:status]
+
+      {
+        posts: posts.map do |post|
+          {
+            id: post.id,
+            title: post.title,
+            category: post.category,
+            can_edit: permissions.can_edit?(post)
+          }
+        end,
+        meta: {
+          total: posts.count,
+          user_role: current_user.role
+        }
+      }
+    end
+  end
+end
+```
+
+### Request Example
+
+```bash
+GET /api/posts?filters[category]=tech
+
+# Controller provides inventory:
+# - current_user (from current_user method)
+# - permissions (from load_permissions method)
+
+# Service receives both params and inventory
+```
+
+See [Inventory System](./inventory.md) for detailed documentation.
+
 ## Next Steps
 
 - [Validation](./validation.md) - Understand how validation works
 - [Versioning](./versioning.md) - Manage multiple versions
+- [Inventory System](./inventory.md) - Pass controller data to services
 - [API Reference](./api-reference.md) - Complete API documentation
 
 [← Back to Documentation](./README.md)

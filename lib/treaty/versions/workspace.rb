@@ -5,7 +5,7 @@ module Treaty
     module Workspace
       private
 
-      def call!(version:, params:, **) # rubocop:disable Metrics/MethodLength
+      def call!(context:, inventory:, version:, params:, **) # rubocop:disable Metrics/MethodLength
         super
 
         version_factory = Resolver.resolve!(
@@ -19,6 +19,8 @@ module Treaty
         )
 
         executor_result = Execution::Request.execute!(
+          context:,
+          inventory:,
           version_factory:,
           validated_params:
         )

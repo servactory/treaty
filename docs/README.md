@@ -19,7 +19,7 @@ Treaty allows you to:
 
 **Contract (Treaty)** - Defines the data structure for a specific API endpoint. Each contract can have multiple versions.
 
-**Version** - Each version describes request structure, response structure, and service delegation
+**Version** - Each version describes request structure, response structure, and service delegation.
 
 ## Documentation Structure
 
@@ -35,15 +35,16 @@ Treaty allows you to:
 8. [Validation](./validation.md) - Data validation system
 9. [Transformation](./transformation.md) - Data transformation pipeline
 10. [Versioning](./versioning.md) - API version management
+11. [Inventory System](./inventory.md) - Passing controller data to services
 
 ### Additional Resources
 
-11. [Examples](./examples.md) - Real-world usage examples
-12. [API Reference](./api-reference.md) - Complete API documentation
-13. [Cheatsheet](./cheatsheet.md) - Quick reference guide
-14. [Migration Guide](./migration-guide.md) - API version migration strategies
-15. [Internationalization](./internationalization.md) - I18n and multilingual support
-16. [Troubleshooting](./troubleshooting.md) - Common issues and solutions
+12. [Examples](./examples.md) - Real-world usage examples
+13. [API Reference](./api-reference.md) - Complete API documentation
+14. [Cheatsheet](./cheatsheet.md) - Quick reference guide
+15. [Migration Guide](./migration-guide.md) - API version migration strategies
+16. [Internationalization](./internationalization.md) - I18n and multilingual support
+17. [Troubleshooting](./troubleshooting.md) - Common issues and solutions
 
 ## Quick Example
 

@@ -1,7 +1,15 @@
 # frozen_string_literal: true
 
 RSpec.describe Gate::API::Posts::IndexTreaty do
-  subject(:perform) { described_class.call!(version:, params:) }
+  subject(:perform) { described_class.call!(inventory:, version:, params:) }
+
+  let(:inventory_collection) { Treaty::Inventory::Collection.new }
+  let(:context) { instance_double(ApplicationController) }
+  let(:inventory) do
+    Treaty::Executor::Inventory.new(inventory_collection, context).tap do |inventory|
+      allow(inventory).to receive(:exists?).and_return(inventory_collection.exists?)
+    end
+  end
 
   it_behaves_like "check treaty class info",
                   versions: [

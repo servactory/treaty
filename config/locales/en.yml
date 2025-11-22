@@ -116,3 +116,23 @@ en:
     # ============================================================================
     controller:
       treaty_class_not_found: "%{class_name}"
+
+    # ============================================================================
+    # Inventory: Controller data provisioning system
+    # ============================================================================
+    inventory:
+      # Factory DSL errors
+      unknown_method: "Unknown method '%{method}' in treaty block for action '%{action}'. Only 'provide' method is supported. Use: provide :name, from: :source OR provide :name"
+      name_must_be_symbol: "Inventory name must be a Symbol, got %{name}. Use: provide :name, from: :source OR provide :name"
+
+      # Inventory validation errors
+      invalid_name: "Inventory name must be a non-empty Symbol, got %{name}"
+      source_required: "Inventory source cannot be nil. Provide a Symbol (method name), Proc/Lambda, or direct value"
+      evaluation_error: "Failed to evaluate inventory item '%{name}': %{error}"
+
+    # ============================================================================
+    # Executor: Inventory executor wrapper
+    # ============================================================================
+    executor:
+      inventory:
+        item_not_found: "Inventory item '%{name}' not found. Available items: %{available}"

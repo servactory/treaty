@@ -75,7 +75,7 @@ jobs:
             ## Project Context:
 
             **Treaty** is a Ruby Gem as an Engine for Rails, providing a DSL for describing API contracts.
-            
+
             **Key Concepts:**
             - Treaty classes describe contracts for endpoints
             - Contract versioning support
@@ -83,6 +83,7 @@ jobs:
             - Request (incoming data) and Response (outgoing data)
             - Request/Response defined via inline blocks or Entity classes (reusable DTOs)
             - Objects for grouping attributes (special :_self merges to parent)
+            - Inventory for passing controller-specific data to services with lazy evaluation
             - Transformation pipeline: validation → transformation → delegation → response
 
             **Project Structure:**
@@ -201,7 +202,25 @@ jobs:
             - Service errors properly propagated
             - Error messages user-friendly
 
-            ### 8. Rails ${{ matrix.rails-version }} Integration
+            ### 8. Inventory System
+            **Controller DSL:**
+            - `provide` method usage correctness
+            - Source types (Symbol, Lambda, Direct value)
+            - Shorthand syntax (`provide :name` vs `provide :name, from: :source`)
+            - Inventory names validity
+
+            **Service Integration:**
+            - Services receive `inventory:` parameter
+            - Lazy evaluation handling
+            - Inventory item access (method calls)
+            - No premature evaluation in controller
+
+            **Error Handling:**
+            - Unknown inventory items handled
+            - Evaluation errors caught
+            - Clear error messages for missing items
+
+            ### 9. Rails ${{ matrix.rails-version }} Integration
             **Engine Compatibility:**
             - Rails ${{ matrix.rails-version }}+ API compatibility
             - Proper engine initialization
@@ -216,7 +235,7 @@ jobs:
 
             **Context7:** check current best practices for Rails ${{ matrix.rails-version }}+ engines
 
-            ### 9. Code Quality
+            ### 10. Code Quality
             **Ruby ${{ matrix.ruby-version }}+ Features:**
             - Proper use of pattern matching
             - Keyword arguments usage
@@ -235,7 +254,7 @@ jobs:
             - Lazy evaluation where appropriate
             - Memory allocations
 
-            ### 10. Testing Coverage
+            ### 11. Testing Coverage
             **RSpec Tests:**
             - Unit tests for new/changed code
             - Integration tests in sandbox
@@ -248,7 +267,7 @@ jobs:
             - No flaky tests
             - Fast execution
 
-            ### 11. Documentation
+            ### 12. Documentation
             **Code Documentation:**
             - Public API documented
             - Complex logic has comments
@@ -261,7 +280,7 @@ jobs:
             - Breaking changes documented
             - Migration guides when necessary
 
-            ### 12. Context7 Integration
+            ### 13. Context7 Integration
             For each library in changes:
             - Load current documentation
             - Check deprecated features
@@ -279,6 +298,9 @@ jobs:
             - ❌ Missing error handling
             - ❌ Tests don't cover new code
             - ❌ Deprecated Rails ${{ matrix.rails-version }}+ APIs
+            - ❌ Evaluating inventory items in controller (breaks lazy evaluation)
+            - ❌ Accessing undefined inventory items in service
+            - ❌ Passing nil as inventory source
 
             **Result:**
             1. Create file: `/tmp/review.md` (Write tool)
@@ -376,6 +398,19 @@ jobs:
 
             ---
 
+            ### 🔄 Inventory System
+            **Controller DSL:**
+            - [✅/⚠️/❌] `provide` usage
+            - [✅/⚠️/❌] Source types correctness
+            - [✅/⚠️/❌] Inventory names validity
+
+            **Service Integration:**
+            - [✅/⚠️/❌] Services receive inventory
+            - [✅/⚠️/❌] Lazy evaluation handling
+            - [✅/⚠️/❌] Error handling
+
+            ---
+
             ### ✨ Code Quality
             **Ruby ${{ matrix.ruby-version }}+ Features:**
             - [modern features usage]
@@ -430,6 +465,7 @@ jobs:
             - DSL consistency: [🟢/🟡/🟠/🔴]
             - Version management: [🟢/🟡/🟠/🔴]
             - Transformation pipeline: [🟢/🟡/🟠/🔴]
+            - Inventory system: [🟢/🟡/🟠/🔴]
             - Rails integration: [🟢/🟡/🟠/🔴]
             - Testing: [🟢/🟡/🟠/🔴]
             - Documentation: [🟢/🟡/🟠/🔴]

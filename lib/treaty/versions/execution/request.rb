@@ -8,7 +8,9 @@ module Treaty
           new(...).execute!
         end
 
-        def initialize(version_factory:, validated_params:)
+        def initialize(version_factory:, validated_params:, inventory: nil, context: nil)
+          @inventory = inventory
+          @context = context
           @version_factory = version_factory
           @validated_params = validated_params
         end
@@ -89,15 +91,26 @@ module Treaty
         ########################################################################
         ########################################################################
 
+        # Creates inventory wrapper with lazy evaluation
+        #
+        # @return [Treaty::Executor::Inventory] Inventory wrapper with method-based access
+        def evaluated_inventory
+          @evaluated_inventory ||= Treaty::Executor::Inventory.new(@inventory, @context)
+        end
+
+        ########################################################################
+
         def execute_proc
-          executor.call(params: @validated_params)
+          # For Proc executors, pass inventory if collection exists
+          executor.call(**build_call_params)
         rescue StandardError => e
           raise Treaty::Exceptions::Execution,
                 I18n.t("treaty.execution.proc_error", message: e.message)
         end
 
         def execute_servactory # rubocop:disable Metrics/MethodLength
-          executor.call!(params: @validated_params)
+          # For Servactory services, pass inventory if collection exists
+          executor.call!(**build_call_params)
         rescue Servactory::Exceptions::Input => e
           raise Treaty::Exceptions::Execution,
                 I18n.t("treaty.execution.servactory_input_error", message: e.message)
@@ -124,7 +137,8 @@ module Treaty
                   )
           end
 
-          executor.public_send(method_name, params: @validated_params)
+          # For regular classes, pass inventory if collection exists
+          executor.public_send(method_name, **build_call_params)
         rescue StandardError => e
           raise Treaty::Exceptions::Execution,
                 I18n.t("treaty.execution.regular_service_error", message: e.message)
@@ -133,6 +147,17 @@ module Treaty
         ########################################################################
         ########################################################################
         ########################################################################
+
+        # Builds call parameters hash with inventory if it exists
+        #
+        # @return [Hash] Parameters hash with :params and optionally :inventory
+        def build_call_params
+          if @inventory&.exists?
+            { params: @validated_params, inventory: evaluated_inventory }
+          else
+            { params: @validated_params }
+          end
+        end
 
         def raise_executor_missing_error!
           raise Treaty::Exceptions::Execution,

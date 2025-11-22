@@ -36,8 +36,9 @@ This document provides comprehensive guidance for AI assistants working with the
 4. **Entity Classes (DTOs)** - Reusable data transfer objects
 5. **Built-in Validation** - Automatic validation of incoming/outgoing data
 6. **Data Transformation** - Transform data between API versions
-7. **Deprecation Management** - Mark versions as deprecated with conditions
-8. **Internationalization** - Full I18n support
+7. **Inventory System** - Pass controller-specific data to services efficiently
+8. **Deprecation Management** - Mark versions as deprecated with conditions
+9. **Internationalization** - Full I18n support
 
 ## Repository Structure
 
@@ -105,7 +106,7 @@ treaty/
 4. **Rails Integration**: Automatic ActionController inclusion via Rails Engine
 5. **Method Missing Magic**: Type methods (string, integer, etc.) via `method_missing`
 
-### The 7 Main Systems
+### The 8 Main Systems
 
 #### 1. Attribute System (`lib/treaty/attribute/`)
 
@@ -184,7 +185,39 @@ class UserDto < Treaty::Entity
 end
 ```
 
-#### 7. Supporting Systems
+#### 7. Inventory System (`lib/treaty/inventory/`)
+
+Passes controller-specific data to services with lazy evaluation.
+
+**Controller DSL**:
+```ruby
+class PostsController < ApplicationController
+  treaty :index do
+    provide :current_user              # Shorthand: uses current_user method
+    provide :posts, from: :load_posts  # Method source
+    provide :meta, from: -> { build_metadata }  # Lambda source
+  end
+end
+```
+
+**Service Integration**:
+```ruby
+class Posts::IndexService
+  def self.call(inventory:, params:)
+    current_user = inventory.current_user  # Lazy evaluation
+    posts = inventory.posts
+    # ...
+  end
+end
+```
+
+**Key Classes**:
+- `Treaty::Inventory::Inventory` - Single inventory item
+- `Treaty::Inventory::Factory` - DSL factory for building inventory
+- `Treaty::Inventory::Collection` - Collection of inventory items
+- `Treaty::Executor::Inventory` - Wrapper with lazy evaluation and caching
+
+#### 8. Supporting Systems
 
 - Configuration (`lib/treaty/configuration.rb`)
 - Engine (`lib/treaty/engine.rb`) - Rails integration
@@ -333,7 +366,12 @@ end
 # frozen_string_literal: true
 
 RSpec.describe Gate::API::Posts::CreateTreaty do
-  subject(:perform) { described_class.call!(version:, params:) }
+  # Note: Treaty API signature includes context and inventory
+  subject(:perform) { described_class.call!(context:, inventory:, version:, params:) }
+
+  let(:context) { instance_double(ApplicationController) }
+  let(:inventory) { Treaty::Executor::Inventory.new(collection, context) }
+  let(:collection) { Treaty::Inventory::Collection.new }
 
   context "when required data for work is valid" do
     context "when version is 1" do
@@ -605,6 +643,46 @@ delegate_to Posts::CreateService => :call!
 delegate_to Posts::CreateService => :call, return: lambda(&:data)
 ```
 
+### Inventory Patterns
+
+```ruby
+# Controller DSL
+class PostsController < ApplicationController
+  treaty :index do
+    # Shorthand - uses method with same name
+    provide :current_user
+
+    # Method source
+    provide :posts, from: :load_posts
+
+    # Lambda source
+    provide :meta, from: -> { { timestamp: Time.current } }
+
+    # Direct value
+    provide :api_version, from: 3
+  end
+
+  private
+
+  def load_posts
+    Post.where(user: current_user).published
+  end
+end
+
+# Service receives inventory
+class Posts::IndexService
+  def self.call(inventory:, params:)
+    # Access inventory items (lazy evaluation)
+    current_user = inventory.current_user
+    posts = inventory.posts
+    meta = inventory.meta
+
+    # Or convert to hash (evaluates all items)
+    data = inventory.to_h
+  end
+end
+```
+
 ## Documentation
 
 ### Primary Documentation
@@ -621,6 +699,7 @@ All documentation is in `/home/user/treaty/docs/`:
 - `transformation.md` - Data transformation
 - `entities.md` - Entity/DTO classes
 - `versioning.md` - Version management
+- `inventory.md` - Inventory system for controller data
 - `examples.md` - Real-world examples
 - `internationalization.md` - I18n support
 - `api-reference.md` - Complete API documentation

@@ -246,6 +246,30 @@ string :password, format: {
 
 **See:** [Format Validation](./validation.md#format-validation) for detailed examples
 
+#### transform
+
+Applies custom lambda-based transformations to attribute values.
+
+```ruby
+# Simple mode
+string :title, transform: ->(value:) { value.strip }
+string :email, transform: ->(value:) { value.downcase }
+
+# Advanced mode with custom error message
+string :slug, transform: {
+  is: ->(value:) { value.parameterize },
+  message: "Failed to generate slug"
+}
+```
+
+**Important:**
+- Lambda must accept a named `value:` parameter
+- All exceptions raised in lambda are caught and converted to `Treaty::Exceptions::Validation`
+- Only applied to non-nil values (nil values pass through unchanged)
+- Applied after validation but before final output
+
+**See:** [Transformation](./transformation.md#custom-transformations) for detailed examples
+
 ### Advanced Mode Options
 
 All simple mode options can be extended with custom error messages using either static strings or dynamic lambda functions:

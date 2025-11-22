@@ -26,7 +26,8 @@ RSpec.describe Deserialization::Gate::API::Posts::IndexDto do
                         title: {
                           type: :string,
                           options: {
-                            required: { is: false, message: nil }
+                            required: { is: false, message: nil },
+                            transform: { is: Proc, message: nil }
                           },
                           attributes: {}
                         }

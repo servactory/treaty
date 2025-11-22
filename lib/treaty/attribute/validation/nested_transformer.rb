@@ -138,8 +138,7 @@ module Treaty
           def transform(value)
             value.each_with_index.map do |item, index|
               if simple_array?
-                validate_simple_element(item, index)
-                item
+                transform_simple_element(item, index)
               else
                 transform_array_item(item, index)
               end
@@ -156,19 +155,21 @@ module Treaty
               attribute.collection_of_attributes.first.name == SELF_OBJECT
           end
 
-          # Validates a simple array element (primitive value)
+          # Transforms a simple array element (primitive value)
+          # Validates and applies transformations to the element
           #
-          # @param item [Object] Array element to validate
+          # @param item [Object] Array element to transform
           # @param index [Integer] Element index for error messages
           # @raise [Treaty::Exceptions::Validation] If validation fails
-          # @return [void]
-          def validate_simple_element(item, index) # rubocop:disable Metrics/MethodLength
+          # @return [Object] Transformed element value
+          def transform_simple_element(item, index) # rubocop:disable Metrics/MethodLength
             self_attr = attribute.collection_of_attributes.first
             validator = AttributeValidator.new(self_attr)
             validator.validate_schema!
 
             begin
               validator.validate_value!(item)
+              validator.transform_value(item)
             rescue Treaty::Exceptions::Validation => e
               raise Treaty::Exceptions::Validation,
                     I18n.t(

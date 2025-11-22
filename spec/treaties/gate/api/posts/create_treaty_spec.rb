@@ -182,7 +182,8 @@ RSpec.describe Gate::API::Posts::CreateTreaty do
                               title: {
                                 type: :string,
                                 options: {
-                                  required: { is: true, message: nil }
+                                  required: { is: true, message: nil },
+                                  transform: { is: Proc, message: nil }
                                 },
                                 attributes: {}
                               },
@@ -223,7 +224,8 @@ RSpec.describe Gate::API::Posts::CreateTreaty do
                                   _self: {
                                     type: :string,
                                     options: {
-                                      required: { is: true, message: nil }
+                                      required: { is: true, message: nil },
+                                      transform: { is: Proc, message: nil }
                                     },
                                     attributes: {}
                                   }
@@ -495,6 +497,39 @@ RSpec.describe Gate::API::Posts::CreateTreaty do
       end
 
       it { expect { perform }.not_to raise_error }
+
+      context "with transform option applied" do
+        let(:params) do
+          {
+            signature: "...",
+            post: {
+              title: "  Title With Spaces  ",
+              summary: "Summary 1",
+              description: "Description 1",
+              content: "...",
+              tags: %w[TAG1 TAG2 TAG3],
+              author: {
+                name: "John Doe",
+                bio: "...",
+                socials: [
+                  {
+                    provider: "twitter",
+                    handle: "johndoe"
+                  }
+                ]
+              }
+            }
+          }
+        end
+
+        it "transforms title by stripping spaces and tags to lowercase", :aggregate_failures do
+          result = perform
+
+          # The transformed value (stripped title) should be passed to the service
+          expect(result.data[:post][:title]).to eq("Title With Spaces")
+          expect(result.data[:post][:tags]).to eq(%w[tag1 tag2 tag3])
+        end
+      end
     end
   end
 

@@ -344,7 +344,8 @@ RSpec.describe Gate::API::Posts::IndexTreaty do
                               title: {
                                 type: :string,
                                 options: {
-                                  required: { is: false, message: nil }
+                                  required: { is: false, message: nil },
+                                  transform: { is: Proc, message: nil }
                                 },
                                 attributes: {}
                               },
@@ -466,7 +467,8 @@ RSpec.describe Gate::API::Posts::IndexTreaty do
                               title: {
                                 type: :string,
                                 options: {
-                                  required: { is: false, message: nil }
+                                  required: { is: false, message: nil },
+                                  transform: { is: Proc, message: nil }
                                 },
                                 attributes: {}
                               },

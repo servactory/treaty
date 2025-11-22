@@ -121,7 +121,7 @@ module Gate
           request do
             # Query: filters[title], filters[middle_name], filters[summary]
             object :filters, :optional do
-              string :title, :optional
+              string :title, :optional, transform: ->(value:) { value.strip.downcase }
               string :summary, :optional
               string :description, :optional
             end

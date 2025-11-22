@@ -10,7 +10,7 @@ module Posts
 
       private
 
-      def call # rubocop:disable Metrics/MethodLength
+      def call # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
         post_data = inputs.params.fetch(:post, {})
 
         outputs.data = {
@@ -20,6 +20,9 @@ module Posts
             summary: post_data[:summary] || "Summary",
             description: post_data[:description] || "Description",
             content: post_data[:content] || "Content",
+            published: post_data[:published],
+            featured: post_data[:featured],
+            published_at: post_data[:published_at] || Time.current,
             tags: post_data.fetch(:tags, []),
             author: post_data.fetch(:author, {}),
             rating: 0,

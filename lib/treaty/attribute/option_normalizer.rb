@@ -70,7 +70,8 @@ module Treaty
       OPTION_KEY_MAPPING = {
         in: { advanced_key: :inclusion, value_key: :in },
         as: { advanced_key: :as, value_key: :is },
-        default: { advanced_key: :default, value_key: :is }
+        default: { advanced_key: :default, value_key: :is },
+        cast: { advanced_key: :cast, value_key: :to }
       }.freeze
       private_constant :OPTION_KEY_MAPPING
 

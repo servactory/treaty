@@ -152,7 +152,37 @@ integer :rating, in: [1, 2, 3, 4, 5]
 
 # Attribute renaming
 string :handle, as: :value
+
+# Type casting
+string :published_at, cast: :datetime  # String to DateTime
+datetime :created_at, cast: :integer   # DateTime to Unix timestamp
+boolean :active, cast: :integer        # Boolean to integer (1/0)
 ```
+
+## Option Execution Order
+
+**Critical:** When combining modifiers, order matters! Options execute sequentially in definition order.
+
+```ruby
+# ✅ Recommended order: transform → cast → default → as
+string :published_at,
+       transform: ->(value:) { value.strip },  # 1. Clean data
+       cast: :datetime,  # 2. Convert type
+       default: Time.current,  # 3. Default if still nil
+       as: :published_date  # 4. Rename
+
+# ❌ Wrong order causes failures
+string :published_at,
+       cast: :datetime,  # Tries to parse dirty string
+       transform: ->(value:) { value.strip }  # ERROR: DateTime has no .strip
+```
+
+**Common conflicts:**
+- `cast` before `transform` → transform fails on converted type
+- Wrong type in `default` → type mismatch (user error)
+- Multiple `transform:` → only last one executes (hash key overwrite)
+
+**See:** [Transformation: Option Execution Order](./transformation.md#option-execution-order)
 
 ## Attribute Options - Advanced Mode
 
@@ -183,6 +213,12 @@ string :priority, inclusion: {
   message: lambda do |attribute:, value:, allowed_values:, **|
     "Invalid #{attribute}: '#{value}'. Must be: #{allowed_values.join(', ')}"
   end
+}
+
+# Type casting with custom message
+string :published_at, cast: {
+  to: :datetime,
+  message: "Invalid date format provided"
 }
 ```
 

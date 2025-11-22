@@ -91,14 +91,15 @@ module Treaty
             # Call lambda with named argument
             transform_lambda.call(value:)
           rescue StandardError => e
+            attributes = {
+              attribute: @attribute_name,
+              error: e.message
+            }
+
             # Catch all exceptions from lambda execution
-            error_message = resolve_custom_message(
-              attribute: @attribute_name,
-              error: e.message
-            ) || I18n.t(
+            error_message = resolve_custom_message(**attributes) || I18n.t(
               "treaty.attributes.modifiers.transform.execution_error",
-              attribute: @attribute_name,
-              error: e.message
+              **attributes
             )
 
             raise Treaty::Exceptions::Validation, error_message

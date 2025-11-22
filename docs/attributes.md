@@ -270,6 +270,93 @@ string :slug, transform: {
 
 **See:** [Transformation](./transformation.md#custom-transformations) for detailed examples
 
+#### cast
+
+Automatically converts values between different types using predefined conversion rules.
+
+```ruby
+# Simple mode
+string :published_at, cast: :datetime       # String to DateTime
+datetime :created_at, cast: :integer        # DateTime to Unix timestamp
+integer :timestamp, cast: :datetime         # Unix timestamp to DateTime
+boolean :active, cast: :integer             # Boolean to integer (1/0)
+string :featured, cast: :boolean            # String to boolean
+
+# Advanced mode with custom error message
+string :published_at, cast: {
+  to: :datetime,
+  message: "Invalid date format provided"
+}
+```
+
+**Supported conversions:**
+
+**From Integer:**
+- `integer -> string`: Converts to string representation
+- `integer -> boolean`: `0` = `false`, non-zero = `true`
+- `integer -> datetime`: Treats as Unix timestamp
+
+**From String:**
+- `string -> integer`: Parses integer from string
+- `string -> boolean`: Parses truthy/falsy strings (`"true"`, `"false"`, `"yes"`, `"no"`, `"1"`, `"0"`, `"on"`, `"off"`, case-insensitive)
+- `string -> datetime`: Parses datetime string (ISO8601, RFC3339, etc.)
+
+**From Boolean:**
+- `boolean -> string`: Converts to `"true"` or `"false"`
+- `boolean -> integer`: `true` = `1`, `false` = `0`
+
+**From DateTime:**
+- `datetime -> string`: Converts to ISO8601 format
+- `datetime -> integer`: Converts to Unix timestamp
+
+**Important:**
+- Cast only works with scalar types (`integer`, `string`, `boolean`, `datetime`)
+- Array and Object types do not support casting
+- Casting to the same type is allowed (no-op)
+- Only applied to non-nil values (nil values pass through unchanged)
+- All conversion errors are caught and converted to `Treaty::Exceptions::Validation`
+
+**Use cast when:**
+- Converting between built-in types
+- You want automatic, consistent type conversions
+- You need standard datetime/timestamp conversions
+
+**Use transform when:**
+- You need custom transformation logic
+- The transformation doesn't fit predefined casting rules
+
+**Combining cast and transform:**
+```ruby
+# Transform cleans the string, then cast converts it to datetime
+string :published_at,
+       transform: ->(value:) { value.strip },
+       cast: :datetime
+```
+
+**Important:** When combining multiple modifiers (`default`, `transform`, `cast`, `as`), their order matters. Options execute sequentially in the order they're defined. Always use this recommended order:
+
+1. `transform:` - Clean/prepare values
+2. `cast:` - Convert types
+3. `default:` - Apply default if still nil
+4. `as:` - Rename attributes
+
+```ruby
+# ✅ Recommended order
+string :published_at,
+       transform: ->(value:) { value.strip },
+       cast: :datetime,
+       default: Time.current  # Already DateTime
+
+# ❌ Wrong type in default
+string :published_at,
+       cast: :datetime,
+       default: "2024-01-15"  # String! Should be Time/DateTime
+```
+
+**See:** [Transformation: Option Execution Order](./transformation.md#option-execution-order) for comprehensive guide on ordering, conflicts, and troubleshooting.
+
+**See:** [Transformation: Type Casting](./transformation.md#type-casting) for detailed examples
+
 ### Advanced Mode Options
 
 All simple mode options can be extended with custom error messages using either static strings or dynamic lambda functions:

@@ -3,7 +3,7 @@
 module Gate
   module API
     module Posts
-      class CreateTreaty < ApplicationTreaty
+      class CreateTreaty < ApplicationTreaty # rubocop:disable Metrics/ClassLength
         version 1 do # Also supported: 1.0, 1.0.0.rc1
           summary "The first version of the contract for creating a post"
 
@@ -126,6 +126,83 @@ module Gate
 
           # Full example:
           # delegate_to "posts/stable/create_service" => :call, return: lambda(&:data)
+        end
+
+        version 4 do
+          summary "Demonstrates type casting functionality"
+
+          request do
+            # Query
+            object :_self do
+              string :signature
+            end
+          end
+
+          request do
+            # Body
+            object :post do
+              string :title, transform: ->(value:) { value.strip }
+              string :summary
+              string :description, :optional
+              string :content
+              boolean :published, :optional
+
+              # Cast string timestamp to datetime
+              string :published_at, :optional, cast: :datetime
+
+              array :tags, :optional do
+                string :_self, transform: ->(value:) { value.downcase }
+              end
+
+              object :author do
+                string :name
+                string :bio
+
+                array :socials, :optional do
+                  string :provider, in: %w[twitter linkedin github]
+                  string :handle, as: :value
+                end
+              end
+            end
+          end
+
+          response 201 do
+            object :post do
+              string :id
+              string :title
+              string :summary
+              string :description
+              string :content
+              boolean :published
+              boolean :featured
+
+              # Cast datetime to string for API output
+              datetime :published_at, cast: :string
+
+              array :tags do
+                string :_self
+              end
+
+              object :author do
+                string :name
+                string :bio
+
+                array :socials do
+                  string :provider
+                  string :value, as: :handle
+                end
+              end
+
+              integer :rating
+              integer :views
+
+              # Cast datetime to integer (Unix timestamp)
+              datetime :created_at, cast: :integer
+              datetime :updated_at, cast: :string
+            end
+          end
+
+          delegate_to "posts/stable/create_service"
         end
       end
     end

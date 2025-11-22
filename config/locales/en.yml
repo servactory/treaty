@@ -53,6 +53,13 @@ en:
           invalid_type: "Option 'transform' for attribute '%{attribute}' must be a Proc or Lambda. Got: %{type}"
           execution_error: "Transform failed for attribute '%{attribute}': %{error}"
 
+        cast:
+          invalid_type: "Option 'cast' for attribute '%{attribute}' must be a Symbol. Got: %{type}"
+          source_not_supported: "Option 'cast' for attribute '%{attribute}' cannot be used with type '%{source_type}'. Casting is only supported for: %{allowed}"
+          target_not_supported: "Option 'cast' for attribute '%{attribute}' cannot cast to '%{target_type}'. Supported target types: %{allowed}"
+          conversion_not_supported: "Option 'cast' for attribute '%{attribute}' does not support conversion from '%{from}' to '%{to}'"
+          conversion_error: "Cast failed for attribute '%{attribute}' from '%{from}' to '%{to}'. Value: '%{value}'. Error: %{error}"
+
       # Attribute builder DSL
       builder:
         not_implemented: "%{class} must implement #create_attribute"

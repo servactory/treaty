@@ -35,7 +35,7 @@ This document provides comprehensive guidance for AI assistants working with the
 3. **Unified Validation** - Same attribute system across requests, responses, and entities
 4. **Entity Classes (DTOs)** - Reusable data transfer objects
 5. **Built-in Validation** - Automatic validation of incoming/outgoing data
-6. **Data Transformation** - Transform data between API versions
+6. **Data Transformation** - Transform data with custom lambdas (`transform:`) and automatic type casting (`cast:`)
 7. **Inventory System** - Pass controller-specific data to services efficiently
 8. **Deprecation Management** - Mark versions as deprecated with conditions
 9. **Internationalization** - Full I18n support
@@ -46,8 +46,8 @@ This document provides comprehensive guidance for AI assistants working with the
 treaty/
 ├── .github/
 │   └── workflows/          # CI/CD workflows (test, rubocop, code-review)
-├── docs/                   # Comprehensive documentation (17 files)
-├── lib/                    # Main source code (72 files)
+├── docs/                   # Comprehensive documentation (18 files)
+├── lib/                    # Main source code (80 files)
 │   └── treaty/
 │       ├── attribute/      # Core attribute system (DSL, validation, transformation)
 │       ├── controller/     # Rails controller integration
@@ -121,7 +121,9 @@ treaty/
 - `:optional` - Makes attribute optional (otherwise required by default in entities)
 - `:required` - Explicitly marks as required (in request/response blocks)
 - `default: value` - Default value if not provided
-- `as: :new_name` - Transform key name
+- `transform: lambda` - Apply custom transformation via lambda (e.g., `transform: ->(value:) { value.strip.upcase }`)
+- `cast: :type` - Automatically convert between types (e.g., `cast: :datetime`, `cast: :boolean`)
+- `as: :new_name` - Rename attribute key
 - `in: [...]` - Value must be in list (inclusion validation)
 - `format: :email` - Format validation (email, uuid, datetime, etc.)
 
@@ -569,8 +571,37 @@ string :uuid, format: :uuid
 string :username,
        required: { is: true, message: "Username is required" }
 
-# With transformation (rename)
+# With custom transformation (v0.12+)
+string :title, transform: ->(value:) { value.strip.titleize }
+string :email, transform: ->(value:) { value.downcase.strip }
+integer :amount_cents, transform: ->(value:) { value * 100 }
+
+# With type casting (v0.13+)
+# Request: Convert client data to service-friendly types
+string :published_at, cast: :datetime    # String → DateTime
+string :featured, cast: :boolean         # String → Boolean
+integer :timestamp, cast: :datetime      # Unix timestamp → DateTime
+
+# Response: Convert service data to client-friendly types
+datetime :created_at, cast: :string      # DateTime → ISO8601 string
+datetime :published_at, cast: :integer   # DateTime → Unix timestamp
+boolean :active, cast: :integer          # Boolean → Integer (1/0)
+
+# With attribute renaming
 string :first_name, as: :firstName
+
+# Combining multiple modifiers (order matters: default → transform → cast → as)
+string :published_at,
+       default: { is: Time.current },
+       transform: ->(value:) { value.to_s.strip },
+       cast: :datetime,
+       as: :publishedAt
+
+# Advanced casting with custom error message
+string :published_at, cast: {
+  to: :datetime,
+  message: "Invalid date format provided"
+}
 
 # Nested objects
 object :author do
@@ -799,6 +830,18 @@ rake
 2. **Version numbers** can be integer or semantic versioning string
 3. **Test all versions** of your treaty
 4. **Document version changes** in summary
+5. **Modifier order matters**: When combining modifiers, use this order:
+   - `default:` - Apply defaults first
+   - `transform:` - Transform the value
+   - `cast:` - Cast to target type
+   - `as:` - Rename the attribute key last
+6. **Choose between transform and cast**:
+   - Use `cast:` for standard type conversions (string ↔ datetime, boolean ↔ integer, etc.)
+   - Use `transform:` for custom business logic (titleize, strip, calculations, etc.)
+   - Both work on non-nil values only (nil passes through unchanged)
+7. **Type casting limitations**:
+   - Array and Object types do not support casting
+   - Only primitive types support casting (string, integer, boolean, datetime)
 
 ### When Writing Tests
 
@@ -868,6 +911,6 @@ grep -r "delegate_to" spec/sandbox/app/treaties/
 
 ---
 
-**Last Updated**: 2025-11-20
+**Last Updated**: 2025-11-22
 **Treaty Version**: 0.13.0
 **Repository**: https://github.com/servactory/treaty

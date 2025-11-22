@@ -20,6 +20,7 @@ Validation
     ↓
 Request Transformation
     - Apply defaults
+    - Custom transformations (transform:)
     - Rename attributes (as:)
     - Convert string keys → symbol keys
     ↓
@@ -27,6 +28,7 @@ Service (receives transformed Ruby hash)
     ↓
 Response Transformation
     - Apply defaults
+    - Custom transformations (transform:)
     - Rename attributes (as:)
     - Convert symbol keys → string keys
     ↓
@@ -248,6 +250,105 @@ Treaty automatically converts between string and symbol keys.
     "title" => "Hello"
   }
 }
+```
+
+### 4. Custom Transformations
+
+Apply custom lambda-based transformations to attribute values using the `transform` option.
+
+#### Request Transformations
+
+```ruby
+request do
+  object :post do
+    string :title, transform: ->(value:) { value.strip.titleize }
+    string :email, transform: ->(value:) { value.downcase.strip }
+    integer :amount_cents, transform: ->(value:) { value * 100 }
+  end
+end
+```
+
+**Client sends:**
+```ruby
+{
+  "post" => {
+    "title" => "  hello world  ",
+    "email" => "  USER@EXAMPLE.COM  ",
+    "amount_cents" => 10
+  }
+}
+```
+
+**Service receives (with transformations applied):**
+```ruby
+{
+  post: {
+    title: "Hello World",
+    email: "user@example.com",
+    amount_cents: 1000
+  }
+}
+```
+
+#### Response Transformations
+
+```ruby
+response 200 do
+  object :post do
+    string :title, transform: ->(value:) { value.upcase }
+    datetime :created_at, transform: ->(value:) { value.iso8601 }
+  end
+end
+```
+
+**Service returns:**
+```ruby
+{
+  post: {
+    title: "Hello World",
+    created_at: Time.parse("2025-01-15 10:30:00 UTC")
+  }
+}
+```
+
+**Client receives (with transformations applied):**
+```ruby
+{
+  "post" => {
+    "title" => "HELLO WORLD",
+    "created_at" => "2025-01-15T10:30:00Z"
+  }
+}
+```
+
+#### Advanced Mode with Custom Error Messages
+
+```ruby
+request do
+  object :post do
+    string :slug, transform: {
+      is: ->(value:) { value.parameterize },
+      message: "Failed to generate slug"
+    }
+  end
+end
+```
+
+#### Error Handling
+
+All exceptions raised within transform lambdas are caught and converted to `Treaty::Exceptions::Validation`:
+
+```ruby
+request do
+  object :post do
+    string :data, transform: ->(value:) { JSON.parse(value) }
+  end
+end
+```
+
+If JSON parsing fails, Treaty raises:
+```
+Treaty::Exceptions::Validation: Transform failed for attribute 'data': unexpected token at '...'
 ```
 
 ## Transformation in Nested Structures

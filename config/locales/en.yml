@@ -49,6 +49,10 @@ en:
         as:
           invalid_type: "Option 'as' for attribute '%{attribute}' must be a Symbol. Got: %{type}"
 
+        transform:
+          invalid_type: "Option 'transform' for attribute '%{attribute}' must be a Proc or Lambda. Got: %{type}"
+          execution_error: "Transform failed for attribute '%{attribute}': %{error}"
+
       # Attribute builder DSL
       builder:
         not_implemented: "%{class} must implement #create_attribute"

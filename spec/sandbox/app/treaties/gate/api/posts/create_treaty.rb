@@ -68,14 +68,14 @@ module Gate
           request do
             # Body
             object :post do
-              string :title
+              string :title, transform: ->(value:) { value.strip }
               string :summary
               string :description, :optional
               string :content
               boolean :published, :optional
 
               array :tags, :optional do
-                string :_self
+                string :_self, transform: ->(value:) { value.downcase }
               end
 
               object :author do

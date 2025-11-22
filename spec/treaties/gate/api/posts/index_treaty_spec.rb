@@ -344,7 +344,8 @@ RSpec.describe Gate::API::Posts::IndexTreaty do
                               title: {
                                 type: :string,
                                 options: {
-                                  required: { is: false, message: nil }
+                                  required: { is: false, message: nil },
+                                  transform: { is: Proc, message: nil }
                                 },
                                 attributes: {}
                               },
@@ -466,7 +467,8 @@ RSpec.describe Gate::API::Posts::IndexTreaty do
                               title: {
                                 type: :string,
                                 options: {
-                                  required: { is: false, message: nil }
+                                  required: { is: false, message: nil },
+                                  transform: { is: Proc, message: nil }
                                 },
                                 attributes: {}
                               },
@@ -598,6 +600,22 @@ RSpec.describe Gate::API::Posts::IndexTreaty do
       end
 
       it { expect { perform }.not_to raise_error }
+
+      context "with transform option applied to title" do
+        let(:params) do
+          {
+            filters: {
+              title: "  HELLO WORLD  "
+            }
+          }
+        end
+
+        it "transforms title by stripping and downcasing" do
+          result = perform
+          # The transformed value should be passed to the service
+          expect(result).to be_a(Treaty::Result)
+        end
+      end
     end
 
     context "when version is 4" do

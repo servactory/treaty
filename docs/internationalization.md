@@ -116,6 +116,20 @@ treaty:
       item_not_found: "Inventory item '%{name}' not found. Available items: %{available}"
 ```
 
+### Modifier Messages
+
+```yaml
+treaty:
+  attributes:
+    modifiers:
+      as:
+        invalid_type: "Option 'as' for attribute '%{attribute}' must be a Symbol. Got: %{type}"
+
+      transform:
+        invalid_type: "Option 'transform' for attribute '%{attribute}' must be a Proc or Lambda. Got: %{type}"
+        execution_error: "Transform failed for attribute '%{attribute}': %{error}"
+```
+
 ## Adding New Languages
 
 To add support for a new language, create a translation file in your Rails application:
@@ -165,6 +179,10 @@ de:
       modifiers:
         as:
           invalid_type: "Option 'as' für Attribut '%{attribute}' muss ein Symbol sein. Erhalten: %{type}"
+
+        transform:
+          invalid_type: "Option 'transform' für Attribut '%{attribute}' muss ein Proc oder Lambda sein. Erhalten: %{type}"
+          execution_error: "Transform fehlgeschlagen für Attribut '%{attribute}': %{error}"
 
       builder:
         not_implemented: "%{class} muss #create_attribute implementieren"
@@ -368,6 +386,11 @@ Different validators provide different interpolation variables:
 - `%{class_name}` - class name
 - `%{method}` - method name
 - `%{message}` - error message
+
+**Transform Modifier:**
+- `%{attribute}` - the attribute name
+- `%{type}` - the actual type provided (for invalid_type error)
+- `%{error}` - the error message from lambda execution (for execution_error)
 
 **Inventory:**
 - `%{method}` - the unknown method name that was called

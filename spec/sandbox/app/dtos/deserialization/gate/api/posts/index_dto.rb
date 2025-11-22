@@ -6,7 +6,7 @@ module Deserialization
       module Posts
         class IndexDto < ApplicationDto
           object :filters, :optional do
-            string :title, :optional
+            string :title, :optional, transform: ->(value:) { value.strip.downcase }
             string :summary, :optional
             string :description, :optional
           end

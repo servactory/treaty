@@ -3,7 +3,7 @@
 module Gate
   module API
     module Posts
-      class CreateTreaty < ApplicationTreaty
+      class CreateTreaty < ApplicationTreaty # rubocop:disable Metrics/ClassLength
         version 1 do # Also supported: 1.0, 1.0.0.rc1
           summary "The first version of the contract for creating a post"
 

@@ -10,7 +10,7 @@ module Posts
 
       private
 
-      def call # rubocop:disable Metrics/MethodLength
+      def call # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
         post_data = inputs.params.fetch(:post, {})
 
         outputs.data = {

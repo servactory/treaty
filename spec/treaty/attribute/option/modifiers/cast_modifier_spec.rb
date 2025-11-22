@@ -144,7 +144,7 @@ RSpec.describe Treaty::Attribute::Option::Modifiers::CastModifier do
       let(:attribute_type) { :integer }
       let(:option_schema) { { to: :datetime, message: nil } }
 
-      it "converts Unix timestamp to Time" do
+      it "converts Unix timestamp to Time", :aggregate_failures do
         timestamp = 1_705_320_600 # 2024-01-15 10:30:00 UTC
         result = modifier.transform_value(timestamp)
         expect(result).to be_a(Time)
@@ -218,7 +218,7 @@ RSpec.describe Treaty::Attribute::Option::Modifiers::CastModifier do
         expect(modifier.transform_value("off")).to be(false)
       end
 
-      it "is case-insensitive" do
+      it "is case-insensitive", :aggregate_failures do
         expect(modifier.transform_value("TRUE")).to be(true)
         expect(modifier.transform_value("False")).to be(false)
       end
@@ -312,14 +312,14 @@ RSpec.describe Treaty::Attribute::Option::Modifiers::CastModifier do
       let(:attribute_type) { :datetime }
       let(:option_schema) { { to: :string, message: nil } }
 
-      it "converts DateTime to ISO8601 string" do
+      it "converts DateTime to ISO8601 string", :aggregate_failures do
         datetime = DateTime.new(2024, 1, 15, 10, 30, 0)
         result = modifier.transform_value(datetime)
         expect(result).to be_a(String)
         expect(result).to include("2024-01-15")
       end
 
-      it "converts Time to ISO8601 string" do
+      it "converts Time to ISO8601 string", :aggregate_failures do
         time = Time.utc(2024, 1, 15, 10, 30, 0)
         result = modifier.transform_value(time)
         expect(result).to be_a(String)
@@ -331,7 +331,7 @@ RSpec.describe Treaty::Attribute::Option::Modifiers::CastModifier do
       let(:attribute_type) { :datetime }
       let(:option_schema) { { to: :integer, message: nil } }
 
-      it "converts DateTime to Unix timestamp" do
+      it "converts DateTime to Unix timestamp", :aggregate_failures do
         datetime = Time.utc(2024, 1, 15, 10, 30, 0)
         result = modifier.transform_value(datetime)
         expect(result).to be_an(Integer)

@@ -90,7 +90,7 @@ module Treaty
           #
           # @raise [Treaty::Exceptions::Validation] If cast configuration is invalid
           # @return [void]
-          def validate_schema! # rubocop:disable Metrics/MethodLength
+          def validate_schema! # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
             # If option_schema is nil, cast is not used for this attribute
             return if @option_schema.nil?
 
@@ -196,7 +196,7 @@ module Treaty
           # Maps from_type => to_type => conversion_lambda
           #
           # @return [Hash] Conversion matrix
-          def conversion_matrix # rubocop:disable Metrics/MethodLength
+          def conversion_matrix # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
             @conversion_matrix ||= {
               integer: {
                 integer: ->(value:) { value }, # No-op for same type

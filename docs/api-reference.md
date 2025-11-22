@@ -819,6 +819,22 @@ string :session_duration, format: :duration
 - `:duration` - ISO 8601 duration (e.g., "PT2H", "P1D")
 - `:boolean` - Boolean string ("true", "false", "0", "1")
 
+#### `transform`
+
+Apply custom transformations to attribute values.
+
+**Type:** Lambda (Proc)
+**Default:** nil
+
+```ruby
+string :title, transform: ->(value:) { value.strip }
+string :email, transform: ->(value:) { value.downcase }
+```
+
+**Requirements:**
+- Lambda must accept a named `value:` parameter
+- All exceptions are caught and converted to `Treaty::Exceptions::Validation`
+
 ### Advanced Mode Options
 
 For custom error messages (static or dynamic) and fine-grained control:

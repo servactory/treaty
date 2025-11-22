@@ -625,6 +625,181 @@ Treaty::Engine.configure do |config|
 end
 ```
 
+## Option Ordering Issues
+
+### "Transform failed for attribute 'X': undefined method..."
+
+**Problem:** Transform lambda fails because it receives an unexpected type (e.g., DateTime instead of String).
+
+**Cause:** Options are executed in definition order. If `cast` comes before `transform`, cast converts the type first, then transform receives the converted type.
+
+**Solution:**
+Always use recommended option order: `default` → `transform` → `cast` → `as`
+
+**Example:**
+```ruby
+# ❌ Wrong: Cast before transform
+string :timestamp,
+       cast: :datetime,  # Converts "2024-01-15" to DateTime
+       transform: ->(value:) { value.strip }  # ERROR: DateTime has no .strip method
+
+# Error:
+# Treaty::Exceptions::Validation: Transform failed for attribute 'timestamp':
+# undefined method 'strip' for DateTime
+
+# ✅ Correct: Transform before cast
+string :timestamp,
+       transform: ->(value:) { value.strip },  # Clean string first
+       cast: :datetime  # Then parse clean string
+```
+
+### Default value not being transformed/cast
+
+**Problem:** Default value remains as originally defined type, not converted by cast or transform.
+
+**Cause:** Options are applied in order. If `default` comes after `cast` or `transform`, those modifiers skip nil values and never process the default.
+
+**Solution:**
+Put `default:` **first** so the default value gets processed by other modifiers.
+
+**Example:**
+```ruby
+# ❌ Wrong: Default after cast
+string :published_at,
+       cast: :datetime,  # Skips nil
+       default: "2024-01-15"  # Applied as string (wrong type!)
+
+# Service receives:
+{ published_at: "2024-01-15" }  # String, not DateTime!
+
+# ✅ Correct: Default before cast
+string :published_at,
+       default: "2024-01-15",  # Applied first
+       cast: :datetime  # Converts default to DateTime
+
+# Service receives:
+{ published_at: DateTime.parse("2024-01-15") }  # Correct type!
+```
+
+### Cast fails on unclean data
+
+**Problem:** Cast option fails to parse values with whitespace or other formatting issues.
+
+**Cause:** Data wasn't cleaned before type conversion.
+
+**Solution:**
+Use `transform` to clean data **before** `cast`.
+
+**Example:**
+```ruby
+# ❌ Wrong: Cast dirty data
+string :date,
+       cast: :datetime  # May fail or be imprecise with spaces
+
+# Input: "  2024-01-15T10:30:00Z  "
+# Result: Parsing error or incorrect DateTime
+
+# ✅ Correct: Clean before cast
+string :date,
+       transform: ->(value:) { value.strip },  # Clean first
+       cast: :datetime  # Parse clean string
+
+# Input: "  2024-01-15T10:30:00Z  "
+# After transform: "2024-01-15T10:30:00Z"
+# After cast: DateTime object
+```
+
+### Multiple transforms only using last one
+
+**Problem:** Defined multiple `transform:` options but only the last one executes.
+
+**Cause:** Ruby hash keys must be unique. The second `transform:` key overwrites the first.
+
+**Solution:**
+Combine all transformations in a single lambda.
+
+**Example:**
+```ruby
+# ❌ Wrong: Multiple transform keys
+string :data,
+       transform: ->(value:) { value.strip },  # Overwritten!
+       transform: ->(value:) { value.downcase }  # Only this executes
+
+# ✅ Correct: Combined transformations
+string :data,
+       transform: ->(value:) { value.strip.downcase }  # Both operations
+```
+
+### Type mismatch after transformation chain
+
+**Problem:** Final value type doesn't match what service expects.
+
+**Cause:** Incorrect order of `transform` and `cast`, or missing cast.
+
+**Solution:**
+Review the complete transformation chain and ensure proper ordering.
+
+**Example:**
+```ruby
+# ❌ Wrong: Transform returns wrong type
+string :amount,
+       transform: ->(value:) { value.to_i }  # Returns Integer
+# Service receives Integer, but attribute defined as string
+
+# ✅ Correct: Use cast for type conversion
+string :amount,
+       cast: :integer  # Proper type conversion
+
+# ✅ Or: Define as integer type
+integer :amount,
+        transform: ->(value:) { value * 100 }  # Transform within same type
+```
+
+### Debugging option order issues
+
+**Tips for identifying order problems:**
+
+1. **Add debug output:**
+   ```ruby
+   string :field,
+          transform: ->(value:) {
+            puts "Transform input: #{value.class} - #{value.inspect}"
+            value.strip
+          },
+          cast: :datetime
+   ```
+
+2. **Test options in isolation:**
+   ```ruby
+   # Test with all options
+   string :field, transform: ..., cast: ..., default: ...
+
+   # Test with only transform
+   string :field, transform: ...
+
+   # Test with only cast
+   string :field, cast: ...
+
+   # Identify which combination causes issues
+   ```
+
+3. **Check error messages carefully:**
+   ```
+   Transform failed for attribute 'X': undefined method 'strip' for DateTime
+   # → Transform is receiving DateTime (cast ran first)
+
+   Cast failed for attribute 'X' from 'string' to 'datetime'
+   # → Cast is receiving dirty/invalid string (transform didn't run first)
+   ```
+
+4. **Verify recommended order:**
+   - default (1st) - Provides value if missing
+   - transform (2nd) - Cleans/prepares value
+   - cast (3rd) - Converts to target type
+   - as (4th) - Renames attribute
+
+**See:** [Transformation: Option Execution Order](./transformation.md#option-execution-order) for detailed guide.
+
 ## Controller Integration Issues
 
 ### Treaty not being invoked

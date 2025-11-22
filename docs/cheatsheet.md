@@ -159,6 +159,31 @@ datetime :created_at, cast: :integer   # DateTime to Unix timestamp
 boolean :active, cast: :integer        # Boolean to integer (1/0)
 ```
 
+## Option Execution Order
+
+**Critical:** When combining modifiers, order matters! Options execute sequentially in definition order.
+
+```ruby
+# ✅ Recommended order: default → transform → cast → as
+string :published_at,
+       default: Time.current.iso8601,  # 1. Default if missing
+       transform: ->(value:) { value.strip },  # 2. Clean data
+       cast: :datetime,  # 3. Convert type
+       as: :published_date  # 4. Rename
+
+# ❌ Wrong order causes failures
+string :published_at,
+       cast: :datetime,  # Tries to parse dirty string
+       transform: ->(value:) { value.strip }  # ERROR: DateTime has no .strip
+```
+
+**Common conflicts:**
+- `cast` before `transform` → transform fails on converted type
+- `default` after `cast` → default value not converted
+- Multiple `transform:` → only last one executes (hash key overwrite)
+
+**See:** [Transformation: Option Execution Order](./transformation.md#option-execution-order)
+
 ## Attribute Options - Advanced Mode
 
 ```ruby

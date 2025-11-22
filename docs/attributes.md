@@ -333,7 +333,29 @@ string :published_at,
        cast: :datetime
 ```
 
-**See:** [Transformation](./transformation.md#type-casting) for detailed examples
+**Important:** When combining multiple modifiers (`default`, `transform`, `cast`, `as`), their order matters. Options execute sequentially in the order they're defined. Always use this recommended order:
+
+1. `default:` - Apply defaults first
+2. `transform:` - Clean/prepare values
+3. `cast:` - Convert types
+4. `as:` - Rename attributes
+
+```ruby
+# ✅ Correct order
+string :published_at,
+       default: Time.current.iso8601,
+       transform: ->(value:) { value.strip },
+       cast: :datetime
+
+# ❌ Wrong order - default won't be cast!
+string :published_at,
+       cast: :datetime,
+       default: "2024-01-15"  # Remains string
+```
+
+**See:** [Transformation: Option Execution Order](./transformation.md#option-execution-order) for comprehensive guide on ordering, conflicts, and troubleshooting.
+
+**See:** [Transformation: Type Casting](./transformation.md#type-casting) for detailed examples
 
 ### Advanced Mode Options
 

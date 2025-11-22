@@ -671,6 +671,221 @@ Transformations happen in this order:
 5. **Convert keys** - Symbol keys → String keys
 6. **Return to client** - Client receives JSON
 
+## Option Execution Order
+
+When multiple transformation options are defined on a single attribute, they execute **in the order they are written** in the DSL. This is critical when combining modifiers like `default`, `transform`, `cast`, and `as`.
+
+### Why Order Matters
+
+Transformation options (modifiers) are applied sequentially, with each modifier receiving the output of the previous one. Ruby hashes maintain insertion order, and Treaty preserves this order through the entire processing pipeline.
+
+```ruby
+# Options execute left-to-right as written:
+string :title, transform: ->(value:) { value.strip }, cast: :datetime
+#              ↑ First                                ↑ Second
+```
+
+**Processing flow:**
+1. Input value received: `"  2024-01-15T10:30:00Z  "`
+2. `transform` executes: `"2024-01-15T10:30:00Z"` (spaces removed)
+3. `cast` executes: `DateTime` object (parsed from clean string)
+4. Final value: `DateTime` object
+
+### Recommended Order
+
+For best results, define options in this order:
+
+1. **`default:`** - Apply default values first if missing
+2. **`transform:`** - Clean/prepare the value
+3. **`cast:`** - Convert types
+4. **`as:`** - Rename the attribute
+
+```ruby
+# Correct order
+string :published_at,
+       default: Time.current.iso8601,  # 1. Set default if nil
+       transform: ->(value:) { value.strip },  # 2. Clean whitespace
+       cast: :datetime,  # 3. Convert to DateTime
+       as: :published_date  # 4. Rename for service
+```
+
+### Common Patterns
+
+#### Pattern 1: Transform Before Cast
+
+```ruby
+# ✅ Correct: Clean string, then parse
+string :published_at,
+       transform: ->(value:) { value.strip },
+       cast: :datetime
+
+# ❌ Wrong: Cast fails on dirty string, transform fails on DateTime
+string :published_at,
+       cast: :datetime,  # Tries to parse "  2024-01-15  " (fails or inaccurate)
+       transform: ->(value:) { value.strip }  # Receives DateTime, .strip fails
+```
+
+#### Pattern 2: Default Before Transform/Cast
+
+```ruby
+# ✅ Correct: Default value gets transformed and cast
+string :published_at,
+       default: "2024-01-15",
+       transform: ->(value:) { value.strip },
+       cast: :datetime
+
+# ❌ Wrong: Default applied after cast, won't be converted
+string :published_at,
+       cast: :datetime,
+       default: "2024-01-15"  # Remains string, type mismatch!
+```
+
+#### Pattern 3: Rename Last
+
+```ruby
+# ✅ Correct: Transform and cast work on original name, then rename
+string :user_email,
+       transform: ->(value:) { value.downcase },
+       as: :email
+
+# This works, but defining as 'email' initially is clearer
+string :email,
+       transform: ->(value:) { value.downcase }
+```
+
+### Conflict Examples
+
+#### Conflict 1: Cast Before Transform
+
+**Problem:**
+```ruby
+# String input with spaces
+string :timestamp,
+       cast: :datetime,  # Parses with spaces (might work but imprecise)
+       transform: ->(value:) { value.strip }  # ERROR: DateTime doesn't have .strip
+```
+
+**Error:**
+```
+Treaty::Exceptions::Validation: Transform failed for attribute 'timestamp': undefined method 'strip' for DateTime
+```
+
+**Solution:**
+```ruby
+# Put transform first
+string :timestamp,
+       transform: ->(value:) { value.strip },  # Clean first
+       cast: :datetime  # Then parse clean string
+```
+
+#### Conflict 2: Default After Cast
+
+**Problem:**
+```ruby
+# If value is nil
+string :published_at,
+       cast: :datetime,  # Skip (nil value)
+       default: "2024-01-15"  # Applied as string (wrong type!)
+
+# Service receives: { published_at: "2024-01-15" } # String, not DateTime!
+```
+
+**Solution:**
+```ruby
+# Put default first
+string :published_at,
+       default: "2024-01-15",  # Applied first
+       cast: :datetime  # Converts default to DateTime
+```
+
+#### Conflict 3: Multiple Transforms with Wrong Order
+
+**Problem:**
+```ruby
+# Want to: strip → downcase → parse JSON
+string :data,
+       transform: ->(value:) { value.downcase },
+       transform: ->(value:) { value.strip }  # Only this executes! (overwrites previous)
+```
+
+**Explanation:** Each option key can only appear once in a hash. The second `transform:` overwrites the first.
+
+**Solution:**
+```ruby
+# Combine transformations in one lambda
+string :data,
+       transform: ->(value:) { value.strip.downcase }
+
+# Or use nested approach
+string :data,
+       transform: ->(value:) { JSON.parse(value.strip.downcase) }
+```
+
+### Validators vs Modifiers
+
+**Important:** Validators (like `required:`, `inclusion:`) execute **before** modifiers during the validation phase. The order discussed here applies only to **modifiers** during the transformation phase.
+
+**Processing sequence:**
+1. **Validation Phase:** `required:`, `type:`, `inclusion:`, `format:` (order doesn't matter)
+2. **Transformation Phase:** `default:`, `transform:`, `cast:`, `as:` (order matters!)
+
+```ruby
+# All validators run first, then modifiers in order
+string :status,
+       required: true,  # ← Validation phase
+       inclusion: { in: %w[draft published] },  # ← Validation phase
+       default: "draft",  # → Transformation phase (1st)
+       transform: ->(value:) { value.downcase }  # → Transformation phase (2nd)
+```
+
+### Debugging Order Issues
+
+If you encounter unexpected behavior:
+
+1. **Check type mismatches:**
+   ```ruby
+   # Is transform receiving the expected type?
+   transform: ->(value:) { puts value.class; value.strip }
+   ```
+
+2. **Verify cast input:**
+   ```ruby
+   # Is cast receiving clean data?
+   string :date,
+          transform: ->(value:) { puts "Before cast: #{value.inspect}"; value.strip },
+          cast: :datetime
+   ```
+
+3. **Test option isolation:**
+   ```ruby
+   # Remove options one by one to identify conflict
+   string :field, transform: ..., cast: ...  # Both
+   string :field, transform: ...  # Only transform
+   string :field, cast: ...  # Only cast
+   ```
+
+### Best Practices
+
+1. **Stick to recommended order:** default → transform → cast → as
+2. **Combine multiple transforms** into a single lambda
+3. **Clean before converting:** transform before cast
+4. **Apply defaults early** so they get processed by other modifiers
+5. **Rename last** with `as:` after all transformations
+6. **Test combinations** thoroughly when mixing multiple modifiers
+7. **Document non-obvious order** in code comments when necessary
+
+```ruby
+# Example: Well-ordered options with comments
+request do
+  object :post do
+    string :published_at,
+           default: Time.current.iso8601,  # Default if missing
+           transform: ->(value:) { value.strip },  # Clean whitespace
+           cast: :datetime  # Parse to DateTime
+  end
+end
+```
+
 ## Practical Examples
 
 ### Example 1: Pagination with Defaults

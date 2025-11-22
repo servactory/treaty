@@ -159,6 +159,41 @@ module Gate
           # Full example:
           # delegate_to ::Posts::Stable::IndexService => :call, return: lambda(&:data)
         end
+
+        version 5 do
+          summary "Demonstrates type casting functionality"
+          request do
+            object :filters, :optional do
+              string :title, :optional, transform: ->(value:) { value.strip.downcase }
+              string :summary, :optional
+              string :description, :optional
+              # Cast boolean string to actual boolean
+              string :published, :optional, cast: :boolean
+              # Cast Unix timestamp to datetime
+              integer :created_after, :optional, cast: :datetime
+            end
+          end
+
+          response 200 do
+            array :posts do
+              string :id
+              string :title
+              string :summary
+              string :description
+              string :content
+              # Cast datetime to Unix timestamp for efficient API transfer
+              datetime :created_at, cast: :integer
+            end
+
+            object :meta do
+              integer :count
+              integer :page
+              integer :limit, default: 12
+            end
+          end
+
+          delegate_to ::Posts::Stable::IndexService
+        end
       end
     end
   end

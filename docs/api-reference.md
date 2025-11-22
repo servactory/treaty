@@ -836,6 +836,59 @@ string :email, transform: ->(value:) { value.downcase }
 - All exceptions are caught and converted to `Treaty::Exceptions::Validation`
 - Only applied to non-nil values (nil values pass through unchanged)
 
+#### `cast`
+
+Automatically convert values between different types using predefined conversion rules.
+
+**Type:** Symbol (target type)
+**Default:** nil
+
+**Simple mode:**
+```ruby
+string :published_at, cast: :datetime
+datetime :created_at, cast: :integer
+integer :timestamp, cast: :datetime
+boolean :active, cast: :integer
+string :featured, cast: :boolean
+```
+
+**Advanced mode:**
+```ruby
+string :published_at, cast: {
+  to: :datetime,
+  message: "Invalid date format provided"
+}
+```
+
+**Supported conversions:**
+
+**From Integer:**
+- `integer -> string` - Converts to string representation
+- `integer -> boolean` - `0` = `false`, non-zero = `true`
+- `integer -> datetime` - Treats as Unix timestamp
+
+**From String:**
+- `string -> integer` - Parses integer from string
+- `string -> boolean` - Parses truthy/falsy strings (`"true"`, `"false"`, `"yes"`, `"no"`, `"1"`, `"0"`, `"on"`, `"off"`, case-insensitive)
+- `string -> datetime` - Parses datetime string (ISO8601, RFC3339, etc.)
+
+**From Boolean:**
+- `boolean -> string` - Converts to `"true"` or `"false"`
+- `boolean -> integer` - `true` = `1`, `false` = `0`
+
+**From DateTime:**
+- `datetime -> string` - Converts to ISO8601 format
+- `datetime -> integer` - Converts to Unix timestamp
+
+**Requirements:**
+- Cast only works with scalar types (`integer`, `string`, `boolean`, `datetime`)
+- Array and Object types do not support casting
+- Casting to the same type is allowed (no-op)
+- Only applied to non-nil values (nil values pass through unchanged)
+- All conversion errors are caught and converted to `Treaty::Exceptions::Validation`
+
+**Note:** Advanced mode uses `:to` key instead of `:is` (different from other options).
+
 ### Advanced Mode Options
 
 For custom error messages (static or dynamic) and fine-grained control:

@@ -28,6 +28,7 @@ module Treaty
       # - `:as` → AsModifier - Renames attributes
       # - `:default` → DefaultModifier - Provides default values
       # - `:transform` → TransformModifier - Transforms values using custom lambdas
+      # - `:cast` → CastModifier - Converts values between types automatically
       #
       # ## Auto-Registration
       #
@@ -83,6 +84,7 @@ module Treaty
             Registry.register(:as, Modifiers::AsModifier, category: :modifier)
             Registry.register(:default, Modifiers::DefaultModifier, category: :modifier)
             Registry.register(:transform, Modifiers::TransformModifier, category: :modifier)
+            Registry.register(:cast, Modifiers::CastModifier, category: :modifier)
           end
         end
       end

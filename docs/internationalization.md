@@ -128,6 +128,13 @@ treaty:
       transform:
         invalid_type: "Option 'transform' for attribute '%{attribute}' must be a Proc or Lambda. Got: %{type}"
         execution_error: "Transform failed for attribute '%{attribute}': %{error}"
+
+      cast:
+        invalid_type: "Option 'cast' for attribute '%{attribute}' must be a Symbol. Got: %{type}"
+        source_not_supported: "Option 'cast' for attribute '%{attribute}' cannot be used with type '%{source_type}'. Casting is only supported for: %{allowed}"
+        target_not_supported: "Option 'cast' for attribute '%{attribute}' cannot cast to '%{target_type}'. Supported target types: %{allowed}"
+        conversion_not_supported: "Option 'cast' for attribute '%{attribute}' does not support conversion from '%{from}' to '%{to}'"
+        conversion_error: "Cast failed for attribute '%{attribute}' from '%{from}' to '%{to}'. Value: '%{value}'. Error: %{error}"
 ```
 
 ## Adding New Languages
@@ -391,6 +398,17 @@ Different validators provide different interpolation variables:
 - `%{attribute}` - the attribute name
 - `%{type}` - the actual type provided (for invalid_type error)
 - `%{error}` - the error message from lambda execution (for execution_error)
+
+**Cast Modifier:**
+- `%{attribute}` - the attribute name
+- `%{type}` - the actual type provided (for invalid_type error)
+- `%{source_type}` - the source attribute type (for source_not_supported error)
+- `%{target_type}` - the target cast type (for target_not_supported error)
+- `%{allowed}` - comma-separated list of allowed types
+- `%{from}` - the source type for conversion
+- `%{to}` - the target type for conversion
+- `%{value}` - the value that failed to convert (for conversion_error)
+- `%{error}` - the error message from conversion execution (for conversion_error)
 
 **Inventory:**
 - `%{method}` - the unknown method name that was called

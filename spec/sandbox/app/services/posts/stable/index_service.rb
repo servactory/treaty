@@ -18,7 +18,8 @@ module Posts
               title: "Title 1",
               summary: "Summary 1",
               description: "Description 1",
-              content: "..."
+              content: "...",
+              created_at: Time.current
             }
           ],
           meta: {

@@ -356,6 +356,195 @@ Treaty::Exceptions::Validation: Transform failed for attribute 'data': unexpecte
 - Nil values are passed through unchanged (handled by `required` validation)
 - This prevents unnecessary lambda execution and potential errors
 
+### 5. Type Casting
+
+Automatically convert values between different types using the `cast` option. Unlike `transform`, which requires you to write custom lambdas, `cast` provides predefined conversions between types.
+
+#### Simple Mode
+
+```ruby
+request do
+  object :post do
+    # Convert string timestamp to DateTime
+    string :published_at, cast: :datetime
+
+    # Convert boolean string to boolean
+    string :featured, cast: :boolean
+
+    # Convert Unix timestamp to DateTime
+    integer :created_at, cast: :datetime
+  end
+end
+
+response 200 do
+  object :post do
+    # Convert DateTime to string (ISO8601)
+    datetime :published_at, cast: :string
+
+    # Convert DateTime to Unix timestamp
+    datetime :created_at, cast: :integer
+
+    # Convert boolean to integer (1/0)
+    boolean :featured, cast: :integer
+  end
+end
+```
+
+#### Advanced Mode with Custom Error Messages
+
+```ruby
+request do
+  object :post do
+    string :published_at, cast: {
+      to: :datetime,
+      message: "Invalid date format provided"
+    }
+  end
+end
+```
+
+#### Supported Conversions
+
+**From Integer:**
+- `integer -> string`: Converts to string representation (`"42"`)
+- `integer -> boolean`: `0` = `false`, non-zero = `true`
+- `integer -> datetime`: Treats as Unix timestamp
+
+**From String:**
+- `string -> integer`: Parses integer from string
+- `string -> boolean`: Parses truthy/falsy strings (`"true"`, `"false"`, `"yes"`, `"no"`, `"1"`, `"0"`, `"on"`, `"off"`, case-insensitive)
+- `string -> datetime`: Parses datetime string (ISO8601, RFC3339, etc.)
+
+**From Boolean:**
+- `boolean -> string`: Converts to `"true"` or `"false"`
+- `boolean -> integer`: `true` = `1`, `false` = `0`
+
+**From DateTime:**
+- `datetime -> string`: Converts to ISO8601 format
+- `datetime -> integer`: Converts to Unix timestamp
+
+#### Request Casting Example
+
+```ruby
+request do
+  object :post do
+    string :title
+    string :published_at, cast: :datetime
+    string :featured, cast: :boolean
+  end
+end
+```
+
+**Client sends:**
+```ruby
+{
+  "post" => {
+    "title" => "My Post",
+    "published_at" => "2024-01-15T10:30:00Z",
+    "featured" => "true"
+  }
+}
+```
+
+**Service receives (with casting applied):**
+```ruby
+{
+  post: {
+    title: "My Post",
+    published_at: DateTime.parse("2024-01-15T10:30:00Z"), # DateTime object
+    featured: true                                         # Boolean
+  }
+}
+```
+
+#### Response Casting Example
+
+```ruby
+response 200 do
+  object :post do
+    string :id
+    string :title
+    datetime :published_at, cast: :string    # Cast to ISO8601 string
+    datetime :created_at, cast: :integer     # Cast to Unix timestamp
+    boolean :featured, cast: :integer        # Cast to 1 or 0
+  end
+end
+```
+
+**Service returns:**
+```ruby
+{
+  post: {
+    id: "123",
+    title: "My Post",
+    published_at: DateTime.parse("2024-01-15T10:30:00Z"),
+    created_at: Time.current,
+    featured: true
+  }
+}
+```
+
+**Client receives (with casting applied):**
+```ruby
+{
+  "post" => {
+    "id" => "123",
+    "title" => "My Post",
+    "published_at" => "2024-01-15T10:30:00Z",  # ISO8601 string
+    "created_at" => 1705320600,                # Unix timestamp
+    "featured" => 1                            # Integer
+  }
+}
+```
+
+#### Error Handling
+
+Casting errors are caught and converted to `Treaty::Exceptions::Validation`:
+
+```ruby
+request do
+  object :post do
+    string :count, cast: :integer
+  end
+end
+```
+
+If casting fails (e.g., `"not a number"`), Treaty raises:
+```
+Treaty::Exceptions::Validation: Cast failed for attribute 'count' from 'string' to 'integer'. Value: 'not a number'. Error: invalid value for Integer(): "not a number"
+```
+
+**Important Notes:**
+- Cast only works with scalar types: `integer`, `string`, `boolean`, `datetime`
+- Array and Object types do not support casting
+- Casting to the same type is allowed (no-op)
+- Cast is only applied to non-nil values
+- Nil values are passed through unchanged (handled by `required` validation)
+
+#### Cast vs Transform
+
+Use `cast` when:
+- Converting between built-in types
+- You want automatic, consistent type conversions
+- You need standard datetime/timestamp conversions
+
+Use `transform` when:
+- You need custom transformation logic
+- The transformation doesn't fit predefined casting rules
+- You want to apply business-specific transformations
+
+**Example combining both:**
+```ruby
+request do
+  object :post do
+    # Transform cleans the string, then cast converts it to datetime
+    string :published_at,
+           transform: ->(value:) { value.strip },
+           cast: :datetime
+  end
+end
+```
+
 ## Transformation in Nested Structures
 
 ### Objects

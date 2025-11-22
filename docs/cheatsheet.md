@@ -152,6 +152,11 @@ integer :rating, in: [1, 2, 3, 4, 5]
 
 # Attribute renaming
 string :handle, as: :value
+
+# Type casting
+string :published_at, cast: :datetime  # String to DateTime
+datetime :created_at, cast: :integer   # DateTime to Unix timestamp
+boolean :active, cast: :integer        # Boolean to integer (1/0)
 ```
 
 ## Attribute Options - Advanced Mode
@@ -183,6 +188,12 @@ string :priority, inclusion: {
   message: lambda do |attribute:, value:, allowed_values:, **|
     "Invalid #{attribute}: '#{value}'. Must be: #{allowed_values.join(', ')}"
   end
+}
+
+# Type casting with custom message
+string :published_at, cast: {
+  to: :datetime,
+  message: "Invalid date format provided"
 }
 ```
 

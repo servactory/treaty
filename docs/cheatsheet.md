@@ -164,11 +164,11 @@ boolean :active, cast: :integer        # Boolean to integer (1/0)
 **Critical:** When combining modifiers, order matters! Options execute sequentially in definition order.
 
 ```ruby
-# ✅ Recommended order: default → transform → cast → as
+# ✅ Recommended order: transform → cast → default → as
 string :published_at,
-       default: Time.current.iso8601,  # 1. Default if missing
-       transform: ->(value:) { value.strip },  # 2. Clean data
-       cast: :datetime,  # 3. Convert type
+       transform: ->(value:) { value.strip },  # 1. Clean data
+       cast: :datetime,  # 2. Convert type
+       default: Time.current,  # 3. Default if still nil
        as: :published_date  # 4. Rename
 
 # ❌ Wrong order causes failures
@@ -179,7 +179,7 @@ string :published_at,
 
 **Common conflicts:**
 - `cast` before `transform` → transform fails on converted type
-- `default` after `cast` → default value not converted
+- Wrong type in `default` → type mismatch (user error)
 - Multiple `transform:` → only last one executes (hash key overwrite)
 
 **See:** [Transformation: Option Execution Order](./transformation.md#option-execution-order)

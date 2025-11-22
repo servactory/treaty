@@ -695,19 +695,27 @@ string :title, transform: ->(value:) { value.strip }, cast: :datetime
 
 For best results, define options in this order:
 
-1. **`default:`** - Apply default values first if missing
-2. **`transform:`** - Clean/prepare the value
-3. **`cast:`** - Convert types
+1. **`transform:`** - Clean/prepare the value
+2. **`cast:`** - Convert types
+3. **`default:`** - Apply default if value is still nil
 4. **`as:`** - Rename the attribute
 
 ```ruby
-# Correct order
+# Recommended order (most common case)
 string :published_at,
-       default: Time.current.iso8601,  # 1. Set default if nil
-       transform: ->(value:) { value.strip },  # 2. Clean whitespace
-       cast: :datetime,  # 3. Convert to DateTime
+       transform: ->(value:) { value.strip },  # 1. Clean whitespace
+       cast: :datetime,  # 2. Convert to DateTime
+       default: Time.current,  # 3. Use default if still nil
        as: :published_date  # 4. Rename for service
 ```
+
+**Why this order?**
+
+Transform and cast skip `nil` values automatically. If you put `default` last:
+- Input `nil` → transform skips → cast skips → default applies → ready value
+- Input with value → transform cleans → cast converts → default skips → processed value
+
+This is logical because default values are usually already in the correct format.
 
 ### Common Patterns
 
@@ -725,19 +733,20 @@ string :published_at,
        transform: ->(value:) { value.strip }  # Receives DateTime, .strip fails
 ```
 
-#### Pattern 2: Default Before Transform/Cast
+#### Pattern 2: Default After Transform/Cast
 
 ```ruby
-# ✅ Correct: Default value gets transformed and cast
+# ✅ Recommended: Default is ready-to-use value
 string :published_at,
-       default: "2024-01-15",
        transform: ->(value:) { value.strip },
-       cast: :datetime
-
-# ❌ Wrong: Default applied after cast, won't be converted
-string :published_at,
        cast: :datetime,
-       default: "2024-01-15"  # Remains string, type mismatch!
+       default: Time.current  # Already DateTime object
+
+# ⚠️ Rare case: Default needs processing
+string :status,
+       default: "  draft  ",  # Unclean default value
+       transform: ->(value:) { value.strip.downcase }  # Clean it
+# Use only when default itself needs transformation
 ```
 
 #### Pattern 3: Rename Last
@@ -778,24 +787,31 @@ string :timestamp,
        cast: :datetime  # Then parse clean string
 ```
 
-#### Conflict 2: Default After Cast
+#### Conflict 2: Wrong Default Type
 
 **Problem:**
 ```ruby
-# If value is nil
+# User provides wrong type in default
 string :published_at,
-       cast: :datetime,  # Skip (nil value)
-       default: "2024-01-15"  # Applied as string (wrong type!)
+       cast: :datetime,
+       default: "2024-01-15"  # String, but we expect DateTime!
 
 # Service receives: { published_at: "2024-01-15" } # String, not DateTime!
 ```
 
+**Root cause:** User error - default should match the target type.
+
 **Solution:**
 ```ruby
-# Put default first
+# ✅ Correct: Default matches target type
 string :published_at,
-       default: "2024-01-15",  # Applied first
-       cast: :datetime  # Converts default to DateTime
+       transform: ->(value:) { value.strip },
+       cast: :datetime,
+       default: Time.current  # DateTime object, not string!
+
+# ✅ Alternative: Don't cast if default is string
+string :published_at,
+       default: "2024-01-15"  # String is fine if no cast
 ```
 
 #### Conflict 3: Multiple Transforms with Wrong Order
@@ -827,15 +843,15 @@ string :data,
 
 **Processing sequence:**
 1. **Validation Phase:** `required:`, `type:`, `inclusion:`, `format:` (order doesn't matter)
-2. **Transformation Phase:** `default:`, `transform:`, `cast:`, `as:` (order matters!)
+2. **Transformation Phase:** `transform:`, `cast:`, `default:`, `as:` (order matters!)
 
 ```ruby
 # All validators run first, then modifiers in order
 string :status,
        required: true,  # ← Validation phase
        inclusion: { in: %w[draft published] },  # ← Validation phase
-       default: "draft",  # → Transformation phase (1st)
-       transform: ->(value:) { value.downcase }  # → Transformation phase (2nd)
+       transform: ->(value:) { value.downcase },  # → Transformation phase (1st)
+       default: "draft"  # → Transformation phase (2nd)
 ```
 
 ### Debugging Order Issues
@@ -866,10 +882,10 @@ If you encounter unexpected behavior:
 
 ### Best Practices
 
-1. **Stick to recommended order:** default → transform → cast → as
+1. **Stick to recommended order:** transform → cast → default → as
 2. **Combine multiple transforms** into a single lambda
 3. **Clean before converting:** transform before cast
-4. **Apply defaults early** so they get processed by other modifiers
+4. **Apply defaults last** - they should be ready-to-use values
 5. **Rename last** with `as:` after all transformations
 6. **Test combinations** thoroughly when mixing multiple modifiers
 7. **Document non-obvious order** in code comments when necessary
@@ -879,9 +895,9 @@ If you encounter unexpected behavior:
 request do
   object :post do
     string :published_at,
-           default: Time.current.iso8601,  # Default if missing
            transform: ->(value:) { value.strip },  # Clean whitespace
-           cast: :datetime  # Parse to DateTime
+           cast: :datetime,  # Parse to DateTime
+           default: Time.current  # Use current time if missing
   end
 end
 ```

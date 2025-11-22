@@ -653,32 +653,37 @@ string :timestamp,
        cast: :datetime  # Then parse clean string
 ```
 
-### Default value not being transformed/cast
+### Default value has wrong type
 
-**Problem:** Default value remains as originally defined type, not converted by cast or transform.
+**Problem:** Default value type doesn't match what cast/transform expects.
 
-**Cause:** Options are applied in order. If `default` comes after `cast` or `transform`, those modifiers skip nil values and never process the default.
+**Cause:** User provided default in wrong type. This is a **user error**, not an ordering issue.
 
 **Solution:**
-Put `default:` **first** so the default value gets processed by other modifiers.
+Ensure default value matches the target type after all transformations.
 
 **Example:**
 ```ruby
-# ❌ Wrong: Default after cast
+# ❌ Wrong: String default when expecting DateTime
 string :published_at,
-       cast: :datetime,  # Skips nil
-       default: "2024-01-15"  # Applied as string (wrong type!)
+       cast: :datetime,
+       default: "2024-01-15"  # String! Should be DateTime
 
 # Service receives:
 { published_at: "2024-01-15" }  # String, not DateTime!
 
-# ✅ Correct: Default before cast
+# ✅ Correct: Default matches target type
 string :published_at,
-       default: "2024-01-15",  # Applied first
-       cast: :datetime  # Converts default to DateTime
+       transform: ->(value:) { value.strip },
+       cast: :datetime,
+       default: Time.current  # DateTime object - correct!
 
 # Service receives:
-{ published_at: DateTime.parse("2024-01-15") }  # Correct type!
+{ published_at: DateTime object }  # Correct type!
+
+# ✅ Alternative: No cast if default is string
+string :published_at,
+       default: "2024-01-15"  # Fine if no cast needed
 ```
 
 ### Cast fails on unclean data
@@ -793,9 +798,9 @@ integer :amount,
    ```
 
 4. **Verify recommended order:**
-   - default (1st) - Provides value if missing
-   - transform (2nd) - Cleans/prepares value
-   - cast (3rd) - Converts to target type
+   - transform (1st) - Cleans/prepares value
+   - cast (2nd) - Converts to target type
+   - default (3rd) - Provides ready-to-use value if still nil
    - as (4th) - Renames attribute
 
 **See:** [Transformation: Option Execution Order](./transformation.md#option-execution-order) for detailed guide.

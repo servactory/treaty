@@ -335,22 +335,22 @@ string :published_at,
 
 **Important:** When combining multiple modifiers (`default`, `transform`, `cast`, `as`), their order matters. Options execute sequentially in the order they're defined. Always use this recommended order:
 
-1. `default:` - Apply defaults first
-2. `transform:` - Clean/prepare values
-3. `cast:` - Convert types
+1. `transform:` - Clean/prepare values
+2. `cast:` - Convert types
+3. `default:` - Apply default if still nil
 4. `as:` - Rename attributes
 
 ```ruby
-# ✅ Correct order
+# ✅ Recommended order
 string :published_at,
-       default: Time.current.iso8601,
        transform: ->(value:) { value.strip },
-       cast: :datetime
+       cast: :datetime,
+       default: Time.current  # Already DateTime
 
-# ❌ Wrong order - default won't be cast!
+# ❌ Wrong type in default
 string :published_at,
        cast: :datetime,
-       default: "2024-01-15"  # Remains string
+       default: "2024-01-15"  # String! Should be Time/DateTime
 ```
 
 **See:** [Transformation: Option Execution Order](./transformation.md#option-execution-order) for comprehensive guide on ordering, conflicts, and troubleshooting.

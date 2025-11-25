@@ -11,10 +11,10 @@ module Deserialization
             string :description, :optional
             string :content
 
-            # Demonstrates casting string to datetime
+            # Example: cast ISO8601 string to datetime object
             string :published_at, :optional, cast: :datetime
 
-            # Demonstrates casting string to boolean
+            # Example: cast string to boolean
             string :featured, :optional, cast: :boolean
 
             array :tags, :optional do

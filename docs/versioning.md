@@ -429,7 +429,7 @@ class Posts::CreateTreaty < ApplicationTreaty
         string :title
         string :content
         string :category
-        datetime :created_at
+        time :created_at
       end
     end
 
@@ -474,8 +474,8 @@ class Posts::CreateTreaty < ApplicationTreaty
           string :email, :required
         end
 
-        datetime :created_at, :required
-        datetime :updated_at, :required
+        time :created_at, :required
+        time :updated_at, :required
       end
     end
 
@@ -563,7 +563,7 @@ version 2, default: true do
       string :id
       string :title
       string :author  # New field - non-breaking
-      datetime :created_at  # New field - non-breaking
+      time :created_at  # New field - non-breaking
     end
   end
 end

@@ -37,7 +37,7 @@ module Gate
               string :id
               string :title
               string :content
-              datetime :created_at
+              time :created_at
             end
           end
 
@@ -198,7 +198,7 @@ response 201 do
   object :post do
     string :id
     string :title
-    datetime :created_at
+    time :created_at
   end
 end
 
@@ -428,8 +428,8 @@ module Gate
               integer :rating
               integer :views
 
-              datetime :created_at
-              datetime :updated_at
+              time :created_at
+              time :updated_at
             end
           end
 

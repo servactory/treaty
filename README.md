@@ -79,7 +79,7 @@ module Posts
           string :title
           string :content
           string :summary
-          datetime :created_at
+          time :created_at
         end
       end
 

@@ -478,7 +478,7 @@ version 3 do
       string :id, :required
       string :title, :required
       string :content, :required
-      datetime :created_at, :required
+      time :created_at, :required
     end
   end
 end

@@ -156,7 +156,7 @@ string :email, format: :email  # ✓ Format works with string
 
 # Incorrect:
 integer :count, format: :number  # ✗ Format doesn't work with integer
-datetime :created_at, format: :datetime  # ✗ Use datetime type, not format
+time :created_at, format: :datetime  # ✗ Use datetime type, not format
 ```
 
 ### "Attribute 'X' must be a Hash (object), got TYPE"

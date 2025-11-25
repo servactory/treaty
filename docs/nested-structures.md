@@ -392,7 +392,7 @@ response 200 do
     end
 
     integer :views
-    datetime :created_at
+    time :created_at
   end
 
   # Pagination metadata

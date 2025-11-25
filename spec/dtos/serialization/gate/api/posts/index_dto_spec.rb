@@ -43,6 +43,14 @@ RSpec.describe Serialization::Gate::API::Posts::IndexDto do
                             required: { is: true, message: nil }
                           },
                           attributes: {}
+                        },
+                        created_at: {
+                          type: :time,
+                          options: {
+                            required: { is: true, message: nil },
+                            cast: { to: :string, message: nil }
+                          },
+                          attributes: {}
                         }
                       }
                     },

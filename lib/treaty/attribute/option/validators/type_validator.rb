@@ -202,15 +202,13 @@ module Treaty
             end
           end
 
-          # Validates that value is a DateTime or ActiveSupport::TimeWithZone
+          # Validates that value is a DateTime
           #
           # @param value [Object] The value to validate
           # @raise [Treaty::Exceptions::Validation] If value is not a DateTime
           # @return [void]
           def validate_datetime!(value)
-            validate_type!(value, :datetime) do |v|
-              v.is_a?(DateTime) || (defined?(ActiveSupport::TimeWithZone) && v.is_a?(ActiveSupport::TimeWithZone))
-            end
+            validate_type!(value, :datetime) { |v| v.is_a?(DateTime) }
           end
         end
       end

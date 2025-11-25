@@ -87,7 +87,7 @@ version 1, default: true do
       string :title
       string :content
       string :author        # New optional field
-      datetime :created_at  # New optional field
+      time :created_at  # New optional field
     end
   end
 

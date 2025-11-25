@@ -11,6 +11,9 @@ module Serialization
             string :summary
             string :description
             string :content
+
+            # Example: cast time to string for API response
+            time :created_at, cast: :string
           end
 
           object :meta do

@@ -13,7 +13,9 @@ module Treaty
         # - `:boolean` - Ruby TrueClass or FalseClass
         # - `:object` - Ruby Hash (for nested objects)
         # - `:array` - Ruby Array (for collections)
-        # - `:datetime` - Ruby DateTime, Time, or Date
+        # - `:date` - Ruby Date
+        # - `:time` - Ruby Time
+        # - `:datetime` - Ruby DateTime
         #
         # ## Usage Examples
         #
@@ -21,7 +23,9 @@ module Treaty
         #   integer :age
         #   string :name
         #   boolean :published
-        #   datetime :created_at
+        #   date :published_on
+        #   time :created_at
+        #   datetime :updated_at
         #
         # Nested structures:
         #   object :author do
@@ -36,14 +40,16 @@ module Treaty
         #
         # - Validates only non-nil values (nil handling is done by RequiredValidator)
         # - Type mismatch raises Treaty::Exceptions::Validation
-        # - Datetime accepts DateTime, Time, or Date objects
+        # - Date accepts only Date objects (not DateTime or Time)
+        # - Time accepts only Time objects (not Date or DateTime)
+        # - DateTime accepts only DateTime objects (not Date or Time)
         #
         # ## Note
         #
         # TypeValidator doesn't use option_schema - it validates based on attribute_type.
         # This validator is always active for all attributes.
         class TypeValidator < Treaty::Attribute::Option::Base
-          ALLOWED_TYPES = %i[integer string boolean object array datetime].freeze
+          ALLOWED_TYPES = %i[integer string boolean object array date time datetime].freeze
 
           # Validates that the attribute type is one of the allowed types
           #
@@ -81,6 +87,10 @@ module Treaty
               validate_object!(value)
             when :array
               validate_array!(value)
+            when :date
+              validate_date!(value)
+            when :time
+              validate_time!(value)
             when :datetime
               validate_datetime!(value)
             end
@@ -172,14 +182,33 @@ module Treaty
             validate_type!(value, :array) { |v| v.is_a?(Array) }
           end
 
-          # Validates that value is a DateTime, Time, or Date
+          # Validates that value is a Date (but not DateTime, since DateTime < Date)
           #
           # @param value [Object] The value to validate
-          # @raise [Treaty::Exceptions::Validation] If value is not a datetime type
+          # @raise [Treaty::Exceptions::Validation] If value is not a Date
+          # @return [void]
+          def validate_date!(value)
+            validate_type!(value, :date) { |v| v.is_a?(Date) && !v.is_a?(DateTime) }
+          end
+
+          # Validates that value is a Time or ActiveSupport::TimeWithZone
+          #
+          # @param value [Object] The value to validate
+          # @raise [Treaty::Exceptions::Validation] If value is not a Time
+          # @return [void]
+          def validate_time!(value)
+            validate_type!(value, :time) do |v|
+              v.is_a?(Time) || (defined?(ActiveSupport::TimeWithZone) && v.is_a?(ActiveSupport::TimeWithZone))
+            end
+          end
+
+          # Validates that value is a DateTime
+          #
+          # @param value [Object] The value to validate
+          # @raise [Treaty::Exceptions::Validation] If value is not a DateTime
           # @return [void]
           def validate_datetime!(value)
-            # TODO: It is better to divide it into different methods for each class.
-            validate_type!(value, :datetime) { |v| v.is_a?(DateTime) || v.is_a?(Time) || v.is_a?(Date) }
+            validate_type!(value, :datetime) { |v| v.is_a?(DateTime) }
           end
         end
       end

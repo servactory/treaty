@@ -12,10 +12,10 @@ module Serialization
             string :description
             string :content
 
-            # Demonstrates casting datetime to string (ISO8601)
+            # Example: cast datetime to ISO8601 string for API response
             datetime :published_at, cast: :string
 
-            # Demonstrates casting boolean to integer
+            # Example: cast boolean to integer representation
             boolean :featured, cast: :integer
 
             array :tags do
@@ -35,10 +35,9 @@ module Serialization
             integer :rating
             integer :views
 
-            # Demonstrates casting datetime to integer (Unix timestamp)
-            datetime :created_at, cast: :integer
-            # Demonstrates casting datetime to string
-            datetime :updated_at, cast: :string
+            # Example: cast time to Unix timestamp for efficient transfer
+            time :created_at, cast: :integer
+            time :updated_at, cast: :string
           end
         end
       end

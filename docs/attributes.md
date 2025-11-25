@@ -4,7 +4,7 @@
 
 ## Overview
 
-Attributes are the building blocks of Treaty contracts. This guide covers all available attribute types (string, integer, boolean, datetime, object, array) and their options, including validation, defaults, and transformation rules.
+Attributes are the building blocks of Treaty contracts. This guide covers all available attribute types (string, integer, boolean, date, time, datetime, object, array) and their options, including validation, defaults, and transformation rules.
 
 ## Attribute Types
 
@@ -46,14 +46,32 @@ boolean :featured, :optional
 - ✅ Accepted: `true`, `false`
 - ❌ Rejected: any other type (Integer, String, NilClass, etc.)
 
+#### Date
+
+```ruby
+date :birth_date
+date :published_on
+```
+
+**Type validation:** Value must be a Ruby `Date`
+
+#### Time
+
+```ruby
+time :created_at
+time :updated_at
+```
+
+**Type validation:** Value must be a Ruby `Time` or `ActiveSupport::TimeWithZone`
+
 #### DateTime
 
 ```ruby
-datetime :created_at
-datetime :published_at
+datetime :scheduled_at
+datetime :expires_at
 ```
 
-**Type validation:** Value must be `DateTime`, `Time`, or `Date`
+**Type validation:** Value must be a Ruby `DateTime` or `ActiveSupport::TimeWithZone`
 
 ### Complex Types
 
@@ -276,9 +294,11 @@ Automatically converts values between different types using predefined conversio
 
 ```ruby
 # Simple mode
-string :published_at, cast: :datetime       # String to DateTime
-datetime :created_at, cast: :integer        # DateTime to Unix timestamp
-integer :timestamp, cast: :datetime         # Unix timestamp to DateTime
+string :published_on, cast: :date           # String to Date
+string :created_at, cast: :time             # String to Time
+string :scheduled_at, cast: :datetime       # String to DateTime
+time :created_at, cast: :integer            # Time to Unix timestamp
+date :published_on, cast: :string           # Date to string
 boolean :active, cast: :integer             # Boolean to integer (1/0)
 string :featured, cast: :boolean            # String to boolean
 
@@ -294,23 +314,41 @@ string :published_at, cast: {
 **From Integer:**
 - `integer -> string`: Converts to string representation
 - `integer -> boolean`: `0` = `false`, non-zero = `true`
-- `integer -> datetime`: Treats as Unix timestamp
+- `integer -> date`: Treats as Unix timestamp, converts to Date
+- `integer -> time`: Treats as Unix timestamp, converts to Time
+- `integer -> datetime`: Treats as Unix timestamp, converts to DateTime
 
 **From String:**
 - `string -> integer`: Parses integer from string
 - `string -> boolean`: Parses truthy/falsy strings (`"true"`, `"false"`, `"yes"`, `"no"`, `"1"`, `"0"`, `"on"`, `"off"`, case-insensitive)
+- `string -> date`: Parses date string (ISO8601, etc.)
+- `string -> time`: Parses time string (ISO8601, RFC3339, etc.)
 - `string -> datetime`: Parses datetime string (ISO8601, RFC3339, etc.)
 
 **From Boolean:**
 - `boolean -> string`: Converts to `"true"` or `"false"`
 - `boolean -> integer`: `true` = `1`, `false` = `0`
 
+**From Date:**
+- `date -> string`: Converts to ISO8601 format
+- `date -> integer`: Converts to Unix timestamp
+- `date -> time`: Converts to Time (start of day)
+- `date -> datetime`: Converts to DateTime (start of day)
+
+**From Time:**
+- `time -> string`: Converts to ISO8601 format
+- `time -> integer`: Converts to Unix timestamp
+- `time -> date`: Converts to Date
+- `time -> datetime`: Converts to DateTime
+
 **From DateTime:**
 - `datetime -> string`: Converts to ISO8601 format
 - `datetime -> integer`: Converts to Unix timestamp
+- `datetime -> date`: Converts to Date
+- `datetime -> time`: Converts to Time
 
 **Important:**
-- Cast only works with scalar types (`integer`, `string`, `boolean`, `datetime`)
+- Cast only works with scalar types (`integer`, `string`, `boolean`, `date`, `time`, `datetime`)
 - Array and Object types do not support casting
 - Casting to the same type is allowed (no-op)
 - Only applied to non-nil values (nil values pass through unchanged)
@@ -319,7 +357,7 @@ string :published_at, cast: {
 **Use cast when:**
 - Converting between built-in types
 - You want automatic, consistent type conversions
-- You need standard datetime/timestamp conversions
+- You need standard date/time/timestamp conversions
 
 **Use transform when:**
 - You need custom transformation logic
@@ -328,7 +366,7 @@ string :published_at, cast: {
 **Combining cast and transform:**
 ```ruby
 # Transform cleans the string, then cast converts it to datetime
-string :published_at,
+string :scheduled_at,
        transform: ->(value:) { value.strip },
        cast: :datetime
 ```
@@ -496,7 +534,9 @@ integer :age, :required
 - `string` → Ruby `String`
 - `integer` → Ruby `Integer`
 - `boolean` → Ruby `TrueClass` or `FalseClass`
-- `datetime` → Ruby `DateTime`, `Time`, or `Date`
+- `date` → Ruby `Date`
+- `time` → Ruby `Time` or `ActiveSupport::TimeWithZone`
+- `datetime` → Ruby `DateTime` or `ActiveSupport::TimeWithZone`
 - `object` → Ruby `Hash`
 - `array` → Ruby `Array`
 

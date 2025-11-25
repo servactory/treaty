@@ -102,16 +102,18 @@ RSpec.describe Serialization::UserDto do
                           attributes: {}
                         },
                         created_at: {
-                          type: :datetime,
+                          type: :time,
                           options: {
-                            required: { is: true, message: nil }
+                            required: { is: true, message: nil },
+                            cast: { to: :string, message: nil }
                           },
                           attributes: {}
                         },
                         updated_at: {
-                          type: :datetime,
+                          type: :time,
                           options: {
-                            required: { is: true, message: nil }
+                            required: { is: true, message: nil },
+                            cast: { to: :string, message: nil }
                           },
                           attributes: {}
                         }

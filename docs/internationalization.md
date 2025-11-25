@@ -75,7 +75,9 @@ treaty:
           string: "Attribute '%{attribute}' must be a String, got %{actual}"
           object: "Attribute '%{attribute}' must be a Hash (object), got %{actual}"
           array: "Attribute '%{attribute}' must be an Array, got %{actual}"
-          datetime: "Attribute '%{attribute}' must be a DateTime/Time/Date, got %{actual}"
+          date: "Attribute '%{attribute}' must be a Date, got %{actual}"
+          time: "Attribute '%{attribute}' must be a Time, got %{actual}"
+          datetime: "Attribute '%{attribute}' must be a DateTime, got %{actual}"
 
       inclusion:
         invalid_schema: "Option 'inclusion' for attribute '%{attribute}' must have a non-empty array of allowed values"
@@ -161,7 +163,9 @@ de:
             string: "Attribut '%{attribute}' muss ein String sein, aber %{actual} erhalten"
             object: "Attribut '%{attribute}' muss ein Hash (Objekt) sein, aber %{actual} erhalten"
             array: "Attribut '%{attribute}' muss ein Array sein, aber %{actual} erhalten"
-            datetime: "Attribut '%{attribute}' muss ein DateTime/Time/Date sein, aber %{actual} erhalten"
+            date: "Attribut '%{attribute}' muss ein Date sein, aber %{actual} erhalten"
+            time: "Attribut '%{attribute}' muss ein Time sein, aber %{actual} erhalten"
+            datetime: "Attribut '%{attribute}' muss ein DateTime sein, aber %{actual} erhalten"
 
         inclusion:
           invalid_schema: "Option 'inclusion' für Attribut '%{attribute}' muss ein nicht-leeres Array von erlaubten Werten haben"

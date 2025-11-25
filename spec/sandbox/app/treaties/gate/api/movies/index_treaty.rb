@@ -94,7 +94,7 @@ module Gate
                 integer :baftas
               end
 
-              datetime :released_at
+              time :released_at
             end
 
             object :meta do

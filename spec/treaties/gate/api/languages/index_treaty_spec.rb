@@ -324,7 +324,7 @@ RSpec.describe Gate::API::Languages::IndexTreaty do
                                 }
                               },
                               introduced_at: {
-                                type: :datetime,
+                                type: :time,
                                 options: {
                                   required: { is: false, message: nil }
                                 },

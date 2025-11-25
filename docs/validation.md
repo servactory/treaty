@@ -421,7 +421,7 @@ response 200 do
   object :post do
     string :id          # Optional by default
     string :title       # Optional by default
-    datetime :created_at  # Optional by default
+    time :created_at  # Optional by default
   end
 end
 ```
@@ -730,8 +730,8 @@ version 1, default: true do
       end
 
       integer :views
-      datetime :created_at, :required
-      datetime :updated_at, :required
+      time :created_at, :required
+      time :updated_at, :required
     end
   end
 
@@ -777,7 +777,7 @@ version 1, default: true do
       string :title, :required
       string :summary, :required
       string :category, :required
-      datetime :created_at, :required
+      time :created_at, :required
     end
 
     object :meta do
@@ -826,7 +826,7 @@ response 200 do
   object :post do
     string :id
     string :title
-    datetime :created_at
+    time :created_at
     # All optional by default - service decides what to include
   end
 end

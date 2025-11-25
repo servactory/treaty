@@ -182,7 +182,48 @@ module Gate
               string :description
               string :content
               # Cast datetime to Unix timestamp for efficient API transfer
-              datetime :created_at, cast: :integer
+              time :created_at, cast: :integer
+            end
+
+            object :meta do
+              integer :count
+              integer :page
+              integer :limit, default: 12
+            end
+          end
+
+          delegate_to ::Posts::Stable::IndexService
+        end
+
+        version 6 do
+          summary "Demonstrates date, time, and datetime types with casting"
+          request do
+            object :filters, :optional do
+              string :title, :optional, transform: ->(value:) { value.strip.downcase }
+              string :summary, :optional
+              string :description, :optional
+              # Cast date string to Date object
+              string :published_on, :optional, cast: :date
+              # Cast time string to Time object
+              string :created_at, :optional, cast: :time
+              # Cast Unix timestamp to datetime
+              integer :updated_after, :optional, cast: :datetime
+            end
+          end
+
+          response 200 do
+            array :posts do
+              string :id
+              string :title
+              string :summary
+              string :description
+              string :content
+              # Cast Date to string for API response
+              date :published_on, cast: :string
+              # Cast Time to Unix timestamp
+              time :created_at, cast: :integer
+              # Cast DateTime to ISO8601 string
+              time :updated_at, cast: :string
             end
 
             object :meta do

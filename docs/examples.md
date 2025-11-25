@@ -36,7 +36,7 @@ module Gate
               string :id
               string :title
               string :summary
-              datetime :created_at
+              time :created_at
             end
 
             object :meta do
@@ -153,7 +153,7 @@ module Gate
               string :title
               string :content
               string :summary
-              datetime :created_at
+              time :created_at
             end
           end
 
@@ -179,7 +179,7 @@ module Gate
               string :content
               string :summary
               string :category
-              datetime :created_at
+              time :created_at
             end
           end
 
@@ -229,8 +229,8 @@ module Gate
               end
 
               integer :views
-              datetime :created_at
-              datetime :updated_at
+              time :created_at
+              time :updated_at
             end
           end
 
@@ -340,7 +340,7 @@ module Gate
                 boolean :public_profile
               end
 
-              datetime :updated_at
+              time :updated_at
             end
           end
 
@@ -530,8 +530,8 @@ class Posts::ShowTreaty < ApplicationTreaty
           string :email
         end
 
-        datetime :created_at
-        datetime :updated_at
+        time :created_at
+        time :updated_at
       end
     end
 
@@ -624,8 +624,8 @@ module Serialization
         string :content
         string :summary
         boolean :published
-        datetime :created_at
-        datetime :updated_at
+        time :created_at
+        time :updated_at
 
         object :author do
           string :id
@@ -823,7 +823,7 @@ module Gate
               string :username
               string :birth_date, :optional, format: :date
               string :external_id, :optional, format: :uuid
-              datetime :created_at
+              time :created_at
             end
           end
 

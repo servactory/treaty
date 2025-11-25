@@ -112,7 +112,9 @@ end
 string :name
 integer :count
 boolean :active
-datetime :created_at
+date :published_on
+time :created_at
+datetime :scheduled_at
 object :metadata do; end
 array :items do; end
 ```
@@ -154,9 +156,12 @@ integer :rating, in: [1, 2, 3, 4, 5]
 string :handle, as: :value
 
 # Type casting
-string :published_at, cast: :datetime  # String to DateTime
-datetime :created_at, cast: :integer   # DateTime to Unix timestamp
-boolean :active, cast: :integer        # Boolean to integer (1/0)
+string :published_on, cast: :date       # String to Date
+string :created_at, cast: :time         # String to Time
+string :scheduled_at, cast: :datetime   # String to DateTime
+date :published_on, cast: :string       # Date to ISO8601 string
+time :created_at, cast: :integer        # Time to Unix timestamp
+boolean :active, cast: :integer         # Boolean to integer (1/0)
 ```
 
 ## Option Execution Order

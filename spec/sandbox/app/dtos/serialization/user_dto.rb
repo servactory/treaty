@@ -47,8 +47,9 @@ module Serialization
       # Example: UUID format validation
       string :external_id, :optional, format: :uuid
 
-      datetime :created_at
-      datetime :updated_at
+      # Example: cast time to string for API response
+      time :created_at, cast: :string
+      time :updated_at, cast: :string
     end
   end
 end

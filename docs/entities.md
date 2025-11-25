@@ -29,7 +29,7 @@ class PostEntity < Treaty::Entity
   string :id
   string :title
   string :content
-  datetime :created_at
+  time :created_at
 end
 ```
 
@@ -85,8 +85,8 @@ class PostResponseEntity < Treaty::Entity
   string :title
   string :content
   string :summary
-  datetime :created_at
-  datetime :updated_at
+  time :created_at
+  time :updated_at
 end
 ```
 
@@ -131,7 +131,7 @@ module Serialization
         string :title
         string :content
         string :summary
-        datetime :created_at
+        time :created_at
       end
     end
   end
@@ -280,8 +280,8 @@ module Serialization
         string :content
         string :summary
         boolean :published
-        datetime :created_at
-        datetime :updated_at
+        time :created_at
+        time :updated_at
 
         object :author do
           string :id

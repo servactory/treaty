@@ -314,7 +314,7 @@ end
 response 201 do
   object :post do
     string :id
-    datetime :created_at
+    time :created_at
   end
 end
 
@@ -352,7 +352,7 @@ class PostEntity < Treaty::Entity
   string :id
   string :title
   string :content, :optional
-  datetime :created_at
+  time :created_at
 
   object :author do
     string :name
@@ -560,16 +560,16 @@ datetime :name, *modes, **options
 
 **Examples (Request - required by default):**
 ```ruby
-datetime :created_at
+time :created_at
 datetime :published_at, :optional
 datetime :expires_at, default: -> { Time.now + 1.day }
 ```
 
 **Examples (Response - optional by default):**
 ```ruby
-datetime :created_at
+time :created_at
 datetime :published_at
-datetime :updated_at, :required
+time :updated_at, :required
 ```
 
 ### `object`
@@ -762,7 +762,7 @@ Set default value if attribute is missing.
 ```ruby
 integer :page, default: 1
 string :status, default: "draft"
-datetime :created_at, default: -> { Time.now }
+time :created_at, default: -> { Time.now }
 ```
 
 **Note:** Cannot be used with `object` or `array` types.
@@ -846,7 +846,7 @@ Automatically convert values between different types using predefined conversion
 **Simple mode:**
 ```ruby
 string :published_at, cast: :datetime
-datetime :created_at, cast: :integer
+time :created_at, cast: :integer
 integer :timestamp, cast: :datetime
 boolean :active, cast: :integer
 string :featured, cast: :boolean
@@ -1512,8 +1512,8 @@ module Gate
               end
 
               integer :views, default: 0
-              datetime :created_at, :required
-              datetime :updated_at, :required
+              time :created_at, :required
+              time :updated_at, :required
             end
 
             object :meta do

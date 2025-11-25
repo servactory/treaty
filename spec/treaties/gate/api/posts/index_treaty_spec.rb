@@ -563,6 +563,14 @@ RSpec.describe Gate::API::Posts::IndexTreaty do
                                   required: { is: true, message: nil }
                                 },
                                 attributes: {}
+                              },
+                              created_at: {
+                                type: :time,
+                                options: {
+                                  required: { is: true, message: nil },
+                                  cast: { to: :string, message: nil }
+                                },
+                                attributes: {}
                               }
                             }
                           }
@@ -704,10 +712,181 @@ RSpec.describe Gate::API::Posts::IndexTreaty do
                                 attributes: {}
                               },
                               created_at: {
-                                type: :datetime,
+                                type: :time,
                                 options: {
                                   required: { is: false, message: nil },
                                   cast: { to: :integer, message: nil }
+                                },
+                                attributes: {}
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      version: "6",
+                      segments: [6],
+                      default: false,
+                      summary: "Demonstrates date, time, and datetime types with casting",
+                      deprecated: false,
+                      executor: {
+                        executor: Posts::Stable::IndexService,
+                        method: :call
+                      },
+                      request: {
+                        attributes: {
+                          filters: {
+                            type: :object,
+                            options: {
+                              required: { is: false, message: nil }
+                            },
+                            attributes: {
+                              title: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil },
+                                  transform: { is: Proc, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              summary: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              description: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              published_on: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil },
+                                  cast: { to: :date, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              created_at: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil },
+                                  cast: { to: :time, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              updated_after: {
+                                type: :integer,
+                                options: {
+                                  required: { is: false, message: nil },
+                                  cast: { to: :datetime, message: nil }
+                                },
+                                attributes: {}
+                              }
+                            }
+                          }
+                        }
+                      },
+                      response: {
+                        status: 200,
+                        attributes: {
+                          meta: {
+                            type: :object,
+                            options: {
+                              required: { is: false, message: nil }
+                            },
+                            attributes: {
+                              count: {
+                                type: :integer,
+                                options: {
+                                  required: { is: false, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              page: {
+                                type: :integer,
+                                options: {
+                                  required: { is: false, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              limit: {
+                                type: :integer,
+                                options: {
+                                  required: { is: false, message: nil },
+                                  default: { is: 12, message: nil }
+                                },
+                                attributes: {}
+                              }
+                            }
+                          },
+                          posts: {
+                            type: :array,
+                            options: {
+                              required: { is: false, message: nil }
+                            },
+                            attributes: {
+                              id: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              title: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              summary: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              description: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              content: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              published_on: {
+                                type: :date,
+                                options: {
+                                  required: { is: false, message: nil },
+                                  cast: { to: :string, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              created_at: {
+                                type: :time,
+                                options: {
+                                  required: { is: false, message: nil },
+                                  cast: { to: :integer, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              updated_at: {
+                                type: :time,
+                                options: {
+                                  required: { is: false, message: nil },
+                                  cast: { to: :string, message: nil }
                                 },
                                 attributes: {}
                               }

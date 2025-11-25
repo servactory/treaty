@@ -48,8 +48,8 @@ module Gate
               string :preferred_notification_time, :optional, format: :time
               string :email_verified, format: :boolean
               string :external_id, :optional, format: :uuid
-              datetime :created_at
-              datetime :updated_at
+              time :created_at
+              time :updated_at
             end
           end
 

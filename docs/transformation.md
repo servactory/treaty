@@ -365,24 +365,30 @@ Automatically convert values between different types using the `cast` option. Un
 ```ruby
 request do
   object :post do
-    # Convert string timestamp to DateTime
-    string :published_at, cast: :datetime
+    # Convert string to Date
+    string :published_on, cast: :date
+
+    # Convert string to Time
+    string :created_at, cast: :time
+
+    # Convert string to DateTime
+    string :scheduled_at, cast: :datetime
 
     # Convert boolean string to boolean
     string :featured, cast: :boolean
-
-    # Convert Unix timestamp to DateTime
-    integer :created_at, cast: :datetime
   end
 end
 
 response 200 do
   object :post do
-    # Convert DateTime to string (ISO8601)
-    datetime :published_at, cast: :string
+    # Convert Date to string (ISO8601)
+    date :published_on, cast: :string
 
-    # Convert DateTime to Unix timestamp
-    datetime :created_at, cast: :integer
+    # Convert Time to Unix timestamp
+    time :created_at, cast: :integer
+
+    # Convert DateTime to string (ISO8601)
+    datetime :scheduled_at, cast: :string
 
     # Convert boolean to integer (1/0)
     boolean :featured, cast: :integer
@@ -408,20 +414,38 @@ end
 **From Integer:**
 - `integer -> string`: Converts to string representation (`"42"`)
 - `integer -> boolean`: `0` = `false`, non-zero = `true`
-- `integer -> datetime`: Treats as Unix timestamp
+- `integer -> date`: Treats as Unix timestamp, converts to Date
+- `integer -> time`: Treats as Unix timestamp, converts to Time
+- `integer -> datetime`: Treats as Unix timestamp, converts to DateTime
 
 **From String:**
 - `string -> integer`: Parses integer from string
 - `string -> boolean`: Parses truthy/falsy strings (`"true"`, `"false"`, `"yes"`, `"no"`, `"1"`, `"0"`, `"on"`, `"off"`, case-insensitive)
+- `string -> date`: Parses date string (ISO8601, etc.)
+- `string -> time`: Parses time string (ISO8601, RFC3339, etc.)
 - `string -> datetime`: Parses datetime string (ISO8601, RFC3339, etc.)
 
 **From Boolean:**
 - `boolean -> string`: Converts to `"true"` or `"false"`
 - `boolean -> integer`: `true` = `1`, `false` = `0`
 
+**From Date:**
+- `date -> string`: Converts to ISO8601 format
+- `date -> integer`: Converts to Unix timestamp
+- `date -> time`: Converts to Time (start of day)
+- `date -> datetime`: Converts to DateTime (start of day)
+
+**From Time:**
+- `time -> string`: Converts to ISO8601 format
+- `time -> integer`: Converts to Unix timestamp
+- `time -> date`: Converts to Date
+- `time -> datetime`: Converts to DateTime
+
 **From DateTime:**
 - `datetime -> string`: Converts to ISO8601 format
 - `datetime -> integer`: Converts to Unix timestamp
+- `datetime -> date`: Converts to Date
+- `datetime -> time`: Converts to Time
 
 #### Request Casting Example
 
@@ -464,9 +488,10 @@ response 200 do
   object :post do
     string :id
     string :title
-    datetime :published_at, cast: :string    # Cast to ISO8601 string
-    datetime :created_at, cast: :integer     # Cast to Unix timestamp
-    boolean :featured, cast: :integer        # Cast to 1 or 0
+    date :published_on, cast: :string       # Cast to ISO8601 string
+    time :created_at, cast: :integer        # Cast to Unix timestamp
+    datetime :scheduled_at, cast: :string   # Cast to ISO8601 string
+    boolean :featured, cast: :integer       # Cast to 1 or 0
   end
 end
 ```
@@ -477,8 +502,9 @@ end
   post: {
     id: "123",
     title: "My Post",
-    published_at: DateTime.parse("2024-01-15T10:30:00Z"),
+    published_on: Date.parse("2024-01-15"),
     created_at: Time.current,
+    scheduled_at: DateTime.parse("2024-01-15T10:30:00Z"),
     featured: true
   }
 }
@@ -490,9 +516,10 @@ end
   "post" => {
     "id" => "123",
     "title" => "My Post",
-    "published_at" => "2024-01-15T10:30:00Z",  # ISO8601 string
-    "created_at" => 1705320600,                # Unix timestamp
-    "featured" => 1                            # Integer
+    "published_on" => "2024-01-15",             # ISO8601 date string
+    "created_at" => 1705320600,                 # Unix timestamp
+    "scheduled_at" => "2024-01-15T10:30:00Z",   # ISO8601 datetime string
+    "featured" => 1                             # Integer
   }
 }
 ```
@@ -515,7 +542,7 @@ Treaty::Exceptions::Validation: Cast failed for attribute 'count' from 'string' 
 ```
 
 **Important Notes:**
-- Cast only works with scalar types: `integer`, `string`, `boolean`, `datetime`
+- Cast only works with scalar types: `integer`, `string`, `boolean`, `date`, `time`, `datetime`
 - Array and Object types do not support casting
 - Casting to the same type is allowed (no-op)
 - Cast is only applied to non-nil values
@@ -526,7 +553,7 @@ Treaty::Exceptions::Validation: Cast failed for attribute 'count' from 'string' 
 Use `cast` when:
 - Converting between built-in types
 - You want automatic, consistent type conversions
-- You need standard datetime/timestamp conversions
+- You need standard date/time/timestamp conversions
 
 Use `transform` when:
 - You need custom transformation logic
@@ -538,7 +565,7 @@ Use `transform` when:
 request do
   object :post do
     # Transform cleans the string, then cast converts it to datetime
-    string :published_at,
+    string :scheduled_at,
            transform: ->(value:) { value.strip },
            cast: :datetime
   end

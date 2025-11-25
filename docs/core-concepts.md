@@ -148,7 +148,7 @@ class PostEntity < Treaty::Entity
   string :id
   string :title
   string :content
-  datetime :created_at
+  time :created_at
 end
 ```
 

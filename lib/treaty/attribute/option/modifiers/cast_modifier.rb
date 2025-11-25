@@ -100,7 +100,7 @@ module Treaty
         #
         # Schema format: `{ to: :target_type, message: "Custom error" }`
         # Note: Uses `:to` key instead of the default `:is` key.
-        class CastModifier < Treaty::Attribute::Option::Base
+        class CastModifier < Treaty::Attribute::Option::Base # rubocop:disable Metrics/ClassLength
           # Types that support casting (scalar types only)
           ALLOWED_CAST_TYPES = %i[integer string boolean date time datetime].freeze
 

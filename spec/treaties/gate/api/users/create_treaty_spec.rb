@@ -174,14 +174,14 @@ RSpec.describe Gate::API::Users::CreateTreaty do
                                 attributes: {}
                               },
                               created_at: {
-                                type: :datetime,
+                                type: :time,
                                 options: {
                                   required: { is: false, message: nil }
                                 },
                                 attributes: {}
                               },
                               updated_at: {
-                                type: :datetime,
+                                type: :time,
                                 options: {
                                   required: { is: false, message: nil }
                                 },
@@ -408,14 +408,14 @@ RSpec.describe Gate::API::Users::CreateTreaty do
                                 attributes: {}
                               },
                               created_at: {
-                                type: :datetime,
+                                type: :time,
                                 options: {
                                   required: { is: true, message: nil }
                                 },
                                 attributes: {}
                               },
                               updated_at: {
-                                type: :datetime,
+                                type: :time,
                                 options: {
                                   required: { is: true, message: nil }
                                 },

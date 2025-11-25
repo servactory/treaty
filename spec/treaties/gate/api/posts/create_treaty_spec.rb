@@ -414,14 +414,14 @@ RSpec.describe Gate::API::Posts::CreateTreaty do
                                 attributes: {}
                               },
                               created_at: {
-                                type: :datetime,
+                                type: :time,
                                 options: {
                                   required: { is: false, message: nil }
                                 },
                                 attributes: {}
                               },
                               updated_at: {
-                                type: :datetime,
+                                type: :time,
                                 options: {
                                   required: { is: false, message: nil }
                                 },
@@ -634,7 +634,7 @@ RSpec.describe Gate::API::Posts::CreateTreaty do
                                 attributes: {}
                               },
                               published_at: {
-                                type: :datetime,
+                                type: :time,
                                 options: {
                                   required: { is: false, message: nil },
                                   cast: { to: :string, message: nil }
@@ -716,7 +716,7 @@ RSpec.describe Gate::API::Posts::CreateTreaty do
                                 attributes: {}
                               },
                               created_at: {
-                                type: :datetime,
+                                type: :time,
                                 options: {
                                   required: { is: false, message: nil },
                                   cast: { to: :integer, message: nil }
@@ -724,7 +724,7 @@ RSpec.describe Gate::API::Posts::CreateTreaty do
                                 attributes: {}
                               },
                               updated_at: {
-                                type: :datetime,
+                                type: :time,
                                 options: {
                                   required: { is: false, message: nil },
                                   cast: { to: :string, message: nil }

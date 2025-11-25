@@ -85,7 +85,7 @@ module Gate
                 integer :popularity_score
               end
 
-              datetime :introduced_at
+              time :introduced_at
             end
 
             object :meta do

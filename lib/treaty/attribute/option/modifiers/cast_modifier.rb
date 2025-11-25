@@ -50,24 +50,42 @@ module Treaty
         # ### From Integer
         # - integer -> string: Converts to string representation
         # - integer -> boolean: 0 = false, non-zero = true
-        # - integer -> datetime: Treats as Unix timestamp
+        # - integer -> date: Treats as Unix timestamp, converts to date
+        # - integer -> time: Treats as Unix timestamp
+        # - integer -> datetime: Treats as Unix timestamp, converts to datetime
         #
         # ### From String
         # - string -> integer: Parses integer from string
         # - string -> boolean: Parses truthy/falsy strings (true/false, yes/no, 1/0, on/off)
+        # - string -> date: Parses date string
+        # - string -> time: Parses time string
         # - string -> datetime: Parses datetime string (ISO8601, RFC3339, etc.)
         #
         # ### From Boolean
         # - boolean -> string: Converts to "true" or "false"
         # - boolean -> integer: true = 1, false = 0
         #
+        # ### From Date
+        # - date -> string: Converts to ISO8601 format
+        # - date -> integer: Converts to Unix timestamp
+        # - date -> time: Converts to Time at midnight
+        # - date -> datetime: Converts to DateTime at midnight
+        #
+        # ### From Time
+        # - time -> string: Converts to ISO8601 format
+        # - time -> integer: Converts to Unix timestamp
+        # - time -> date: Converts to Date
+        # - time -> datetime: Converts to DateTime
+        #
         # ### From DateTime
         # - datetime -> string: Converts to ISO8601 format
         # - datetime -> integer: Converts to Unix timestamp
+        # - datetime -> date: Converts to Date
+        # - datetime -> time: Converts to Time
         #
         # ## Important Notes
         #
-        # - Cast option only works with scalar types (integer, string, boolean, datetime)
+        # - Cast option only works with scalar types (integer, string, boolean, date, time, datetime)
         # - Array and Object types are not supported for casting
         # - Casting to the same type is allowed (no-op)
         # - Nil values are not transformed (handled by RequiredValidator)
@@ -84,7 +102,7 @@ module Treaty
         # Note: Uses `:to` key instead of the default `:is` key.
         class CastModifier < Treaty::Attribute::Option::Base
           # Types that support casting (scalar types only)
-          ALLOWED_CAST_TYPES = %i[integer string boolean datetime].freeze
+          ALLOWED_CAST_TYPES = %i[integer string boolean date time datetime].freeze
 
           # Validates that cast option is correctly configured
           #
@@ -202,12 +220,16 @@ module Treaty
                 integer: ->(value:) { value }, # No-op for same type
                 string: ->(value:) { value.to_s },
                 boolean: ->(value:) { value != 0 },
-                datetime: ->(value:) { Time.at(value) }
+                date: ->(value:) { Time.at(value).to_date },
+                time: ->(value:) { Time.at(value) },
+                datetime: ->(value:) { Time.at(value).to_datetime }
               },
               string: {
                 string: ->(value:) { value }, # No-op for same type
                 integer: ->(value:) { Integer(value) },
                 boolean: ->(value:) { parse_boolean(value) },
+                date: ->(value:) { Date.parse(value) },
+                time: ->(value:) { Time.parse(value) },
                 datetime: ->(value:) { DateTime.parse(value) }
               },
               boolean: {
@@ -215,10 +237,26 @@ module Treaty
                 string: ->(value:) { value.to_s },
                 integer: ->(value:) { value ? 1 : 0 }
               },
+              date: {
+                date: ->(value:) { value }, # No-op for same type
+                string: ->(value:) { value.iso8601 },
+                integer: ->(value:) { value.to_time.to_i },
+                time: ->(value:) { value.to_time },
+                datetime: ->(value:) { value.to_datetime }
+              },
+              time: {
+                time: ->(value:) { value }, # No-op for same type
+                string: ->(value:) { value.iso8601 },
+                integer: ->(value:) { value.to_i },
+                date: ->(value:) { value.to_date },
+                datetime: ->(value:) { value.to_datetime }
+              },
               datetime: {
                 datetime: ->(value:) { value }, # No-op for same type
                 string: ->(value:) { value.iso8601 },
-                integer: ->(value:) { value.to_i }
+                integer: ->(value:) { value.to_i },
+                date: ->(value:) { value.to_date },
+                time: ->(value:) { value.to_time }
               }
             }
           end

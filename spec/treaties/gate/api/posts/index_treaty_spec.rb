@@ -704,7 +704,7 @@ RSpec.describe Gate::API::Posts::IndexTreaty do
                                 attributes: {}
                               },
                               created_at: {
-                                type: :datetime,
+                                type: :time,
                                 options: {
                                   required: { is: false, message: nil },
                                   cast: { to: :integer, message: nil }

@@ -51,7 +51,7 @@ RSpec.describe Treaty::Attribute::Option::Modifiers::CastModifier do
         expect { modifier.validate_schema! }.to(
           raise_error(Treaty::Exceptions::Validation) do |exception|
             expect(exception.message).to include("cannot be used with type 'array'")
-            expect(exception.message).to include("integer, string, boolean, datetime")
+            expect(exception.message).to include("integer, string, boolean, date, time, datetime")
           end
         )
       end
@@ -78,7 +78,7 @@ RSpec.describe Treaty::Attribute::Option::Modifiers::CastModifier do
         expect { modifier.validate_schema! }.to(
           raise_error(Treaty::Exceptions::Validation) do |exception|
             expect(exception.message).to include("cannot cast to 'array'")
-            expect(exception.message).to include("integer, string, boolean, datetime")
+            expect(exception.message).to include("integer, string, boolean, date, time, datetime")
           end
         )
       end
@@ -144,10 +144,10 @@ RSpec.describe Treaty::Attribute::Option::Modifiers::CastModifier do
       let(:attribute_type) { :integer }
       let(:option_schema) { { to: :datetime, message: nil } }
 
-      it "converts Unix timestamp to Time", :aggregate_failures do
+      it "converts Unix timestamp to DateTime", :aggregate_failures do
         timestamp = 1_705_320_600 # 2024-01-15 10:30:00 UTC
         result = modifier.transform_value(timestamp)
-        expect(result).to be_a(Time)
+        expect(result).to be_a(DateTime)
         expect(result.to_i).to eq(timestamp)
       end
     end

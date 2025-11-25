@@ -47,8 +47,8 @@ module Serialization
       # Example: UUID format validation
       string :external_id, :optional, format: :uuid
 
-      datetime :created_at
-      datetime :updated_at
+      time :created_at
+      time :updated_at
     end
   end
 end

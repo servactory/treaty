@@ -380,7 +380,7 @@ RSpec.describe Gate::API::Movies::IndexTreaty do
                                 }
                               },
                               released_at: {
-                                type: :datetime,
+                                type: :time,
                                 options: {
                                   required: { is: false, message: nil }
                                 },

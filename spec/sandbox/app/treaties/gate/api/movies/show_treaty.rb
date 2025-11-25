@@ -170,8 +170,8 @@ module Gate
                 integer :box_office, as: :revenue
               end
 
-              datetime :released_at
-              datetime :updated_at
+              time :released_at
+              time :updated_at
             end
           end
 

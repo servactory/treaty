@@ -597,14 +597,14 @@ RSpec.describe Gate::API::Movies::ShowTreaty do
                                 }
                               },
                               released_at: {
-                                type: :datetime,
+                                type: :time,
                                 options: {
                                   required: { is: false, message: nil }
                                 },
                                 attributes: {}
                               },
                               updated_at: {
-                                type: :datetime,
+                                type: :time,
                                 options: {
                                   required: { is: false, message: nil }
                                 },

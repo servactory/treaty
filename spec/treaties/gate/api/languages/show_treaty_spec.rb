@@ -366,14 +366,14 @@ RSpec.describe Gate::API::Languages::ShowTreaty do
                                 }
                               },
                               introduced_at: {
-                                type: :datetime,
+                                type: :time,
                                 options: {
                                   required: { is: false, message: nil }
                                 },
                                 attributes: {}
                               },
                               updated_at: {
-                                type: :datetime,
+                                type: :time,
                                 options: {
                                   required: { is: false, message: nil }
                                 },

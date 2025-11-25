@@ -100,8 +100,8 @@ module Gate
                 end
               end
 
-              datetime :introduced_at
-              datetime :updated_at
+              time :introduced_at
+              time :updated_at
             end
           end
 

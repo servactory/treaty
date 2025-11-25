@@ -35,10 +35,10 @@ module Serialization
             integer :rating
             integer :views
 
-            # Demonstrates casting datetime to integer (Unix timestamp)
-            datetime :created_at, cast: :integer
-            # Demonstrates casting datetime to string
-            datetime :updated_at, cast: :string
+            # Demonstrates casting time to integer (Unix timestamp)
+            time :created_at, cast: :integer
+            # Demonstrates casting time to string
+            time :updated_at, cast: :string
           end
         end
       end

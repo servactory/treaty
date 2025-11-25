@@ -52,6 +52,22 @@ RSpec.describe Treaty::Attribute::Option::Validators::TypeValidator do
       end
     end
 
+    context "with allowed type :date" do
+      let(:attribute_type) { :date }
+
+      it "does not raise an error" do
+        expect { validator.validate_schema! }.not_to raise_error
+      end
+    end
+
+    context "with allowed type :time" do
+      let(:attribute_type) { :time }
+
+      it "does not raise an error" do
+        expect { validator.validate_schema! }.not_to raise_error
+      end
+    end
+
     context "with allowed type :datetime" do
       let(:attribute_type) { :datetime }
 
@@ -258,16 +274,8 @@ RSpec.describe Treaty::Attribute::Option::Validators::TypeValidator do
       end
     end
 
-    context "with type :datetime" do
-      let(:attribute_type) { :datetime }
-
-      it "accepts DateTime value" do
-        expect { validator.validate_value!(DateTime.now) }.not_to raise_error
-      end
-
-      it "accepts Time value" do
-        expect { validator.validate_value!(Time.now) }.not_to raise_error
-      end
+    context "with type :date" do
+      let(:attribute_type) { :date }
 
       it "accepts Date value" do
         expect { validator.validate_value!(Date.today) }.not_to raise_error
@@ -275,6 +283,120 @@ RSpec.describe Treaty::Attribute::Option::Validators::TypeValidator do
 
       it "accepts nil (handled by RequiredValidator)" do
         expect { validator.validate_value!(nil) }.not_to raise_error
+      end
+
+      it "rejects DateTime", :aggregate_failures do
+        expect { validator.validate_value!(DateTime.now) }.to(
+          raise_error(Treaty::Exceptions::Validation) do |exception|
+            expect(exception.message).to include("test_attr")
+            expect(exception.message).to include("DateTime")
+          end
+        )
+      end
+
+      it "rejects Time", :aggregate_failures do
+        expect { validator.validate_value!(Time.now) }.to(
+          raise_error(Treaty::Exceptions::Validation) do |exception|
+            expect(exception.message).to include("test_attr")
+            expect(exception.message).to include("Time")
+          end
+        )
+      end
+
+      it "rejects String", :aggregate_failures do
+        expect { validator.validate_value!("2025-01-15") }.to(
+          raise_error(Treaty::Exceptions::Validation) do |exception|
+            expect(exception.message).to include("test_attr")
+            expect(exception.message).to include("String")
+          end
+        )
+      end
+
+      it "rejects Integer", :aggregate_failures do
+        expect { validator.validate_value!(1_673_788_800) }.to(
+          raise_error(Treaty::Exceptions::Validation) do |exception|
+            expect(exception.message).to include("test_attr")
+            expect(exception.message).to include("Integer")
+          end
+        )
+      end
+    end
+
+    context "with type :time" do
+      let(:attribute_type) { :time }
+
+      it "accepts Time value" do
+        expect { validator.validate_value!(Time.now) }.not_to raise_error
+      end
+
+      it "accepts nil (handled by RequiredValidator)" do
+        expect { validator.validate_value!(nil) }.not_to raise_error
+      end
+
+      it "rejects DateTime", :aggregate_failures do
+        expect { validator.validate_value!(DateTime.now) }.to(
+          raise_error(Treaty::Exceptions::Validation) do |exception|
+            expect(exception.message).to include("test_attr")
+            expect(exception.message).to include("DateTime")
+          end
+        )
+      end
+
+      it "rejects Date", :aggregate_failures do
+        expect { validator.validate_value!(Date.today) }.to(
+          raise_error(Treaty::Exceptions::Validation) do |exception|
+            expect(exception.message).to include("test_attr")
+            expect(exception.message).to include("Date")
+          end
+        )
+      end
+
+      it "rejects String", :aggregate_failures do
+        expect { validator.validate_value!("10:30:00") }.to(
+          raise_error(Treaty::Exceptions::Validation) do |exception|
+            expect(exception.message).to include("test_attr")
+            expect(exception.message).to include("String")
+          end
+        )
+      end
+
+      it "rejects Integer", :aggregate_failures do
+        expect { validator.validate_value!(1_673_788_800) }.to(
+          raise_error(Treaty::Exceptions::Validation) do |exception|
+            expect(exception.message).to include("test_attr")
+            expect(exception.message).to include("Integer")
+          end
+        )
+      end
+    end
+
+    context "with type :datetime" do
+      let(:attribute_type) { :datetime }
+
+      it "accepts DateTime value" do
+        expect { validator.validate_value!(DateTime.now) }.not_to raise_error
+      end
+
+      it "accepts nil (handled by RequiredValidator)" do
+        expect { validator.validate_value!(nil) }.not_to raise_error
+      end
+
+      it "rejects Time", :aggregate_failures do
+        expect { validator.validate_value!(Time.now) }.to(
+          raise_error(Treaty::Exceptions::Validation) do |exception|
+            expect(exception.message).to include("test_attr")
+            expect(exception.message).to include("Time")
+          end
+        )
+      end
+
+      it "rejects Date", :aggregate_failures do
+        expect { validator.validate_value!(Date.today) }.to(
+          raise_error(Treaty::Exceptions::Validation) do |exception|
+            expect(exception.message).to include("test_attr")
+            expect(exception.message).to include("Date")
+          end
+        )
       end
 
       it "rejects String", :aggregate_failures do

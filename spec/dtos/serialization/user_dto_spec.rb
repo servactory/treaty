@@ -102,14 +102,14 @@ RSpec.describe Serialization::UserDto do
                           attributes: {}
                         },
                         created_at: {
-                          type: :datetime,
+                          type: :time,
                           options: {
                             required: { is: true, message: nil }
                           },
                           attributes: {}
                         },
                         updated_at: {
-                          type: :datetime,
+                          type: :time,
                           options: {
                             required: { is: true, message: nil }
                           },

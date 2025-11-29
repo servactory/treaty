@@ -889,6 +889,44 @@ string :published_at, cast: {
 
 **Note:** Advanced mode uses `:to` key instead of `:is` (different from other options).
 
+#### `if`
+
+Control whether an attribute should be processed based on runtime data evaluation.
+
+**Type:** Lambda (Proc)
+**Default:** nil
+
+```ruby
+string :published_at, if: ->(post:) { post[:status] == 'published' }
+array :tags, if: ->(post:) { post[:status] != 'draft' } do
+  string :_self
+end
+integer :views, if: ->(post:) { post[:status] == 'published' }
+```
+
+**Requirements:**
+- Lambda must be a Proc or Lambda (no other types accepted)
+- Lambda receives raw data as named arguments matching the parent object structure
+- If condition returns falsy value, attribute doesn't exist (not processed, not validated)
+- If condition returns truthy value, attribute is processed normally
+- All exceptions in lambda are caught and converted to `Treaty::Exceptions::Validation`
+- Evaluation happens before validators and modifiers run
+
+**Lambda argument patterns:**
+```ruby
+# For root-level attributes in request/response
+if: ->(**attributes) { attributes[:status] == 'published' }
+
+# For nested attributes (recommended - more explicit)
+if: ->(post:) { post[:status] == 'published' }
+
+# Access parent data in nested structures
+object :post do
+  string :status
+  string :published_at, if: ->(post:) { post[:status] == 'published' }
+end
+```
+
 ### Advanced Mode Options
 
 For custom error messages (static or dynamic) and fine-grained control:

@@ -1039,6 +1039,210 @@ GET /api/posts?filters[category]=tech
 
 See [Inventory System](./inventory.md) for detailed documentation.
 
+## Example 10: Conditional Attributes with Status-Based Logic
+
+Demonstrates using the `if` option to conditionally include attributes based on data state.
+
+### Treaty Definition
+
+```ruby
+module Gate
+  module API
+    module Posts
+      class CreateTreaty < ApplicationTreaty
+        version 1, default: true do
+
+          request do
+            object :post do
+              string :title
+              string :content
+              string :status, in: %w[draft published archived], default: "draft"
+
+              # Published date only accepted for published posts
+              string :published_at, :optional, cast: :datetime,
+                     if: ->(post:) { post[:status] == 'published' }
+
+              # Tags only accepted for non-draft posts
+              array :tags, :optional, if: ->(post:) { post[:status] != 'draft' } do
+                string :_self
+              end
+
+              # Draft notes only for draft posts
+              string :draft_notes, :optional,
+                     if: ->(post:) { post[:status] == 'draft' }
+
+              object :author do
+                string :name
+                string :email
+              end
+            end
+          end
+
+          response 201 do
+            object :post do
+              string :id
+              string :title
+              string :content
+              string :status
+              boolean :featured
+
+              # Published date only in response for published posts
+              datetime :published_at, cast: :string,
+                       if: ->(post:) { post[:status] == 'published' }
+
+              # Tags only visible for non-draft posts
+              array :tags, if: ->(post:) { post[:status] != 'draft' } do
+                string :_self
+              end
+
+              # Draft notes only for drafts
+              string :draft_notes, if: ->(post:) { post[:status] == 'draft' }
+
+              object :author do
+                string :name
+                string :email
+              end
+
+              # Public stats only for published posts
+              integer :rating, if: ->(post:) { post[:status] == 'published' }
+              integer :views, if: ->(post:) { post[:status] == 'published' }
+
+              time :created_at, cast: :string
+              time :updated_at, cast: :integer
+            end
+          end
+
+          delegate_to Posts::CreateService
+        end
+      end
+    end
+  end
+end
+```
+
+### Controller
+
+```ruby
+module Gate
+  module API
+    class PostsController < ApplicationController
+      treaty :create
+    end
+  end
+end
+```
+
+### Request Examples
+
+**Draft Post:**
+```bash
+POST /api/posts
+
+{
+  "post": {
+    "title": "My Draft Article",
+    "content": "Work in progress...",
+    "status": "draft",
+    "draft_notes": "Need to add more examples",
+    "author": {
+      "name": "John Doe",
+      "email": "john@example.com"
+    }
+  }
+}
+
+# Response:
+{
+  "post": {
+    "id": "123",
+    "title": "My Draft Article",
+    "content": "Work in progress...",
+    "status": "draft",
+    "featured": false,
+    "draft_notes": "Need to add more examples",
+    "author": {
+      "name": "John Doe",
+      "email": "john@example.com"
+    },
+    "created_at": "2024-01-01T12:00:00Z",
+    "updated_at": 1704110400
+  }
+}
+# Note: No tags, published_at, rating, or views for draft posts
+```
+
+**Published Post:**
+```bash
+POST /api/posts
+
+{
+  "post": {
+    "title": "Getting Started with Treaty",
+    "content": "Treaty is a powerful API contract library...",
+    "status": "published",
+    "published_at": "2024-01-15T10:00:00Z",
+    "tags": ["ruby", "api", "treaty"],
+    "author": {
+      "name": "Jane Smith",
+      "email": "jane@example.com"
+    }
+  }
+}
+
+# Response:
+{
+  "post": {
+    "id": "124",
+    "title": "Getting Started with Treaty",
+    "content": "Treaty is a powerful API contract library...",
+    "status": "published",
+    "featured": true,
+    "published_at": "2024-01-15T10:00:00Z",
+    "tags": ["ruby", "api", "treaty"],
+    "author": {
+      "name": "Jane Smith",
+      "email": "jane@example.com"
+    },
+    "rating": 5,
+    "views": 1523,
+    "created_at": "2024-01-01T12:00:00Z",
+    "updated_at": 1704110400
+  }
+}
+# Note: Includes published_at, tags, rating, and views
+```
+
+**Invalid Request (tags for draft):**
+```bash
+POST /api/posts
+
+{
+  "post": {
+    "title": "My Draft",
+    "content": "Content...",
+    "status": "draft",
+    "tags": ["ruby"],  # Invalid: tags not allowed for drafts
+    "author": {
+      "name": "John Doe",
+      "email": "john@example.com"
+    }
+  }
+}
+
+# Error: Tags are ignored/filtered because condition is false
+# The request is processed, but tags attribute is not validated or stored
+```
+
+### Benefits
+
+1. **Context-Aware Validation** - Different rules for different states
+2. **Clean API** - Clients only see/send relevant attributes
+3. **Single Contract** - One version handles multiple scenarios
+4. **Type Safety** - Conditional attributes still fully validated when present
+5. **Flexible Logic** - Lambda can evaluate any runtime condition
+
+See [Attributes: Conditional Attributes](./attributes.md#conditional-attributes) for detailed documentation.
+
 ## Next Steps
 
 - [Validation](./validation.md) - Understand how validation works

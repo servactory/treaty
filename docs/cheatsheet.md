@@ -162,6 +162,12 @@ string :scheduled_at, cast: :datetime   # String to DateTime
 date :published_on, cast: :string       # Date to ISO8601 string
 time :created_at, cast: :integer        # Time to Unix timestamp
 boolean :active, cast: :integer         # Boolean to integer (1/0)
+
+# Conditional attributes
+string :published_at, if: ->(post:) { post[:status] == 'published' }
+array :tags, if: ->(post:) { post[:status] != 'draft' } do
+  string :_self
+end
 ```
 
 ## Option Execution Order

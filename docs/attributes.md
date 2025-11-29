@@ -395,6 +395,129 @@ string :published_at,
 
 **See:** [Transformation: Type Casting](./transformation.md#type-casting) for detailed examples
 
+#### if
+
+Conditionally includes attributes based on runtime data evaluation. Unlike validators (which check data) and modifiers (which transform data), the `if` option controls whether an attribute should exist in the output at all.
+
+```ruby
+# Basic usage with keyword splat
+integer :rating, if: ->(**attributes) { attributes.dig(:post, :published_at).present? }
+array :tags, if: ->(**attributes) { attributes.dig(:post, :published_at).present? }
+
+# Named argument pattern (cleaner for nested structures)
+integer :views, if: ->(post:) { post[:published_at].present? }
+string :admin_note, if: ->(user:, post:) { user[:role] == 'admin' && post[:flagged] }
+```
+
+**How it works:**
+- If condition evaluates to `true` → attribute is processed normally (validated and transformed)
+- If condition evaluates to `false` → attribute is completely excluded from output
+- Lambda receives raw data as named arguments
+- All exceptions in lambda are caught and wrapped in `Treaty::Exceptions::Validation`
+
+**Important:**
+- Does NOT support simple mode (`if: true`) or advanced mode (`if: { is: ..., message: ... }`)
+- Only accepts Proc/Lambda directly
+- Lambda must return truthy/falsy value
+- Evaluated BEFORE validators and modifiers run
+- Works with all attribute types (including nested objects and arrays)
+
+**Use cases:**
+
+1. **Show fields only when published:**
+```ruby
+response 200 do
+  object :post do
+    string :id
+    string :title
+    datetime :published_at, :optional
+    # Rating only visible for published posts
+    integer :rating, if: ->(**attrs) { attrs.dig(:post, :published_at).present? }
+    # Tags only visible for published posts
+    array :tags, if: ->(**attrs) { attrs.dig(:post, :published_at).present? } do
+      string :_self
+    end
+  end
+end
+```
+
+2. **Role-based field visibility:**
+```ruby
+response 200 do
+  object :user do
+    string :name
+    string :email
+    # Admin-only fields
+    string :internal_id, if: ->(user:) { user[:role] == 'admin' }
+    datetime :last_login, if: ->(user:) { user[:role] == 'admin' }
+  end
+end
+```
+
+3. **Feature flags:**
+```ruby
+response 200 do
+  object :product do
+    string :name
+    string :price
+    # Beta features only for specific users
+    object :analytics, if: ->(product:, user:) { user[:beta_access] == true } do
+      integer :view_count
+      integer :click_count
+    end
+  end
+end
+```
+
+**Data access pattern:**
+```ruby
+# For data structure: { post: { title: "...", published_at: "..." } }
+
+# Option 1: Keyword splat (accepts any structure)
+if: ->(**attributes) { attributes.dig(:post, :published_at).present? }
+
+# Option 2: Named arguments (type-safe for known structure)
+if: ->(post:) { post[:published_at].present? }
+
+# Option 3: Multiple named arguments
+if: ->(user:, post:) { user[:role] == 'admin' || post[:author_id] == user[:id] }
+```
+
+**Execution order:**
+The `if` conditional is evaluated FIRST, before any validation or transformation:
+1. `if` - Check condition (if false, skip attribute entirely)
+2. Validators - Validate value (`required`, `type`, `inclusion`, `format`)
+3. Modifiers - Transform value (`default`, `transform`, `cast`, `as`)
+
+**Common patterns:**
+```ruby
+# Conditional with validation
+integer :rating,
+        if: ->(post:) { post[:published_at].present? },
+        in: [1, 2, 3, 4, 5]  # Validation only runs if condition is true
+
+# Conditional with transformation
+string :slug,
+        if: ->(post:) { post[:published_at].present? },
+        transform: ->(value:) { value.parameterize }  # Transform only runs if condition is true
+
+# Conditional with default
+integer :views,
+        if: ->(post:) { post[:published_at].present? },
+        default: 0  # Default only applies if condition is true
+```
+
+**Error handling:**
+```ruby
+# If lambda raises exception
+integer :rating, if: ->(post:) { post[:invalid_key].upcase }  # NoMethodError
+
+# Treaty catches it and raises:
+# Treaty::Exceptions::Validation: "Conditional evaluation failed for attribute 'rating': undefined method `upcase' for nil:NilClass"
+```
+
+**See:** [Validation: Conditional Attributes](./validation.md#conditional-attributes) for more examples
+
 ### Advanced Mode Options
 
 All simple mode options can be extended with custom error messages using either static strings or dynamic lambda functions:

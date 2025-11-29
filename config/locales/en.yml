@@ -62,6 +62,12 @@ en:
           conversion_not_supported: "Option 'cast' for attribute '%{attribute}' does not support conversion from '%{from}' to '%{to}'"
           conversion_error: "Cast failed for attribute '%{attribute}' from '%{from}' to '%{to}'. Value: '%{value}'. Error: %{error}"
 
+      # Attribute conditionals
+      conditionals:
+        if:
+          invalid_type: "Option 'if' for attribute '%{attribute}' must be a Proc or Lambda. Got: %{type}"
+          evaluation_error: "Conditional evaluation failed for attribute '%{attribute}': %{error}"
+
       # Attribute builder DSL
       builder:
         not_implemented: "%{class} must implement #create_attribute"

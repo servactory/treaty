@@ -287,6 +287,84 @@ module Gate
 
           delegate_to "posts/stable/create_service"
         end
+
+        version 6 do
+          summary "Demonstrates conditional attributes with if option"
+
+          request do
+            # Query
+            object :_self do
+              string :signature
+            end
+          end
+
+          request do
+            # Body
+            object :post do
+              string :title, transform: ->(value:) { value.strip }
+              string :summary
+              string :description, :optional
+              string :content
+              boolean :published, :optional
+
+              # published_at determines visibility of other fields
+              string :published_at, :optional, cast: :datetime
+
+              # Tags only accepted if post is published
+              array :tags, :optional, if: ->(**attrs) { attrs.dig(:post, :published_at).present? } do
+                string :_self, transform: ->(value:) { value.downcase }
+              end
+
+              object :author do
+                string :name
+                string :bio
+
+                array :socials, :optional do
+                  string :provider, in: %w[twitter linkedin github]
+                  string :handle, as: :value
+                end
+              end
+            end
+          end
+
+          response 201 do
+            object :post do
+              string :id
+              string :title
+              string :summary
+              string :description
+              string :content
+              boolean :published
+              boolean :featured
+
+              datetime :published_at, cast: :string
+
+              # Tags only visible if post is published
+              array :tags, if: ->(**attrs) { attrs.dig(:post, :published_at).present? } do
+                string :_self
+              end
+
+              object :author do
+                string :name
+                string :bio
+
+                array :socials do
+                  string :provider
+                  string :value, as: :handle
+                end
+              end
+
+              # Rating and views only visible for published posts
+              integer :rating, if: ->(post:) { post[:published_at].present? }
+              integer :views, if: ->(post:) { post[:published_at].present? }
+
+              time :created_at, cast: :string
+              time :updated_at, cast: :integer
+            end
+          end
+
+          delegate_to "posts/stable/create_service"
+        end
       end
     end
   end

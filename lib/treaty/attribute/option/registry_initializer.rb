@@ -7,14 +7,15 @@ module Treaty
       #
       # ## Purpose
       #
-      # Centralized registration point for all option processors (validators and modifiers).
+      # Centralized registration point for all option processors (validators, modifiers, and conditionals).
       # Automatically registers all built-in options when loaded.
       #
       # ## Responsibilities
       #
       # 1. **Validator Registration** - Registers all built-in validators
       # 2. **Modifier Registration** - Registers all built-in modifiers
-      # 3. **Auto-Loading** - Executes automatically when file is loaded
+      # 3. **Conditional Registration** - Registers all built-in conditionals
+      # 4. **Auto-Loading** - Executes automatically when file is loaded
       #
       # ## Built-in Validators
       #
@@ -29,6 +30,10 @@ module Treaty
       # - `:default` → DefaultModifier - Provides default values
       # - `:transform` → TransformModifier - Transforms values using custom lambdas
       # - `:cast` → CastModifier - Converts values between types automatically
+      #
+      # ## Built-in Conditionals
+      #
+      # - `:if` → IfConditional - Conditionally includes attributes based on runtime data
       #
       # ## Auto-Registration
       #
@@ -63,6 +68,7 @@ module Treaty
           def register_all!
             register_validators!
             register_modifiers!
+            register_conditionals!
           end
 
           private
@@ -85,6 +91,13 @@ module Treaty
             Registry.register(:default, Modifiers::DefaultModifier, category: :modifier)
             Registry.register(:transform, Modifiers::TransformModifier, category: :modifier)
             Registry.register(:cast, Modifiers::CastModifier, category: :modifier)
+          end
+
+          # Registers all built-in conditionals
+          #
+          # @return [void]
+          def register_conditionals!
+            Registry.register(:if, Conditionals::IfConditional, category: :conditional)
           end
         end
       end

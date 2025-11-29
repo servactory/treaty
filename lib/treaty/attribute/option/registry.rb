@@ -3,7 +3,7 @@
 module Treaty
   module Attribute
     module Option
-      # Central registry for all option processors (validators and modifiers).
+      # Central registry for all option processors (validators, modifiers, and conditionals).
       #
       # ## Purpose
       #
@@ -14,7 +14,7 @@ module Treaty
       #
       # 1. **Registration** - Stores option processor classes
       # 2. **Retrieval** - Provides access to registered processors
-      # 3. **Categorization** - Organizes processors by category (validator/modifier)
+      # 3. **Categorization** - Organizes processors by category (validator/modifier/conditional)
       # 4. **Validation** - Checks if options are registered
       #
       # ## Registered Options
@@ -23,15 +23,22 @@ module Treaty
       # - `:required` → RequiredValidator
       # - `:type` → TypeValidator
       # - `:inclusion` → InclusionValidator
+      # - `:format` → FormatValidator
       #
       # ### Modifiers
       # - `:as` → AsModifier
       # - `:default` → DefaultModifier
+      # - `:transform` → TransformModifier
+      # - `:cast` → CastModifier
+      #
+      # ### Conditionals
+      # - `:if` → IfConditional
       #
       # ## Usage
       #
       # Registration (done in RegistryInitializer):
       #   Registry.register(:required, RequiredValidator, category: :validator)
+      #   Registry.register(:if, IfConditional, category: :conditional)
       #
       # Retrieval (done in OptionOrchestrator):
       #   processor_class = Registry.processor_for(:required)
@@ -108,6 +115,14 @@ module Treaty
           # @return [Hash] Hash of option_name => processor_class for modifiers
           def modifiers
             registry.select { |_, info| info.fetch(:category) == :modifier }
+                    .transform_values { |info| info.fetch(:processor_class) }
+          end
+
+          # Get all conditionals
+          #
+          # @return [Hash] Hash of option_name => processor_class for conditionals
+          def conditionals
+            registry.select { |_, info| info.fetch(:category) == :conditional }
                     .transform_values { |info| info.fetch(:processor_class) }
           end
 

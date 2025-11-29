@@ -70,12 +70,16 @@ module Treaty
 
           # Validates and transforms all attributes
           # Iterates through attributes, processes them, handles :_self objects
+          # Skips attributes with false conditional (if option)
           #
           # @return [Hash] Transformed data with all attributes processed
           def validate!
             transformed_data = {}
 
             collection_of_attributes.each do |attribute|
+              # Check if conditional (if option) - skip attribute if condition is false
+              next unless should_process_attribute?(attribute)
+
               transformed_value = validate_and_transform_attribute!(attribute)
 
               if attribute.name == SELF_OBJECT && attribute.type == :object
@@ -90,6 +94,34 @@ module Treaty
           end
 
           private
+
+          # Checks if an attribute should be processed based on its conditional (if option)
+          # Returns true if no conditional is defined or if conditional evaluates to true
+          #
+          # @param attribute [Attribute::Base] The attribute to check
+          # @return [Boolean] True if attribute should be processed, false to skip it
+          def should_process_attribute?(attribute)
+            # Check if attribute has an :if option
+            return true unless attribute.options.key?(:if)
+
+            # Get the if conditional processor from the validator
+            # We need to build a temporary processor to evaluate the condition
+            processor_class = Option::Registry.processor_for(:if)
+            return true if processor_class.nil?
+
+            # Create processor instance
+            conditional = processor_class.new(
+              attribute_name: attribute.name,
+              attribute_type: attribute.type,
+              option_schema: attribute.options.fetch(:if)
+            )
+
+            # Validate schema at runtime (ensure it's a valid lambda)
+            conditional.validate_schema!
+
+            # Evaluate condition with raw data
+            conditional.evaluate_condition(data)
+          end
 
           # Returns collection of attributes for this context
           # Must be implemented in subclasses

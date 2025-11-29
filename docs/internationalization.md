@@ -139,6 +139,17 @@ treaty:
         conversion_error: "Cast failed for attribute '%{attribute}' from '%{from}' to '%{to}'. Value: '%{value}'. Error: %{error}"
 ```
 
+### Conditional Messages
+
+```yaml
+treaty:
+  attributes:
+    conditionals:
+      if:
+        invalid_type: "Option 'if' for attribute '%{attribute}' must be a Proc or Lambda. Got: %{type}"
+        evaluation_error: "Conditional evaluation failed for attribute '%{attribute}': %{error}"
+```
+
 ## Adding New Languages
 
 To add support for a new language, create a translation file in your Rails application:
@@ -413,6 +424,11 @@ Different validators provide different interpolation variables:
 - `%{to}` - the target type for conversion
 - `%{value}` - the value that failed to convert (for conversion_error)
 - `%{error}` - the error message from conversion execution (for conversion_error)
+
+**If Conditional:**
+- `%{attribute}` - the attribute name
+- `%{type}` - the actual type provided (for invalid_type error)
+- `%{error}` - the error message from lambda execution (for evaluation_error)
 
 **Inventory:**
 - `%{method}` - the unknown method name that was called

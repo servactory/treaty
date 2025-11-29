@@ -309,15 +309,15 @@ module Gate
 
               # published_at only accepted for published posts
               string :published_at, :optional, cast: :datetime,
-                     if: ->(post:) { post[:status] == 'published' }
+                     if: ->(post:) { post[:status] == "published" }
 
               # Tags only accepted for non-draft posts
-              array :tags, :optional, if: ->(post:) { post[:status] != 'draft' } do
+              array :tags, :optional, if: ->(post:) { post[:status] != "draft" } do
                 string :_self, transform: ->(value:) { value.downcase }
               end
 
               # Draft notes only for draft posts
-              string :draft_notes, :optional, if: ->(post:) { post[:status] == 'draft' }
+              string :draft_notes, :optional, if: ->(post:) { post[:status] == "draft" }
 
               object :author do
                 string :name
@@ -342,15 +342,15 @@ module Gate
               boolean :featured
 
               # published_at only in response for published posts
-              datetime :published_at, cast: :string, if: ->(post:) { post[:status] == 'published' }
+              datetime :published_at, cast: :string, if: ->(post:) { post[:status] == "published" }
 
               # Tags only visible for non-draft posts
-              array :tags, if: ->(post:) { post[:status] != 'draft' } do
+              array :tags, if: ->(post:) { post[:status] != "draft" } do
                 string :_self
               end
 
               # Draft notes only for drafts
-              string :draft_notes, if: ->(post:) { post[:status] == 'draft' }
+              string :draft_notes, if: ->(post:) { post[:status] == "draft" }
 
               object :author do
                 string :name
@@ -363,8 +363,8 @@ module Gate
               end
 
               # Public stats only for published posts
-              integer :rating, if: ->(post:) { post[:status] == 'published' }
-              integer :views, if: ->(post:) { post[:status] == 'published' }
+              integer :rating, if: ->(post:) { post[:status] == "published" }
+              integer :views, if: ->(post:) { post[:status] == "published" }
 
               time :created_at, cast: :string
               time :updated_at, cast: :integer

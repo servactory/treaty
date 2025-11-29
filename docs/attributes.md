@@ -406,7 +406,7 @@ array :tags, if: ->(**attributes) { attributes.dig(:post, :published_at).present
 
 # Named argument pattern (cleaner for nested structures)
 integer :views, if: ->(post:) { post[:published_at].present? }
-string :admin_note, if: ->(user:, post:) { user[:role] == 'admin' && post[:flagged] }
+string :admin_note, if: ->(user:, post:) { user[:role] == "admin" && post[:flagged] }
 ```
 
 **How it works:**
@@ -462,12 +462,12 @@ response 200 do
     string :title
     string :status
     # Draft metadata only for unpublished articles
-    object :draft_data, if: ->(article:) { article[:status] == 'draft' } do
+    object :draft_data, if: ->(article:) { article[:status] == "draft" } do
       datetime :last_edited
       string :editor_notes
     end
     # Published metadata only for published articles
-    object :publication_data, if: ->(article:) { article[:status] == 'published' } do
+    object :publication_data, if: ->(article:) { article[:status] == "published" } do
       datetime :published_at
       integer :view_count
     end
@@ -486,7 +486,7 @@ if: ->(**attributes) { attributes.dig(:post, :published_at).present? }
 if: ->(post:) { post[:published_at].present? }
 
 # Option 3: Multiple named arguments
-if: ->(user:, post:) { user[:role] == 'admin' || post[:author_id] == user[:id] }
+if: ->(user:, post:) { user[:role] == "admin" || post[:author_id] == user[:id] }
 ```
 
 **Execution order:**
@@ -499,17 +499,17 @@ The `if` conditional is evaluated FIRST, before any validation or transformation
 ```ruby
 # Conditional with validation
 integer :rating,
-        if: ->(post:) { post[:status] == 'published' },
+        if: ->(post:) { post[:status] == "published" },
         in: [1, 2, 3, 4, 5]  # Validation only runs if condition is true
 
 # Conditional with transformation
 string :public_url,
-        if: ->(post:) { post[:status] == 'published' },
+        if: ->(post:) { post[:status] == "published" },
         transform: ->(value:) { value.downcase }  # Transform only runs if condition is true
 
 # Conditional with default
 integer :priority,
-        if: ->(post:) { post[:status] == 'draft' },
+        if: ->(post:) { post[:status] == "draft" },
         default: 0  # Default only applies if condition is true
 ```
 

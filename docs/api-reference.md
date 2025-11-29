@@ -897,11 +897,11 @@ Control whether an attribute should be processed based on runtime data evaluatio
 **Default:** nil
 
 ```ruby
-string :published_at, if: ->(post:) { post[:status] == 'published' }
-array :tags, if: ->(post:) { post[:status] != 'draft' } do
+string :published_at, if: ->(post:) { post[:status] == "published" }
+array :tags, if: ->(post:) { post[:status] != "draft" } do
   string :_self
 end
-integer :views, if: ->(post:) { post[:status] == 'published' }
+integer :views, if: ->(post:) { post[:status] == "published" }
 ```
 
 **Requirements:**
@@ -915,15 +915,15 @@ integer :views, if: ->(post:) { post[:status] == 'published' }
 **Lambda argument patterns:**
 ```ruby
 # For root-level attributes in request/response
-if: ->(**attributes) { attributes[:status] == 'published' }
+if: ->(**attributes) { attributes[:status] == "published" }
 
 # For nested attributes (recommended - more explicit)
-if: ->(post:) { post[:status] == 'published' }
+if: ->(post:) { post[:status] == "published" }
 
 # Access parent data in nested structures
 object :post do
   string :status
-  string :published_at, if: ->(post:) { post[:status] == 'published' }
+  string :published_at, if: ->(post:) { post[:status] == "published" }
 end
 ```
 

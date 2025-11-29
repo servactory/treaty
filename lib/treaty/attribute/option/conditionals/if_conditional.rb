@@ -18,7 +18,7 @@ module Treaty
         #
         # Complex conditions:
         #   string :admin_note, if: ->(**attrs) {
-        #     attrs.dig(:user, :role) == 'admin' && attrs.dig(:post, :flagged)
+        #     attrs.dig(:user, :role) == "admin" && attrs.dig(:post, :flagged)
         #   }
         #
         # ## Use Cases
@@ -42,7 +42,7 @@ module Treaty
         #    response 200 do
         #      object :user do
         #        string :name
-        #        string :email, if: ->(user:) { user[:role] == 'admin' }
+        #        string :email, if: ->(user:) { user[:role] == "admin" }
         #      end
         #    end
         #    ```

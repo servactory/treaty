@@ -58,10 +58,10 @@ module Treaty
           # Evaluates the conditional with runtime data
           # Must be overridden in subclasses
           #
-          # @param data [Hash] Raw data to evaluate condition against
+          # @param _data [Hash] Raw data to evaluate condition against
           # @raise [Treaty::Exceptions::Validation] If evaluation fails
           # @return [Boolean] True if attribute should be processed, false otherwise
-          def evaluate_condition(data)
+          def evaluate_condition(_data)
             raise Treaty::Exceptions::NotImplemented,
                   "#{self.class} must implement #evaluate_condition"
           end

@@ -73,7 +73,7 @@ module Treaty
           # Skips attributes with false conditional (if option)
           #
           # @return [Hash] Transformed data with all attributes processed
-          def validate!
+          def validate! # rubocop:disable Metrics/MethodLength
             transformed_data = {}
 
             collection_of_attributes.each do |attribute|

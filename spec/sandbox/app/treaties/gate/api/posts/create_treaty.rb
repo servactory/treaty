@@ -308,7 +308,9 @@ module Gate
               string :status, in: %w[draft published archived], default: "draft"
 
               # published_at only accepted for published posts
-              string :published_at, :optional, cast: :datetime,
+              string :published_at,
+                     :optional,
+                     cast: :datetime,
                      if: ->(post:) { post[:status] == "published" }
 
               # Tags only accepted for non-draft posts

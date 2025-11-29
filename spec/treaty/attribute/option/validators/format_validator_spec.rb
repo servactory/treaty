@@ -3,7 +3,7 @@
 RSpec.describe Treaty::Attribute::Option::Validators::FormatValidator do
   subject(:validator) do
     described_class.new(
-      attribute_name: :test_attr,
+      attribute_name: :test_attribute,
       attribute_type:,
       option_schema:
     )
@@ -83,7 +83,7 @@ RSpec.describe Treaty::Attribute::Option::Validators::FormatValidator do
         it "raises validation error", :aggregate_failures do
           expect { validator.validate_schema! }.to(
             raise_error(Treaty::Exceptions::Validation) do |exception|
-              expect(exception.message).to include("test_attr")
+              expect(exception.message).to include("test_attribute")
               expect(exception.message).to include("unknown_format")
             end
           )
@@ -100,7 +100,7 @@ RSpec.describe Treaty::Attribute::Option::Validators::FormatValidator do
         it "raises validation error", :aggregate_failures do
           expect { validator.validate_schema! }.to(
             raise_error(Treaty::Exceptions::Validation) do |exception|
-              expect(exception.message).to include("test_attr")
+              expect(exception.message).to include("test_attribute")
               expect(exception.message).to include("integer")
             end
           )
@@ -113,7 +113,7 @@ RSpec.describe Treaty::Attribute::Option::Validators::FormatValidator do
         it "raises validation error", :aggregate_failures do
           expect { validator.validate_schema! }.to(
             raise_error(Treaty::Exceptions::Validation) do |exception|
-              expect(exception.message).to include("test_attr")
+              expect(exception.message).to include("test_attribute")
               expect(exception.message).to include("boolean")
             end
           )
@@ -145,7 +145,7 @@ RSpec.describe Treaty::Attribute::Option::Validators::FormatValidator do
       it "rejects invalid UUID", :aggregate_failures do
         expect { validator.validate_value!("not-a-uuid") }.to(
           raise_error(Treaty::Exceptions::Validation) do |exception|
-            expect(exception.message).to include("test_attr")
+            expect(exception.message).to include("test_attribute")
             expect(exception.message).to include("not-a-uuid")
           end
         )
@@ -173,7 +173,7 @@ RSpec.describe Treaty::Attribute::Option::Validators::FormatValidator do
       it "rejects invalid email", :aggregate_failures do
         expect { validator.validate_value!("not-an-email") }.to(
           raise_error(Treaty::Exceptions::Validation) do |exception|
-            expect(exception.message).to include("test_attr")
+            expect(exception.message).to include("test_attribute")
             expect(exception.message).to include("not-an-email")
           end
         )
@@ -250,7 +250,7 @@ RSpec.describe Treaty::Attribute::Option::Validators::FormatValidator do
       it "rejects invalid date", :aggregate_failures do
         expect { validator.validate_value!("not-a-date") }.to(
           raise_error(Treaty::Exceptions::Validation) do |exception|
-            expect(exception.message).to include("test_attr")
+            expect(exception.message).to include("test_attribute")
             expect(exception.message).to include("not-a-date")
           end
         )
@@ -272,7 +272,7 @@ RSpec.describe Treaty::Attribute::Option::Validators::FormatValidator do
       it "rejects invalid datetime", :aggregate_failures do
         expect { validator.validate_value!("not-a-datetime") }.to(
           raise_error(Treaty::Exceptions::Validation) do |exception|
-            expect(exception.message).to include("test_attr")
+            expect(exception.message).to include("test_attribute")
             expect(exception.message).to include("not-a-datetime")
           end
         )
@@ -295,7 +295,7 @@ RSpec.describe Treaty::Attribute::Option::Validators::FormatValidator do
       it "rejects invalid time", :aggregate_failures do
         expect { validator.validate_value!("not-a-time") }.to(
           raise_error(Treaty::Exceptions::Validation) do |exception|
-            expect(exception.message).to include("test_attr")
+            expect(exception.message).to include("test_attribute")
             expect(exception.message).to include("not-a-time")
           end
         )
@@ -320,7 +320,7 @@ RSpec.describe Treaty::Attribute::Option::Validators::FormatValidator do
       it "rejects invalid duration", :aggregate_failures do
         expect { validator.validate_value!("not-a-duration") }.to(
           raise_error(Treaty::Exceptions::Validation) do |exception|
-            expect(exception.message).to include("test_attr")
+            expect(exception.message).to include("test_attribute")
             expect(exception.message).to include("not-a-duration")
           end
         )

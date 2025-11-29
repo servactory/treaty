@@ -276,8 +276,8 @@ module Treaty
           # @raise [Treaty::Exceptions::Validation] If validation fails
           # @return [Object] Transformed element value
           def transform_simple_element(item, index) # rubocop:disable Metrics/MethodLength
-            self_attr = attribute.collection_of_attributes.first
-            validator = AttributeValidator.new(self_attr)
+            self_attribute = attribute.collection_of_attributes.first
+            validator = AttributeValidator.new(self_attribute)
             validator.validate_schema!
 
             begin

@@ -3,7 +3,7 @@
 RSpec.describe Treaty::Attribute::Option::Conditionals::IfConditional do
   subject(:conditional) do
     described_class.new(
-      attribute_name: :test_attr,
+      attribute_name: :test_attribute,
       attribute_type: :string,
       option_schema:
     )
@@ -48,7 +48,7 @@ RSpec.describe Treaty::Attribute::Option::Conditionals::IfConditional do
           expect { conditional.validate_schema! }.to(
             raise_error(Treaty::Exceptions::Validation) do |exception|
               expect(exception.message).to eq(
-                "Option 'if' for attribute 'test_attr' must be a Proc or Lambda. Got: String"
+                "Option 'if' for attribute 'test_attribute' must be a Proc or Lambda. Got: String"
               )
             end
           )
@@ -62,7 +62,7 @@ RSpec.describe Treaty::Attribute::Option::Conditionals::IfConditional do
           expect { conditional.validate_schema! }.to(
             raise_error(Treaty::Exceptions::Validation) do |exception|
               expect(exception.message).to eq(
-                "Option 'if' for attribute 'test_attr' must be a Proc or Lambda. Got: Integer"
+                "Option 'if' for attribute 'test_attribute' must be a Proc or Lambda. Got: Integer"
               )
             end
           )
@@ -76,7 +76,7 @@ RSpec.describe Treaty::Attribute::Option::Conditionals::IfConditional do
           expect { conditional.validate_schema! }.to(
             raise_error(Treaty::Exceptions::Validation) do |exception|
               expect(exception.message).to eq(
-                "Option 'if' for attribute 'test_attr' must be a Proc or Lambda. Got: TrueClass"
+                "Option 'if' for attribute 'test_attribute' must be a Proc or Lambda. Got: TrueClass"
               )
             end
           )
@@ -90,7 +90,7 @@ RSpec.describe Treaty::Attribute::Option::Conditionals::IfConditional do
           expect { conditional.validate_schema! }.to(
             raise_error(Treaty::Exceptions::Validation) do |exception|
               expect(exception.message).to eq(
-                "Option 'if' for attribute 'test_attr' must be a Proc or Lambda. Got: FalseClass"
+                "Option 'if' for attribute 'test_attribute' must be a Proc or Lambda. Got: FalseClass"
               )
             end
           )
@@ -104,7 +104,7 @@ RSpec.describe Treaty::Attribute::Option::Conditionals::IfConditional do
           expect { conditional.validate_schema! }.to(
             raise_error(Treaty::Exceptions::Validation) do |exception|
               expect(exception.message).to eq(
-                "Option 'if' for attribute 'test_attr' must be a Proc or Lambda. Got: Hash"
+                "Option 'if' for attribute 'test_attribute' must be a Proc or Lambda. Got: Hash"
               )
             end
           )
@@ -118,7 +118,7 @@ RSpec.describe Treaty::Attribute::Option::Conditionals::IfConditional do
           expect { conditional.validate_schema! }.to(
             raise_error(Treaty::Exceptions::Validation) do |exception|
               expect(exception.message).to eq(
-                "Option 'if' for attribute 'test_attr' must be a Proc or Lambda. Got: Symbol"
+                "Option 'if' for attribute 'test_attribute' must be a Proc or Lambda. Got: Symbol"
               )
             end
           )
@@ -132,7 +132,7 @@ RSpec.describe Treaty::Attribute::Option::Conditionals::IfConditional do
           expect { conditional.validate_schema! }.to(
             raise_error(Treaty::Exceptions::Validation) do |exception|
               expect(exception.message).to eq(
-                "Option 'if' for attribute 'test_attr' must be a Proc or Lambda. Got: NilClass"
+                "Option 'if' for attribute 'test_attribute' must be a Proc or Lambda. Got: NilClass"
               )
             end
           )
@@ -146,7 +146,7 @@ RSpec.describe Treaty::Attribute::Option::Conditionals::IfConditional do
           expect { conditional.validate_schema! }.to(
             raise_error(Treaty::Exceptions::Validation) do |exception|
               expect(exception.message).to eq(
-                "Option 'if' for attribute 'test_attr' must be a Proc or Lambda. Got: Array"
+                "Option 'if' for attribute 'test_attribute' must be a Proc or Lambda. Got: Array"
               )
             end
           )
@@ -364,7 +364,7 @@ RSpec.describe Treaty::Attribute::Option::Conditionals::IfConditional do
         it "wraps exception in Validation error", :aggregate_failures do
           expect { conditional.evaluate_condition(data) }.to(
             raise_error(Treaty::Exceptions::Validation) do |exception|
-              expect(exception.message).to include("Conditional evaluation failed for attribute 'test_attr'")
+              expect(exception.message).to include("Conditional evaluation failed for attribute 'test_attribute'")
               expect(exception.message).to include("undefined method")
             end
           )
@@ -378,7 +378,7 @@ RSpec.describe Treaty::Attribute::Option::Conditionals::IfConditional do
         it "wraps exception in Validation error", :aggregate_failures do
           expect { conditional.evaluate_condition(data) }.to(
             raise_error(Treaty::Exceptions::Validation) do |exception|
-              expect(exception.message).to include("Conditional evaluation failed for attribute 'test_attr'")
+              expect(exception.message).to include("Conditional evaluation failed for attribute 'test_attribute'")
               expect(exception.message).to include("key not found")
             end
           )
@@ -392,7 +392,7 @@ RSpec.describe Treaty::Attribute::Option::Conditionals::IfConditional do
         it "wraps exception in Validation error", :aggregate_failures do
           expect { conditional.evaluate_condition(data) }.to(
             raise_error(Treaty::Exceptions::Validation) do |exception|
-              expect(exception.message).to include("Conditional evaluation failed for attribute 'test_attr'")
+              expect(exception.message).to include("Conditional evaluation failed for attribute 'test_attribute'")
               expect(exception.message).to include("missing keyword")
             end
           )
@@ -407,7 +407,7 @@ RSpec.describe Treaty::Attribute::Option::Conditionals::IfConditional do
           expect { conditional.evaluate_condition(data) }.to(
             raise_error(Treaty::Exceptions::Validation) do |exception|
               expect(exception.message).to eq(
-                "Conditional evaluation failed for attribute 'test_attr': Custom error"
+                "Conditional evaluation failed for attribute 'test_attribute': Custom error"
               )
             end
           )
@@ -422,7 +422,7 @@ RSpec.describe Treaty::Attribute::Option::Conditionals::IfConditional do
           expect { conditional.evaluate_condition(data) }.to(
             raise_error(Treaty::Exceptions::Validation) do |exception|
               expect(exception.message).to eq(
-                "Conditional evaluation failed for attribute 'test_attr': Something went wrong"
+                "Conditional evaluation failed for attribute 'test_attribute': Something went wrong"
               )
             end
           )
@@ -436,7 +436,7 @@ RSpec.describe Treaty::Attribute::Option::Conditionals::IfConditional do
         it "wraps exception in Validation error", :aggregate_failures do
           expect { conditional.evaluate_condition(data) }.to(
             raise_error(Treaty::Exceptions::Validation) do |exception|
-              expect(exception.message).to include("Conditional evaluation failed for attribute 'test_attr'")
+              expect(exception.message).to include("Conditional evaluation failed for attribute 'test_attribute'")
               expect(exception.message).to include("divided by")
             end
           )

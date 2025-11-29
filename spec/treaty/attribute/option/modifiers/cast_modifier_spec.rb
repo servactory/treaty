@@ -3,7 +3,7 @@
 RSpec.describe Treaty::Attribute::Option::Modifiers::CastModifier do
   subject(:modifier) do
     described_class.new(
-      attribute_name: :test_attr,
+      attribute_name: :test_attribute,
       attribute_type:,
       option_schema:
     )
@@ -36,7 +36,7 @@ RSpec.describe Treaty::Attribute::Option::Modifiers::CastModifier do
         expect { modifier.validate_schema! }.to(
           raise_error(Treaty::Exceptions::Validation) do |exception|
             expect(exception.message).to eq(
-              "Option 'cast' for attribute 'test_attr' must be a Symbol. Got: String"
+              "Option 'cast' for attribute 'test_attribute' must be a Symbol. Got: String"
             )
           end
         )
@@ -175,7 +175,7 @@ RSpec.describe Treaty::Attribute::Option::Modifiers::CastModifier do
       it "raises error for invalid string", :aggregate_failures do
         expect { modifier.transform_value("not a number") }.to(
           raise_error(Treaty::Exceptions::Validation) do |exception|
-            expect(exception.message).to include("Cast failed for attribute 'test_attr'")
+            expect(exception.message).to include("Cast failed for attribute 'test_attribute'")
             expect(exception.message).to include("from 'string' to 'integer'")
           end
         )

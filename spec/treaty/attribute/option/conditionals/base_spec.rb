@@ -3,7 +3,7 @@
 RSpec.describe Treaty::Attribute::Option::Conditionals::Base do
   subject(:conditional) do
     described_class.new(
-      attribute_name: :test_attr,
+      attribute_name: :test_attribute,
       attribute_type: :string,
       option_schema:
     )

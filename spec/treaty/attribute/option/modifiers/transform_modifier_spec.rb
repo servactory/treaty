@@ -3,7 +3,7 @@
 RSpec.describe Treaty::Attribute::Option::Modifiers::TransformModifier do
   subject(:modifier) do
     described_class.new(
-      attribute_name: :test_attr,
+      attribute_name: :test_attribute,
       attribute_type: :string,
       option_schema:
     )
@@ -33,7 +33,7 @@ RSpec.describe Treaty::Attribute::Option::Modifiers::TransformModifier do
         expect { modifier.validate_schema! }.to(
           raise_error(Treaty::Exceptions::Validation) do |exception|
             expect(exception.message).to eq(
-              "Option 'transform' for attribute 'test_attr' must be a Proc or Lambda. Got: String"
+              "Option 'transform' for attribute 'test_attribute' must be a Proc or Lambda. Got: String"
             )
           end
         )
@@ -66,7 +66,7 @@ RSpec.describe Treaty::Attribute::Option::Modifiers::TransformModifier do
       it "catches the error and raises Treaty::Exceptions::Validation", :aggregate_failures do
         expect { modifier.transform_value("test") }.to(
           raise_error(Treaty::Exceptions::Validation) do |exception|
-            expect(exception.message).to include("Transform failed for attribute 'test_attr'")
+            expect(exception.message).to include("Transform failed for attribute 'test_attribute'")
             expect(exception.message).to include("undefined method")
           end
         )
@@ -77,13 +77,13 @@ RSpec.describe Treaty::Attribute::Option::Modifiers::TransformModifier do
       let(:option_schema) do
         {
           is: ->(**) { raise StandardError, "Custom error" },
-          message: "Custom transform error for test_attr"
+          message: "Custom transform error for test_attribute"
         }
       end
 
       it "uses the custom message" do
         expect { modifier.transform_value("test") }.to(
-          raise_error(Treaty::Exceptions::Validation, "Custom transform error for test_attr")
+          raise_error(Treaty::Exceptions::Validation, "Custom transform error for test_attribute")
         )
       end
     end

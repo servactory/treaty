@@ -79,6 +79,9 @@ module Treaty
             transformed = {}
 
             attribute.collection_of_attributes.each do |nested_attribute|
+              # Check if conditional (if option) - skip attribute if condition is false
+              next unless should_process_attribute?(nested_attribute, value)
+
               process_attribute(nested_attribute, value, transformed)
             end
 
@@ -86,6 +89,36 @@ module Treaty
           end
 
           private
+
+          # Checks if an attribute should be processed based on its conditional (if option)
+          # Returns true if no conditional is defined or if conditional evaluates to true
+          #
+          # @param nested_attribute [Attribute::Base] The attribute to check
+          # @param source_hash [Hash] Source data to pass to conditional
+          # @return [Boolean] True if attribute should be processed, false to skip it
+          def should_process_attribute?(nested_attribute, source_hash)
+            # Check if attribute has an :if option
+            return true unless nested_attribute.options.key?(:if)
+
+            # Get the conditional processor
+            processor_class = Option::Registry.processor_for(:if)
+            return true if processor_class.nil?
+
+            # Create and validate the conditional processor
+            conditional = processor_class.new(
+              attribute_name: nested_attribute.name,
+              attribute_type: nested_attribute.type,
+              option_schema: nested_attribute.options.fetch(:if)
+            )
+            conditional.validate_schema!
+
+            # Evaluate condition with source hash data wrapped with parent object name
+            wrapped_data = { attribute.name => source_hash }
+            conditional.evaluate_condition(wrapped_data)
+          rescue StandardError
+            # If conditional evaluation fails, skip the attribute
+            false
+          end
 
           # Processes a single nested attribute
           # Validates, transforms, and adds to target hash
@@ -147,6 +180,36 @@ module Treaty
 
           private
 
+          # Checks if an attribute should be processed based on its conditional (if option)
+          # Returns true if no conditional is defined or if conditional evaluates to true
+          #
+          # @param nested_attribute [Attribute::Base] The attribute to check
+          # @param source_hash [Hash] Source data to pass to conditional
+          # @return [Boolean] True if attribute should be processed, false to skip it
+          def should_process_attribute?(nested_attribute, source_hash)
+            # Check if attribute has an :if option
+            return true unless nested_attribute.options.key?(:if)
+
+            # Get the conditional processor
+            processor_class = Option::Registry.processor_for(:if)
+            return true if processor_class.nil?
+
+            # Create and validate the conditional processor
+            conditional = processor_class.new(
+              attribute_name: nested_attribute.name,
+              attribute_type: nested_attribute.type,
+              option_schema: nested_attribute.options.fetch(:if)
+            )
+            conditional.validate_schema!
+
+            # Evaluate condition with source hash data wrapped with parent array attribute name
+            wrapped_data = { attribute.name => source_hash }
+            conditional.evaluate_condition(wrapped_data)
+          rescue StandardError
+            # If conditional evaluation fails, skip the attribute
+            false
+          end
+
           # Checks if this is a simple array (primitive values)
           #
           # @return [Boolean] True if array contains primitive values with :_self attribute
@@ -201,6 +264,9 @@ module Treaty
             transformed = {}
 
             attribute.collection_of_attributes.each do |nested_attribute|
+              # Check if conditional (if option) - skip attribute if condition is false
+              next unless should_process_attribute?(nested_attribute, item)
+
               process_attribute(nested_attribute, item, transformed, index)
             end
 

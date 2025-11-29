@@ -90,6 +90,39 @@ module Treaty
 
           private
 
+          # Gets cached conditional processors for attributes or builds them
+          #
+          # @return [Hash] Hash of attribute => conditional processor
+          def conditionals_for_attributes
+            @conditionals_for_attributes ||= build_conditionals_for_attributes
+          end
+
+          # Builds conditional processors for attributes with :if option
+          # Validates schema at definition time for performance
+          #
+          # @return [Hash] Hash of attribute => conditional processor
+          def build_conditionals_for_attributes # rubocop:disable Metrics/MethodLength
+            attribute.collection_of_attributes.each_with_object({}) do |nested_attribute, cache|
+              # Only build conditional if attribute has :if option
+              next unless nested_attribute.options.key?(:if)
+
+              processor_class = Option::Registry.processor_for(:if)
+              next if processor_class.nil?
+
+              # Create processor instance
+              conditional = processor_class.new(
+                attribute_name: nested_attribute.name,
+                attribute_type: nested_attribute.type,
+                option_schema: nested_attribute.options.fetch(:if)
+              )
+
+              # Validate schema at definition time (not runtime)
+              conditional.validate_schema!
+
+              cache[nested_attribute] = conditional
+            end
+          end
+
           # Checks if an attribute should be processed based on its conditional (if option)
           # Returns true if no conditional is defined or if conditional evaluates to true
           #
@@ -100,17 +133,9 @@ module Treaty
             # Check if attribute has an :if option
             return true unless nested_attribute.options.key?(:if)
 
-            # Get the conditional processor
-            processor_class = Option::Registry.processor_for(:if)
-            return true if processor_class.nil?
-
-            # Create and validate the conditional processor
-            conditional = processor_class.new(
-              attribute_name: nested_attribute.name,
-              attribute_type: nested_attribute.type,
-              option_schema: nested_attribute.options.fetch(:if)
-            )
-            conditional.validate_schema!
+            # Get cached conditional processor
+            conditional = conditionals_for_attributes[nested_attribute]
+            return true if conditional.nil?
 
             # Evaluate condition with source hash data wrapped with parent object name
             wrapped_data = { attribute.name => source_hash }
@@ -150,7 +175,7 @@ module Treaty
         end
 
         # Transforms array with nested attributes
-        class ArrayTransformer
+        class ArrayTransformer # rubocop:disable Metrics/ClassLength
           SELF_OBJECT = :_self
           private_constant :SELF_OBJECT
 
@@ -180,6 +205,39 @@ module Treaty
 
           private
 
+          # Gets cached conditional processors for attributes or builds them
+          #
+          # @return [Hash] Hash of attribute => conditional processor
+          def conditionals_for_attributes
+            @conditionals_for_attributes ||= build_conditionals_for_attributes
+          end
+
+          # Builds conditional processors for attributes with :if option
+          # Validates schema at definition time for performance
+          #
+          # @return [Hash] Hash of attribute => conditional processor
+          def build_conditionals_for_attributes # rubocop:disable Metrics/MethodLength
+            attribute.collection_of_attributes.each_with_object({}) do |nested_attribute, cache|
+              # Only build conditional if attribute has :if option
+              next unless nested_attribute.options.key?(:if)
+
+              processor_class = Option::Registry.processor_for(:if)
+              next if processor_class.nil?
+
+              # Create processor instance
+              conditional = processor_class.new(
+                attribute_name: nested_attribute.name,
+                attribute_type: nested_attribute.type,
+                option_schema: nested_attribute.options.fetch(:if)
+              )
+
+              # Validate schema at definition time (not runtime)
+              conditional.validate_schema!
+
+              cache[nested_attribute] = conditional
+            end
+          end
+
           # Checks if an attribute should be processed based on its conditional (if option)
           # Returns true if no conditional is defined or if conditional evaluates to true
           #
@@ -190,17 +248,9 @@ module Treaty
             # Check if attribute has an :if option
             return true unless nested_attribute.options.key?(:if)
 
-            # Get the conditional processor
-            processor_class = Option::Registry.processor_for(:if)
-            return true if processor_class.nil?
-
-            # Create and validate the conditional processor
-            conditional = processor_class.new(
-              attribute_name: nested_attribute.name,
-              attribute_type: nested_attribute.type,
-              option_schema: nested_attribute.options.fetch(:if)
-            )
-            conditional.validate_schema!
+            # Get cached conditional processor
+            conditional = conditionals_for_attributes[nested_attribute]
+            return true if conditional.nil?
 
             # Evaluate condition with source hash data wrapped with parent array attribute name
             wrapped_data = { attribute.name => source_hash }

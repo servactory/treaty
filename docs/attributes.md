@@ -432,38 +432,44 @@ response 200 do
     string :title
     datetime :published_at, :optional
     # Rating only visible for published posts
-    integer :rating, if: ->(**attrs) { attrs.dig(:post, :published_at).present? }
-    # Tags only visible for published posts
-    array :tags, if: ->(**attrs) { attrs.dig(:post, :published_at).present? } do
-      string :_self
-    end
+    integer :rating, if: ->(post:) { post[:published_at].present? }
+    # View count only visible for published posts
+    integer :views, if: ->(post:) { post[:published_at].present? }
   end
 end
 ```
 
-2. **Role-based field visibility:**
-```ruby
-response 200 do
-  object :user do
-    string :name
-    string :email
-    # Admin-only fields
-    string :internal_id, if: ->(user:) { user[:role] == 'admin' }
-    datetime :last_login, if: ->(user:) { user[:role] == 'admin' }
-  end
-end
-```
-
-3. **Feature flags:**
+2. **Show analytics when data exists:**
 ```ruby
 response 200 do
   object :product do
     string :name
     string :price
-    # Beta features only for specific users
-    object :analytics, if: ->(product:, user:) { user[:beta_access] == true } do
+    # Analytics only shown when there are views
+    object :analytics, if: ->(product:) { product[:view_count].to_i > 0 } do
       integer :view_count
       integer :click_count
+      integer :conversion_rate
+    end
+  end
+end
+```
+
+3. **Conditional metadata based on status:**
+```ruby
+response 200 do
+  object :article do
+    string :title
+    string :status
+    # Draft metadata only for unpublished articles
+    object :draft_data, if: ->(article:) { article[:status] == 'draft' } do
+      datetime :last_edited
+      string :editor_notes
+    end
+    # Published metadata only for published articles
+    object :publication_data, if: ->(article:) { article[:status] == 'published' } do
+      datetime :published_at
+      integer :view_count
     end
   end
 end
@@ -493,27 +499,27 @@ The `if` conditional is evaluated FIRST, before any validation or transformation
 ```ruby
 # Conditional with validation
 integer :rating,
-        if: ->(post:) { post[:published_at].present? },
+        if: ->(post:) { post[:status] == 'published' },
         in: [1, 2, 3, 4, 5]  # Validation only runs if condition is true
 
 # Conditional with transformation
-string :slug,
-        if: ->(post:) { post[:published_at].present? },
-        transform: ->(value:) { value.parameterize }  # Transform only runs if condition is true
+string :public_url,
+        if: ->(post:) { post[:status] == 'published' },
+        transform: ->(value:) { value.downcase }  # Transform only runs if condition is true
 
 # Conditional with default
-integer :views,
-        if: ->(post:) { post[:published_at].present? },
+integer :priority,
+        if: ->(post:) { post[:status] == 'draft' },
         default: 0  # Default only applies if condition is true
 ```
 
 **Error handling:**
 ```ruby
 # If lambda raises exception
-integer :rating, if: ->(post:) { post[:invalid_key].upcase }  # NoMethodError
+integer :rating, if: ->(post:) { post[:metadata][:status].upcase }  # NoMethodError if metadata is nil
 
 # Treaty catches it and raises:
-# Treaty::Exceptions::Validation: "Conditional evaluation failed for attribute 'rating': undefined method `upcase' for nil:NilClass"
+# Treaty::Exceptions::Validation: "Conditional evaluation failed for attribute 'rating': undefined method `[]' for nil:NilClass"
 ```
 
 **See:** [Validation: Conditional Attributes](./validation.md#conditional-attributes) for more examples

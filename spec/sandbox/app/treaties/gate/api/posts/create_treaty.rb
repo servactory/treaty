@@ -305,15 +305,19 @@ module Gate
               string :summary
               string :description, :optional
               string :content
-              boolean :published, :optional
+              string :status, in: %w[draft published archived], default: "draft"
 
-              # published_at determines visibility of other fields
-              string :published_at, :optional, cast: :datetime
+              # published_at only accepted for published posts
+              string :published_at, :optional, cast: :datetime,
+                     if: ->(post:) { post[:status] == 'published' }
 
-              # Tags only accepted if post is published
-              array :tags, :optional, if: ->(**attrs) { attrs.dig(:post, :published_at).present? } do
+              # Tags only accepted for non-draft posts
+              array :tags, :optional, if: ->(post:) { post[:status] != 'draft' } do
                 string :_self, transform: ->(value:) { value.downcase }
               end
+
+              # Draft notes only for draft posts
+              string :draft_notes, :optional, if: ->(post:) { post[:status] == 'draft' }
 
               object :author do
                 string :name
@@ -334,15 +338,19 @@ module Gate
               string :summary
               string :description
               string :content
-              boolean :published
+              string :status
               boolean :featured
 
-              datetime :published_at, cast: :string
+              # published_at only in response for published posts
+              datetime :published_at, cast: :string, if: ->(post:) { post[:status] == 'published' }
 
-              # Tags only visible if post is published
-              array :tags, if: ->(**attrs) { attrs.dig(:post, :published_at).present? } do
+              # Tags only visible for non-draft posts
+              array :tags, if: ->(post:) { post[:status] != 'draft' } do
                 string :_self
               end
+
+              # Draft notes only for drafts
+              string :draft_notes, if: ->(post:) { post[:status] == 'draft' }
 
               object :author do
                 string :name
@@ -354,9 +362,9 @@ module Gate
                 end
               end
 
-              # Rating and views only visible for published posts
-              integer :rating, if: ->(post:) { post[:published_at].present? }
-              integer :views, if: ->(post:) { post[:published_at].present? }
+              # Public stats only for published posts
+              integer :rating, if: ->(post:) { post[:status] == 'published' }
+              integer :views, if: ->(post:) { post[:status] == 'published' }
 
               time :created_at, cast: :string
               time :updated_at, cast: :integer

@@ -120,7 +120,7 @@ end
 { rating: "5" } ✗  # Must be Integer, got String
 
 # DateTime validation
-{ published_at: Time.now } ✓
+{ published_at: Time.current } ✓
 { published_at: "2024-01-01" } ✗  # Must be DateTime/Time, got String
 ```
 

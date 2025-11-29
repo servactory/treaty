@@ -286,7 +286,7 @@ RSpec.describe Treaty::Attribute::Option::Validators::TypeValidator do
       end
 
       it "rejects DateTime", :aggregate_failures do
-        expect { validator.validate_value!(DateTime.now) }.to(
+        expect { validator.validate_value!(DateTime.current) }.to(
           raise_error(Treaty::Exceptions::Validation) do |exception|
             expect(exception.message).to include("test_attribute")
             expect(exception.message).to include("DateTime")
@@ -295,7 +295,7 @@ RSpec.describe Treaty::Attribute::Option::Validators::TypeValidator do
       end
 
       it "rejects Time", :aggregate_failures do
-        expect { validator.validate_value!(Time.now) }.to(
+        expect { validator.validate_value!(Time.current) }.to(
           raise_error(Treaty::Exceptions::Validation) do |exception|
             expect(exception.message).to include("test_attribute")
             expect(exception.message).to include("Time")
@@ -326,7 +326,7 @@ RSpec.describe Treaty::Attribute::Option::Validators::TypeValidator do
       let(:attribute_type) { :time }
 
       it "accepts Time value" do
-        expect { validator.validate_value!(Time.now) }.not_to raise_error
+        expect { validator.validate_value!(Time.current) }.not_to raise_error
       end
 
       it "accepts nil (handled by RequiredValidator)" do
@@ -334,7 +334,7 @@ RSpec.describe Treaty::Attribute::Option::Validators::TypeValidator do
       end
 
       it "rejects DateTime", :aggregate_failures do
-        expect { validator.validate_value!(DateTime.now) }.to(
+        expect { validator.validate_value!(DateTime.current) }.to(
           raise_error(Treaty::Exceptions::Validation) do |exception|
             expect(exception.message).to include("test_attribute")
             expect(exception.message).to include("DateTime")
@@ -374,7 +374,7 @@ RSpec.describe Treaty::Attribute::Option::Validators::TypeValidator do
       let(:attribute_type) { :datetime }
 
       it "accepts DateTime value" do
-        expect { validator.validate_value!(DateTime.now) }.not_to raise_error
+        expect { validator.validate_value!(DateTime.current) }.not_to raise_error
       end
 
       it "accepts nil (handled by RequiredValidator)" do
@@ -382,7 +382,7 @@ RSpec.describe Treaty::Attribute::Option::Validators::TypeValidator do
       end
 
       it "rejects Time", :aggregate_failures do
-        expect { validator.validate_value!(Time.now) }.to(
+        expect { validator.validate_value!(Time.current) }.to(
           raise_error(Treaty::Exceptions::Validation) do |exception|
             expect(exception.message).to include("test_attribute")
             expect(exception.message).to include("Time")

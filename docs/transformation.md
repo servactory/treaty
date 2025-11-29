@@ -1160,7 +1160,7 @@ integer :views, default: 0
 # Bad - should be explicitly provided
 string :email, default: "unknown@example.com"
 string :password, default: "changeme"
-datetime :birth_date, default: Time.now
+datetime :birth_date, default: Time.current
 
 # Good - require explicit values
 string :email, :required

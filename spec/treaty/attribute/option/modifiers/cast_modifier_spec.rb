@@ -313,17 +313,17 @@ RSpec.describe Treaty::Attribute::Option::Modifiers::CastModifier do
       let(:option_schema) { { to: :string, message: nil } }
 
       it "converts DateTime to ISO8601 string", :aggregate_failures do
-        datetime = DateTime.new(2024, 1, 15, 10, 30, 0)
+        datetime = DateTime.new(2024, 2, 21, 0, 0, 0)
         result = modifier.transform_value(datetime)
         expect(result).to be_a(String)
-        expect(result).to include("2024-01-15")
+        expect(result).to include("2024-02-21")
       end
 
       it "converts Time to ISO8601 string", :aggregate_failures do
-        time = Time.utc(2024, 1, 15, 10, 30, 0)
+        time = Time.utc(2024, 2, 21, 0, 0, 0)
         result = modifier.transform_value(time)
         expect(result).to be_a(String)
-        expect(result).to include("2024-01-15")
+        expect(result).to include("2024-02-21")
       end
     end
 
@@ -332,7 +332,7 @@ RSpec.describe Treaty::Attribute::Option::Modifiers::CastModifier do
       let(:option_schema) { { to: :integer, message: nil } }
 
       it "converts DateTime to Unix timestamp", :aggregate_failures do
-        datetime = Time.utc(2024, 1, 15, 10, 30, 0)
+        datetime = Time.utc(2024, 2, 21, 0, 0, 0)
         result = modifier.transform_value(datetime)
         expect(result).to be_an(Integer)
         expect(result).to eq(datetime.to_i)

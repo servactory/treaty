@@ -144,7 +144,7 @@ end
 array :timestamps do
   datetime :_self
 end
-# Data: [Time.now, 1.day.ago]
+# Data: [Time.current, 1.day.ago]
 ```
 
 ### Complex Arrays (Objects)

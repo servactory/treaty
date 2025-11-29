@@ -562,7 +562,7 @@ datetime :name, *modes, **options
 ```ruby
 time :created_at
 datetime :published_at, :optional
-datetime :expires_at, default: -> { Time.now + 1.day }
+datetime :expires_at, default: -> { Time.current + 1.day }
 ```
 
 **Examples (Response - optional by default):**
@@ -762,7 +762,7 @@ Set default value if attribute is missing.
 ```ruby
 integer :page, default: 1
 string :status, default: "draft"
-time :created_at, default: -> { Time.now }
+time :created_at, default: -> { Time.current }
 ```
 
 **Note:** Cannot be used with `object` or `array` types.

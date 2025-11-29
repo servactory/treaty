@@ -91,7 +91,7 @@ RSpec.describe Treaty::Attribute::Option::Modifiers::DefaultModifier do
       end
 
       context "with Proc that generates dynamic value" do
-        let(:time) { Time.new(2025, 1, 15, 10, 30, 0) }
+        let(:time) { Time.new(2025, 2, 21, 0, 0, 0) }
         let(:option_schema) { { is: -> { time }, message: nil } }
 
         it "calls the Proc and returns dynamic value" do

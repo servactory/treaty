@@ -1483,6 +1483,57 @@ RSpec.describe Gate::API::Posts::CreateTreaty do
         end
       end
     end
+
+    context "when version is 6" do
+      let(:version) { "6" }
+
+      context "with published post" do
+        let(:params) do
+          {
+            signature: "...",
+            post: {
+              title: "Title 1",
+              summary: "Summary 1",
+              content: "Content",
+              status: "published",
+              published_at: "2024-01-15T10:00:00Z",
+              tags: %w[ruby rails],
+              author: {
+                name: "John Doe",
+                bio: "Developer"
+              }
+            }
+          }
+        end
+
+        it "processes successfully" do
+          expect { perform }.not_to raise_error
+        end
+      end
+
+      context "with draft post" do
+        let(:params) do
+          {
+            signature: "...",
+            post: {
+              title: "Title 1",
+              summary: "Summary 1",
+              content: "Content",
+              status: "draft",
+              draft_notes: "Need to review",
+              author: {
+                name: "John Doe",
+                bio: "Developer"
+              }
+            }
+          }
+        end
+
+        it "processes successfully without published_at and tags" do
+          expect { perform }.not_to raise_error
+        end
+      end
+    end
   end
 
   context "when required data for work is invalid" do

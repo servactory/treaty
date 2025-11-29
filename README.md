@@ -133,4 +133,4 @@ Thank you to all [contributors](https://github.com/servactory/treaty/graphs/cont
 
 ## 📄 License
 
-Treaty is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
+Treaty is available as open source under the terms of the [MIT License](./LICENSE).

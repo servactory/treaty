@@ -73,6 +73,7 @@ treaty:
         mismatch:
           integer: "Attribute '%{attribute}' must be an Integer, got %{actual}"
           string: "Attribute '%{attribute}' must be a String, got %{actual}"
+          boolean: "Attribute '%{attribute}' must be a Boolean (true or false), got %{actual}"
           object: "Attribute '%{attribute}' must be a Hash (object), got %{actual}"
           array: "Attribute '%{attribute}' must be an Array, got %{actual}"
           date: "Attribute '%{attribute}' must be a Date, got %{actual}"
@@ -150,6 +151,23 @@ treaty:
         evaluation_error: "Conditional evaluation failed for attribute '%{attribute}': %{error}"
 ```
 
+### Versioning Messages
+
+```yaml
+treaty:
+  versioning:
+    resolver:
+      specified_version_required: "Specified version is required for validation"
+      version_not_found: "Version %{version} not found in treaty definition"
+      version_deprecated: "Version %{version} is deprecated and cannot be used"
+
+    factory:
+      invalid_default_option: "Default option for version must be true, false, or a Proc, got: %{type}"
+      unknown_method: "Unknown method '%{method}' in version definition. Available methods: summary, deprecated, request, response, delegate_to"
+      default_deprecated_conflict: "Version %{version} cannot be both default and deprecated. A default version must be active and usable. Either remove 'default: true' or remove the 'deprecated' declaration."
+      multiple_defaults: "Cannot have multiple versions marked as default. Only one version can be the default. Please review your treaty definition and ensure only one version has 'default: true'."
+```
+
 ## Adding New Languages
 
 To add support for a new language, create a translation file in your Rails application:
@@ -172,6 +190,7 @@ de:
           mismatch:
             integer: "Attribut '%{attribute}' muss ein Integer sein, aber %{actual} erhalten"
             string: "Attribut '%{attribute}' muss ein String sein, aber %{actual} erhalten"
+            boolean: "Attribut '%{attribute}' muss ein Boolean (true oder false) sein, aber %{actual} erhalten"
             object: "Attribut '%{attribute}' muss ein Hash (Objekt) sein, aber %{actual} erhalten"
             array: "Attribut '%{attribute}' muss ein Array sein, aber %{actual} erhalten"
             date: "Attribut '%{attribute}' muss ein Date sein, aber %{actual} erhalten"
@@ -246,6 +265,8 @@ de:
       factory:
         invalid_default_option: "Standard-Option für Version muss true, false oder ein Proc sein, erhalten: %{type}"
         unknown_method: "Unbekannte Methode '%{method}' in Version-Definition. Verfügbare Methoden: summary, deprecated, request, response, delegate_to"
+        default_deprecated_conflict: "Version %{version} kann nicht gleichzeitig Standard und veraltet sein. Eine Standard-Version muss aktiv und verwendbar sein. Entweder 'default: true' entfernen oder die 'deprecated'-Deklaration entfernen."
+        multiple_defaults: "Es können nicht mehrere Versionen als Standard markiert werden. Nur eine Version kann die Standardversion sein. Bitte überprüfen Sie Ihre Treaty-Definition und stellen Sie sicher, dass nur eine Version 'default: true' hat."
 
     execution:
       executor_missing: "Executor ist nicht definiert für Version %{version}"

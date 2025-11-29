@@ -440,22 +440,32 @@ end
 
 ## Validation Order
 
-Treaty validates in this order:
+Treaty processes attributes in this order:
 
-1. **Schema Validation** - Is the structure correct?
+1. **Conditional Evaluation** - Should this attribute be processed?
+   - Evaluate `if` conditions using raw data
+   - Skip attribute entirely if condition returns false
+   - Continue to validation if condition returns true
+
+2. **Schema Validation** - Is the structure correct?
    - Are objects present?
    - Are required attributes present?
    - Are values the right types?
 
-2. **Value Validation** - Are the values valid?
+3. **Value Validation** - Are the values valid?
    - Type checking (String, Integer, DateTime)
    - Inclusion validation (in: list)
+   - Format validation (email, uuid, date, etc.)
    - Nested validation (objects and arrays)
 
-3. **Transformation** - Apply transformations
+4. **Transformation** - Apply transformations
    - Default values
+   - Transform lambdas
+   - Type casting
    - Attribute renaming (as:)
    - Symbol/string key conversion
+
+**Note:** Attributes with conditional options (`if:`) are evaluated first. If the condition returns false, the attribute is not validated or transformed at all.
 
 ## Error Messages
 

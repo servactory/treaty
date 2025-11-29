@@ -805,6 +805,71 @@ integer :amount,
 
 **See:** [Transformation: Option Execution Order](./transformation.md#option-execution-order) for detailed guide.
 
+### Conditional option errors
+
+**Problem:** Errors when using the `if` option for conditional attributes.
+
+**Common issues:**
+
+**1. "Option 'if' must be a Proc or Lambda"**
+
+```ruby
+# ❌ Wrong: Boolean value instead of lambda
+string :published_at, if: true
+
+# ❌ Wrong: Symbol instead of lambda
+string :tags, if: :published?
+
+# ✅ Correct: Lambda
+string :published_at, if: ->(post:) { post[:status] == "published" }
+```
+
+**2. "Conditional evaluation failed for attribute 'X'"**
+
+```ruby
+# ❌ Wrong: Error in lambda (accessing nil)
+string :views, if: ->(post:) { post[:metadata][:public] }
+# Error if metadata is nil
+
+# ✅ Correct: Safe navigation
+string :views, if: ->(post:) { post.dig(:metadata, :public) == true }
+```
+
+**3. Wrong lambda arguments**
+
+```ruby
+# ❌ Wrong: Accessing wrong data structure
+object :post do
+  string :published_at, if: ->(user:) { user[:role] == "admin" }
+  # Error: 'user' doesn't exist in 'post' context
+end
+
+# ✅ Correct: Access parent object data
+object :post do
+  string :published_at, if: ->(post:) { post[:status] == "published" }
+end
+```
+
+**4. Condition not evaluating as expected**
+
+```ruby
+# ❌ Wrong: String comparison instead of presence check
+string :draft_notes, if: ->(post:) { post[:status] == "draft" }
+# Won't show if status is missing
+
+# ✅ Correct: Handle missing values
+string :draft_notes, if: ->(post:) { post[:status].to_s == "draft" }
+```
+
+**Tips:**
+- Lambda receives raw data before validation
+- Use named arguments matching parent object (e.g., `post:`, `user:`)
+- Use safe navigation (`dig`, `&.`, `to_s`) to handle nil values
+- Test conditionals with different data scenarios
+- Remember: `if` is evaluated BEFORE validators and modifiers
+
+**See:** [Attributes: Conditional Attributes](./attributes.md#conditional-attributes) for complete documentation.
+
 ## Controller Integration Issues
 
 ### Treaty not being invoked

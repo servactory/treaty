@@ -206,6 +206,18 @@ de:
           invalid_type: "Option 'transform' für Attribut '%{attribute}' muss ein Proc oder Lambda sein. Erhalten: %{type}"
           execution_error: "Transform fehlgeschlagen für Attribut '%{attribute}': %{error}"
 
+        cast:
+          invalid_type: "Option 'cast' für Attribut '%{attribute}' muss ein Symbol sein. Erhalten: %{type}"
+          source_not_supported: "Option 'cast' für Attribut '%{attribute}' kann nicht mit Typ '%{source_type}' verwendet werden. Casting wird nur unterstützt für: %{allowed}"
+          target_not_supported: "Option 'cast' für Attribut '%{attribute}' kann nicht nach '%{target_type}' konvertieren. Unterstützte Zieltypen: %{allowed}"
+          conversion_not_supported: "Option 'cast' für Attribut '%{attribute}' unterstützt keine Konvertierung von '%{from}' nach '%{to}'"
+          conversion_error: "Cast fehlgeschlagen für Attribut '%{attribute}' von '%{from}' nach '%{to}'. Wert: '%{value}'. Fehler: %{error}"
+
+      conditionals:
+        if:
+          invalid_type: "Option 'if' für Attribut '%{attribute}' muss ein Proc oder Lambda sein. Erhalten: %{type}"
+          evaluation_error: "Conditional-Auswertung fehlgeschlagen für Attribut '%{attribute}': %{error}"
+
       builder:
         not_implemented: "%{class} muss #create_attribute implementieren"
         create_attribute_not_implemented: "Unterklasse %{class} muss die Methode #create_attribute implementieren"

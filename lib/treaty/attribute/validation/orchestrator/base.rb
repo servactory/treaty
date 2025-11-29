@@ -104,22 +104,11 @@ module Treaty
             # Check if attribute has an :if option
             return true unless attribute.options.key?(:if)
 
-            # Get the if conditional processor from the validator
-            # We need to build a temporary processor to evaluate the condition
-            processor_class = Option::Registry.processor_for(:if)
-            return true if processor_class.nil?
+            # Get cached conditional processor
+            conditional = conditionals_for_attributes[attribute]
+            return true if conditional.nil?
 
-            # Create processor instance
-            conditional = processor_class.new(
-              attribute_name: attribute.name,
-              attribute_type: attribute.type,
-              option_schema: attribute.options.fetch(:if)
-            )
-
-            # Validate schema at runtime (ensure it's a valid lambda)
-            conditional.validate_schema!
-
-            # Evaluate condition with raw data
+            # Evaluate condition with raw data (processor already validated at definition time)
             conditional.evaluate_condition(data)
           end
 
@@ -148,6 +137,39 @@ module Treaty
               validator = AttributeValidator.new(attribute)
               validator.validate_schema!
               cache[attribute] = validator
+            end
+          end
+
+          # Gets cached conditional processors for attributes or builds them
+          #
+          # @return [Hash] Hash of attribute => conditional processor
+          def conditionals_for_attributes
+            @conditionals_for_attributes ||= build_conditionals_for_attributes
+          end
+
+          # Builds conditional processors for attributes with :if option
+          # Validates schema at definition time for performance
+          #
+          # @return [Hash] Hash of attribute => conditional processor
+          def build_conditionals_for_attributes # rubocop:disable Metrics/MethodLength
+            collection_of_attributes.each_with_object({}) do |attribute, cache|
+              # Only build conditional if attribute has :if option
+              next unless attribute.options.key?(:if)
+
+              processor_class = Option::Registry.processor_for(:if)
+              next if processor_class.nil?
+
+              # Create processor instance
+              conditional = processor_class.new(
+                attribute_name: attribute.name,
+                attribute_type: attribute.type,
+                option_schema: attribute.options.fetch(:if)
+              )
+
+              # Validate schema at definition time (not runtime)
+              conditional.validate_schema!
+
+              cache[attribute] = conditional
             end
           end
 

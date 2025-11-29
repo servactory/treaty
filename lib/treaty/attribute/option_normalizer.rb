@@ -65,11 +65,6 @@ module Treaty
     #
     # Both are normalized to advanced mode internally.
     class OptionNormalizer
-      # # Options that should NOT be normalized (e.g., conditionals that only accept Proc/Lambda).
-      # # These options are passed through as-is.
-      # NON_NORMALIZABLE_OPTIONS = %i[if].freeze
-      # private_constant :NON_NORMALIZABLE_OPTIONS
-
       # Maps simple mode option keys to their advanced mode configuration.
       # Format: simple_key => { advanced_key:, value_key: }
       OPTION_KEY_MAPPING = {
@@ -99,14 +94,6 @@ module Treaty
           options.each_with_object({}) do |(key, value), result|
             advanced_key, normalized_value = normalize_option(key, value)
             result[advanced_key] = normalized_value
-
-            # # Skip normalization for conditionals and other non-normalizable options
-            # if NON_NORMALIZABLE_OPTIONS.include?(key)
-            #   result[key] = value
-            # else
-            #   advanced_key, normalized_value = normalize_option(key, value)
-            #   result[advanced_key] = normalized_value
-            # end
           end
         end
 

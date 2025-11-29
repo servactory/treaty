@@ -1121,7 +1121,7 @@ RSpec.describe Gate::API::Posts::CreateTreaty do
                               status: {
                                 type: :string,
                                 options: {
-                                  required: { is: true, message: nil },
+                                  required: { is: false, message: nil },
                                   inclusion: { in: %w[draft published archived], message: nil },
                                   default: { is: "draft", message: nil }
                                 },

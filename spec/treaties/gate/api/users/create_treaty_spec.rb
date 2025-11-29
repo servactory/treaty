@@ -244,7 +244,7 @@ RSpec.describe Gate::API::Users::CreateTreaty do
                               role: {
                                 type: :string,
                                 options: {
-                                  required: { is: true, message: nil },
+                                  required: { is: false, message: nil },
                                   inclusion: { in: %w[admin user guest], message: nil },
                                   default: { is: "user", message: nil }
                                 },
@@ -352,7 +352,7 @@ RSpec.describe Gate::API::Users::CreateTreaty do
                               role: {
                                 type: :string,
                                 options: {
-                                  required: { is: true, message: nil },
+                                  required: { is: false, message: nil },
                                   inclusion: { in: %w[admin user guest], message: nil },
                                   default: { is: "user", message: nil }
                                 },
@@ -385,7 +385,7 @@ RSpec.describe Gate::API::Users::CreateTreaty do
                               email_verified: {
                                 type: :string,
                                 options: {
-                                  required: { is: true, message: nil },
+                                  required: { is: false, message: nil },
                                   format: { is: :boolean, message: nil },
                                   default: { is: "false", message: nil }
                                 },

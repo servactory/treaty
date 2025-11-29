@@ -39,7 +39,7 @@ RSpec.describe Deserialization::UserDto do
                         role: {
                           type: :string,
                           options: {
-                            required: { is: true, message: nil },
+                            required: { is: false, message: nil },
                             inclusion: { in: %w[admin user guest], message: nil },
                             default: { is: "user", message: nil }
                           },

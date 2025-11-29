@@ -305,7 +305,7 @@ module Gate
               string :summary
               string :description, :optional
               string :content
-              string :status, in: %w[draft published archived], default: "draft"
+              string :status, :optional, in: %w[draft published archived], default: "draft"
 
               # published_at only accepted for published posts
               string :published_at,

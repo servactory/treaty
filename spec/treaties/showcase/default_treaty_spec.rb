@@ -224,6 +224,10 @@ RSpec.describe Showcase::DefaultTreaty do
 
       it { expect { perform }.not_to raise_error }
 
+      it { expect(perform.data).to be_a(Hash) }
+      it { expect(perform.status).to eq(200) }
+      it { expect(perform.version).to eq(Gem::Version.new("1")) }
+
       it do
         expect(perform.data).to match(
           {
@@ -255,6 +259,10 @@ RSpec.describe Showcase::DefaultTreaty do
       end
 
       it { expect { perform }.not_to raise_error }
+
+      it { expect(perform.data).to be_a(Hash) }
+      it { expect(perform.status).to eq(200) }
+      it { expect(perform.version).to eq(Gem::Version.new("2")) }
 
       it do
         expect(perform.data).to match(

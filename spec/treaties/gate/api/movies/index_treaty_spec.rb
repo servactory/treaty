@@ -444,6 +444,10 @@ RSpec.describe Gate::API::Movies::IndexTreaty do
       end
 
       it { expect { perform }.not_to raise_error }
+
+      it { expect(perform.data).to be_a(Hash) }
+      it { expect(perform.status).to eq(200) }
+      it { expect(perform.version).to eq(Gem::Version.new("1.0.0.rc1")) }
     end
 
     context "when version is 2" do
@@ -460,6 +464,10 @@ RSpec.describe Gate::API::Movies::IndexTreaty do
       end
 
       it { expect { perform }.not_to raise_error }
+
+      it { expect(perform.data).to be_a(Hash) }
+      it { expect(perform.status).to eq(200) }
+      it { expect(perform.version).to eq(Gem::Version.new("2")) }
     end
 
     context "when version is 3" do
@@ -475,6 +483,10 @@ RSpec.describe Gate::API::Movies::IndexTreaty do
       end
 
       it { expect { perform }.not_to raise_error }
+
+      it { expect(perform.data).to be_a(Hash) }
+      it { expect(perform.status).to eq(200) }
+      it { expect(perform.version).to eq(Gem::Version.new("3")) }
     end
 
     describe "when version was not specified" do

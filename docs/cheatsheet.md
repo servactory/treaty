@@ -689,6 +689,8 @@ RSpec.describe Posts::CreateTreaty do
 
     it "returns post with expected attributes" do
       expect(perform.data[:post]).to include(:id, :title, :content)
+      expect(perform.status).to eq(201)
+      expect(perform.version).to eq(Gem::Version.new("1"))
     end
   end
 end

@@ -906,6 +906,10 @@ RSpec.describe Gate::API::Posts::IndexTreaty do
       end
 
       it { expect { perform }.not_to raise_error }
+
+      it { expect(perform.data).to be_a(Hash) }
+      it { expect(perform.status).to eq(200) }
+      it { expect(perform.version).to eq(Gem::Version.new("1")) }
     end
 
     context "when version is 2" do
@@ -916,6 +920,10 @@ RSpec.describe Gate::API::Posts::IndexTreaty do
       end
 
       it { expect { perform }.not_to raise_error }
+
+      it { expect(perform.data).to be_a(Hash) }
+      it { expect(perform.status).to eq(200) }
+      it { expect(perform.version).to eq(Gem::Version.new("2")) }
     end
 
     context "when version is 3" do
@@ -926,6 +934,10 @@ RSpec.describe Gate::API::Posts::IndexTreaty do
       end
 
       it { expect { perform }.not_to raise_error }
+
+      it { expect(perform.data).to be_a(Hash) }
+      it { expect(perform.status).to eq(200) }
+      it { expect(perform.version).to eq(Gem::Version.new("3")) }
     end
 
     context "when version is 4" do
@@ -936,6 +948,10 @@ RSpec.describe Gate::API::Posts::IndexTreaty do
       end
 
       it { expect { perform }.not_to raise_error }
+
+      it { expect(perform.data).to be_a(Hash) }
+      it { expect(perform.status).to eq(200) }
+      it { expect(perform.version).to eq(Gem::Version.new("4")) }
     end
 
     context "when version is 5" do
@@ -946,6 +962,10 @@ RSpec.describe Gate::API::Posts::IndexTreaty do
       end
 
       it { expect { perform }.not_to raise_error }
+
+      it { expect(perform.data).to be_a(Hash) }
+      it { expect(perform.status).to eq(200) }
+      it { expect(perform.version).to eq(Gem::Version.new("5")) }
     end
 
     describe "when version was not specified" do

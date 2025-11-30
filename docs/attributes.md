@@ -589,6 +589,11 @@ option_name: { value_key: value, message: "String" | lambda }
 - Type: `attribute`, `value`, `expected_type`, `actual_type`
 - Format: `attribute`, `value`, `format_name`
 
+**Error handling:**
+- All exceptions raised in message lambdas are caught and converted to `Treaty::Exceptions::Validation`
+- Original error message is preserved and included in the validation error
+- Ensures custom message logic errors don't crash your application
+
 ## Default Behavior
 
 ### Request Attributes

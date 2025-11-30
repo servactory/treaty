@@ -233,6 +233,8 @@ string :published_at, cast: {
 }
 ```
 
+**Note:** Exceptions in message lambdas are caught automatically and converted to validation errors.
+
 ## Objects
 
 ```ruby

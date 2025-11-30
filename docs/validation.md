@@ -614,6 +614,10 @@ Different validators provide different context arguments to lambda functions:
 - `expected_type` - Symbol: Expected type (`:integer`, `:string`, etc.)
 - `actual_type` - Class: Actual class of the value
 
+**Error handling:**
+
+All exceptions raised in message lambdas are caught and converted to `Treaty::Exceptions::Validation` errors. The original error message is preserved and included in the validation error, ensuring that errors in custom message logic don't crash your application.
+
 ### Practical Lambda Examples
 
 ```ruby

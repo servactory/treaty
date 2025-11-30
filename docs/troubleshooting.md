@@ -870,6 +870,52 @@ string :draft_notes, if: ->(post:) { post[:status].to_s == "draft" }
 
 **See:** [Attributes: Conditional Attributes](./attributes.md#conditional-attributes) for complete documentation.
 
+### Custom message lambda errors
+
+**Problem:** "Custom message evaluation failed for attribute 'X': ..."
+
+This error occurs when a custom message lambda (in advanced mode) raises an exception during execution.
+
+**Solution:**
+
+1. **Check lambda logic for errors:**
+   ```ruby
+   # ❌ Wrong: Lambda raises exception
+   string :title, required: {
+     is: true,
+     message: ->(attribute:, **) { attribute.metadata.upcase }  # Error: undefined method for Symbol
+   }
+
+   # ✅ Correct: Safe lambda
+   string :title, required: {
+     is: true,
+     message: ->(attribute:, **) { "#{attribute.to_s.capitalize} is required" }
+   }
+   ```
+
+2. **Use safe navigation:**
+   ```ruby
+   # ❌ Wrong: Accessing nil
+   message: ->(value:, **) { value.dig(:data, :name).upcase }
+
+   # ✅ Correct: Safe access
+   message: ->(value:, **) { value.dig(:data, :name)&.upcase || "Value is invalid" }
+   ```
+
+3. **Handle edge cases:**
+   ```ruby
+   # ✅ Good: Handle all cases
+   message: lambda do |attribute:, value:, **|
+     if value.nil?
+       "#{attribute} cannot be empty"
+     else
+       "#{attribute} has invalid value: #{value.inspect}"
+     end
+   end
+   ```
+
+**Note:** All exceptions in message lambdas are caught automatically and converted to validation errors with the original error message preserved. This ensures your application doesn't crash, but you should still fix the lambda logic.
+
 ## Controller Integration Issues
 
 ### Treaty not being invoked

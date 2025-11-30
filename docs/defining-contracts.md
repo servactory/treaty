@@ -131,6 +131,26 @@ request do
 end
 ```
 
+### With Conditional Attributes
+
+```ruby
+request do
+  object :post do
+    string :title
+    string :content
+    string :status, in: %w[draft published]
+
+    # Published date only for published posts
+    datetime :published_at, :optional,
+             if: ->(post:) { post[:status] == "published" }
+
+    # Draft notes only for draft posts
+    string :draft_notes, :optional,
+           unless: ->(post:) { post[:status] == "published" }
+  end
+end
+```
+
 ### Root Level Attributes (`:_self` object)
 
 ```ruby

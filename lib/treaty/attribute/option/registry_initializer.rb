@@ -34,6 +34,7 @@ module Treaty
       # ## Built-in Conditionals
       #
       # - `:if` → IfConditional - Conditionally includes attributes based on runtime data
+      # - `:unless` → UnlessConditional - Conditionally excludes attributes based on runtime data
       #
       # ## Auto-Registration
       #
@@ -98,6 +99,7 @@ module Treaty
           # @return [void]
           def register_conditionals!
             Registry.register(:if, Conditionals::IfConditional, category: :conditional)
+            Registry.register(:unless, Conditionals::UnlessConditional, category: :conditional)
           end
         end
       end

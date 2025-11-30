@@ -69,6 +69,12 @@ en:
           invalid_type: "Option 'if' for attribute '%{attribute}' must be a Proc or Lambda. Got: %{type}"
           evaluation_error: "Conditional evaluation failed for attribute '%{attribute}': %{error}"
 
+        unless:
+          invalid_type: "Option 'unless' for attribute '%{attribute}' must be a Proc or Lambda. Got: %{type}"
+          evaluation_error: "Conditional evaluation failed for attribute '%{attribute}': %{error}"
+
+        mutual_exclusivity_error: "Attribute '%{attribute}' cannot have both 'if' and 'unless' options. Use only one conditional option."
+
       # Attribute builder DSL
       builder:
         not_implemented: "%{class} must implement #create_attribute"

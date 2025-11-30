@@ -70,14 +70,14 @@ module Treaty
 
           # Validates and transforms all attributes
           # Iterates through attributes, processes them, handles :_self objects
-          # Skips attributes with false conditional (if option)
+          # Skips attributes with false conditional (if/unless option)
           #
           # @return [Hash] Transformed data with all attributes processed
           def validate! # rubocop:disable Metrics/MethodLength
             transformed_data = {}
 
             collection_of_attributes.each do |attribute|
-              # Check if conditional (if option) - skip attribute if condition is false
+              # Check if conditional (if/unless option) - skip attribute if condition evaluates to skip
               next unless should_process_attribute?(attribute)
 
               transformed_value = validate_and_transform_attribute!(attribute)
@@ -95,20 +95,46 @@ module Treaty
 
           private
 
-          # Checks if an attribute should be processed based on its conditional (if option)
-          # Returns true if no conditional is defined or if conditional evaluates to true
+          # Returns the conditional option name if present (:if or :unless)
+          # Raises error if both are present (mutual exclusivity)
+          #
+          # @param attribute [Attribute::Base] The attribute to check
+          # @raise [Treaty::Exceptions::Validation] If both :if and :unless are present
+          # @return [Symbol, nil] :if, :unless, or nil
+          def conditional_option_for(attribute) # rubocop:disable Metrics/MethodLength
+            has_if = attribute.options.key?(:if)
+            has_unless = attribute.options.key?(:unless)
+
+            if has_if && has_unless
+              raise Treaty::Exceptions::Validation,
+                    I18n.t(
+                      "treaty.attributes.conditionals.mutual_exclusivity_error",
+                      attribute: attribute.name
+                    )
+            end
+
+            return :if if has_if
+            return :unless if has_unless
+
+            nil
+          end
+
+          # Checks if an attribute should be processed based on its conditional (if/unless option)
+          # Returns true if no conditional is defined or if conditional evaluates appropriately
           #
           # @param attribute [Attribute::Base] The attribute to check
           # @return [Boolean] True if attribute should be processed, false to skip it
           def should_process_attribute?(attribute)
-            # Check if attribute has an :if option
-            return true unless attribute.options.key?(:if)
+            # Check if attribute has a conditional option
+            conditional_type = conditional_option_for(attribute)
+            return true if conditional_type.nil?
 
             # Get cached conditional processor
             conditional = conditionals_for_attributes[attribute]
             return true if conditional.nil?
 
-            # Evaluate condition with raw data (processor already validated at definition time)
+            # Evaluate condition with raw data
+            # The processor's evaluate_condition already handles if/unless logic
             conditional.evaluate_condition(data)
           end
 
@@ -147,23 +173,24 @@ module Treaty
             @conditionals_for_attributes ||= build_conditionals_for_attributes
           end
 
-          # Builds conditional processors for attributes with :if option
+          # Builds conditional processors for attributes with :if or :unless option
           # Validates schema at definition time for performance
           #
           # @return [Hash] Hash of attribute => conditional processor
           def build_conditionals_for_attributes # rubocop:disable Metrics/MethodLength
             collection_of_attributes.each_with_object({}) do |attribute, cache|
-              # Only build conditional if attribute has :if option
-              next unless attribute.options.key?(:if)
+              # Get conditional option name (:if or :unless)
+              conditional_type = conditional_option_for(attribute)
+              next if conditional_type.nil?
 
-              processor_class = Option::Registry.processor_for(:if)
+              processor_class = Option::Registry.processor_for(conditional_type)
               next if processor_class.nil?
 
               # Create processor instance
               conditional = processor_class.new(
                 attribute_name: attribute.name,
                 attribute_type: attribute.type,
-                option_schema: attribute.options.fetch(:if)
+                option_schema: attribute.options.fetch(conditional_type)
               )
 
               # Validate schema at definition time (not runtime)

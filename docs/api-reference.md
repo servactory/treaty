@@ -1024,7 +1024,7 @@ string :published_at, cast: {
 
 **Note:** Advanced mode uses `:to` key instead of `:is` (different from other options).
 
-#### `if`
+#### `if` / `unless`
 
 Control whether an attribute should be processed based on runtime data evaluation.
 
@@ -1032,20 +1032,25 @@ Control whether an attribute should be processed based on runtime data evaluatio
 **Default:** nil
 
 ```ruby
+# Using if - include when condition is true
 string :published_at, if: ->(post:) { post[:status] == "published" }
-array :tags, if: ->(post:) { post[:status] != "draft" } do
+integer :views, if: ->(post:) { post[:status] == "published" }
+
+# Using unless - include when condition is false
+string :draft_notes, unless: ->(post:) { post[:status] == "published" }
+array :tags, unless: ->(post:) { post[:status] == "draft" } do
   string :_self
 end
-integer :views, if: ->(post:) { post[:status] == "published" }
 ```
 
 **Requirements:**
 - Lambda must be a Proc or Lambda (no other types accepted)
 - Lambda receives raw data as named arguments matching the parent object structure
-- If condition returns falsy value, attribute doesn't exist (not processed, not validated)
-- If condition returns truthy value, attribute is processed normally
+- `if` - If condition returns truthy, attribute is processed; if falsy, attribute is excluded
+- `unless` - If condition returns falsy, attribute is processed; if truthy, attribute is excluded
 - All exceptions in lambda are caught and converted to `Treaty::Exceptions::Validation`
 - Evaluation happens before validators and modifiers run
+- Cannot use both `if` and `unless` on the same attribute (raises mutual exclusivity error)
 
 **Lambda argument patterns:**
 ```ruby
@@ -1054,11 +1059,13 @@ if: ->(**attributes) { attributes[:status] == "published" }
 
 # For nested attributes (recommended - more explicit)
 if: ->(post:) { post[:status] == "published" }
+unless: ->(post:) { post[:status] == "draft" }
 
 # Access parent data in nested structures
 object :post do
   string :status
   string :published_at, if: ->(post:) { post[:status] == "published" }
+  string :draft_notes, unless: ->(post:) { post[:status] == "published" }
 end
 ```
 

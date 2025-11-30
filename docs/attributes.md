@@ -395,14 +395,18 @@ string :published_at,
 
 **See:** [Transformation: Type Casting](./transformation.md#type-casting) for detailed examples
 
-#### if
+#### if / unless
 
-Conditionally includes attributes based on runtime data evaluation. Unlike validators (which check data) and modifiers (which transform data), the `if` option controls whether an attribute should exist in the output at all.
+Conditionally includes attributes based on runtime data evaluation. Unlike validators (which check data) and modifiers (which transform data), the `if` and `unless` options control whether an attribute should exist in the output at all.
 
 ```ruby
-# Basic usage with keyword splat
+# Using if - include when condition is true
 integer :rating, if: ->(**attributes) { attributes.dig(:post, :published_at).present? }
 array :tags, if: ->(**attributes) { attributes.dig(:post, :published_at).present? }
+
+# Using unless - include when condition is false
+integer :draft_version, unless: ->(post:) { post[:published_at].present? }
+string :draft_notes, unless: ->(post:) { post[:status] == "published" }
 
 # Named argument pattern (cleaner for nested structures)
 integer :views, if: ->(post:) { post[:published_at].present? }
@@ -410,8 +414,10 @@ string :admin_note, if: ->(user:, post:) { user[:role] == "admin" && post[:flagg
 ```
 
 **How it works:**
-- If condition evaluates to `true` → attribute is processed normally (validated and transformed)
-- If condition evaluates to `false` → attribute is completely excluded from output
+- `if` - If condition evaluates to `true` → attribute is processed normally (validated and transformed)
+- `if` - If condition evaluates to `false` → attribute is completely excluded from output
+- `unless` - If condition evaluates to `false` → attribute is processed normally (validated and transformed)
+- `unless` - If condition evaluates to `true` → attribute is completely excluded from output
 - Lambda receives raw data as named arguments
 - All exceptions in lambda are caught and wrapped in `Treaty::Exceptions::Validation`
 
@@ -421,6 +427,7 @@ string :admin_note, if: ->(user:, post:) { user[:role] == "admin" && post[:flagg
 - Lambda must return truthy/falsy value
 - Evaluated BEFORE validators and modifiers run
 - Works with all attribute types (including nested objects and arrays)
+- Cannot use both `if` and `unless` on the same attribute (mutual exclusivity error)
 
 **Use cases:**
 
@@ -433,8 +440,8 @@ response 200 do
     datetime :published_at, :optional
     # Rating only visible for published posts
     integer :rating, if: ->(post:) { post[:published_at].present? }
-    # View count only visible for published posts
-    integer :views, if: ->(post:) { post[:published_at].present? }
+    # Draft notes only for unpublished posts
+    string :draft_notes, unless: ->(post:) { post[:published_at].present? }
   end
 end
 ```
@@ -461,12 +468,12 @@ response 200 do
   object :article do
     string :title
     string :status
-    # Draft metadata only for unpublished articles
-    object :draft_data, if: ->(article:) { article[:status] == "draft" } do
+    # Draft metadata only for unpublished articles (using unless)
+    object :draft_data, unless: ->(article:) { article[:status] == "published" } do
       datetime :last_edited
       string :editor_notes
     end
-    # Published metadata only for published articles
+    # Published metadata only for published articles (using if)
     object :publication_data, if: ->(article:) { article[:status] == "published" } do
       datetime :published_at
       integer :view_count
@@ -490,16 +497,21 @@ if: ->(user:, post:) { user[:role] == "admin" || post[:author_id] == user[:id] }
 ```
 
 **Execution order:**
-The `if` conditional is evaluated FIRST, before any validation or transformation:
-1. `if` - Check condition (if false, skip attribute entirely)
+The `if` / `unless` conditional is evaluated FIRST, before any validation or transformation:
+1. `if` / `unless` - Check condition (skip attribute if condition fails)
 2. Validators - Validate value (`required`, `type`, `inclusion`, `format`)
 3. Modifiers - Transform value (`default`, `transform`, `cast`, `as`)
 
 **Common patterns:**
 ```ruby
-# Conditional with validation
+# Conditional with validation (using if)
 integer :rating,
         if: ->(post:) { post[:status] == "published" },
+        in: [1, 2, 3, 4, 5]  # Validation only runs if condition is true
+
+# Conditional with validation (using unless)
+integer :draft_version,
+        unless: ->(post:) { post[:status] == "published" },
         in: [1, 2, 3, 4, 5]  # Validation only runs if condition is true
 
 # Conditional with transformation
@@ -509,7 +521,7 @@ string :public_url,
 
 # Conditional with default
 integer :priority,
-        if: ->(post:) { post[:status] == "draft" },
+        unless: ->(post:) { post[:status] == "published" },
         default: 0  # Default only applies if condition is true
 ```
 
@@ -520,6 +532,17 @@ integer :rating, if: ->(post:) { post[:metadata][:status].upcase }  # NoMethodEr
 
 # Treaty catches it and raises:
 # Treaty::Exceptions::Validation: "Conditional evaluation failed for attribute 'rating': undefined method `[]' for nil:NilClass"
+```
+
+**Mutual exclusivity:**
+```ruby
+# ERROR: Cannot use both if and unless on the same attribute
+integer :rating,
+        if: ->(post:) { post[:status] == "published" },
+        unless: ->(post:) { post[:draft] }
+
+# Raises: Treaty::Exceptions::Validation
+# "Attribute 'rating' cannot have both 'if' and 'unless' options"
 ```
 
 **See:** [Validation: Conditional Attributes](./validation.md#conditional-attributes) for more examples

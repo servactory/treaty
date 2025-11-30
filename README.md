@@ -13,7 +13,7 @@
 </div>
 
 > [!WARNING]
-> **Development Status**: Treaty is currently under active development in the 0.x version series. Breaking changes may occur between minor versions (0.x) as we refine the API and add new features. The library will stabilize with the 1.0 release. We recommend pinning to specific patch versions in your Gemfile (e.g., `gem "treaty", "~> 0.14.0"`) until the 1.0 release.
+> **Development Status**: Treaty is currently under active development in the 0.x version series. Breaking changes may occur between minor versions (0.x) as we refine the API and add new features. The library will stabilize with the 1.0 release. We recommend pinning to specific patch versions in your Gemfile (e.g., `gem "treaty", "~> 0.15.0"`) until the 1.0 release.
 
 ## 📚 Documentation
 

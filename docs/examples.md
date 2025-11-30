@@ -1062,14 +1062,14 @@ module Gate
               string :published_at, :optional, cast: :datetime,
                      if: ->(post:) { post[:status] == "published" }
 
-              # Tags only accepted for non-draft posts
-              array :tags, :optional, if: ->(post:) { post[:status] != "draft" } do
+              # Tags only accepted for non-draft posts (using unless)
+              array :tags, :optional, unless: ->(post:) { post[:status] == "draft" } do
                 string :_self
               end
 
-              # Draft notes only for draft posts
+              # Draft notes only for draft posts (using unless)
               string :draft_notes, :optional,
-                     if: ->(post:) { post[:status] == "draft" }
+                     unless: ->(post:) { post[:status] == "published" }
 
               object :author do
                 string :name
@@ -1090,13 +1090,13 @@ module Gate
               datetime :published_at, cast: :string,
                        if: ->(post:) { post[:status] == "published" }
 
-              # Tags only visible for non-draft posts
-              array :tags, if: ->(post:) { post[:status] != "draft" } do
+              # Tags only visible for non-draft posts (using unless)
+              array :tags, unless: ->(post:) { post[:status] == "draft" } do
                 string :_self
               end
 
-              # Draft notes only for drafts
-              string :draft_notes, if: ->(post:) { post[:status] == "draft" }
+              # Draft notes only for drafts (using unless)
+              string :draft_notes, unless: ->(post:) { post[:status] == "published" }
 
               object :author do
                 string :name

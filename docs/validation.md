@@ -443,9 +443,9 @@ end
 Treaty processes attributes in this order:
 
 1. **Conditional Evaluation** - Should this attribute be processed?
-   - Evaluate `if` conditions using raw data
-   - Skip attribute entirely if condition returns false
-   - Continue to validation if condition returns true
+   - Evaluate `if` / `unless` conditions using raw data
+   - Skip attribute entirely if condition fails
+   - Continue to validation if condition succeeds
 
 2. **Schema Validation** - Is the structure correct?
    - Are objects present?
@@ -465,7 +465,7 @@ Treaty processes attributes in this order:
    - Attribute renaming (as:)
    - Symbol/string key conversion
 
-**Note:** Attributes with conditional options (`if:`) are evaluated first. If the condition returns false, the attribute is not validated or transformed at all.
+**Note:** Attributes with conditional options (`if:` / `unless:`) are evaluated first. If the condition fails, the attribute is not validated or transformed at all.
 
 ## Error Messages
 

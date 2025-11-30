@@ -807,21 +807,24 @@ integer :amount,
 
 ### Conditional option errors
 
-**Problem:** Errors when using the `if` option for conditional attributes.
+**Problem:** Errors when using the `if` / `unless` options for conditional attributes.
 
 **Common issues:**
 
-**1. "Option 'if' must be a Proc or Lambda"**
+**1. "Option 'if' must be a Proc or Lambda" / "Option 'unless' must be a Proc or Lambda"**
 
 ```ruby
 # ❌ Wrong: Boolean value instead of lambda
 string :published_at, if: true
+string :password, unless: false
 
 # ❌ Wrong: Symbol instead of lambda
 string :tags, if: :published?
+string :internal_notes, unless: :public?
 
 # ✅ Correct: Lambda
 string :published_at, if: ->(post:) { post[:status] == "published" }
+string :password, unless: ->(post:) { post[:visibility] == "public" }
 ```
 
 **2. "Conditional evaluation failed for attribute 'X'"**
@@ -829,10 +832,12 @@ string :published_at, if: ->(post:) { post[:status] == "published" }
 ```ruby
 # ❌ Wrong: Error in lambda (accessing nil)
 string :views, if: ->(post:) { post[:metadata][:public] }
-# Error if metadata is nil
+string :password, unless: ->(post:) { post[:settings][:public] }
+# Error if metadata/settings is nil
 
 # ✅ Correct: Safe navigation
 string :views, if: ->(post:) { post.dig(:metadata, :public) == true }
+string :password, unless: ->(post:) { post.dig(:settings, :public) == true }
 ```
 
 **3. Wrong lambda arguments**
@@ -841,12 +846,14 @@ string :views, if: ->(post:) { post.dig(:metadata, :public) == true }
 # ❌ Wrong: Accessing wrong data structure
 object :post do
   string :published_at, if: ->(user:) { user[:role] == "admin" }
+  string :password, unless: ->(user:) { user[:role] == "admin" }
   # Error: 'user' doesn't exist in 'post' context
 end
 
 # ✅ Correct: Access parent object data
 object :post do
   string :published_at, if: ->(post:) { post[:status] == "published" }
+  string :password, unless: ->(post:) { post[:visibility] == "public" }
 end
 ```
 
@@ -855,10 +862,12 @@ end
 ```ruby
 # ❌ Wrong: String comparison instead of presence check
 string :draft_notes, if: ->(post:) { post[:status] == "draft" }
-# Won't show if status is missing
+string :meta_description, unless: ->(post:) { post[:visibility] == "private" }
+# Won't evaluate correctly if status/visibility is missing
 
 # ✅ Correct: Handle missing values
 string :draft_notes, if: ->(post:) { post[:status].to_s == "draft" }
+string :meta_description, unless: ->(post:) { post[:visibility].to_s == "private" }
 ```
 
 **Tips:**
@@ -866,7 +875,8 @@ string :draft_notes, if: ->(post:) { post[:status].to_s == "draft" }
 - Use named arguments matching parent object (e.g., `post:`, `user:`)
 - Use safe navigation (`dig`, `&.`, `to_s`) to handle nil values
 - Test conditionals with different data scenarios
-- Remember: `if` is evaluated BEFORE validators and modifiers
+- Remember: `if` / `unless` are evaluated BEFORE validators and modifiers
+- `if` includes attribute when condition is truthy, `unless` includes when condition is falsy
 
 **See:** [Attributes: Conditional Attributes](./attributes.md#conditional-attributes) for complete documentation.
 

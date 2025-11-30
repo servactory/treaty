@@ -375,6 +375,95 @@ module Gate
 
           delegate_to "posts/stable/create_service"
         end
+
+        version 7 do
+          summary "Demonstrates conditional attributes with unless option"
+
+          request do
+            # Query
+            object :_self do
+              string :signature
+            end
+          end
+
+          request do
+            # Body
+            object :post do
+              string :title, transform: ->(value:) { value.strip }
+              string :summary
+              string :description, :optional
+              string :content
+              string :visibility, :optional, in: %w[public private internal], default: "public"
+
+              # password only accepted for non-public posts
+              string :password,
+                     :optional,
+                     unless: ->(post:) { post[:visibility] == "public" }
+
+              # Tags excluded for private posts
+              array :tags, :optional, unless: ->(post:) { post[:visibility] == "private" } do
+                string :_self, transform: ->(value:) { value.downcase }
+              end
+
+              # SEO fields excluded for private and internal posts
+              string :meta_description, :optional, unless: lambda { |post:|
+                %w[private internal].include?(post[:visibility])
+              }
+
+              object :author do
+                string :name
+                string :bio
+
+                array :socials, :optional do
+                  string :provider, in: %w[twitter linkedin github]
+                  string :handle, as: :value
+                end
+              end
+            end
+          end
+
+          response 201 do
+            object :post do
+              string :id
+              string :title
+              string :summary
+              string :description
+              string :content
+              string :visibility
+              boolean :featured
+
+              # password visible unless public
+              string :password, unless: ->(post:) { post[:visibility] == "public" }
+
+              # Tags excluded for private posts
+              array :tags, unless: ->(post:) { post[:visibility] == "private" } do
+                string :_self
+              end
+
+              # SEO excluded unless public
+              string :meta_description, unless: ->(post:) { %w[private internal].include?(post[:visibility]) }
+
+              object :author do
+                string :name
+                string :bio
+
+                array :socials do
+                  string :provider
+                  string :value, as: :handle
+                end
+              end
+
+              # Public stats excluded for private posts
+              integer :rating, unless: ->(post:) { post[:visibility] == "private" }
+              integer :views, unless: ->(post:) { post[:visibility] == "private" }
+
+              time :created_at, cast: :string
+              time :updated_at, cast: :integer
+            end
+          end
+
+          delegate_to "posts/stable/create_service"
+        end
       end
     end
   end

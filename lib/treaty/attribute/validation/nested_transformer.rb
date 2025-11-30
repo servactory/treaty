@@ -79,7 +79,7 @@ module Treaty
             transformed = {}
 
             attribute.collection_of_attributes.each do |nested_attribute|
-              # Check if conditional (if option) - skip attribute if condition is false
+              # Check if conditional (if/unless option) - skip attribute if condition evaluates to skip
               next unless should_process_attribute?(nested_attribute, value)
 
               process_attribute(nested_attribute, value, transformed)
@@ -90,6 +90,30 @@ module Treaty
 
           private
 
+          # Returns the conditional option name if present (:if or :unless)
+          # Raises error if both are present (mutual exclusivity)
+          #
+          # @param nested_attribute [Attribute::Base] The attribute to check
+          # @raise [Treaty::Exceptions::Validation] If both :if and :unless are present
+          # @return [Symbol, nil] :if, :unless, or nil
+          def conditional_option_for(nested_attribute) # rubocop:disable Metrics/MethodLength
+            has_if = nested_attribute.options.key?(:if)
+            has_unless = nested_attribute.options.key?(:unless)
+
+            if has_if && has_unless
+              raise Treaty::Exceptions::Validation,
+                    I18n.t(
+                      "treaty.attributes.conditionals.mutual_exclusivity_error",
+                      attribute: nested_attribute.name
+                    )
+            end
+
+            return :if if has_if
+            return :unless if has_unless
+
+            nil
+          end
+
           # Gets cached conditional processors for attributes or builds them
           #
           # @return [Hash] Hash of attribute => conditional processor
@@ -97,23 +121,24 @@ module Treaty
             @conditionals_for_attributes ||= build_conditionals_for_attributes
           end
 
-          # Builds conditional processors for attributes with :if option
+          # Builds conditional processors for attributes with :if or :unless option
           # Validates schema at definition time for performance
           #
           # @return [Hash] Hash of attribute => conditional processor
           def build_conditionals_for_attributes # rubocop:disable Metrics/MethodLength
             attribute.collection_of_attributes.each_with_object({}) do |nested_attribute, cache|
-              # Only build conditional if attribute has :if option
-              next unless nested_attribute.options.key?(:if)
+              # Get conditional option name (:if or :unless)
+              conditional_type = conditional_option_for(nested_attribute)
+              next if conditional_type.nil?
 
-              processor_class = Option::Registry.processor_for(:if)
+              processor_class = Option::Registry.processor_for(conditional_type)
               next if processor_class.nil?
 
               # Create processor instance
               conditional = processor_class.new(
                 attribute_name: nested_attribute.name,
                 attribute_type: nested_attribute.type,
-                option_schema: nested_attribute.options.fetch(:if)
+                option_schema: nested_attribute.options.fetch(conditional_type)
               )
 
               # Validate schema at definition time (not runtime)
@@ -123,15 +148,16 @@ module Treaty
             end
           end
 
-          # Checks if an attribute should be processed based on its conditional (if option)
-          # Returns true if no conditional is defined or if conditional evaluates to true
+          # Checks if an attribute should be processed based on its conditional (if/unless option)
+          # Returns true if no conditional is defined or if conditional evaluates appropriately
           #
           # @param nested_attribute [Attribute::Base] The attribute to check
           # @param source_hash [Hash] Source data to pass to conditional
           # @return [Boolean] True if attribute should be processed, false to skip it
           def should_process_attribute?(nested_attribute, source_hash)
-            # Check if attribute has an :if option
-            return true unless nested_attribute.options.key?(:if)
+            # Check if attribute has a conditional option
+            conditional_type = conditional_option_for(nested_attribute)
+            return true if conditional_type.nil?
 
             # Get cached conditional processor
             conditional = conditionals_for_attributes[nested_attribute]
@@ -205,6 +231,30 @@ module Treaty
 
           private
 
+          # Returns the conditional option name if present (:if or :unless)
+          # Raises error if both are present (mutual exclusivity)
+          #
+          # @param nested_attribute [Attribute::Base] The attribute to check
+          # @raise [Treaty::Exceptions::Validation] If both :if and :unless are present
+          # @return [Symbol, nil] :if, :unless, or nil
+          def conditional_option_for(nested_attribute) # rubocop:disable Metrics/MethodLength
+            has_if = nested_attribute.options.key?(:if)
+            has_unless = nested_attribute.options.key?(:unless)
+
+            if has_if && has_unless
+              raise Treaty::Exceptions::Validation,
+                    I18n.t(
+                      "treaty.attributes.conditionals.mutual_exclusivity_error",
+                      attribute: nested_attribute.name
+                    )
+            end
+
+            return :if if has_if
+            return :unless if has_unless
+
+            nil
+          end
+
           # Gets cached conditional processors for attributes or builds them
           #
           # @return [Hash] Hash of attribute => conditional processor
@@ -212,23 +262,24 @@ module Treaty
             @conditionals_for_attributes ||= build_conditionals_for_attributes
           end
 
-          # Builds conditional processors for attributes with :if option
+          # Builds conditional processors for attributes with :if or :unless option
           # Validates schema at definition time for performance
           #
           # @return [Hash] Hash of attribute => conditional processor
           def build_conditionals_for_attributes # rubocop:disable Metrics/MethodLength
             attribute.collection_of_attributes.each_with_object({}) do |nested_attribute, cache|
-              # Only build conditional if attribute has :if option
-              next unless nested_attribute.options.key?(:if)
+              # Get conditional option name (:if or :unless)
+              conditional_type = conditional_option_for(nested_attribute)
+              next if conditional_type.nil?
 
-              processor_class = Option::Registry.processor_for(:if)
+              processor_class = Option::Registry.processor_for(conditional_type)
               next if processor_class.nil?
 
               # Create processor instance
               conditional = processor_class.new(
                 attribute_name: nested_attribute.name,
                 attribute_type: nested_attribute.type,
-                option_schema: nested_attribute.options.fetch(:if)
+                option_schema: nested_attribute.options.fetch(conditional_type)
               )
 
               # Validate schema at definition time (not runtime)
@@ -238,15 +289,16 @@ module Treaty
             end
           end
 
-          # Checks if an attribute should be processed based on its conditional (if option)
-          # Returns true if no conditional is defined or if conditional evaluates to true
+          # Checks if an attribute should be processed based on its conditional (if/unless option)
+          # Returns true if no conditional is defined or if conditional evaluates appropriately
           #
           # @param nested_attribute [Attribute::Base] The attribute to check
           # @param source_hash [Hash] Source data to pass to conditional
           # @return [Boolean] True if attribute should be processed, false to skip it
           def should_process_attribute?(nested_attribute, source_hash)
-            # Check if attribute has an :if option
-            return true unless nested_attribute.options.key?(:if)
+            # Check if attribute has a conditional option
+            conditional_type = conditional_option_for(nested_attribute)
+            return true if conditional_type.nil?
 
             # Get cached conditional processor
             conditional = conditionals_for_attributes[nested_attribute]
@@ -314,7 +366,7 @@ module Treaty
             transformed = {}
 
             attribute.collection_of_attributes.each do |nested_attribute|
-              # Check if conditional (if option) - skip attribute if condition is false
+              # Check if conditional (if/unless option) - skip attribute if condition evaluates to skip
               next unless should_process_attribute?(nested_attribute, item)
 
               process_attribute(nested_attribute, item, transformed, index)

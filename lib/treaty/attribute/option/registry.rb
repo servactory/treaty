@@ -33,6 +33,7 @@ module Treaty
       #
       # ### Conditionals
       # - `:if` → IfConditional
+      # - `:unless` → UnlessConditional
       #
       # ## Usage
       #

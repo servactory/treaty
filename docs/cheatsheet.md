@@ -165,7 +165,8 @@ boolean :active, cast: :integer         # Boolean to integer (1/0)
 
 # Conditional attributes
 string :published_at, if: ->(post:) { post[:status] == "published" }
-array :tags, if: ->(post:) { post[:status] != "draft" } do
+string :draft_notes, unless: ->(post:) { post[:status] == "published" }
+array :tags, unless: ->(post:) { post[:status] == "draft" } do
   string :_self
 end
 ```

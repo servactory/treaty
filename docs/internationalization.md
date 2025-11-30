@@ -159,6 +159,10 @@ treaty:
       if:
         invalid_type: "Option 'if' for attribute '%{attribute}' must be a Proc or Lambda. Got: %{type}"
         evaluation_error: "Conditional evaluation failed for attribute '%{attribute}': %{error}"
+      unless:
+        invalid_type: "Option 'unless' for attribute '%{attribute}' must be a Proc or Lambda. Got: %{type}"
+        evaluation_error: "Conditional evaluation failed for attribute '%{attribute}': %{error}"
+      mutual_exclusivity_error: "Attribute '%{attribute}' cannot use both 'if' and 'unless' options simultaneously. Please use only one conditional option."
 ```
 
 ### Versioning Messages
@@ -246,6 +250,10 @@ de:
         if:
           invalid_type: "Option 'if' für Attribut '%{attribute}' muss ein Proc oder Lambda sein. Erhalten: %{type}"
           evaluation_error: "Conditional-Auswertung fehlgeschlagen für Attribut '%{attribute}': %{error}"
+        unless:
+          invalid_type: "Option 'unless' für Attribut '%{attribute}' muss ein Proc oder Lambda sein. Erhalten: %{type}"
+          evaluation_error: "Conditional-Auswertung fehlgeschlagen für Attribut '%{attribute}': %{error}"
+        mutual_exclusivity_error: "Attribut '%{attribute}' kann nicht gleichzeitig 'if' und 'unless' Optionen verwenden. Bitte verwenden Sie nur eine Conditional-Option."
 
       builder:
         not_implemented: "%{class} muss #create_attribute implementieren"
@@ -494,7 +502,7 @@ Different validators provide different interpolation variables:
 - `%{value}` - the value that failed to convert (for conversion_error)
 - `%{error}` - the error message from conversion execution (for conversion_error)
 
-**If Conditional:**
+**If/Unless Conditionals:**
 - `%{attribute}` - the attribute name
 - `%{type}` - the actual type provided (for invalid_type error)
 - `%{error}` - the error message from lambda execution (for evaluation_error)

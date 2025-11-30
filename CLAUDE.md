@@ -36,9 +36,10 @@ This document provides comprehensive guidance for AI assistants working with the
 4. **Entity Classes (DTOs)** - Reusable data transfer objects
 5. **Built-in Validation** - Automatic validation of incoming/outgoing data
 6. **Data Transformation** - Transform data with custom lambdas (`transform:`) and automatic type casting (`cast:`)
-7. **Inventory System** - Pass controller-specific data to services efficiently
-8. **Deprecation Management** - Mark versions as deprecated with conditions
-9. **Internationalization** - Full I18n support
+7. **Conditional Attributes** - Include/exclude attributes dynamically with `if:` and `unless:` modifiers
+8. **Inventory System** - Pass controller-specific data to services efficiently
+9. **Deprecation Management** - Mark versions as deprecated with conditions
+10. **Internationalization** - Full I18n support
 
 ## Repository Structure
 
@@ -126,6 +127,8 @@ treaty/
 - `as: :new_name` - Rename attribute key
 - `in: [...]` - Value must be in list (inclusion validation)
 - `format: :email` - Format validation (email, uuid, datetime, etc.)
+- `if: lambda` - Conditionally include attribute when lambda returns true (e.g., `if: ->(post:) { post[:status] == "published" }`)
+- `unless: lambda` - Conditionally exclude attribute when lambda returns true (e.g., `unless: ->(post:) { post[:visibility] == "private" }`)
 
 **Key Classes**:
 - `Treaty::Attribute::DSL` - Provides attribute definition methods
@@ -169,7 +172,13 @@ Automatically:
 1. Validates incoming parameters
 2. Calls delegated service
 3. Validates service response
-4. Returns transformed data
+4. Returns `Treaty::Result` object with transformed data
+
+**Treaty::Result**:
+The result object contains:
+- `data` - Validated and transformed response data
+- `status` - HTTP status code (default: 200, or as defined in response block)
+- `version` - The API version that was used (e.g., "1", "2.0.0")
 
 #### 6. Entity/DTOs (`lib/treaty/entity/`)
 
@@ -603,6 +612,25 @@ string :published_at, cast: {
   message: "Invalid date format provided"
 }
 
+# Conditional attributes with 'if'
+integer :stock_count, if: ->(product:) { product[:status] == "active" }
+datetime :published_at, :optional, cast: :string, if: ->(post:) { post[:status] == "published" }
+array :tags, :optional, if: ->(post:) { post[:status] != "draft" } do
+  string :_self
+end
+
+# Conditional attributes with 'unless'
+string :sku, unless: ->(product:) { product[:status] == "draft" }
+string :password, :optional, unless: ->(post:) { post[:visibility] == "public" }
+array :tags, :optional, unless: ->(post:) { post[:visibility] == "private" } do
+  string :_self
+end
+
+# Complex conditional logic
+string :meta_description, :optional, unless: lambda { |post:|
+  %w[private internal].include?(post[:visibility])
+}
+
 # Nested objects
 object :author do
   string :name
@@ -835,6 +863,7 @@ rake
    - `transform:` - Transform the value
    - `cast:` - Cast to target type
    - `as:` - Rename the attribute key last
+   - `if:` / `unless:` - Evaluate conditionals last
 6. **Choose between transform and cast**:
    - Use `cast:` for standard type conversions (string ↔ datetime, boolean ↔ integer, etc.)
    - Use `transform:` for custom business logic (titleize, strip, calculations, etc.)
@@ -842,6 +871,12 @@ rake
 7. **Type casting limitations**:
    - Array and Object types do not support casting
    - Only primitive types support casting (string, integer, boolean, datetime)
+8. **Conditional attributes**:
+   - Use `if:` to include attributes only when condition is true
+   - Use `unless:` to exclude attributes when condition is true
+   - Conditions receive the parent object as a named parameter (e.g., `if: ->(post:) { post[:status] == "published" }`)
+   - Conditionals work with all attribute types including objects and arrays
+   - Useful for dynamic API responses based on state or permissions
 
 ### When Writing Tests
 
@@ -911,6 +946,6 @@ grep -r "delegate_to" spec/sandbox/app/treaties/
 
 ---
 
-**Last Updated**: 2025-11-22
+**Last Updated**: 2025-11-30
 **Treaty Version**: 0.14.0
 **Repository**: https://github.com/servactory/treaty

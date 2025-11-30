@@ -1450,7 +1450,6 @@ RSpec.describe Gate::API::Posts::CreateTreaty do
                                 type: :string,
                                 options: {
                                   required: { is: false, message: nil },
-                                  unless: { is: Proc, message: nil },
                                   inclusion: { in: %w[public private internal], message: nil },
                                   default: { is: "public", message: nil }
                                 },
@@ -1461,24 +1460,6 @@ RSpec.describe Gate::API::Posts::CreateTreaty do
                                 options: {
                                   required: { is: false, message: nil },
                                   unless: { is: Proc, message: nil }
-                                },
-                                attributes: {}
-                              },
-                              status: {
-                                type: :string,
-                                options: {
-                                  required: { is: false, message: nil },
-                                  inclusion: { in: %w[draft published archived], message: nil },
-                                  default: { is: "draft", message: nil }
-                                },
-                                attributes: {}
-                              },
-                              published_at: {
-                                type: :string,
-                                options: {
-                                  required: { is: false, message: nil },
-                                  cast: { to: :datetime, message: nil },
-                                  if: { is: Proc, message: nil }
                                 },
                                 attributes: {}
                               },
@@ -1503,7 +1484,7 @@ RSpec.describe Gate::API::Posts::CreateTreaty do
                                 type: :string,
                                 options: {
                                   required: { is: false, message: nil },
-                                  if: { is: Proc, message: nil }
+                                  unless: { is: Proc, message: nil }
                                 },
                                 attributes: {}
                               },
@@ -1608,13 +1589,6 @@ RSpec.describe Gate::API::Posts::CreateTreaty do
                                 },
                                 attributes: {}
                               },
-                              status: {
-                                type: :string,
-                                options: {
-                                  required: { is: false, message: nil }
-                                },
-                                attributes: {}
-                              },
                               featured: {
                                 type: :boolean,
                                 options: {
@@ -1622,12 +1596,11 @@ RSpec.describe Gate::API::Posts::CreateTreaty do
                                 },
                                 attributes: {}
                               },
-                              published_at: {
-                                type: :datetime,
+                              password: {
+                                type: :string,
                                 options: {
                                   required: { is: false, message: nil },
-                                  cast: { to: :string, message: nil },
-                                  if: { is: Proc, message: nil }
+                                  unless: { is: Proc, message: nil }
                                 },
                                 attributes: {}
                               },
@@ -1635,7 +1608,7 @@ RSpec.describe Gate::API::Posts::CreateTreaty do
                                 type: :array,
                                 options: {
                                   required: { is: false, message: nil },
-                                  if: { is: Proc, message: nil }
+                                  unless: { is: Proc, message: nil }
                                 },
                                 attributes: {
                                   _self: {
@@ -1647,11 +1620,11 @@ RSpec.describe Gate::API::Posts::CreateTreaty do
                                   }
                                 }
                               },
-                              draft_notes: {
+                              meta_description: {
                                 type: :string,
                                 options: {
                                   required: { is: false, message: nil },
-                                  if: { is: Proc, message: nil }
+                                  unless: { is: Proc, message: nil }
                                 },
                                 attributes: {}
                               },

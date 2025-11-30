@@ -79,6 +79,9 @@ module Treaty
             transformed = {}
 
             attribute.collection_of_attributes.each do |nested_attribute|
+              # Check if conditional (if option) - skip attribute if condition is false
+              next unless should_process_attribute?(nested_attribute, value)
+
               process_attribute(nested_attribute, value, transformed)
             end
 
@@ -86,6 +89,61 @@ module Treaty
           end
 
           private
+
+          # Gets cached conditional processors for attributes or builds them
+          #
+          # @return [Hash] Hash of attribute => conditional processor
+          def conditionals_for_attributes
+            @conditionals_for_attributes ||= build_conditionals_for_attributes
+          end
+
+          # Builds conditional processors for attributes with :if option
+          # Validates schema at definition time for performance
+          #
+          # @return [Hash] Hash of attribute => conditional processor
+          def build_conditionals_for_attributes # rubocop:disable Metrics/MethodLength
+            attribute.collection_of_attributes.each_with_object({}) do |nested_attribute, cache|
+              # Only build conditional if attribute has :if option
+              next unless nested_attribute.options.key?(:if)
+
+              processor_class = Option::Registry.processor_for(:if)
+              next if processor_class.nil?
+
+              # Create processor instance
+              conditional = processor_class.new(
+                attribute_name: nested_attribute.name,
+                attribute_type: nested_attribute.type,
+                option_schema: nested_attribute.options.fetch(:if)
+              )
+
+              # Validate schema at definition time (not runtime)
+              conditional.validate_schema!
+
+              cache[nested_attribute] = conditional
+            end
+          end
+
+          # Checks if an attribute should be processed based on its conditional (if option)
+          # Returns true if no conditional is defined or if conditional evaluates to true
+          #
+          # @param nested_attribute [Attribute::Base] The attribute to check
+          # @param source_hash [Hash] Source data to pass to conditional
+          # @return [Boolean] True if attribute should be processed, false to skip it
+          def should_process_attribute?(nested_attribute, source_hash)
+            # Check if attribute has an :if option
+            return true unless nested_attribute.options.key?(:if)
+
+            # Get cached conditional processor
+            conditional = conditionals_for_attributes[nested_attribute]
+            return true if conditional.nil?
+
+            # Evaluate condition with source hash data wrapped with parent object name
+            wrapped_data = { attribute.name => source_hash }
+            conditional.evaluate_condition(wrapped_data)
+          rescue StandardError
+            # If conditional evaluation fails, skip the attribute
+            false
+          end
 
           # Processes a single nested attribute
           # Validates, transforms, and adds to target hash
@@ -117,7 +175,7 @@ module Treaty
         end
 
         # Transforms array with nested attributes
-        class ArrayTransformer
+        class ArrayTransformer # rubocop:disable Metrics/ClassLength
           SELF_OBJECT = :_self
           private_constant :SELF_OBJECT
 
@@ -147,6 +205,61 @@ module Treaty
 
           private
 
+          # Gets cached conditional processors for attributes or builds them
+          #
+          # @return [Hash] Hash of attribute => conditional processor
+          def conditionals_for_attributes
+            @conditionals_for_attributes ||= build_conditionals_for_attributes
+          end
+
+          # Builds conditional processors for attributes with :if option
+          # Validates schema at definition time for performance
+          #
+          # @return [Hash] Hash of attribute => conditional processor
+          def build_conditionals_for_attributes # rubocop:disable Metrics/MethodLength
+            attribute.collection_of_attributes.each_with_object({}) do |nested_attribute, cache|
+              # Only build conditional if attribute has :if option
+              next unless nested_attribute.options.key?(:if)
+
+              processor_class = Option::Registry.processor_for(:if)
+              next if processor_class.nil?
+
+              # Create processor instance
+              conditional = processor_class.new(
+                attribute_name: nested_attribute.name,
+                attribute_type: nested_attribute.type,
+                option_schema: nested_attribute.options.fetch(:if)
+              )
+
+              # Validate schema at definition time (not runtime)
+              conditional.validate_schema!
+
+              cache[nested_attribute] = conditional
+            end
+          end
+
+          # Checks if an attribute should be processed based on its conditional (if option)
+          # Returns true if no conditional is defined or if conditional evaluates to true
+          #
+          # @param nested_attribute [Attribute::Base] The attribute to check
+          # @param source_hash [Hash] Source data to pass to conditional
+          # @return [Boolean] True if attribute should be processed, false to skip it
+          def should_process_attribute?(nested_attribute, source_hash)
+            # Check if attribute has an :if option
+            return true unless nested_attribute.options.key?(:if)
+
+            # Get cached conditional processor
+            conditional = conditionals_for_attributes[nested_attribute]
+            return true if conditional.nil?
+
+            # Evaluate condition with source hash data wrapped with parent array attribute name
+            wrapped_data = { attribute.name => source_hash }
+            conditional.evaluate_condition(wrapped_data)
+          rescue StandardError
+            # If conditional evaluation fails, skip the attribute
+            false
+          end
+
           # Checks if this is a simple array (primitive values)
           #
           # @return [Boolean] True if array contains primitive values with :_self attribute
@@ -163,8 +276,8 @@ module Treaty
           # @raise [Treaty::Exceptions::Validation] If validation fails
           # @return [Object] Transformed element value
           def transform_simple_element(item, index) # rubocop:disable Metrics/MethodLength
-            self_attr = attribute.collection_of_attributes.first
-            validator = AttributeValidator.new(self_attr)
+            self_attribute = attribute.collection_of_attributes.first
+            validator = AttributeValidator.new(self_attribute)
             validator.validate_schema!
 
             begin
@@ -201,6 +314,9 @@ module Treaty
             transformed = {}
 
             attribute.collection_of_attributes.each do |nested_attribute|
+              # Check if conditional (if option) - skip attribute if condition is false
+              next unless should_process_attribute?(nested_attribute, item)
+
               process_attribute(nested_attribute, item, transformed, index)
             end
 

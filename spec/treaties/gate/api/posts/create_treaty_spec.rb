@@ -1055,6 +1055,334 @@ RSpec.describe Gate::API::Posts::CreateTreaty do
                           }
                         }
                       }
+                    },
+                    {
+                      version: "6",
+                      segments: [6],
+                      default: false,
+                      summary: "Demonstrates conditional attributes with if option",
+                      deprecated: false,
+                      executor: {
+                        executor: "posts/stable/create_service",
+                        method: :call
+                      },
+                      request: {
+                        attributes: {
+                          _self: {
+                            type: :object,
+                            options: {
+                              required: { is: true, message: nil }
+                            },
+                            attributes: {
+                              signature: {
+                                type: :string,
+                                options: {
+                                  required: { is: true, message: nil }
+                                },
+                                attributes: {}
+                              }
+                            }
+                          },
+                          post: {
+                            type: :object,
+                            options: {
+                              required: { is: true, message: nil }
+                            },
+                            attributes: {
+                              title: {
+                                type: :string,
+                                options: {
+                                  required: { is: true, message: nil },
+                                  transform: { is: Proc, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              summary: {
+                                type: :string,
+                                options: {
+                                  required: { is: true, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              description: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              content: {
+                                type: :string,
+                                options: {
+                                  required: { is: true, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              status: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil },
+                                  inclusion: { in: %w[draft published archived], message: nil },
+                                  default: { is: "draft", message: nil }
+                                },
+                                attributes: {}
+                              },
+                              published_at: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil },
+                                  cast: { to: :datetime, message: nil },
+                                  if: { is: Proc, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              tags: {
+                                type: :array,
+                                options: {
+                                  required: { is: false, message: nil },
+                                  if: { is: Proc, message: nil }
+                                },
+                                attributes: {
+                                  _self: {
+                                    type: :string,
+                                    options: {
+                                      required: { is: true, message: nil },
+                                      transform: { is: Proc, message: nil }
+                                    },
+                                    attributes: {}
+                                  }
+                                }
+                              },
+                              draft_notes: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil },
+                                  if: { is: Proc, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              author: {
+                                type: :object,
+                                options: {
+                                  required: { is: true, message: nil }
+                                },
+                                attributes: {
+                                  name: {
+                                    type: :string,
+                                    options: {
+                                      required: { is: true, message: nil }
+                                    },
+                                    attributes: {}
+                                  },
+                                  bio: {
+                                    type: :string,
+                                    options: {
+                                      required: { is: true, message: nil }
+                                    },
+                                    attributes: {}
+                                  },
+                                  socials: {
+                                    type: :array,
+                                    options: {
+                                      required: { is: false, message: nil }
+                                    },
+                                    attributes: {
+                                      provider: {
+                                        type: :string,
+                                        options: {
+                                          required: { is: true, message: nil },
+                                          inclusion: { in: %w[twitter linkedin github], message: nil }
+                                        },
+                                        attributes: {}
+                                      },
+                                      handle: {
+                                        type: :string,
+                                        options: {
+                                          required: { is: true, message: nil },
+                                          as: { is: :value, message: nil }
+                                        },
+                                        attributes: {}
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      response: {
+                        status: 201,
+                        attributes: {
+                          post: {
+                            type: :object,
+                            options: {
+                              required: { is: false, message: nil }
+                            },
+                            attributes: {
+                              id: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              title: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              summary: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              description: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              content: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              status: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              featured: {
+                                type: :boolean,
+                                options: {
+                                  required: { is: false, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              published_at: {
+                                type: :datetime,
+                                options: {
+                                  required: { is: false, message: nil },
+                                  cast: { to: :string, message: nil },
+                                  if: { is: Proc, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              tags: {
+                                type: :array,
+                                options: {
+                                  required: { is: false, message: nil },
+                                  if: { is: Proc, message: nil }
+                                },
+                                attributes: {
+                                  _self: {
+                                    type: :string,
+                                    options: {
+                                      required: { is: false, message: nil }
+                                    },
+                                    attributes: {}
+                                  }
+                                }
+                              },
+                              draft_notes: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil },
+                                  if: { is: Proc, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              author: {
+                                type: :object,
+                                options: {
+                                  required: { is: false, message: nil }
+                                },
+                                attributes: {
+                                  name: {
+                                    type: :string,
+                                    options: {
+                                      required: { is: false, message: nil }
+                                    },
+                                    attributes: {}
+                                  },
+                                  bio: {
+                                    type: :string,
+                                    options: {
+                                      required: { is: false, message: nil }
+                                    },
+                                    attributes: {}
+                                  },
+                                  socials: {
+                                    type: :array,
+                                    options: {
+                                      required: { is: false, message: nil }
+                                    },
+                                    attributes: {
+                                      provider: {
+                                        type: :string,
+                                        options: {
+                                          required: { is: false, message: nil }
+                                        },
+                                        attributes: {}
+                                      },
+                                      value: {
+                                        type: :string,
+                                        options: {
+                                          required: { is: false, message: nil },
+                                          as: { is: :handle, message: nil }
+                                        },
+                                        attributes: {}
+                                      }
+                                    }
+                                  }
+                                }
+                              },
+                              rating: {
+                                type: :integer,
+                                options: {
+                                  required: { is: false, message: nil },
+                                  if: { is: Proc, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              views: {
+                                type: :integer,
+                                options: {
+                                  required: { is: false, message: nil },
+                                  if: { is: Proc, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              created_at: {
+                                type: :time,
+                                options: {
+                                  required: { is: false, message: nil },
+                                  cast: { to: :string, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              updated_at: {
+                                type: :time,
+                                options: {
+                                  required: { is: false, message: nil },
+                                  cast: { to: :integer, message: nil }
+                                },
+                                attributes: {}
+                              }
+                            }
+                          }
+                        }
+                      }
                     }
                   ]
 
@@ -1152,6 +1480,57 @@ RSpec.describe Gate::API::Posts::CreateTreaty do
           # The transformed value (stripped title) should be passed to the service
           expect(result.data[:post][:title]).to eq("Title With Spaces")
           expect(result.data[:post][:tags]).to eq(%w[tag1 tag2 tag3])
+        end
+      end
+    end
+
+    context "when version is 6" do
+      let(:version) { "6" }
+
+      context "with published post" do
+        let(:params) do
+          {
+            signature: "...",
+            post: {
+              title: "Title 1",
+              summary: "Summary 1",
+              content: "Content",
+              status: "published",
+              published_at: "2024-01-15T10:00:00Z",
+              tags: %w[ruby rails],
+              author: {
+                name: "John Doe",
+                bio: "Developer"
+              }
+            }
+          }
+        end
+
+        it "processes successfully" do
+          expect { perform }.not_to raise_error
+        end
+      end
+
+      context "with draft post" do
+        let(:params) do
+          {
+            signature: "...",
+            post: {
+              title: "Title 1",
+              summary: "Summary 1",
+              content: "Content",
+              status: "draft",
+              draft_notes: "Need to review",
+              author: {
+                name: "John Doe",
+                bio: "Developer"
+              }
+            }
+          }
+        end
+
+        it "processes successfully without published_at and tags" do
+          expect { perform }.not_to raise_error
         end
       end
     end

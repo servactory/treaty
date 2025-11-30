@@ -34,7 +34,7 @@ module Gate
             object :filters, :optional do
               string :title, :optional
               integer :year, :optional
-              string :genre, :optional, in: %w[crime thriller action drama western]
+              string :genre, :optional, :optional, in: %w[crime thriller action drama western]
               integer :min_rating, :optional
             end
           end

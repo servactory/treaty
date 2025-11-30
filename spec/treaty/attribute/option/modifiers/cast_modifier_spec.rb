@@ -3,7 +3,7 @@
 RSpec.describe Treaty::Attribute::Option::Modifiers::CastModifier do
   subject(:modifier) do
     described_class.new(
-      attribute_name: :test_attr,
+      attribute_name: :test_attribute,
       attribute_type:,
       option_schema:
     )
@@ -36,7 +36,7 @@ RSpec.describe Treaty::Attribute::Option::Modifiers::CastModifier do
         expect { modifier.validate_schema! }.to(
           raise_error(Treaty::Exceptions::Validation) do |exception|
             expect(exception.message).to eq(
-              "Option 'cast' for attribute 'test_attr' must be a Symbol. Got: String"
+              "Option 'cast' for attribute 'test_attribute' must be a Symbol. Got: String"
             )
           end
         )
@@ -175,7 +175,7 @@ RSpec.describe Treaty::Attribute::Option::Modifiers::CastModifier do
       it "raises error for invalid string", :aggregate_failures do
         expect { modifier.transform_value("not a number") }.to(
           raise_error(Treaty::Exceptions::Validation) do |exception|
-            expect(exception.message).to include("Cast failed for attribute 'test_attr'")
+            expect(exception.message).to include("Cast failed for attribute 'test_attribute'")
             expect(exception.message).to include("from 'string' to 'integer'")
           end
         )
@@ -313,17 +313,17 @@ RSpec.describe Treaty::Attribute::Option::Modifiers::CastModifier do
       let(:option_schema) { { to: :string, message: nil } }
 
       it "converts DateTime to ISO8601 string", :aggregate_failures do
-        datetime = DateTime.new(2024, 1, 15, 10, 30, 0)
+        datetime = DateTime.new(2024, 2, 21, 0, 0, 0)
         result = modifier.transform_value(datetime)
         expect(result).to be_a(String)
-        expect(result).to include("2024-01-15")
+        expect(result).to include("2024-02-21")
       end
 
       it "converts Time to ISO8601 string", :aggregate_failures do
-        time = Time.utc(2024, 1, 15, 10, 30, 0)
+        time = Time.utc(2024, 2, 21, 0, 0, 0)
         result = modifier.transform_value(time)
         expect(result).to be_a(String)
-        expect(result).to include("2024-01-15")
+        expect(result).to include("2024-02-21")
       end
     end
 
@@ -332,7 +332,7 @@ RSpec.describe Treaty::Attribute::Option::Modifiers::CastModifier do
       let(:option_schema) { { to: :integer, message: nil } }
 
       it "converts DateTime to Unix timestamp", :aggregate_failures do
-        datetime = Time.utc(2024, 1, 15, 10, 30, 0)
+        datetime = Time.utc(2024, 2, 21, 0, 0, 0)
         result = modifier.transform_value(datetime)
         expect(result).to be_an(Integer)
         expect(result).to eq(datetime.to_i)

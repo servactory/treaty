@@ -287,6 +287,94 @@ module Gate
 
           delegate_to "posts/stable/create_service"
         end
+
+        version 6 do
+          summary "Demonstrates conditional attributes with if option"
+
+          request do
+            # Query
+            object :_self do
+              string :signature
+            end
+          end
+
+          request do
+            # Body
+            object :post do
+              string :title, transform: ->(value:) { value.strip }
+              string :summary
+              string :description, :optional
+              string :content
+              string :status, :optional, in: %w[draft published archived], default: "draft"
+
+              # published_at only accepted for published posts
+              string :published_at,
+                     :optional,
+                     cast: :datetime,
+                     if: ->(post:) { post[:status] == "published" }
+
+              # Tags only accepted for non-draft posts
+              array :tags, :optional, if: ->(post:) { post[:status] != "draft" } do
+                string :_self, transform: ->(value:) { value.downcase }
+              end
+
+              # Draft notes only for draft posts
+              string :draft_notes, :optional, if: ->(post:) { post[:status] == "draft" }
+
+              object :author do
+                string :name
+                string :bio
+
+                array :socials, :optional do
+                  string :provider, in: %w[twitter linkedin github]
+                  string :handle, as: :value
+                end
+              end
+            end
+          end
+
+          response 201 do
+            object :post do
+              string :id
+              string :title
+              string :summary
+              string :description
+              string :content
+              string :status
+              boolean :featured
+
+              # published_at only in response for published posts
+              datetime :published_at, cast: :string, if: ->(post:) { post[:status] == "published" }
+
+              # Tags only visible for non-draft posts
+              array :tags, if: ->(post:) { post[:status] != "draft" } do
+                string :_self
+              end
+
+              # Draft notes only for drafts
+              string :draft_notes, if: ->(post:) { post[:status] == "draft" }
+
+              object :author do
+                string :name
+                string :bio
+
+                array :socials do
+                  string :provider
+                  string :value, as: :handle
+                end
+              end
+
+              # Public stats only for published posts
+              integer :rating, if: ->(post:) { post[:status] == "published" }
+              integer :views, if: ->(post:) { post[:status] == "published" }
+
+              time :created_at, cast: :string
+              time :updated_at, cast: :integer
+            end
+          end
+
+          delegate_to "posts/stable/create_service"
+        end
       end
     end
   end

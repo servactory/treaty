@@ -27,7 +27,7 @@ module Serialization
                end
              }
 
-      string :role, in: %w[admin user guest], default: { is: "user" }
+      string :role, :optional, in: %w[admin user guest], default: { is: "user" }
 
       # Example: datetime format validation
       string :last_login_at, :optional, format: :datetime
@@ -39,7 +39,7 @@ module Serialization
       string :preferred_notification_time, :optional, format: :time
 
       # Example: boolean format validation
-      string :email_verified, format: :boolean, default: { is: "false" }
+      string :email_verified, :optional, format: :boolean, default: { is: "false" }
 
       # Example: duration format validation (e.g., "1 day", "2 hours")
       string :session_duration, :optional, format: :duration

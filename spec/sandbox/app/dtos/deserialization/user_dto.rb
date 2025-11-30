@@ -25,7 +25,7 @@ module Deserialization
                end
              }
 
-      string :role, in: %w[admin user guest], default: { is: "user" }
+      string :role, :optional, in: %w[admin user guest], default: { is: "user" }
 
       # Example: datetime format validation
       string :last_login_at, :optional, format: :datetime

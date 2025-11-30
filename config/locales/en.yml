@@ -45,6 +45,7 @@ en:
       # Attribute options
       options:
         unknown: "Unknown options for attribute '%{attribute}': %{unknown}. Known options: %{known}"
+        message_evaluation_error: "Custom message evaluation failed for attribute '%{attribute}': %{error}"
 
       # Attribute modifiers
       modifiers:

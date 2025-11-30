@@ -143,10 +143,12 @@ module Treaty
 
         # Resolves custom message with lambda support
         # If message is a lambda, calls it with provided named arguments
+        # Catches all exceptions from lambda execution and re-raises as Validation errors
         #
         # @param attributes [Hash] Named arguments to pass to lambda
         # @return [String, nil] Resolved message string or nil
-        def resolve_custom_message(**attributes)
+        # @raise [Treaty::Exceptions::Validation] If custom message lambda raises an exception
+        def resolve_custom_message(**attributes) # rubocop:disable Metrics/MethodLength
           message = custom_message
           return nil if message.nil?
 
@@ -155,6 +157,15 @@ module Treaty
           else
             message
           end
+        rescue StandardError => e
+          # Catch all exceptions from custom message lambda execution
+          error_message = I18n.t(
+            "treaty.attributes.options.message_evaluation_error",
+            attribute: @attribute_name,
+            error: e.message
+          )
+
+          raise Treaty::Exceptions::Validation, error_message
         end
 
         # Checks if schema is in advanced mode

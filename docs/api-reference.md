@@ -1047,6 +1047,33 @@ string :password, format: {
 - `value` - Object: The invalid value
 - `format_name` - Symbol: The format name (e.g., :email, :uuid)
 
+### Custom Message Error Handling
+
+Custom message lambdas are executed during validation. If a lambda raises an exception, Treaty catches it and raises a `Treaty::Exceptions::Validation` error with details about what went wrong.
+
+**Example:**
+```ruby
+string :title, required: {
+  is: true,
+  message: lambda do |attribute:, **|
+    # If this raises an exception, Treaty catches it
+    raise "Something went wrong in custom message"
+  end
+}
+```
+
+**Error message format:**
+```
+Custom message evaluation failed for attribute 'title': Something went wrong in custom message
+```
+
+This ensures that:
+- Errors in custom message logic don't crash your application
+- You get clear feedback about which attribute's message failed
+- The original error message is preserved for debugging
+
+**Note:** This applies to all custom message lambdas across all options (`required`, `inclusion`, `format`, `transform`, `cast`, etc.).
+
 ## Configuration
 
 ### Global Configuration

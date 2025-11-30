@@ -119,6 +119,16 @@ treaty:
       item_not_found: "Inventory item '%{name}' not found. Available items: %{available}"
 ```
 
+### Option Messages
+
+```yaml
+treaty:
+  attributes:
+    options:
+      unknown: "Unknown options for attribute '%{attribute}': %{unknown}. Known options: %{known}"
+      message_evaluation_error: "Custom message evaluation failed for attribute '%{attribute}': %{error}"
+```
+
 ### Modifier Messages
 
 ```yaml
@@ -395,6 +405,32 @@ de:
         invalid: "Bitte wählen Sie eine gültige Kategorie: Tech, Business oder Lifestyle"
 ```
 
+### Error Handling for Custom Messages
+
+Custom message lambdas are executed during validation, and any exceptions they raise are caught and converted to Treaty validation errors:
+
+```ruby
+request do
+  object :post do
+    string :title, required: {
+      is: true,
+      message: ->(attribute:) do
+        # If this lambda raises an exception, Treaty catches it
+        # and raises Treaty::Exceptions::Validation with appropriate message
+        raise "Something went wrong"
+      end
+    }
+  end
+end
+```
+
+If the custom message lambda raises an exception, Treaty will:
+1. Catch the exception
+2. Wrap it in a `Treaty::Exceptions::Validation` error
+3. Include both the attribute name and original error message
+
+This ensures that errors in custom message logic don't break your application and are reported clearly.
+
 ## Message Interpolation
 
 Treaty messages support variable interpolation using `%{variable_name}` syntax:
@@ -469,6 +505,12 @@ Different validators provide different interpolation variables:
 - `%{name}` - the inventory item name
 - `%{error}` - the error message from evaluation
 - `%{available}` - comma-separated list of available inventory items
+
+**Options:**
+- `%{attribute}` - the attribute name
+- `%{unknown}` - comma-separated list of unknown options
+- `%{known}` - comma-separated list of known options
+- `%{error}` - the error message from custom message lambda execution (for message_evaluation_error)
 
 ### Example: German Customization
 

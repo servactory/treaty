@@ -682,21 +682,33 @@ Transformations happen in this order:
 
 ### Request Transformation
 
-1. **Validate structure** - Ensure objects and types are correct
-2. **Validate values** - Check required, inclusion, etc.
-3. **Apply defaults** - Fill in missing values with defaults
-4. **Rename attributes** - Apply `as:` transformations
-5. **Convert keys** - String keys → Symbol keys
-6. **Pass to service** - Service receives transformed data
+1. **Conditional Evaluation** - Determine if attribute should be processed
+   - Evaluate `if` / `unless` conditions using raw data
+   - Skip attribute completely if condition fails
+   - Continue to validation if condition succeeds
+2. **Validate structure** - Ensure objects and types are correct
+3. **Validate values** - Check required, inclusion, etc.
+4. **Apply defaults** - Fill in missing values with defaults
+5. **Custom transformations** - Apply `transform:` lambdas
+6. **Type casting** - Apply `cast:` conversions
+7. **Rename attributes** - Apply `as:` transformations
+8. **Convert keys** - String keys → Symbol keys
+9. **Pass to service** - Service receives transformed data
 
 ### Response Transformation
 
 1. **Receive from service** - Service returns Ruby hash
-2. **Validate structure** - Ensure response matches definition
-3. **Apply defaults** - Fill in missing values with defaults
-4. **Rename attributes** - Apply `as:` transformations
-5. **Convert keys** - Symbol keys → String keys
-6. **Return to client** - Client receives JSON
+2. **Conditional Evaluation** - Determine if attribute should be processed
+   - Evaluate `if` / `unless` conditions using raw data
+   - Skip attribute completely if condition fails
+   - Continue to validation if condition succeeds
+3. **Validate structure** - Ensure response matches definition
+4. **Apply defaults** - Fill in missing values with defaults
+5. **Custom transformations** - Apply `transform:` lambdas
+6. **Type casting** - Apply `cast:` conversions
+7. **Rename attributes** - Apply `as:` transformations
+8. **Convert keys** - Symbol keys → String keys
+9. **Return to client** - Client receives JSON
 
 ## Option Execution Order
 
@@ -743,6 +755,30 @@ Transform and cast skip `nil` values automatically. If you put `default` last:
 - Input with value → transform cleans → cast converts → default skips → processed value
 
 This is logical because default values are usually already in the correct format.
+
+### Conditionals vs Modifiers
+
+**Important distinction:** The `if` / `unless` options are **conditionals**, not modifiers. They execute **before** the transformation phase and determine whether an attribute should be processed at all.
+
+**Processing sequence:**
+1. **Conditional Evaluation Phase:** `if` / `unless` (decides if attribute exists)
+2. **Validation Phase:** `required:`, `type:`, `inclusion:`, `format:` (validates value)
+3. **Transformation Phase:** `default:`, `transform:`, `cast:`, `as:` (modifies value)
+
+```ruby
+# Conditionals run first, separate from modifier chain
+string :published_at,
+       if: ->(post:) { post[:status] == "published" },  # Step 1: Should attribute exist?
+       transform: ->(value:) { value.strip },            # Step 3a: Clean value
+       cast: :datetime,                                  # Step 3b: Convert type
+       default: Time.current                             # Step 3c: Apply default if nil
+```
+
+**Key points:**
+- Conditionals evaluate on raw data before any transformation
+- If condition fails, attribute is completely excluded (no validation, no transformation)
+- Modifier order matters only for attributes that pass conditional evaluation
+- Cannot use `if` and `unless` together on same attribute
 
 ### Common Patterns
 
@@ -866,20 +902,28 @@ string :data,
 
 ### Validators vs Modifiers
 
-**Important:** Validators (like `required:`, `inclusion:`) execute **before** modifiers during the validation phase. The order discussed here applies only to **modifiers** during the transformation phase.
+**Important:** Validators (like `required:`, `inclusion:`) execute **before** modifiers during the validation phase. Conditionals (like `if:`, `unless:`) execute **before** validators during the conditional evaluation phase. The order discussed here applies only to **modifiers** during the transformation phase.
 
 **Processing sequence:**
+0. **Conditional Evaluation Phase:** `if:`, `unless:` (determines if attribute should exist)
 1. **Validation Phase:** `required:`, `type:`, `inclusion:`, `format:` (order doesn't matter)
-2. **Transformation Phase:** `transform:`, `cast:`, `default:`, `as:` (order matters!)
+2. **Transformation Phase:** `default:`, `transform:`, `cast:`, `as:` (order matters!)
 
 ```ruby
-# All validators run first, then modifiers in order
-string :status,
-       required: true,  # ← Validation phase
-       inclusion: { in: %w[draft published] },  # ← Validation phase
-       transform: ->(value:) { value.downcase },  # → Transformation phase (1st)
-       default: "draft"  # → Transformation phase (2nd)
+# All three phases in action
+string :published_at,
+       if: ->(post:) { post[:status] == "published" },  # ← 0. Conditional phase
+       required: true,                                   # ← 1. Validation phase
+       inclusion: { in: valid_dates },                   # ← 1. Validation phase
+       transform: ->(value:) { value.strip },            # → 2. Transformation phase (1st)
+       cast: :datetime,                                  # → 2. Transformation phase (2nd)
+       default: Time.current                             # → 2. Transformation phase (3rd)
 ```
+
+**Flow:**
+1. If `if`/`unless` condition fails → attribute excluded entirely (no validation, no transformation)
+2. If condition passes → proceed to validation phase
+3. After validation passes → proceed to transformation phase with ordered modifiers
 
 ### Debugging Order Issues
 

@@ -2,11 +2,12 @@
 
 module Treaty
   class Result
-    attr_reader :data, :status
+    attr_reader :data, :status, :version
 
-    def initialize(data:, status:)
+    def initialize(data:, status:, version:)
       @data = data
       @status = status
+      @version = version
     end
 
     def inspect
@@ -16,7 +17,7 @@ module Treaty
     private
 
     def draw_result
-      "@data=#{@data.inspect}, @status=#{@status.inspect}"
+      "@data=#{@data.inspect}, @status=#{@status.inspect}, @version=#{@version.inspect}"
     end
   end
 end

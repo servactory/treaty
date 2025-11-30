@@ -34,7 +34,8 @@ module Treaty
 
         Treaty::Result.new(
           data: validated_response,
-          status:
+          status:,
+          version: version_factory.version.version
         )
       end
     end

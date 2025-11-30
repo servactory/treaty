@@ -18,6 +18,141 @@ class MyTreaty < ApplicationTreaty
 end
 ```
 
+## Treaty::Result Class
+
+### Overview
+
+Every successful treaty execution returns a `Treaty::Result` object containing the validated data, HTTP status code, and version information.
+
+**Structure:**
+
+```ruby
+class Treaty::Result
+  attr_reader :data, :status, :version
+end
+```
+
+### Attributes
+
+**`.data` - Validated response data:**
+
+```ruby
+result = Posts::CreateTreaty.call!(version: "1", params: params)
+
+result.data
+# => {
+#   post: {
+#     id: "123",
+#     title: "Hello World",
+#     content: "...",
+#     created_at: DateTime object
+#   }
+# }
+```
+
+**`.status` - HTTP status code:**
+
+```ruby
+result.status
+# => 201
+
+# Status is determined by:
+# 1. response block definition: response 201 do ... end
+# 2. Default: 200 if no response block specified
+```
+
+**`.version` - API version used:**
+
+```ruby
+result.version
+# => #<Gem::Version "1">
+
+# The version attribute contains:
+# - A Gem::Version object representing the API version
+# - Useful for logging, debugging, and tracking which version was used
+# - Same version format as defined in treaty (converted to Gem::Version)
+
+result.version.to_s
+# => "1"
+
+result.version.segments
+# => [1]
+```
+
+### Usage Examples
+
+**Basic usage:**
+
+```ruby
+result = Posts::IndexTreaty.call!(version: "2", params: { filters: {} })
+
+# Access individual attributes
+posts = result.data[:posts]
+status_code = result.status
+api_version = result.version
+
+# Controller usage
+render json: result.data, status: result.status
+```
+
+**Testing:**
+
+```ruby
+RSpec.describe Posts::CreateTreaty do
+  subject(:perform) { described_class.call!(version: "1", params: params) }
+
+  context "when creating post successfully" do
+    let(:params) { { post: { title: "Test" } } }
+
+    it "returns expected result structure" do
+      expect(perform).to be_a(Treaty::Result)
+      expect(perform.data).to include(:post)
+      expect(perform.status).to eq(201)
+      expect(perform.version).to eq(Gem::Version.new("1"))
+    end
+  end
+end
+```
+
+**Logging:**
+
+```ruby
+result = Posts::CreateTreaty.call!(version: version, params: params)
+
+Rails.logger.info(
+  "Treaty executed: version=#{result.version}, " \
+  "status=#{result.status}, " \
+  "data=#{result.data.inspect}"
+)
+```
+
+**Version tracking:**
+
+```ruby
+result = Posts::IndexTreaty.call!(version: version, params: params)
+
+# Track which version was actually used
+Analytics.track(
+  event: "api_request",
+  version: result.version.to_s,
+  status: result.status
+)
+
+# Compare versions
+if result.version < Gem::Version.new("2")
+  # Handle legacy version response
+end
+```
+
+### Inspect Output
+
+```ruby
+result = Posts::CreateTreaty.call!(version: "1", params: params)
+
+result.inspect
+# => "#<Treaty::Result @data={...}, @status=201, @version=#<Gem::Version \"1\">>"
+```
+
 ### Introspection Methods
 
 Treaty classes provide class methods for introspection and metadata access:

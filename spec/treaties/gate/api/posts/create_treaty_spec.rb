@@ -1400,6 +1400,10 @@ RSpec.describe Gate::API::Posts::CreateTreaty do
       end
 
       it { expect { perform }.not_to raise_error }
+
+      it { expect(perform.data).to be_a(Hash) }
+      it { expect(perform.status).to eq(201) }
+      it { expect(perform.version).to eq(Gem::Version.new("1")) }
     end
 
     context "when version is 2" do
@@ -1417,6 +1421,10 @@ RSpec.describe Gate::API::Posts::CreateTreaty do
       end
 
       it { expect { perform }.not_to raise_error }
+
+      it { expect(perform.data).to be_a(Hash) }
+      it { expect(perform.status).to eq(201) }
+      it { expect(perform.version).to eq(Gem::Version.new("2")) }
     end
 
     context "when version is 3" do
@@ -1449,6 +1457,10 @@ RSpec.describe Gate::API::Posts::CreateTreaty do
       end
 
       it { expect { perform }.not_to raise_error }
+
+      it { expect(perform.data).to be_a(Hash) }
+      it { expect(perform.status).to eq(201) }
+      it { expect(perform.version).to eq(Gem::Version.new("3")) }
 
       context "with transform option applied" do
         let(:params) do

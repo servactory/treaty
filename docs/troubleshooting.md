@@ -1164,6 +1164,9 @@ params = { post: { title: "Test" } }
 begin
   result = Posts::CreateTreaty.call!(version: version, params: params)
   puts "Success: #{result.inspect}"
+  puts "Data: #{result.data}"
+  puts "Status: #{result.status}"
+  puts "Version: #{result.version}"
 rescue Treaty::Exceptions::Validation => e
   puts "Error: #{e.message}"
 end

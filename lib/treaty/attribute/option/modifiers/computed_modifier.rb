@@ -94,17 +94,17 @@ module Treaty
                   )
           end
 
-          # Computes value using the provided lambda and full context data
+          # Computes value using the provided lambda and full root data
           # Always executes - ignores any existing value
           #
           # @param _value [Object] The current value (ignored - always computes)
-          # @param context [Hash] Full raw data from root level
+          # @param root_data [Hash] Full raw data from root level
           # @return [Object] Computed value
-          def transform_value(_value, context = {}) # rubocop:disable Metrics/MethodLength
+          def transform_value(_value, root_data = {}) # rubocop:disable Metrics/MethodLength
             computed_lambda = option_value
 
-            # Call lambda with full context data as named arguments
-            computed_lambda.call(**context)
+            # Call lambda with full root data as named arguments
+            computed_lambda.call(**root_data)
           rescue StandardError => e
             attributes = {
               attribute: @attribute_name,

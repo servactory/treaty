@@ -894,6 +894,9 @@ integer :age, inclusion: {
 - Structure validation
 
 **Transformation** modifies data:
+- Computed values (derive from other attributes)
+- Custom transformations
+- Type casting
 - Default values
 - Attribute renaming
 - Key conversion (string → symbol)

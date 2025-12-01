@@ -634,7 +634,7 @@ end
 **Cause:** Options are executed in definition order. If `cast` comes before `transform`, cast converts the type first, then transform receives the converted type.
 
 **Solution:**
-Always use recommended option order: `default` → `transform` → `cast` → `as`
+Always use recommended option order: `computed` → `transform` → `cast` → `default` → `as`
 
 **Example:**
 ```ruby
@@ -651,6 +651,11 @@ string :timestamp,
 string :timestamp,
        transform: ->(value:) { value.strip },  # Clean string first
        cast: :datetime  # Then parse clean string
+
+# ✅ Correct: With computed (always first)
+string :slug, :optional,
+       computed: ->(**attrs) { attrs.dig(:post, :title) },  # Compute first
+       transform: ->(value:) { value.downcase.gsub(/\s+/, "-") }  # Transform second
 ```
 
 ### Default value has wrong type

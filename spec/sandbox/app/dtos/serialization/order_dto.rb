@@ -14,7 +14,7 @@ module Serialization
         integer :unit_price_cents
 
         # Computed: line total from quantity * unit_price
-        integer :line_total_cents, computed: ->(**attrs) {
+        integer :line_total_cents, computed: lambda { |**attrs|
           # Access parent array element data
           # In array context, attrs will contain the item data
           quantity = attrs.dig(:order, :items)&.last&.dig(:quantity) || 0
@@ -24,21 +24,21 @@ module Serialization
       end
 
       # Order-level computed fields
-      integer :subtotal_cents, computed: ->(**attrs) {
+      integer :subtotal_cents, computed: lambda { |**attrs|
         items = attrs.dig(:order, :items) || []
         items.sum { |item| item[:quantity].to_i * item[:unit_price_cents].to_i }
       }
 
       integer :tax_rate_percent, default: 10
 
-      integer :tax_cents, computed: ->(**attrs) {
+      integer :tax_cents, computed: lambda { |**attrs|
         items = attrs.dig(:order, :items) || []
         subtotal = items.sum { |item| item[:quantity].to_i * item[:unit_price_cents].to_i }
         tax_rate = attrs.dig(:order, :tax_rate_percent) || 10
         (subtotal * tax_rate / 100.0).round
       }
 
-      integer :total_cents, computed: ->(**attrs) {
+      integer :total_cents, computed: lambda { |**attrs|
         items = attrs.dig(:order, :items) || []
         subtotal = items.sum { |item| item[:quantity].to_i * item[:unit_price_cents].to_i }
         tax_rate = attrs.dig(:order, :tax_rate_percent) || 10
@@ -47,7 +47,7 @@ module Serialization
       }
 
       # Computed: formatted total as string
-      string :formatted_total, computed: ->(**attrs) {
+      string :formatted_total, computed: lambda { |**attrs|
         items = attrs.dig(:order, :items) || []
         subtotal = items.sum { |item| item[:quantity].to_i * item[:unit_price_cents].to_i }
         tax_rate = attrs.dig(:order, :tax_rate_percent) || 10

@@ -68,9 +68,10 @@ module Treaty
         # Transforms attribute value through all modifiers
         #
         # @param value [Object] The value to transform
+        # @param context [Hash] Full raw data context (used by computed modifier)
         # @return [Object] Transformed value
-        def transform_value(value)
-          option_orchestrator.transform_value(value)
+        def transform_value(value, context = {})
+          option_orchestrator.transform_value(value, context)
         end
 
         # Checks if attribute name is transformed

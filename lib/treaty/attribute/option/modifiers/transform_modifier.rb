@@ -82,8 +82,9 @@ module Treaty
           # Skips transformation for nil values (handled by RequiredValidator)
           #
           # @param value [Object] The current value
+          # @param _context [Hash] Unused context parameter
           # @return [Object] Transformed value
-          def transform_value(value) # rubocop:disable Metrics/MethodLength
+          def transform_value(value, _context = {}) # rubocop:disable Metrics/MethodLength
             return value if value.nil? # Transform doesn't modify nil, required validator handles it.
 
             transform_lambda = option_value

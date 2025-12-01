@@ -19,7 +19,7 @@
 3. **Unified Validation** - Same attribute system across requests, responses, and entities
 4. **Entity Classes (DTOs)** - Reusable data transfer objects with inheritance support
 5. **Built-in Validation** - 4 validators (required, type, inclusion, format) with 8 format types
-6. **Data Transformation** - Transform data with custom lambdas (`transform:`) and automatic type casting (`cast:`)
+6. **Data Transformation** - Transform data with computed values (`computed:`), custom lambdas (`transform:`), and automatic type casting (`cast:`)
 7. **Type Casting** - 26 predefined type conversions between scalar types
 8. **Conditional Attributes** - Include/exclude attributes dynamically with `if:` and `unless:` conditionals
 9. **Inventory System** - Pass controller-specific data to services efficiently with lazy evaluation
@@ -217,16 +217,25 @@ string :email, required: {
 }
 ```
 
-### Modifiers (4 options)
+### Modifiers (5 options)
 
 | Modifier | Purpose | Key | Example |
 |----------|---------|-----|---------|
+| `computed:` | Compute value from other attributes | `:is` | `string :slug, :optional, computed: ->(**attrs) { attrs.dig(:post, :title).downcase }` |
 | `default:` | Set default value | `:is` | `integer :page, default: 1` |
 | `transform:` | Custom lambda transformation | `:is` | `string :title, transform: ->(value:) { value.strip }` |
 | `cast:` | Type conversion | `:to` | `string :date, cast: :datetime` |
 | `as:` | Rename attribute | `:is` | `string :handle, as: :value` |
 
 ```ruby
+# Computed (derive from other attributes)
+string :full_name, :optional, computed: ->(**attrs) {
+  "#{attrs.dig(:user, :first_name)} #{attrs.dig(:user, :last_name)}"
+}
+integer :word_count, :optional, computed: ->(**attrs) {
+  attrs.dig(:post, :content).to_s.split.size
+}
+
 # Default values
 integer :page, default: 1
 datetime :created_at, default: -> { Time.current }
@@ -243,6 +252,8 @@ string :user_id, as: :id  # Request: client sends 'user_id', service gets 'id'
 ```
 
 **Supported casts**: Between `string`, `integer`, `boolean`, `date`, `time`, `datetime`
+
+**Note**: Computed attributes should be marked as `:optional` since the value comes from computation, not input
 
 ### Conditionals (2 options)
 
@@ -278,9 +289,15 @@ string :published_at,
        cast: :datetime,                        # 2. Convert type
        default: Time.current,                  # 3. Apply default
        as: :published_date                     # 4. Rename
+
+# With computed (for derived values)
+string :slug, :optional,
+       computed: ->(**attrs) { attrs.dig(:post, :title) },  # Always first
+       transform: ->(value:) { value.downcase.gsub(/\s+/, "-") }
 ```
 
 **Why this order?**
+- `computed:` always runs first regardless of position (generates initial value)
 - `transform:` and `cast:` skip `nil` values
 - `default:` value should match target type (after cast)
 - `as:` should happen last after all transformations

@@ -79,8 +79,9 @@ module Treaty
           # The renaming is handled by the orchestrator using target_name
           #
           # @param value [Object] The value to transform
+          # @param _context [Hash] Unused context parameter
           # @return [Object] Unchanged value
-          def transform_value(value)
+          def transform_value(value, _context = {})
             value
           end
         end

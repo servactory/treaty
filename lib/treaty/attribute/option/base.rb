@@ -76,8 +76,9 @@ module Treaty
         # Override in subclasses if transformation is needed
         #
         # @param value [Object] The value to transform
+        # @param _context [Hash] Full raw data context (used by computed modifier)
         # @return [Object] Transformed value
-        def transform_value(value)
+        def transform_value(value, _context = {})
           value
         end
 

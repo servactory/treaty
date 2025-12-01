@@ -464,6 +464,103 @@ module Gate
 
           delegate_to "posts/stable/create_service"
         end
+
+        version 8 do
+          summary "Demonstrates computed attributes"
+
+          request do
+            # Query
+            object :_self do
+              string :signature
+            end
+          end
+
+          request do
+            # Body
+            object :post do
+              string :title, transform: ->(value:) { value.strip }
+              string :summary
+              string :description, :optional
+              string :content
+              boolean :published, :optional
+
+              array :tags, :optional do
+                string :_self, transform: ->(value:) { value.downcase }
+              end
+
+              object :author do
+                string :first_name
+                string :last_name
+                string :bio
+
+                # Computed: full name derived from first_name and last_name
+                # Note: computed attributes should be :optional since value comes from computation
+                string :full_name, :optional, computed: ->(**attrs) {
+                  "#{attrs.dig(:post, :author, :first_name)} #{attrs.dig(:post, :author, :last_name)}"
+                }
+
+                array :socials, :optional do
+                  string :provider, in: %w[twitter linkedin github]
+                  string :handle, as: :value
+                end
+              end
+
+              # Computed: word count derived from content
+              # Note: computed attributes should be :optional since value comes from computation
+              integer :word_count, :optional, computed: ->(**attrs) {
+                attrs.dig(:post, :content).to_s.split.size
+              }
+
+              # Computed: slug derived from title
+              # Note: computed attributes should be :optional since value comes from computation
+              string :slug, :optional, computed: ->(**attrs) {
+                attrs.dig(:post, :title).to_s.downcase.gsub(/\s+/, "-").gsub(/[^a-z0-9\-]/, "")
+              }
+            end
+          end
+
+          response 201 do
+            object :post do
+              string :id
+              string :title
+              string :summary
+              string :description
+              string :content
+              boolean :published
+              boolean :featured
+
+              array :tags do
+                string :_self
+              end
+
+              object :author do
+                string :first_name
+                string :last_name
+                string :full_name
+                string :bio
+
+                array :socials do
+                  string :provider
+                  string :value, as: :handle
+                end
+              end
+
+              # Computed in response: derive slug from title
+              string :slug, computed: ->(**attrs) {
+                attrs.dig(:post, :title).to_s.downcase.gsub(/\s+/, "-").gsub(/[^a-z0-9\-]/, "")
+              }
+
+              integer :word_count
+              integer :rating
+              integer :views
+
+              time :created_at, cast: :string
+              time :updated_at, cast: :string
+            end
+          end
+
+          delegate_to "posts/stable/create_service"
+        end
       end
     end
   end

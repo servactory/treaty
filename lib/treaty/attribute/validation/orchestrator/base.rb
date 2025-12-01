@@ -219,7 +219,7 @@ module Treaty
               validate_and_transform_nested(attribute, value, validator)
             else
               validator.validate_value!(value)
-              validator.transform_value(value)
+              validator.transform_value(value, data)
             end
           end
 
@@ -249,8 +249,9 @@ module Treaty
 
             # Step 4: Transform non-nil value
             # At this point, value is guaranteed to be non-nil
+            # Pass full root data as context for computed modifiers
             transformer = NestedTransformer.new(attribute)
-            transformer.transform(value)
+            transformer.transform(value, data)
           end
         end
       end

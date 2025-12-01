@@ -26,10 +26,11 @@ module Treaty
       #
       # ## Built-in Modifiers
       #
-      # - `:as` → AsModifier - Renames attributes
-      # - `:default` → DefaultModifier - Provides default values
+      # - `:computed` → ComputedModifier - Computes values from all raw data (executes first)
       # - `:transform` → TransformModifier - Transforms values using custom lambdas
       # - `:cast` → CastModifier - Converts values between types automatically
+      # - `:default` → DefaultModifier - Provides default values
+      # - `:as` → AsModifier - Renames attributes
       #
       # ## Built-in Conditionals
       #
@@ -85,13 +86,15 @@ module Treaty
           end
 
           # Registers all built-in modifiers
+          # Order matters: computed runs first, then transform, cast, default, as
           #
           # @return [void]
           def register_modifiers!
-            Registry.register(:as, Modifiers::AsModifier, category: :modifier)
-            Registry.register(:default, Modifiers::DefaultModifier, category: :modifier)
+            Registry.register(:computed, Modifiers::ComputedModifier, category: :modifier)
             Registry.register(:transform, Modifiers::TransformModifier, category: :modifier)
             Registry.register(:cast, Modifiers::CastModifier, category: :modifier)
+            Registry.register(:default, Modifiers::DefaultModifier, category: :modifier)
+            Registry.register(:as, Modifiers::AsModifier, category: :modifier)
           end
 
           # Registers all built-in conditionals

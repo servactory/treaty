@@ -56,6 +56,10 @@ en:
           invalid_type: "Option 'transform' for attribute '%{attribute}' must be a Proc or Lambda. Got: %{type}"
           execution_error: "Transform failed for attribute '%{attribute}': %{error}"
 
+        computed:
+          invalid_type: "Option 'computed' for attribute '%{attribute}' must be a Proc or Lambda. Got: %{type}"
+          execution_error: "Computed failed for attribute '%{attribute}': %{error}"
+
         cast:
           invalid_type: "Option 'cast' for attribute '%{attribute}' must be a Symbol. Got: %{type}"
           source_not_supported: "Option 'cast' for attribute '%{attribute}' cannot be used with type '%{source_type}'. Casting is only supported for: %{allowed}"

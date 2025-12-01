@@ -103,10 +103,11 @@ module Treaty
       # Applies transformations like defaults, type coercion, etc.
       #
       # @param value [Object] The value to transform
+      # @param context [Hash] Full raw data context (used by computed modifier)
       # @return [Object] Transformed value
-      def transform_value(value)
+      def transform_value(value, context = {})
         @processors.values.reduce(value) do |current_value, processor|
-          processor.transform_value(current_value)
+          processor.transform_value(current_value, context)
         end
       end
 

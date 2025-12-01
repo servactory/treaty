@@ -163,6 +163,14 @@ date :published_on, cast: :string       # Date to ISO8601 string
 time :created_at, cast: :integer        # Time to Unix timestamp
 boolean :active, cast: :integer         # Boolean to integer (1/0)
 
+# Computed values (derive from other attributes)
+string :full_name, :optional, computed: ->(**attrs) {
+  "#{attrs.dig(:user, :first_name)} #{attrs.dig(:user, :last_name)}"
+}
+integer :word_count, :optional, computed: ->(**attrs) {
+  attrs.dig(:post, :content).to_s.split.size
+}
+
 # Conditional attributes
 string :published_at, if: ->(post:) { post[:status] == "published" }
 string :draft_notes, unless: ->(post:) { post[:status] == "published" }
@@ -176,12 +184,17 @@ end
 **Critical:** When combining modifiers, order matters! Options execute sequentially in definition order.
 
 ```ruby
-# ✅ Recommended order: transform → cast → default → as
+# ✅ Recommended order: computed → transform → cast → default → as
 string :published_at,
        transform: ->(value:) { value.strip },  # 1. Clean data
        cast: :datetime,  # 2. Convert type
        default: Time.current,  # 3. Default if still nil
        as: :published_date  # 4. Rename
+
+# With computed (for derived values)
+string :slug, :optional,
+       computed: ->(**attrs) { attrs.dig(:post, :title) },  # Always first
+       transform: ->(value:) { value.downcase.gsub(/\s+/, "-") }
 
 # ❌ Wrong order causes failures
 string :published_at,

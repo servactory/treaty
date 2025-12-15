@@ -19,16 +19,20 @@ Client Request (JSON)
 Validation
     ↓
 Request Transformation
-    - Apply defaults
+    - Compute values (computed:)
     - Custom transformations (transform:)
+    - Type casting (cast:)
+    - Apply defaults (default:)
     - Rename attributes (as:)
     - Convert string keys → symbol keys
     ↓
 Service (receives transformed Ruby hash)
     ↓
 Response Transformation
-    - Apply defaults
+    - Compute values (computed:)
     - Custom transformations (transform:)
+    - Type casting (cast:)
+    - Apply defaults (default:)
     - Rename attributes (as:)
     - Convert symbol keys → string keys
     ↓
@@ -252,7 +256,145 @@ Treaty automatically converts between string and symbol keys.
 }
 ```
 
-### 4. Custom Transformations
+### 4. Computed Values
+
+Compute attribute values from other attributes in the data using the `computed` option. Unlike `transform` which receives only the current attribute's value, `computed` receives all raw data from the root level, allowing derivation of values from multiple sources.
+
+#### Basic Usage
+
+```ruby
+request do
+  object :post do
+    string :title
+    string :content
+
+    # Computed: slug derived from title
+    string :slug, :optional, computed: ->(**attrs) {
+      attrs.dig(:post, :title).to_s.downcase.gsub(/\s+/, "-").gsub(/[^a-z0-9\-]/, "")
+    }
+
+    # Computed: word count derived from content
+    integer :word_count, :optional, computed: ->(**attrs) {
+      attrs.dig(:post, :content).to_s.split.size
+    }
+
+    object :author do
+      string :first_name
+      string :last_name
+
+      # Computed: full name from first_name and last_name
+      string :full_name, :optional, computed: ->(**attrs) {
+        "#{attrs.dig(:post, :author, :first_name)} #{attrs.dig(:post, :author, :last_name)}"
+      }
+    end
+  end
+end
+```
+
+**Client sends:**
+```ruby
+{
+  "post" => {
+    "title" => "Hello World Post",
+    "content" => "This is a sample content with multiple words",
+    "author" => {
+      "first_name" => "John",
+      "last_name" => "Doe"
+    }
+  }
+}
+```
+
+**Service receives (with computed values):**
+```ruby
+{
+  post: {
+    title: "Hello World Post",
+    content: "This is a sample content with multiple words",
+    slug: "hello-world-post",      # Computed from title
+    word_count: 8,                  # Computed from content
+    author: {
+      first_name: "John",
+      last_name: "Doe",
+      full_name: "John Doe"        # Computed from first_name + last_name
+    }
+  }
+}
+```
+
+#### Advanced Mode with Custom Error Messages
+
+```ruby
+request do
+  object :order do
+    integer :quantity
+    integer :unit_price
+
+    integer :total, :optional, computed: {
+      is: ->(**attrs) { attrs.dig(:order, :quantity).to_i * attrs.dig(:order, :unit_price).to_i },
+      message: "Failed to calculate order total"
+    }
+
+    # Lambda message for dynamic error
+    string :formatted_total, :optional, computed: {
+      is: ->(**attrs) {
+        total = attrs.dig(:order, :quantity).to_i * attrs.dig(:order, :unit_price).to_i
+        "$#{format('%.2f', total / 100.0)}"
+      },
+      message: ->(attribute:, error:) { "Computation failed for #{attribute}: #{error}" }
+    }
+  end
+end
+```
+
+#### Error Handling
+
+All exceptions raised within computed lambdas are caught and converted to `Treaty::Exceptions::Validation`:
+
+```ruby
+request do
+  object :post do
+    string :data, :optional, computed: ->(**attrs) { attrs.fetch(:missing_key) }
+  end
+end
+```
+
+If the computation fails, Treaty raises:
+```
+Treaty::Exceptions::Validation: Computed failed for attribute 'data': key not found: :missing_key
+```
+
+**Important Notes:**
+- Computed always executes, ignoring any existing value for the attribute
+- The lambda receives ALL raw data from the root level as keyword arguments
+- Use `dig` to safely access nested values
+- Computed attributes should be marked as `:optional` since the value comes from computation, not input
+- Computed runs FIRST in the modifier chain, before transform, cast, default, and as
+
+#### Computed vs Transform
+
+| Aspect | `computed:` | `transform:` |
+|--------|-------------|--------------|
+| **Input** | All raw data (`**attrs`) | Current attribute value (`value:`) |
+| **Purpose** | Derive value from other attributes | Transform the current value |
+| **Execution** | Always runs, ignores existing value | Only runs on non-nil values |
+| **Order** | First in modifier chain | After computed |
+
+**Example combining both:**
+```ruby
+request do
+  object :post do
+    string :title
+
+    # Compute initial slug from title, then transform to ensure lowercase
+    string :slug, :optional,
+           computed: ->(**attrs) { attrs.dig(:post, :title).to_s.gsub(/\s+/, "-") },
+           transform: ->(value:) { value.downcase }
+  end
+end
+```
+
+### 5. Custom Transformations
 
 Apply custom lambda-based transformations to attribute values using the `transform` option.
 
@@ -356,7 +498,7 @@ Treaty::Exceptions::Validation: Transform failed for attribute 'data': unexpecte
 - Nil values are passed through unchanged (handled by `required` validation)
 - This prevents unnecessary lambda execution and potential errors
 
-### 5. Type Casting
+### 6. Type Casting
 
 Automatically convert values between different types using the `cast` option. Unlike `transform`, which requires you to write custom lambdas, `cast` provides predefined conversions between types.
 
@@ -734,10 +876,11 @@ string :title, transform: ->(value:) { value.strip }, cast: :datetime
 
 For best results, define options in this order:
 
-1. **`transform:`** - Clean/prepare the value
-2. **`cast:`** - Convert types
-3. **`default:`** - Apply default if value is still nil
-4. **`as:`** - Rename the attribute
+1. **`computed:`** - Compute value from other attributes (always runs first regardless of position)
+2. **`transform:`** - Clean/prepare the value
+3. **`cast:`** - Convert types
+4. **`default:`** - Apply default if value is still nil
+5. **`as:`** - Rename the attribute
 
 ```ruby
 # Recommended order (most common case)
@@ -746,6 +889,12 @@ string :published_at,
        cast: :datetime,  # 2. Convert to DateTime
        default: Time.current,  # 3. Use default if still nil
        as: :published_date  # 4. Rename for service
+
+# With computed (for derived values)
+string :slug, :optional,
+       computed: ->(**attrs) { attrs.dig(:post, :title) },  # 1. Compute from title
+       transform: ->(value:) { value.downcase.gsub(/\s+/, "-") },  # 2. Transform
+       as: :url_slug  # 3. Rename
 ```
 
 **Why this order?**
@@ -953,22 +1102,31 @@ If you encounter unexpected behavior:
 
 ### Best Practices
 
-1. **Stick to recommended order:** transform → cast → default → as
-2. **Combine multiple transforms** into a single lambda
-3. **Clean before converting:** transform before cast
-4. **Apply defaults last** - they should be ready-to-use values
-5. **Rename last** with `as:` after all transformations
-6. **Test combinations** thoroughly when mixing multiple modifiers
-7. **Document non-obvious order** in code comments when necessary
+1. **Stick to recommended order:** computed → transform → cast → default → as
+2. **Use computed for derived values** when you need data from other attributes
+3. **Mark computed attributes as optional** since they don't require input
+4. **Combine multiple transforms** into a single lambda
+5. **Clean before converting:** transform before cast
+6. **Apply defaults last** - they should be ready-to-use values
+7. **Rename last** with `as:` after all transformations
+8. **Test combinations** thoroughly when mixing multiple modifiers
+9. **Document non-obvious order** in code comments when necessary
 
 ```ruby
 # Example: Well-ordered options with comments
 request do
   object :post do
+    string :title
+    string :content
+
     string :published_at,
            transform: ->(value:) { value.strip },  # Clean whitespace
            cast: :datetime,  # Parse to DateTime
            default: Time.current  # Use current time if missing
+
+    # Computed: derive from other attributes
+    integer :word_count, :optional,
+            computed: ->(**attrs) { attrs.dig(:post, :content).to_s.split.size }
   end
 end
 ```

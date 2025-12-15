@@ -151,6 +151,36 @@ request do
 end
 ```
 
+### With Computed Attributes
+
+```ruby
+request do
+  object :post do
+    string :title
+    string :content
+
+    # Computed: derive slug from title
+    string :slug, :optional,
+           computed: ->(**attrs) { attrs.dig(:post, :title).to_s.downcase.gsub(/\s+/, "-") }
+
+    # Computed: calculate word count from content
+    integer :word_count, :optional,
+            computed: ->(**attrs) { attrs.dig(:post, :content).to_s.split.size }
+
+    object :author do
+      string :first_name
+      string :last_name
+
+      # Computed: combine first and last name
+      string :full_name, :optional,
+             computed: ->(**attrs) {
+               "#{attrs.dig(:post, :author, :first_name)} #{attrs.dig(:post, :author, :last_name)}"
+             }
+    end
+  end
+end
+```
+
 ### Root Level Attributes (`:_self` object)
 
 ```ruby

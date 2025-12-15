@@ -79,8 +79,9 @@ module Treaty
           # The renaming is handled by the orchestrator using target_name
           #
           # @param value [Object] The value to transform
+          # @param _root_data [Hash] Unused root data parameter
           # @return [Object] Unchanged value
-          def transform_value(value)
+          def transform_value(value, _root_data = {})
             value
           end
         end

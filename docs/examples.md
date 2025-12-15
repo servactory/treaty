@@ -627,10 +627,22 @@ module Serialization
         time :created_at
         time :updated_at
 
+        # Computed: word count from content
+        integer :word_count, :optional, computed: ->(**attrs) {
+          attrs.dig(:post, :content).to_s.split.size
+        }
+
         object :author do
           string :id
           string :name
           string :email
+
+          # Computed: display format
+          string :display, :optional, computed: ->(**attrs) {
+            name = attrs.dig(:post, :author, :name)
+            email = attrs.dig(:post, :author, :email)
+            "#{name} <#{email}>"
+          }
         end
 
         array :tags do

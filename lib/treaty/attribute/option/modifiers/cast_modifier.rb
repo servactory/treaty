@@ -162,8 +162,9 @@ module Treaty
           # Skips conversion for nil values (handled by RequiredValidator)
           #
           # @param value [Object] The current value
+          # @param _root_data [Hash] Unused root data parameter
           # @return [Object] Converted value
-          def transform_value(value) # rubocop:disable Metrics/MethodLength
+          def transform_value(value, _root_data = {}) # rubocop:disable Metrics/MethodLength
             return value if value.nil? # Cast doesn't modify nil, required validator handles it.
 
             target_type = option_value

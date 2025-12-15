@@ -12,6 +12,7 @@ module Posts
 
       def call # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
         post_data = inputs.params.fetch(:post, {})
+        author_data = post_data.fetch(:author, {})
 
         outputs.data = {
           post: {
@@ -24,7 +25,9 @@ module Posts
             featured: post_data[:featured],
             published_at: post_data[:published_at] || Time.current,
             tags: post_data.fetch(:tags, []),
-            author: post_data.fetch(:author, {}),
+            author: author_data,
+            slug: post_data[:slug],
+            word_count: post_data[:word_count],
             rating: 0,
             views: 0,
             created_at: Time.current,

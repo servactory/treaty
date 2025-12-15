@@ -142,6 +142,10 @@ treaty:
         invalid_type: "Option 'transform' for attribute '%{attribute}' must be a Proc or Lambda. Got: %{type}"
         execution_error: "Transform failed for attribute '%{attribute}': %{error}"
 
+      computed:
+        invalid_type: "Option 'computed' for attribute '%{attribute}' must be a Proc or Lambda. Got: %{type}"
+        execution_error: "Computed failed for attribute '%{attribute}': %{error}"
+
       cast:
         invalid_type: "Option 'cast' for attribute '%{attribute}' must be a Symbol. Got: %{type}"
         source_not_supported: "Option 'cast' for attribute '%{attribute}' cannot be used with type '%{source_type}'. Casting is only supported for: %{allowed}"
@@ -238,6 +242,10 @@ de:
         transform:
           invalid_type: "Option 'transform' für Attribut '%{attribute}' muss ein Proc oder Lambda sein. Erhalten: %{type}"
           execution_error: "Transform fehlgeschlagen für Attribut '%{attribute}': %{error}"
+
+        computed:
+          invalid_type: "Option 'computed' für Attribut '%{attribute}' muss ein Proc oder Lambda sein. Erhalten: %{type}"
+          execution_error: "Computed fehlgeschlagen für Attribut '%{attribute}': %{error}"
 
         cast:
           invalid_type: "Option 'cast' für Attribut '%{attribute}' muss ein Symbol sein. Erhalten: %{type}"
@@ -487,6 +495,11 @@ Different validators provide different interpolation variables:
 - `%{message}` - error message
 
 **Transform Modifier:**
+- `%{attribute}` - the attribute name
+- `%{type}` - the actual type provided (for invalid_type error)
+- `%{error}` - the error message from lambda execution (for execution_error)
+
+**Computed Modifier:**
 - `%{attribute}` - the attribute name
 - `%{type}` - the actual type provided (for invalid_type error)
 - `%{error}` - the error message from lambda execution (for execution_error)

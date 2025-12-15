@@ -971,6 +971,40 @@ string :email, transform: ->(value:) { value.downcase }
 - All exceptions are caught and converted to `Treaty::Exceptions::Validation`
 - Only applied to non-nil values (nil values pass through unchanged)
 
+#### `computed`
+
+Compute attribute values from other attributes in the data.
+
+**Type:** Lambda (Proc)
+**Default:** nil
+
+```ruby
+# Derive value from other attributes
+string :full_name, :optional, computed: ->(**attrs) {
+  "#{attrs.dig(:user, :first_name)} #{attrs.dig(:user, :last_name)}"
+}
+
+integer :word_count, :optional, computed: ->(**attrs) {
+  attrs.dig(:post, :content).to_s.split.size
+}
+
+string :slug, :optional, computed: ->(**attrs) {
+  attrs.dig(:post, :title).to_s.downcase.gsub(/\s+/, "-")
+}
+```
+
+**Requirements:**
+- Lambda must accept keyword arguments (`**attrs`) to receive all raw data
+- All exceptions are caught and converted to `Treaty::Exceptions::Validation`
+- Always executes, ignoring any existing value for the attribute
+- Computed attributes should be marked as `:optional` since value comes from computation
+- Runs FIRST in the modifier chain (before transform, cast, default, as)
+- Use `dig` to safely access nested values
+
+**Difference from transform:**
+- `computed:` receives ALL raw data (`**attrs`) and derives a new value
+- `transform:` receives only the current attribute's value (`value:`)
+
 #### `cast`
 
 Automatically convert values between different types using predefined conversion rules.

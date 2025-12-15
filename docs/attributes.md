@@ -288,6 +288,56 @@ string :slug, transform: {
 
 **See:** [Transformation](./transformation.md#custom-transformations) for detailed examples
 
+#### computed
+
+Computes attribute values from other attributes in the data. Unlike `transform` which receives only the current attribute's value, `computed` receives all raw data from the root level.
+
+```ruby
+# Simple mode
+string :full_name, :optional, computed: ->(**attrs) {
+  "#{attrs.dig(:user, :first_name)} #{attrs.dig(:user, :last_name)}"
+}
+
+integer :word_count, :optional, computed: ->(**attrs) {
+  attrs.dig(:post, :content).to_s.split.size
+}
+
+string :slug, :optional, computed: ->(**attrs) {
+  attrs.dig(:post, :title).to_s.downcase.gsub(/\s+/, "-")
+}
+
+# Advanced mode with custom error message
+integer :total, :optional, computed: {
+  is: ->(**attrs) { attrs.dig(:order, :quantity).to_i * attrs.dig(:order, :price).to_i },
+  message: "Failed to calculate total"
+}
+
+# Lambda message for dynamic error
+string :formatted_total, :optional, computed: {
+  is: ->(**attrs) { "$#{attrs.dig(:order, :total)}" },
+  message: ->(attribute:, error:) { "Computation failed for #{attribute}: #{error}" }
+}
+```
+
+**Important:**
+- Lambda must accept keyword arguments (`**attrs`) to receive all raw data
+- All exceptions raised in lambda are caught and converted to `Treaty::Exceptions::Validation`
+- Computed always executes, ignoring any existing value for the attribute
+- Computed attributes should be marked as `:optional` since the value comes from computation, not input
+- Computed runs FIRST in the modifier chain (before transform, cast, default, as)
+- Use `dig` to safely access nested values
+
+**Computed vs Transform:**
+
+| Aspect | `computed:` | `transform:` |
+|--------|-------------|--------------|
+| **Input** | All raw data (`**attrs`) | Current attribute value (`value:`) |
+| **Purpose** | Derive value from other attributes | Transform the current value |
+| **Execution** | Always runs, ignores existing value | Only runs on non-nil values |
+| **Order** | First in modifier chain | After computed |
+
+**See:** [Transformation: Computed Values](./transformation.md#computed-values) for detailed examples
+
 #### cast
 
 Automatically converts values between different types using predefined conversion rules.
@@ -371,12 +421,13 @@ string :scheduled_at,
        cast: :datetime
 ```
 
-**Important:** When combining multiple modifiers (`default`, `transform`, `cast`, `as`), their order matters. Options execute sequentially in the order they're defined. Always use this recommended order:
+**Important:** When combining multiple modifiers (`computed`, `default`, `transform`, `cast`, `as`), their order matters. Options execute sequentially in the order they're defined. Always use this recommended order:
 
-1. `transform:` - Clean/prepare values
-2. `cast:` - Convert types
-3. `default:` - Apply default if still nil
-4. `as:` - Rename attributes
+1. `computed:` - Compute value from other attributes (always runs first regardless of position)
+2. `transform:` - Clean/prepare values
+3. `cast:` - Convert types
+4. `default:` - Apply default if still nil
+5. `as:` - Rename attributes
 
 ```ruby
 # ✅ Recommended order
@@ -384,6 +435,11 @@ string :published_at,
        transform: ->(value:) { value.strip },
        cast: :datetime,
        default: Time.current  # Already DateTime
+
+# With computed (for derived values)
+string :slug, :optional,
+       computed: ->(**attrs) { attrs.dig(:post, :title) },
+       transform: ->(value:) { value.downcase.gsub(/\s+/, "-") }
 
 # ❌ Wrong type in default
 string :published_at,

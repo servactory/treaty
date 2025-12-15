@@ -80,9 +80,9 @@ module Treaty
           # Empty strings, empty arrays, and false are NOT replaced
           #
           # @param value [Object] The current value
-          # @param _context [Hash] Unused context parameter
+          # @param _root_data [Hash] Unused root data parameter
           # @return [Object] Default value if original is nil, otherwise original value
-          def transform_value(value, _context = {})
+          def transform_value(value, _root_data = {})
             # Only apply default if value is nil
             # Empty strings, empty arrays, false are NOT replaced
             return value unless value.nil?

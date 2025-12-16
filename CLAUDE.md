@@ -8,7 +8,7 @@
 |----------|-------|
 | Language | Ruby 3.2+ (tested: 3.2, 3.3, 3.4, 3.5.0-preview1) |
 | Framework | Rails 7.1+ (tested: 7.1, 7.2, 8.0, 8.1) |
-| Version | 0.16.0 |
+| Version | 0.17.0 |
 | License | MIT |
 | Repository | https://github.com/servactory/treaty |
 
@@ -521,4 +521,4 @@ Treaty automatically catches Servactory exceptions:
 
 ---
 
-**Version**: 0.16.0 | **Last Updated**: 2025-12-02
+**Version**: 0.17.0 | **Last Updated**: 2025-12-02

@@ -625,6 +625,68 @@ Treaty::Engine.configure do |config|
 end
 ```
 
+## Entity Issues
+
+### "Expected a Treaty::Entity subclass"
+
+**Problem:** `use_entity` called with invalid argument.
+
+**Solution:**
+1. Ensure argument is a class, not instance
+2. Verify class inherits from `Treaty::Entity`
+
+**Example:**
+```ruby
+# Correct:
+use_entity(Posts::AuthorDto)  # ✓ Class reference
+
+# Incorrect:
+use_entity(Posts::AuthorDto.new)  # ✗ Instance
+use_entity("Posts::AuthorDto")    # ✗ String
+```
+
+### "Cannot define additional attributes after use_entity"
+
+**Problem:** Tried to add attributes after calling `use_entity`.
+
+**Solution:**
+`use_entity` must be the only content in the block.
+
+**Example:**
+```ruby
+# Correct:
+object :author do
+  use_entity(Posts::AuthorDto)
+end
+
+# Incorrect:
+object :author do
+  use_entity(Posts::AuthorDto)
+  string :extra_field  # ✗ Not allowed
+end
+```
+
+### "use_entity must be called before any other attributes"
+
+**Problem:** Attributes defined before `use_entity` call.
+
+**Solution:**
+`use_entity` must be called first in the block.
+
+**Example:**
+```ruby
+# Correct:
+object :author do
+  use_entity(Posts::AuthorDto)
+end
+
+# Incorrect:
+object :author do
+  string :name
+  use_entity(Posts::AuthorDto)  # ✗ Too late
+end
+```
+
 ## Transformation Issues
 
 ### Default value has wrong type

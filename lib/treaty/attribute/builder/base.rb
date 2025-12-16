@@ -86,8 +86,8 @@ module Treaty
         # References an Entity class to copy its attributes into the current block
         #
         # @param entity_class [Class] A Treaty::Entity subclass
-        # @raise [Treaty::Exceptions::Validation] If entity_class is not a Treaty::Entity subclass
-        # @raise [Treaty::Exceptions::Validation] If attributes were already defined in block
+        # @raise [Treaty::Exceptions::NestedAttributes] If entity_class is not a Treaty::Entity subclass
+        # @raise [Treaty::Exceptions::NestedAttributes] If attributes were already defined in block
         # @return [void]
         #
         # @example Using in object block
@@ -186,7 +186,7 @@ module Treaty
         def validate_entity_class!(entity_class)
           return if entity_class?(entity_class)
 
-          raise Treaty::Exceptions::Validation,
+          raise Treaty::Exceptions::NestedAttributes,
                 I18n.t(
                   "treaty.attributes.builder.use_entity_invalid_class",
                   type: entity_class.class.name,
@@ -209,7 +209,7 @@ module Treaty
         def raise_if_use_entity_called!
           return unless @use_entity_called
 
-          raise Treaty::Exceptions::Validation,
+          raise Treaty::Exceptions::NestedAttributes,
                 I18n.t("treaty.attributes.builder.use_entity_no_additional_attributes")
         end
 
@@ -220,7 +220,7 @@ module Treaty
         def raise_if_attributes_exist!
           return if @collection_of_attributes.empty?
 
-          raise Treaty::Exceptions::Validation,
+          raise Treaty::Exceptions::NestedAttributes,
                 I18n.t("treaty.attributes.builder.use_entity_must_be_first")
         end
 

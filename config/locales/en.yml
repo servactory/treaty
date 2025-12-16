@@ -90,6 +90,12 @@ en:
         apply_defaults_not_implemented: "%{class} must implement #apply_defaults!"
         process_nested_not_implemented: "%{class} must implement #process_nested_attributes"
 
+      # Entity usage errors (use_entity method)
+      entity_usage:
+        invalid_class: "Expected a Treaty::Entity subclass, got %{type}: %{value}"
+        no_additional_attributes: "Cannot define additional attributes after use_entity. The use_entity method must be the only content in the block."
+        entity_must_be_first: "use_entity must be called before any other attributes are defined"
+
     # ============================================================================
     # Request: Request definition and structure
     # ============================================================================

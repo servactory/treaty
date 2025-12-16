@@ -837,6 +837,52 @@ end
 array :items
 ```
 
+### `use_entity`
+
+References an Entity class inside `object` or `array` blocks.
+
+**Syntax:**
+```ruby
+object :name, *modes, **options do
+  use_entity(EntityClass)
+end
+
+array :name, *modes, **options do
+  use_entity(EntityClass)
+end
+```
+
+**Parameters:**
+- `EntityClass` - A class that inherits from `Treaty::Entity`
+
+**Examples:**
+```ruby
+# In object block
+object :author do
+  use_entity(AuthorDto)
+end
+
+# In array block
+array :items do
+  use_entity(ItemDto)
+end
+
+# With options on wrapper
+array :socials, :optional, if: ->(post:) { post[:status] == "published" } do
+  use_entity(SocialDto)
+end
+```
+
+**Constraints:**
+- Must be the only statement in the block
+- Cannot mix with additional attribute definitions
+- Entity class must inherit from `Treaty::Entity`
+
+**Raises:**
+- `Treaty::Exceptions::EntityUsage` if constraints are violated
+
+See [Entity Classes (DTOs)](./entities.md) for detailed documentation.
+
 ## Attribute Options
 
 ### Helper Mode

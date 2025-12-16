@@ -469,6 +469,50 @@ array :authors do
 end
 ```
 
+## Using Entity Classes
+
+Instead of defining nested structures inline, you can reference Entity classes using `use_entity`:
+
+### Object with Entity
+
+```ruby
+# Define Entity
+class AuthorDto < Treaty::Entity
+  string :name
+  string :email
+  string :bio, :optional
+end
+
+# Use in object block
+object :author do
+  use_entity(AuthorDto)
+end
+```
+
+### Array with Entity
+
+```ruby
+# Define Entity
+class TagDto < Treaty::Entity
+  string :name
+  string :slug
+end
+
+# Use in array block
+array :tags, :optional do
+  use_entity(TagDto)
+end
+```
+
+### Benefits
+
+1. **Reusability** - Same Entity across multiple treaties
+2. **Maintainability** - Update structure in one place
+3. **Organization** - Clear separation of data structures
+4. **Testing** - Test Entity classes independently
+
+See [Entity Classes (DTOs)](./entities.md) for detailed documentation.
+
 ## Next Steps
 
 - [Validation](./validation.md) - Understand validation system

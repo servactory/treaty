@@ -79,13 +79,7 @@ module Gate
               end
 
               object :author do
-                string :name
-                string :bio
-
-                array :socials, :optional do
-                  string :provider, in: %w[twitter linkedin github]
-                  string :handle, as: :value
-                end
+                use_entity(::Posts::AuthorDto)
               end
             end
           end

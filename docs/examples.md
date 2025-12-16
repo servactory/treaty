@@ -789,6 +789,77 @@ POST /posts
 
 See [Entity Classes (DTOs)](./entities.md) for detailed documentation.
 
+## Example 7a: Nested Entities with use_entity
+
+Demonstrates using `use_entity` to reference Entity classes in nested structures.
+
+### Entity Definitions
+
+```ruby
+# app/dtos/posts/author_dto.rb
+module Posts
+  class AuthorDto < ApplicationDto
+    string :name
+    string :bio
+  end
+end
+
+# app/dtos/posts/social_dto.rb
+module Posts
+  class SocialDto < ApplicationDto
+    string :provider, in: %w[twitter linkedin github]
+    string :handle, as: :value
+  end
+end
+```
+
+### Treaty Using use_entity
+
+```ruby
+class Posts::CreateTreaty < ApplicationTreaty
+  version 1 do
+    request do
+      object :post do
+        string :title
+        string :content
+
+        object :author do
+          use_entity(Posts::AuthorDto)
+        end
+
+        array :socials, :optional do
+          use_entity(Posts::SocialDto)
+        end
+      end
+    end
+
+    response 201 do
+      object :post do
+        string :id
+        string :title
+
+        object :author do
+          use_entity(Posts::AuthorDto)
+        end
+
+        array :socials do
+          use_entity(Posts::SocialDto)
+        end
+      end
+    end
+
+    delegate_to Posts::CreateService
+  end
+end
+```
+
+### Benefits
+
+1. **DRY Principle** - Define nested structures once in Entity classes
+2. **Consistent Structure** - Same Entity structure in request and response
+3. **Easier Maintenance** - Update Entity class to change all usages
+4. **Better Organization** - Keep complex structures in dedicated files
+
 ## Example 8: Format Validation for User Registration
 
 Demonstrates format validation for email, password, dates, and other specific string formats.

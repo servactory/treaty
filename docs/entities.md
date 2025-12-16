@@ -177,6 +177,100 @@ class PostEntity < Treaty::Entity
 end
 ```
 
+## Using Entity Classes in Nested Structures
+
+You can reference Entity classes inside `object` and `array` blocks using the `use_entity` method:
+
+### Basic Usage
+
+```ruby
+# Define reusable Entity classes
+class Posts::AuthorDto < ApplicationDto
+  string :name
+  string :bio
+end
+
+class Posts::SocialDto < ApplicationDto
+  string :provider, in: %w[twitter linkedin github]
+  string :handle, as: :value
+end
+
+# Use in treaty
+version 1 do
+  request do
+    object :post do
+      string :title
+      string :content
+
+      object :author do
+        use_entity(Posts::AuthorDto)
+      end
+
+      array :socials, :optional do
+        use_entity(Posts::SocialDto)
+      end
+    end
+  end
+end
+```
+
+### Options on Wrapper
+
+Options like `:optional`, `if:`, `unless:` apply to the wrapper, not the Entity contents:
+
+```ruby
+# The :optional applies to the array itself, not to SocialDto attributes
+array :socials, :optional, if: ->(post:) { post[:status] == "published" } do
+  use_entity(Posts::SocialDto)
+end
+```
+
+### Nested Entities with use_entity
+
+Entity classes can themselves use `use_entity` for nested structures:
+
+```ruby
+class Posts::AuthorDto < ApplicationDto
+  string :name
+  string :bio
+
+  # Reference another Entity inside this Entity
+  array :socials, :optional do
+    use_entity(Posts::SocialDto)
+  end
+end
+
+# When used in treaty, all nested structures are included
+object :author do
+  use_entity(Posts::AuthorDto)  # Includes socials automatically
+end
+```
+
+### Constraints
+
+When using `use_entity`:
+1. It must be the **only** statement in the block
+2. Cannot mix `use_entity` with additional attributes
+
+```ruby
+# CORRECT
+object :author do
+  use_entity(Posts::AuthorDto)
+end
+
+# WRONG - will raise Treaty::Exceptions::EntityUsage
+object :author do
+  use_entity(Posts::AuthorDto)
+  string :extra_field  # Not allowed!
+end
+
+# WRONG - will raise Treaty::Exceptions::EntityUsage
+object :author do
+  string :extra_field
+  use_entity(Posts::AuthorDto)  # Must be first and only!
+end
+```
+
 ## Combining Blocks and Entities
 
 You can mix entity classes with inline block definitions:

@@ -80,6 +80,31 @@ module Treaty
         def initialize(collection_of_attributes, nesting_level)
           @collection_of_attributes = collection_of_attributes
           @nesting_level = nesting_level
+          @use_entity_called = false
+        end
+
+        # References an Entity class to copy its attributes into the current block
+        #
+        # @param entity_class [Class] A Treaty::Entity subclass
+        # @raise [Treaty::Exceptions::EntityUsage] If entity_class is not a Treaty::Entity subclass
+        # @raise [Treaty::Exceptions::EntityUsage] If attributes were already defined in block
+        # @return [void]
+        #
+        # @example Using in object block
+        #   object :author do
+        #     use_entity(Posts::AuthorDto)
+        #   end
+        #
+        # @example Using in array block
+        #   array :socials, :optional do
+        #     use_entity(Posts::SocialDto)
+        #   end
+        def use_entity(entity_class)
+          validate_entity_class!(entity_class)
+          raise_if_attributes_exist!
+
+          @use_entity_called = true
+          copy_entity_attributes(entity_class)
         end
 
         # Defines an attribute with explicit type
@@ -91,6 +116,8 @@ module Treaty
         # @param block [Proc] Block for nested attributes
         # @return [void]
         def attribute(name, type, *helpers, **options, &block)
+          raise_if_use_entity_called!
+
           @collection_of_attributes << create_attribute(
             name,
             type,
@@ -126,7 +153,7 @@ module Treaty
           super
         end
 
-        private
+        protected
 
         # Creates an attribute instance (must be implemented in subclasses)
         #
@@ -136,6 +163,79 @@ module Treaty
           # Must be implemented in subclasses
           raise Treaty::Exceptions::NotImplemented,
                 I18n.t("treaty.attributes.builder.not_implemented", class: self.class)
+        end
+
+        # Creates an attribute from an Entity attribute (must be implemented in subclasses)
+        #
+        # @param entity_attr [Treaty::Attribute::Entity::Attribute] Source entity attribute
+        # @raise [Treaty::Exceptions::NotImplemented] If subclass doesn't implement
+        # @return [void]
+        def create_attribute_from_entity(entity_attr)
+          # Must be implemented in subclasses
+          raise Treaty::Exceptions::NotImplemented,
+                I18n.t("treaty.attributes.builder.create_attribute_not_implemented", class: self.class)
+        end
+
+        private
+
+        # Validates that entity_class is a Treaty::Entity subclass
+        #
+        # @param entity_class [Class] Class to validate
+        # @raise [Treaty::Exceptions::EntityUsage] If not a Treaty::Entity subclass
+        # @return [void]
+        def validate_entity_class!(entity_class)
+          return if entity_class?(entity_class)
+
+          raise Treaty::Exceptions::EntityUsage,
+                I18n.t(
+                  "treaty.attributes.entity_usage.invalid_class",
+                  type: entity_class.class.name,
+                  value: entity_class.inspect
+                )
+        end
+
+        # Checks if a class is a Treaty::Entity subclass
+        #
+        # @param klass [Object] Object to check
+        # @return [Boolean] True if klass is a Treaty::Entity subclass
+        def entity_class?(klass)
+          klass.is_a?(Class) && klass < Treaty::Entity
+        end
+
+        # Raises an error if use_entity was already called
+        #
+        # @raise [Treaty::Exceptions::EntityUsage] If use_entity was called
+        # @return [void]
+        def raise_if_use_entity_called!
+          return unless @use_entity_called
+
+          raise Treaty::Exceptions::EntityUsage,
+                I18n.t("treaty.attributes.entity_usage.no_additional_attributes")
+        end
+
+        # Raises an error if attributes already exist in the collection
+        #
+        # @raise [Treaty::Exceptions::EntityUsage] If attributes exist
+        # @return [void]
+        def raise_if_attributes_exist!
+          return if @collection_of_attributes.empty?
+
+          raise Treaty::Exceptions::EntityUsage,
+                I18n.t("treaty.attributes.entity_usage.entity_must_be_first")
+        end
+
+        # Copies all attributes from an Entity class into the current collection
+        #
+        # Each copied attribute gets nesting_level + 1, which provides
+        # protection against circular references through the existing
+        # attribute_nesting_level configuration.
+        #
+        # @param entity_class [Class] A Treaty::Entity subclass
+        # @return [void]
+        def copy_entity_attributes(entity_class)
+          entity_class.collection_of_attributes.each do |entity_attr|
+            create_attribute_from_entity(entity_attr)
+          end
         end
       end
     end

@@ -17,22 +17,22 @@ module Treaty
       # 3. **Conditional Registration** - Registers all built-in conditionals
       # 4. **Auto-Loading** - Executes automatically when file is loaded
       #
-      # ## Built-in Validators
+      # ## Built-in Validators (sorted by position)
       #
-      # - `:required` → RequiredValidator - Validates required/optional attributes
-      # - `:type` → TypeValidator - Validates value types
-      # - `:inclusion` → InclusionValidator - Validates value is in allowed set
-      # - `:format` → FormatValidator - Validates string values match specific formats
+      # - `:type` → TypeValidator (position: 100) - Validates value types
+      # - `:required` → RequiredValidator (position: 200) - Validates required/optional attributes
+      # - `:inclusion` → InclusionValidator (position: 300) - Validates value is in allowed set
+      # - `:format` → FormatValidator (position: 400) - Validates string values match specific formats
       #
-      # ## Built-in Modifiers
+      # ## Built-in Modifiers (sorted by position)
       #
-      # - `:computed` → ComputedModifier - Computes values from all raw data (executes first)
-      # - `:transform` → TransformModifier - Transforms values using custom lambdas
-      # - `:cast` → CastModifier - Converts values between types automatically
-      # - `:default` → DefaultModifier - Provides default values
-      # - `:as` → AsModifier - Renames attributes
+      # - `:transform` → TransformModifier (position: 500) - Transforms values using custom lambdas
+      # - `:cast` → CastModifier (position: 600) - Converts values between types automatically
+      # - `:computed` → ComputedModifier (position: 700) - Computes values from all raw data
+      # - `:default` → DefaultModifier (position: 800) - Provides default values
+      # - `:as` → AsModifier (position: 900) - Renames attributes
       #
-      # ## Built-in Conditionals
+      # ## Built-in Conditionals (no position - handled separately)
       #
       # - `:if` → IfConditional - Conditionally includes attributes based on runtime data
       # - `:unless` → UnlessConditional - Conditionally excludes attributes based on runtime data
@@ -76,25 +76,26 @@ module Treaty
           private
 
           # Registers all built-in validators
+          # Position determines execution order (lower = earlier)
           #
           # @return [void]
           def register_validators!
-            Registry.register(:required, Validators::RequiredValidator, category: :validator)
-            Registry.register(:type, Validators::TypeValidator, category: :validator)
-            Registry.register(:inclusion, Validators::InclusionValidator, category: :validator)
-            Registry.register(:format, Validators::FormatValidator, category: :validator)
+            Registry.register(:type, Validators::TypeValidator, category: :validator, position: 100)
+            Registry.register(:required, Validators::RequiredValidator, category: :validator, position: 200)
+            Registry.register(:inclusion, Validators::InclusionValidator, category: :validator, position: 300)
+            Registry.register(:format, Validators::FormatValidator, category: :validator, position: 400)
           end
 
           # Registers all built-in modifiers
-          # Order matters: computed runs first, then transform, cast, default, as
+          # Position determines execution order (lower = earlier)
           #
           # @return [void]
           def register_modifiers!
-            Registry.register(:computed, Modifiers::ComputedModifier, category: :modifier)
-            Registry.register(:transform, Modifiers::TransformModifier, category: :modifier)
-            Registry.register(:cast, Modifiers::CastModifier, category: :modifier)
-            Registry.register(:default, Modifiers::DefaultModifier, category: :modifier)
-            Registry.register(:as, Modifiers::AsModifier, category: :modifier)
+            Registry.register(:transform, Modifiers::TransformModifier, category: :modifier, position: 500)
+            Registry.register(:cast, Modifiers::CastModifier, category: :modifier, position: 600)
+            Registry.register(:computed, Modifiers::ComputedModifier, category: :modifier, position: 700)
+            Registry.register(:default, Modifiers::DefaultModifier, category: :modifier, position: 800)
+            Registry.register(:as, Modifiers::AsModifier, category: :modifier, position: 900)
           end
 
           # Registers all built-in conditionals

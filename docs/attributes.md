@@ -421,33 +421,20 @@ string :scheduled_at,
        cast: :datetime
 ```
 
-**Important:** When combining multiple modifiers (`computed`, `default`, `transform`, `cast`, `as`), their order matters. Options execute sequentially in the order they're defined. Always use this recommended order:
-
-1. `computed:` - Compute value from other attributes (always runs first regardless of position)
-2. `transform:` - Clean/prepare values
-3. `cast:` - Convert types
-4. `default:` - Apply default if still nil
-5. `as:` - Rename attributes
+**Note:** Treaty automatically ensures options execute in the correct order. You can write options in any order — Treaty handles the rest. Default values should match the target type (after any `cast:` transformation).
 
 ```ruby
-# ✅ Recommended order
-string :published_at,
-       transform: ->(value:) { value.strip },
-       cast: :datetime,
-       default: Time.current  # Already DateTime
+# Both are equivalent - Treaty sorts automatically
+string :published_at, default: Time.current, cast: :datetime, transform: ->(value:) { value.strip }
+string :published_at, transform: ->(value:) { value.strip }, cast: :datetime, default: Time.current
 
 # With computed (for derived values)
 string :slug, :optional,
        computed: ->(**attrs) { attrs.dig(:post, :title) },
        transform: ->(value:) { value.downcase.gsub(/\s+/, "-") }
-
-# ❌ Wrong type in default
-string :published_at,
-       cast: :datetime,
-       default: "2024-01-15"  # String! Should be Time/DateTime
 ```
 
-**See:** [Transformation: Option Execution Order](./transformation.md#option-execution-order) for comprehensive guide on ordering, conflicts, and troubleshooting.
+**See:** [Transformation: Option Execution Order](./transformation.md#option-execution-order) for details.
 
 **See:** [Transformation: Type Casting](./transformation.md#type-casting) for detailed examples
 

@@ -854,281 +854,31 @@ Transformations happen in this order:
 
 ## Option Execution Order
 
-When multiple transformation options are defined on a single attribute, they execute **in the order they are written** in the DSL. This is critical when combining modifiers like `default`, `transform`, `cast`, and `as`.
+Treaty automatically ensures options execute in the correct order, regardless of how you write them in the DSL.
 
-### Why Order Matters
+**Processing phases:**
 
-Transformation options (modifiers) are applied sequentially, with each modifier receiving the output of the previous one. Ruby hashes maintain insertion order, and Treaty preserves this order through the entire processing pipeline.
+1. **Conditionals** (`if:`, `unless:`) — Evaluated first to determine if attribute is included
+2. **Validators** (`type:` → `required:` → `inclusion:` → `format:`) — Check value constraints
+3. **Modifiers** (`transform:` → `cast:` → `computed:` → `default:` → `as:`) — Transform value
 
-```ruby
-# Options execute left-to-right as written:
-string :title, transform: ->(value:) { value.strip }, cast: :datetime
-#              ↑ First                                ↑ Second
-```
-
-**Processing flow:**
-1. Input value received: `"  2024-01-15T10:30:00Z  "`
-2. `transform` executes: `"2024-01-15T10:30:00Z"` (spaces removed)
-3. `cast` executes: `DateTime` object (parsed from clean string)
-4. Final value: `DateTime` object
-
-### Recommended Order
-
-For best results, define options in this order:
-
-1. **`computed:`** - Compute value from other attributes (always runs first regardless of position)
-2. **`transform:`** - Clean/prepare the value
-3. **`cast:`** - Convert types
-4. **`default:`** - Apply default if value is still nil
-5. **`as:`** - Rename the attribute
+You can write options in any order in your DSL — Treaty handles the rest.
 
 ```ruby
-# Recommended order (most common case)
-string :published_at,
-       transform: ->(value:) { value.strip },  # 1. Clean whitespace
-       cast: :datetime,  # 2. Convert to DateTime
-       default: Time.current,  # 3. Use default if still nil
-       as: :published_date  # 4. Rename for service
-
-# With computed (for derived values)
-string :slug, :optional,
-       computed: ->(**attrs) { attrs.dig(:post, :title) },  # 1. Compute from title
-       transform: ->(value:) { value.downcase.gsub(/\s+/, "-") },  # 2. Transform
-       as: :url_slug  # 3. Rename
+# These are equivalent - Treaty sorts automatically:
+string :published_at, default: Time.current, cast: :datetime, transform: ->(value:) { value.strip }
+string :published_at, transform: ->(value:) { value.strip }, cast: :datetime, default: Time.current
 ```
 
-**Why this order?**
+### Important Notes
 
-Transform and cast skip `nil` values automatically. If you put `default` last:
-- Input `nil` → transform skips → cast skips → default applies → ready value
-- Input with value → transform cleans → cast converts → default skips → processed value
+- **Default values** should match the target type (after any `cast:` transformation)
+- **Computed attributes** should be marked as `:optional` since they derive values from other attributes
+- **Multiple transforms** must be combined in a single lambda (Ruby hash keys are unique)
 
-This is logical because default values are usually already in the correct format.
-
-### Conditionals vs Modifiers
-
-**Important distinction:** The `if` / `unless` options are **conditionals**, not modifiers. They execute **before** the transformation phase and determine whether an attribute should be processed at all.
-
-**Processing sequence:**
-1. **Conditional Evaluation Phase:** `if` / `unless` (decides if attribute exists)
-2. **Validation Phase:** `required:`, `type:`, `inclusion:`, `format:` (validates value)
-3. **Transformation Phase:** `default:`, `transform:`, `cast:`, `as:` (modifies value)
-
-```ruby
-# Conditionals run first, separate from modifier chain
-string :published_at,
-       if: ->(post:) { post[:status] == "published" },  # Step 1: Should attribute exist?
-       transform: ->(value:) { value.strip },            # Step 3a: Clean value
-       cast: :datetime,                                  # Step 3b: Convert type
-       default: Time.current                             # Step 3c: Apply default if nil
-```
-
-**Key points:**
-- Conditionals evaluate on raw data before any transformation
-- If condition fails, attribute is completely excluded (no validation, no transformation)
-- Modifier order matters only for attributes that pass conditional evaluation
-- Cannot use `if` and `unless` together on same attribute
-
-### Common Patterns
-
-#### Pattern 1: Transform Before Cast
-
-```ruby
-# ✅ Correct: Clean string, then parse
-string :published_at,
-       transform: ->(value:) { value.strip },
-       cast: :datetime
-
-# ❌ Wrong: Cast fails on dirty string, transform fails on DateTime
-string :published_at,
-       cast: :datetime,  # Tries to parse "  2024-01-15  " (fails or inaccurate)
-       transform: ->(value:) { value.strip }  # Receives DateTime, .strip fails
-```
-
-#### Pattern 2: Default After Transform/Cast
-
-```ruby
-# ✅ Recommended: Default is ready-to-use value
-string :published_at,
-       transform: ->(value:) { value.strip },
-       cast: :datetime,
-       default: Time.current  # Already DateTime object
-
-# ⚠️ Rare case: Default needs processing
-string :status,
-       default: "  draft  ",  # Unclean default value
-       transform: ->(value:) { value.strip.downcase }  # Clean it
-# Use only when default itself needs transformation
-```
-
-#### Pattern 3: Rename Last
-
-```ruby
-# ✅ Correct: Transform and cast work on original name, then rename
-string :user_email,
-       transform: ->(value:) { value.downcase },
-       as: :email
-
-# This works, but defining as 'email' initially is clearer
-string :email,
-       transform: ->(value:) { value.downcase }
-```
-
-### Conflict Examples
-
-#### Conflict 1: Cast Before Transform
-
-**Problem:**
-```ruby
-# String input with spaces
-string :timestamp,
-       cast: :datetime,  # Parses with spaces (might work but imprecise)
-       transform: ->(value:) { value.strip }  # ERROR: DateTime doesn't have .strip
-```
-
-**Error:**
-```
-Treaty::Exceptions::Validation: Transform failed for attribute 'timestamp': undefined method 'strip' for DateTime
-```
-
-**Solution:**
-```ruby
-# Put transform first
-string :timestamp,
-       transform: ->(value:) { value.strip },  # Clean first
-       cast: :datetime  # Then parse clean string
-```
-
-#### Conflict 2: Wrong Default Type
-
-**Problem:**
-```ruby
-# User provides wrong type in default
-string :published_at,
-       cast: :datetime,
-       default: "2024-01-15"  # String, but we expect DateTime!
-
-# Service receives: { published_at: "2024-01-15" } # String, not DateTime!
-```
-
-**Root cause:** User error - default should match the target type.
-
-**Solution:**
-```ruby
-# ✅ Correct: Default matches target type
-string :published_at,
-       transform: ->(value:) { value.strip },
-       cast: :datetime,
-       default: Time.current  # DateTime object, not string!
-
-# ✅ Alternative: Don't cast if default is string
-string :published_at,
-       default: "2024-01-15"  # String is fine if no cast
-```
-
-#### Conflict 3: Multiple Transforms with Wrong Order
-
-**Problem:**
-```ruby
-# Want to: strip → downcase → parse JSON
-string :data,
-       transform: ->(value:) { value.downcase },
-       transform: ->(value:) { value.strip }  # Only this executes! (overwrites previous)
-```
-
-**Explanation:** Each option key can only appear once in a hash. The second `transform:` overwrites the first.
-
-**Solution:**
 ```ruby
 # Combine transformations in one lambda
-string :data,
-       transform: ->(value:) { value.strip.downcase }
-
-# Or use nested approach
-string :data,
-       transform: ->(value:) { JSON.parse(value.strip.downcase) }
-```
-
-### Validators vs Modifiers
-
-**Important:** Validators (like `required:`, `inclusion:`) execute **before** modifiers during the validation phase. Conditionals (like `if:`, `unless:`) execute **before** validators during the conditional evaluation phase. The order discussed here applies only to **modifiers** during the transformation phase.
-
-**Processing sequence:**
-0. **Conditional Evaluation Phase:** `if:`, `unless:` (determines if attribute should exist)
-1. **Validation Phase:** `required:`, `type:`, `inclusion:`, `format:` (order doesn't matter)
-2. **Transformation Phase:** `default:`, `transform:`, `cast:`, `as:` (order matters!)
-
-```ruby
-# All three phases in action
-string :published_at,
-       if: ->(post:) { post[:status] == "published" },  # ← 0. Conditional phase
-       required: true,                                   # ← 1. Validation phase
-       inclusion: { in: valid_dates },                   # ← 1. Validation phase
-       transform: ->(value:) { value.strip },            # → 2. Transformation phase (1st)
-       cast: :datetime,                                  # → 2. Transformation phase (2nd)
-       default: Time.current                             # → 2. Transformation phase (3rd)
-```
-
-**Flow:**
-1. If `if`/`unless` condition fails → attribute excluded entirely (no validation, no transformation)
-2. If condition passes → proceed to validation phase
-3. After validation passes → proceed to transformation phase with ordered modifiers
-
-### Debugging Order Issues
-
-If you encounter unexpected behavior:
-
-1. **Check type mismatches:**
-   ```ruby
-   # Is transform receiving the expected type?
-   transform: ->(value:) { puts value.class; value.strip }
-   ```
-
-2. **Verify cast input:**
-   ```ruby
-   # Is cast receiving clean data?
-   string :date,
-          transform: ->(value:) { puts "Before cast: #{value.inspect}"; value.strip },
-          cast: :datetime
-   ```
-
-3. **Test option isolation:**
-   ```ruby
-   # Remove options one by one to identify conflict
-   string :field, transform: ..., cast: ...  # Both
-   string :field, transform: ...  # Only transform
-   string :field, cast: ...  # Only cast
-   ```
-
-### Best Practices
-
-1. **Stick to recommended order:** computed → transform → cast → default → as
-2. **Use computed for derived values** when you need data from other attributes
-3. **Mark computed attributes as optional** since they don't require input
-4. **Combine multiple transforms** into a single lambda
-5. **Clean before converting:** transform before cast
-6. **Apply defaults last** - they should be ready-to-use values
-7. **Rename last** with `as:` after all transformations
-8. **Test combinations** thoroughly when mixing multiple modifiers
-9. **Document non-obvious order** in code comments when necessary
-
-```ruby
-# Example: Well-ordered options with comments
-request do
-  object :post do
-    string :title
-    string :content
-
-    string :published_at,
-           transform: ->(value:) { value.strip },  # Clean whitespace
-           cast: :datetime,  # Parse to DateTime
-           default: Time.current  # Use current time if missing
-
-    # Computed: derive from other attributes
-    integer :word_count, :optional,
-            computed: ->(**attrs) { attrs.dig(:post, :content).to_s.split.size }
-  end
-end
+string :data, transform: ->(value:) { value.strip.downcase }
 ```
 
 ## Practical Examples

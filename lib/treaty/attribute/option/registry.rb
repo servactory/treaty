@@ -19,26 +19,27 @@ module Treaty
       #
       # ## Registered Options
       #
-      # ### Validators
-      # - `:required` → RequiredValidator
-      # - `:type` → TypeValidator
-      # - `:inclusion` → InclusionValidator
-      # - `:format` → FormatValidator
+      # ### Validators (sorted by position)
+      # - `:type` → TypeValidator (position: 100)
+      # - `:required` → RequiredValidator (position: 200)
+      # - `:inclusion` → InclusionValidator (position: 300)
+      # - `:format` → FormatValidator (position: 400)
       #
-      # ### Modifiers
-      # - `:as` → AsModifier
-      # - `:default` → DefaultModifier
-      # - `:transform` → TransformModifier
-      # - `:cast` → CastModifier
+      # ### Modifiers (sorted by position)
+      # - `:transform` → TransformModifier (position: 500)
+      # - `:cast` → CastModifier (position: 600)
+      # - `:computed` → ComputedModifier (position: 700)
+      # - `:default` → DefaultModifier (position: 800)
+      # - `:as` → AsModifier (position: 900)
       #
-      # ### Conditionals
+      # ### Conditionals (no position - handled separately)
       # - `:if` → IfConditional
       # - `:unless` → UnlessConditional
       #
       # ## Usage
       #
       # Registration (done in RegistryInitializer):
-      #   Registry.register(:required, RequiredValidator, category: :validator)
+      #   Registry.register(:required, RequiredValidator, category: :validator, position: 200)
       #   Registry.register(:if, IfConditional, category: :conditional)
       #
       # Retrieval (done in OptionOrchestrator):
@@ -64,11 +65,13 @@ module Treaty
           #
           # @param option_name [Symbol] The name of the option (e.g., :required, :as, :default)
           # @param processor_class [Class] The processor class
-          # @param category [Symbol] The category (:validator or :modifier)
-          def register(option_name, processor_class, category:)
+          # @param category [Symbol] The category (:validator, :modifier, or :conditional)
+          # @param position [Integer, nil] Execution order position (nil for conditionals)
+          def register(option_name, processor_class, category:, position: nil)
             registry[option_name] = {
               processor_class:,
-              category:
+              category:,
+              position:
             }
           end
 
@@ -86,6 +89,14 @@ module Treaty
           # @return [Symbol, nil] The category (:validator or :modifier) or nil if not found
           def category_for(option_name)
             registry.dig(option_name, :category)
+          end
+
+          # Get position for an option
+          #
+          # @param option_name [Symbol] The name of the option
+          # @return [Integer, nil] The execution order position or nil if not set
+          def position_for(option_name)
+            registry.dig(option_name, :position)
           end
 
           # Check if an option is registered

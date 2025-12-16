@@ -278,42 +278,24 @@ end
 
 **Note**: Cannot use both `if` and `unless` on the same attribute.
 
-### Modifier Order (CRITICAL!)
+### Option Execution Order
 
-When combining modifiers, they execute **in the order written**.
+Treaty automatically sorts options for correct execution. Users can write options in any order.
 
-**Recommended order**:
+**Execution order (automatic):**
+1. Conditionals (`if:`, `unless:`) — processed separately in ValidationOrchestrator
+2. Validators: `type:` → `required:` → `inclusion:` → `format:`
+3. Modifiers: `transform:` → `cast:` → `computed:` → `default:` → `as:`
+
+**Position values (internal):** type=100, required=200, inclusion=300, format=400, transform=500, cast=600, computed=700, default=800, as=900
+
 ```ruby
-string :published_at,
-       transform: ->(value:) { value.strip },  # 1. Clean/prepare
-       cast: :datetime,                        # 2. Convert type
-       default: Time.current,                  # 3. Apply default
-       as: :published_date                     # 4. Rename
-
-# With computed (for derived values)
-string :slug, :optional,
-       computed: ->(**attrs) { attrs.dig(:post, :title) },  # Always first
-       transform: ->(value:) { value.downcase.gsub(/\s+/, "-") }
+# Both are equivalent — Treaty sorts automatically
+string :published_at, cast: :datetime, transform: ->(value:) { value.strip }
+string :published_at, transform: ->(value:) { value.strip }, cast: :datetime
 ```
 
-**Why this order?**
-- `computed:` always runs first regardless of position (generates initial value)
-- `transform:` and `cast:` skip `nil` values
-- `default:` value should match target type (after cast)
-- `as:` should happen last after all transformations
-
-**Common mistake**:
-```ruby
-# WRONG: Cast before transform
-string :timestamp,
-       cast: :datetime,
-       transform: ->(value:) { value.strip }  # ERROR: DateTime has no .strip
-
-# CORRECT: Transform before cast
-string :timestamp,
-       transform: ->(value:) { value.strip },
-       cast: :datetime
-```
+**Note:** Ensure `default:` values match the target type when using `cast:`.
 
 ## Entity Classes
 

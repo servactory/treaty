@@ -20,31 +20,31 @@ module Treaty
 
         # Creates a Response attribute from an Entity attribute
         #
-        # @param entity_attr [Treaty::Attribute::Entity::Attribute] Source attribute
+        # @param entity_attribute [Treaty::Attribute::Entity::Attribute] Source attribute
         # @return [void]
-        def create_attribute_from_entity(entity_attr)
-          new_attr = Attribute.new(
-            entity_attr.name,
-            entity_attr.type,
+        def create_attribute_from_entity(entity_attribute)
+          new_attribute = Attribute.new(
+            entity_attribute.name,
+            entity_attribute.type,
             nesting_level: @nesting_level + 1,
-            **entity_attr.options
+            **entity_attribute.options
           )
 
-          copy_nested_attributes(entity_attr, new_attr) if entity_attr.nested?
+          copy_nested_attributes(entity_attribute, new_attribute) if entity_attribute.nested?
 
-          @collection_of_attributes << new_attr
+          @collection_of_attributes << new_attribute
         end
 
         # Recursively copies nested attributes from source to target
         #
-        # @param source_attr [Treaty::Attribute::Base] Source attribute with nested attributes
-        # @param target_attr [Treaty::Attribute::Base] Target attribute to copy into
+        # @param source_attribute [Treaty::Attribute::Base] Source attribute with nested attributes
+        # @param target_attribute [Treaty::Attribute::Base] Target attribute to copy into
         # @return [void]
-        def copy_nested_attributes(source_attr, target_attr)
-          nested_builder = self.class.new(target_attr.collection_of_attributes, @nesting_level + 1)
+        def copy_nested_attributes(source_attribute, target_attribute)
+          nested_builder = self.class.new(target_attribute.collection_of_attributes, @nesting_level + 1)
 
-          source_attr.collection_of_attributes.each do |nested_attr|
-            nested_builder.create_attribute_from_entity(nested_attr)
+          source_attribute.collection_of_attributes.each do |nested_attribute|
+            nested_builder.create_attribute_from_entity(nested_attribute)
           end
         end
       end

@@ -258,13 +258,13 @@ object :author do
   use_entity(Posts::AuthorDto)
 end
 
-# WRONG - will raise Treaty::Exceptions::EntityUsage
+# WRONG - will raise Treaty::Exceptions::Validation
 object :author do
   use_entity(Posts::AuthorDto)
   string :extra_field  # Not allowed!
 end
 
-# WRONG - will raise Treaty::Exceptions::EntityUsage
+# WRONG - will raise Treaty::Exceptions::Validation
 object :author do
   string :extra_field
   use_entity(Posts::AuthorDto)  # Must be first and only!

@@ -86,8 +86,8 @@ module Treaty
         # References an Entity class to copy its attributes into the current block
         #
         # @param entity_class [Class] A Treaty::Entity subclass
-        # @raise [Treaty::Exceptions::EntityUsage] If entity_class is not a Treaty::Entity subclass
-        # @raise [Treaty::Exceptions::EntityUsage] If attributes were already defined in block
+        # @raise [Treaty::Exceptions::Validation] If entity_class is not a Treaty::Entity subclass
+        # @raise [Treaty::Exceptions::Validation] If attributes were already defined in block
         # @return [void]
         #
         # @example Using in object block
@@ -167,10 +167,10 @@ module Treaty
 
         # Creates an attribute from an Entity attribute (must be implemented in subclasses)
         #
-        # @param entity_attr [Treaty::Attribute::Entity::Attribute] Source entity attribute
+        # @param entity_attribute [Treaty::Attribute::Entity::Attribute] Source entity attribute
         # @raise [Treaty::Exceptions::NotImplemented] If subclass doesn't implement
         # @return [void]
-        def create_attribute_from_entity(entity_attr)
+        def create_attribute_from_entity(_entity_attribute)
           # Must be implemented in subclasses
           raise Treaty::Exceptions::NotImplemented,
                 I18n.t("treaty.attributes.builder.create_attribute_not_implemented", class: self.class)
@@ -181,14 +181,14 @@ module Treaty
         # Validates that entity_class is a Treaty::Entity subclass
         #
         # @param entity_class [Class] Class to validate
-        # @raise [Treaty::Exceptions::EntityUsage] If not a Treaty::Entity subclass
+        # @raise [Treaty::Exceptions::Validation] If not a Treaty::Entity subclass
         # @return [void]
         def validate_entity_class!(entity_class)
           return if entity_class?(entity_class)
 
-          raise Treaty::Exceptions::EntityUsage,
+          raise Treaty::Exceptions::Validation,
                 I18n.t(
-                  "treaty.attributes.entity_usage.invalid_class",
+                  "treaty.attributes.builder.use_entity_invalid_class",
                   type: entity_class.class.name,
                   value: entity_class.inspect
                 )
@@ -204,24 +204,24 @@ module Treaty
 
         # Raises an error if use_entity was already called
         #
-        # @raise [Treaty::Exceptions::EntityUsage] If use_entity was called
+        # @raise [Treaty::Exceptions::Validation] If use_entity was called
         # @return [void]
         def raise_if_use_entity_called!
           return unless @use_entity_called
 
-          raise Treaty::Exceptions::EntityUsage,
-                I18n.t("treaty.attributes.entity_usage.no_additional_attributes")
+          raise Treaty::Exceptions::Validation,
+                I18n.t("treaty.attributes.builder.use_entity_no_additional_attributes")
         end
 
         # Raises an error if attributes already exist in the collection
         #
-        # @raise [Treaty::Exceptions::EntityUsage] If attributes exist
+        # @raise [Treaty::Exceptions::Validation] If attributes exist
         # @return [void]
         def raise_if_attributes_exist!
           return if @collection_of_attributes.empty?
 
-          raise Treaty::Exceptions::EntityUsage,
-                I18n.t("treaty.attributes.entity_usage.entity_must_be_first")
+          raise Treaty::Exceptions::Validation,
+                I18n.t("treaty.attributes.builder.use_entity_must_be_first")
         end
 
         # Copies all attributes from an Entity class into the current collection
@@ -233,8 +233,8 @@ module Treaty
         # @param entity_class [Class] A Treaty::Entity subclass
         # @return [void]
         def copy_entity_attributes(entity_class)
-          entity_class.collection_of_attributes.each do |entity_attr|
-            create_attribute_from_entity(entity_attr)
+          entity_class.collection_of_attributes.each do |entity_attribute|
+            create_attribute_from_entity(entity_attribute)
           end
         end
       end

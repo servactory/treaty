@@ -879,7 +879,7 @@ end
 - Entity class must inherit from `Treaty::Entity`
 
 **Raises:**
-- `Treaty::Exceptions::EntityUsage` if constraints are violated
+- `Treaty::Exceptions::Validation` if constraints are violated
 
 See [Entity Classes (DTOs)](./entities.md) for detailed documentation.
 

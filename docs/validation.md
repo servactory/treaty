@@ -458,14 +458,15 @@ Treaty processes attributes in this order:
    - Format validation (email, uuid, date, etc.)
    - Nested validation (objects and arrays)
 
-4. **Transformation** - Apply transformations
-   - Default values
-   - Transform lambdas
-   - Type casting
-   - Attribute renaming (as:)
+4. **Transformation** - Apply transformations (automatically sorted)
+   - Transform lambdas (`transform:`)
+   - Type casting (`cast:`)
+   - Computed values (`computed:`)
+   - Default values (`default:`)
+   - Attribute renaming (`as:`)
    - Symbol/string key conversion
 
-**Note:** Attributes with conditional options (`if:` / `unless:`) are evaluated first. If the condition fails, the attribute is not validated or transformed at all.
+**Note:** Treaty automatically sorts options for correct execution order. You can write options in any order in your DSL. Attributes with conditional options (`if:` / `unless:`) are evaluated first — if the condition fails, the attribute is not validated or transformed at all.
 
 ## Error Messages
 

@@ -87,17 +87,31 @@ module Treaty
 
       class << self
         # Normalizes all options from simple mode to advanced mode
+        # and sorts them by position for consistent execution order.
         #
         # @param options [Hash] Options hash in simple or advanced mode
-        # @return [Hash] Normalized options in advanced mode
+        # @return [Hash] Normalized options in advanced mode, sorted by position
         def normalize(options)
-          options.each_with_object({}) do |(key, value), result|
+          normalized = options.each_with_object({}) do |(key, value), result|
             advanced_key, normalized_value = normalize_option(key, value)
             result[advanced_key] = normalized_value
           end
+
+          sort_by_position(normalized)
         end
 
         private
+
+        # Sorts options by their registered position.
+        # Options without position (like conditionals) sort first (position 0).
+        #
+        # @param options_hash [Hash] Normalized options hash
+        # @return [Hash] Options sorted by position
+        def sort_by_position(options_hash)
+          options_hash.sort_by do |option_name, _|
+            Option::Registry.position_for(option_name) || 0
+          end.to_h
+        end
 
         # Normalizes a single option to advanced mode
         #

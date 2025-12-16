@@ -996,9 +996,8 @@ string :slug, :optional, computed: ->(**attrs) {
 **Requirements:**
 - Lambda must accept keyword arguments (`**attrs`) to receive all raw data
 - All exceptions are caught and converted to `Treaty::Exceptions::Validation`
-- Always executes, ignoring any existing value for the attribute
+- Always executes, generating a new value from raw data
 - Computed attributes should be marked as `:optional` since value comes from computation
-- Runs FIRST in the modifier chain (before transform, cast, default, as)
 - Use `dig` to safely access nested values
 
 **Difference from transform:**

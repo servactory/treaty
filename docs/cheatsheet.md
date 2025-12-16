@@ -181,33 +181,20 @@ end
 
 ## Option Execution Order
 
-**Critical:** When combining modifiers, order matters! Options execute sequentially in definition order.
+Treaty automatically sorts options for correct execution — you can write them in any order.
+
+**Execution order:**
+1. Conditionals (`if:`, `unless:`) — evaluated first
+2. Validators (`type:`, `required:`, `inclusion:`, `format:`)
+3. Modifiers (`transform:` → `cast:` → `computed:` → `default:` → `as:`)
 
 ```ruby
-# ✅ Recommended order: computed → transform → cast → default → as
-string :published_at,
-       transform: ->(value:) { value.strip },  # 1. Clean data
-       cast: :datetime,  # 2. Convert type
-       default: Time.current,  # 3. Default if still nil
-       as: :published_date  # 4. Rename
-
-# With computed (for derived values)
-string :slug, :optional,
-       computed: ->(**attrs) { attrs.dig(:post, :title) },  # Always first
-       transform: ->(value:) { value.downcase.gsub(/\s+/, "-") }
-
-# ❌ Wrong order causes failures
-string :published_at,
-       cast: :datetime,  # Tries to parse dirty string
-       transform: ->(value:) { value.strip }  # ERROR: DateTime has no .strip
+# All these are equivalent — Treaty handles the order
+string :published_at, cast: :datetime, transform: ->(value:) { value.strip }
+string :published_at, transform: ->(value:) { value.strip }, cast: :datetime
 ```
 
-**Common conflicts:**
-- `cast` before `transform` → transform fails on converted type
-- Wrong type in `default` → type mismatch (user error)
-- Multiple `transform:` → only last one executes (hash key overwrite)
-
-**See:** [Transformation: Option Execution Order](./transformation.md#option-execution-order)
+**Note:** Ensure `default:` values match the target type when using `cast:`.
 
 ## Attribute Options - Advanced Mode
 

@@ -324,6 +324,11 @@ version 1 do
   request PostDto
   response 201, PostDto
 end
+
+# Reuse in nested blocks
+object :author do
+  use_entity(AuthorDto)
+end
 ```
 
 ### Default Behavior Differences

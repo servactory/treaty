@@ -405,6 +405,53 @@ response 200 do
 end
 ```
 
+## Reusing Entity Classes in Nested Structures
+
+When the same nested structure appears in multiple places, you can use `use_entity` to reuse an Entity class:
+
+```ruby
+# Define a reusable entity
+class AuthorDto < ApplicationDto
+  string :name
+  string :bio, :optional
+
+  array :socials, :optional do
+    string :provider
+    string :handle
+  end
+end
+
+# Use in request
+request do
+  object :post do
+    string :title
+
+    object :author do
+      use_entity(AuthorDto)
+    end
+  end
+end
+
+# Use in response
+response 201 do
+  object :post do
+    string :id
+    string :title
+
+    object :author do
+      use_entity(AuthorDto)
+    end
+  end
+end
+```
+
+This approach:
+- Reduces duplication when the same nested structure is used multiple times
+- Centralizes the definition for easier maintenance
+- Preserves all validation and transformation options from the Entity
+
+**Note:** `use_entity` must be the only statement in the block. You cannot define additional attributes in the same block.
+
 ## Best Practices
 
 ### 1. Keep Nesting Shallow

@@ -2057,6 +2057,243 @@ RSpec.describe Gate::API::Posts::CreateTreaty do
                           }
                         }
                       }
+                    },
+                    {
+                      version: "9",
+                      segments: [9],
+                      default: false,
+                      summary: "Demonstrates use_entity for nested structures",
+                      deprecated: false,
+                      executor: {
+                        executor: "posts/stable/create_service",
+                        method: :call
+                      },
+                      request: {
+                        attributes: {
+                          _self: {
+                            type: :object,
+                            options: {
+                              required: { is: true, message: nil }
+                            },
+                            attributes: {
+                              signature: {
+                                type: :string,
+                                options: {
+                                  required: { is: true, message: nil }
+                                },
+                                attributes: {}
+                              }
+                            }
+                          },
+                          post: {
+                            type: :object,
+                            options: {
+                              required: { is: true, message: nil }
+                            },
+                            attributes: {
+                              title: {
+                                type: :string,
+                                options: {
+                                  required: { is: true, message: nil },
+                                  transform: { is: Proc, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              summary: {
+                                type: :string,
+                                options: {
+                                  required: { is: true, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              content: {
+                                type: :string,
+                                options: {
+                                  required: { is: true, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              tags: {
+                                type: :array,
+                                options: {
+                                  required: { is: false, message: nil }
+                                },
+                                attributes: {
+                                  _self: {
+                                    type: :string,
+                                    options: {
+                                      required: { is: true, message: nil }
+                                    },
+                                    attributes: {}
+                                  }
+                                }
+                              },
+                              author: {
+                                type: :object,
+                                options: {
+                                  required: { is: true, message: nil }
+                                },
+                                attributes: {
+                                  name: {
+                                    type: :string,
+                                    options: {
+                                      required: { is: true, message: nil }
+                                    },
+                                    attributes: {}
+                                  },
+                                  bio: {
+                                    type: :string,
+                                    options: {
+                                      required: { is: false, message: nil }
+                                    },
+                                    attributes: {}
+                                  },
+                                  socials: {
+                                    type: :array,
+                                    options: {
+                                      required: { is: false, message: nil }
+                                    },
+                                    attributes: {
+                                      provider: {
+                                        type: :string,
+                                        options: {
+                                          required: { is: true, message: nil },
+                                          inclusion: { in: %w[twitter linkedin github], message: nil }
+                                        },
+                                        attributes: {}
+                                      },
+                                      handle: {
+                                        type: :string,
+                                        options: {
+                                          required: { is: true, message: nil }
+                                        },
+                                        attributes: {}
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      response: {
+                        status: 201,
+                        attributes: {
+                          post: {
+                            type: :object,
+                            options: {
+                              required: { is: false, message: nil }
+                            },
+                            attributes: {
+                              id: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              title: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              summary: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              content: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              tags: {
+                                type: :array,
+                                options: {
+                                  required: { is: false, message: nil }
+                                },
+                                attributes: {
+                                  _self: {
+                                    type: :string,
+                                    options: {
+                                      required: { is: false, message: nil }
+                                    },
+                                    attributes: {}
+                                  }
+                                }
+                              },
+                              author: {
+                                type: :object,
+                                options: {
+                                  required: { is: false, message: nil }
+                                },
+                                attributes: {
+                                  name: {
+                                    type: :string,
+                                    options: {
+                                      required: { is: true, message: nil }
+                                    },
+                                    attributes: {}
+                                  },
+                                  bio: {
+                                    type: :string,
+                                    options: {
+                                      required: { is: false, message: nil }
+                                    },
+                                    attributes: {}
+                                  },
+                                  socials: {
+                                    type: :array,
+                                    options: {
+                                      required: { is: false, message: nil }
+                                    },
+                                    attributes: {
+                                      provider: {
+                                        type: :string,
+                                        options: {
+                                          required: { is: true, message: nil },
+                                          inclusion: { in: %w[twitter linkedin github], message: nil }
+                                        },
+                                        attributes: {}
+                                      },
+                                      handle: {
+                                        type: :string,
+                                        options: {
+                                          required: { is: true, message: nil }
+                                        },
+                                        attributes: {}
+                                      }
+                                    }
+                                  }
+                                }
+                              },
+                              created_at: {
+                                type: :time,
+                                options: {
+                                  required: { is: false, message: nil },
+                                  cast: { to: :string, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              updated_at: {
+                                type: :time,
+                                options: {
+                                  required: { is: false, message: nil },
+                                  cast: { to: :string, message: nil }
+                                },
+                                attributes: {}
+                              }
+                            }
+                          }
+                        }
+                      }
                     }
                   ]
 
@@ -2257,6 +2494,45 @@ RSpec.describe Gate::API::Posts::CreateTreaty do
       it "computes slug from title", :aggregate_failures do
         result = perform
         expect(result.data[:post][:slug]).to eq("hello-world-post")
+      end
+    end
+
+    context "when version is 9 (use_entity for nested structures)" do
+      let(:version) { "9" }
+
+      let(:params) do
+        {
+          signature: "...",
+          post: {
+            title: "Title 1",
+            summary: "Summary 1",
+            content: "Content",
+            author: {
+              name: "John Doe",
+              bio: "Developer",
+              socials: [
+                {
+                  provider: "twitter",
+                  handle: "johndoe"
+                }
+              ]
+            }
+          }
+        }
+      end
+
+      it { expect { perform }.not_to raise_error }
+
+      it { expect(perform.data).to be_a(Hash) }
+      it { expect(perform.status).to eq(201) }
+      it { expect(perform.version).to eq(Gem::Version.new("9")) }
+
+      it "returns expected author structure from entity", :aggregate_failures do
+        result = perform
+        expect(result.data[:post][:author][:name]).to eq("John Doe")
+        expect(result.data[:post][:author][:bio]).to eq("Developer")
+        expect(result.data[:post][:author][:socials]).to be_a(Array)
+        expect(result.data[:post][:author][:socials].first[:handle]).to eq("johndoe")
       end
     end
   end

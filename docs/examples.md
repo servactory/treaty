@@ -455,7 +455,7 @@ class SimpleCalculatorTreaty < ApplicationTreaty
       end
     end
 
-    delegate_to lambda { |params:|
+    delegate_to(lambda do |params:|
       calc = params[:calculation]
       result = case calc[:operation]
       when "add" then calc[:a] + calc[:b]
@@ -465,7 +465,7 @@ class SimpleCalculatorTreaty < ApplicationTreaty
       end
 
       { result: { value: result, operation: calc[:operation] } }
-    }
+    end)
   end
 end
 ```
@@ -489,7 +489,9 @@ class Posts::ShowTreaty < ApplicationTreaty
 
   # Version 2: Added validation
   version 2 do
-    deprecated lambda { ENV["RELEASE_VERSION"] >= "3.0.0" }
+    deprecated(lambda do
+      ENV["RELEASE_VERSION"] >= "3.0.0"
+    end)
 
 
     request do
@@ -628,9 +630,9 @@ module Serialization
         time :updated_at
 
         # Computed: word count from content
-        integer :word_count, :optional, computed: ->(**attrs) {
-          attrs.dig(:post, :content).to_s.split.size
-        }
+        integer :word_count, :optional, computed: (lambda do |**attributes|
+          attributes.dig(:post, :content).to_s.split.size
+        end)
 
         object :author do
           string :id
@@ -638,11 +640,11 @@ module Serialization
           string :email
 
           # Computed: display format
-          string :display, :optional, computed: ->(**attrs) {
-            name = attrs.dig(:post, :author, :name)
-            email = attrs.dig(:post, :author, :email)
+          string :display, :optional, computed: (lambda do |**attributes|
+            name = attributes.dig(:post, :author, :name)
+            email = attributes.dig(:post, :author, :email)
             "#{name} <#{email}>"
-          }
+          end)
         end
 
         array :tags do

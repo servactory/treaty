@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Showcase::DefaultTreaty do
+RSpec.describe Showcase::IfTreaty do
   subject(:perform) { described_class.call!(inventory:, version:, params:) }
 
   let(:inventory_collection) { Treaty::Inventory::Collection.new }
@@ -17,7 +17,7 @@ RSpec.describe Showcase::DefaultTreaty do
                       version: "1",
                       segments: [1],
                       default: false,
-                      summary: "Showing default value in request",
+                      summary: "Showing if option in request",
                       deprecated: false,
                       executor: {
                         executor: Proc,
@@ -31,11 +31,17 @@ RSpec.describe Showcase::DefaultTreaty do
                               required: { is: true, message: nil }
                             },
                             attributes: {
+                              flag: {
+                                type: :boolean,
+                                options: {
+                                  required: { is: false, message: nil }
+                                },
+                                attributes: {}
+                              },
                               example1: {
                                 type: :string,
                                 options: {
-                                  required: { is: false, message: nil },
-                                  default: { is: "Example 1", message: nil }
+                                  required: { is: false, message: nil }
                                 },
                                 attributes: {}
                               },
@@ -43,23 +49,7 @@ RSpec.describe Showcase::DefaultTreaty do
                                 type: :string,
                                 options: {
                                   required: { is: false, message: nil },
-                                  default: { is: "Example 2", message: nil }
-                                },
-                                attributes: {}
-                              },
-                              example3: {
-                                type: :string,
-                                options: {
-                                  required: { is: false, message: nil },
-                                  default: { is: Proc, message: nil }
-                                },
-                                attributes: {}
-                              },
-                              example4: {
-                                type: :string,
-                                options: {
-                                  required: { is: false, message: nil },
-                                  default: { is: Proc, message: nil }
+                                  if: { is: Proc, message: nil }
                                 },
                                 attributes: {}
                               }
@@ -76,6 +66,13 @@ RSpec.describe Showcase::DefaultTreaty do
                               required: { is: false, message: nil }
                             },
                             attributes: {
+                              flag: {
+                                type: :boolean,
+                                options: {
+                                  required: { is: false, message: nil }
+                                },
+                                attributes: {}
+                              },
                               example1: {
                                 type: :string,
                                 options: {
@@ -84,20 +81,6 @@ RSpec.describe Showcase::DefaultTreaty do
                                 attributes: {}
                               },
                               example2: {
-                                type: :string,
-                                options: {
-                                  required: { is: false, message: nil }
-                                },
-                                attributes: {}
-                              },
-                              example3: {
-                                type: :string,
-                                options: {
-                                  required: { is: false, message: nil }
-                                },
-                                attributes: {}
-                              },
-                              example4: {
                                 type: :string,
                                 options: {
                                   required: { is: false, message: nil }
@@ -113,7 +96,7 @@ RSpec.describe Showcase::DefaultTreaty do
                       version: "2",
                       segments: [2],
                       default: false,
-                      summary: "Showing default value in response",
+                      summary: "Showing if option in response",
                       deprecated: false,
                       executor: {
                         executor: Proc,
@@ -127,6 +110,13 @@ RSpec.describe Showcase::DefaultTreaty do
                               required: { is: true, message: nil }
                             },
                             attributes: {
+                              flag: {
+                                type: :boolean,
+                                options: {
+                                  required: { is: false, message: nil }
+                                },
+                                attributes: {}
+                              },
                               example1: {
                                 type: :string,
                                 options: {
@@ -135,20 +125,6 @@ RSpec.describe Showcase::DefaultTreaty do
                                 attributes: {}
                               },
                               example2: {
-                                type: :string,
-                                options: {
-                                  required: { is: false, message: nil }
-                                },
-                                attributes: {}
-                              },
-                              example3: {
-                                type: :string,
-                                options: {
-                                  required: { is: false, message: nil }
-                                },
-                                attributes: {}
-                              },
-                              example4: {
                                 type: :string,
                                 options: {
                                   required: { is: false, message: nil }
@@ -168,11 +144,17 @@ RSpec.describe Showcase::DefaultTreaty do
                               required: { is: false, message: nil }
                             },
                             attributes: {
+                              flag: {
+                                type: :boolean,
+                                options: {
+                                  required: { is: false, message: nil }
+                                },
+                                attributes: {}
+                              },
                               example1: {
                                 type: :string,
                                 options: {
-                                  required: { is: false, message: nil },
-                                  default: { is: "Example 1", message: nil }
+                                  required: { is: false, message: nil }
                                 },
                                 attributes: {}
                               },
@@ -180,23 +162,7 @@ RSpec.describe Showcase::DefaultTreaty do
                                 type: :string,
                                 options: {
                                   required: { is: false, message: nil },
-                                  default: { is: "Example 2", message: nil }
-                                },
-                                attributes: {}
-                              },
-                              example3: {
-                                type: :string,
-                                options: {
-                                  required: { is: false, message: nil },
-                                  default: { is: Proc, message: nil }
-                                },
-                                attributes: {}
-                              },
-                              example4: {
-                                type: :string,
-                                options: {
-                                  required: { is: false, message: nil },
-                                  default: { is: Proc, message: nil }
+                                  if: { is: Proc, message: nil }
                                 },
                                 attributes: {}
                               }
@@ -209,7 +175,7 @@ RSpec.describe Showcase::DefaultTreaty do
                       version: "3",
                       segments: [3],
                       default: false,
-                      summary: "Showing custom message with required option",
+                      summary: "Showing if option on nested objects",
                       deprecated: false,
                       executor: {
                         executor: Proc,
@@ -223,19 +189,35 @@ RSpec.describe Showcase::DefaultTreaty do
                               required: { is: true, message: nil }
                             },
                             attributes: {
-                              example1: {
-                                type: :string,
+                              flag: {
+                                type: :boolean,
                                 options: {
-                                  required: { is: true, message: "Example1 is required" }
+                                  required: { is: false, message: nil }
                                 },
                                 attributes: {}
                               },
-                              example2: {
+                              example1: {
                                 type: :string,
                                 options: {
-                                  required: { is: true, message: Proc }
+                                  required: { is: false, message: nil }
                                 },
                                 attributes: {}
+                              },
+                              nested: {
+                                type: :object,
+                                options: {
+                                  required: { is: false, message: nil },
+                                  if: { is: Proc, message: nil }
+                                },
+                                attributes: {
+                                  value: {
+                                    type: :string,
+                                    options: {
+                                      required: { is: false, message: nil }
+                                    },
+                                    attributes: {}
+                                  }
+                                }
                               }
                             }
                           }
@@ -250,6 +232,13 @@ RSpec.describe Showcase::DefaultTreaty do
                               required: { is: false, message: nil }
                             },
                             attributes: {
+                              flag: {
+                                type: :boolean,
+                                options: {
+                                  required: { is: false, message: nil }
+                                },
+                                attributes: {}
+                              },
                               example1: {
                                 type: :string,
                                 options: {
@@ -257,12 +246,20 @@ RSpec.describe Showcase::DefaultTreaty do
                                 },
                                 attributes: {}
                               },
-                              example2: {
-                                type: :string,
+                              nested: {
+                                type: :object,
                                 options: {
                                   required: { is: false, message: nil }
                                 },
-                                attributes: {}
+                                attributes: {
+                                  value: {
+                                    type: :string,
+                                    options: {
+                                      required: { is: false, message: nil }
+                                    },
+                                    attributes: {}
+                                  }
+                                }
                               }
                             }
                           }
@@ -278,10 +275,9 @@ RSpec.describe Showcase::DefaultTreaty do
       let(:params) do
         {
           showcase: {
-            example1: nil,
-            example2: nil,
-            example3: nil,
-            example4: nil
+            flag: true,
+            example1: "Value 1",
+            example2: "Value 2"
           }
         }
       end
@@ -292,19 +288,9 @@ RSpec.describe Showcase::DefaultTreaty do
       it { expect(perform.status).to eq(200) }
       it { expect(perform.version).to eq(Gem::Version.new("1")) }
 
-      it do
-        expect(perform.data).to match(
-          {
-            showcase: match(
-              {
-                example1: "Example 1",
-                example2: "Example 2",
-                example3: "Example 3",
-                example4: "Example 4"
-              }
-            )
-          }
-        )
+      it "returns expected values", :aggregate_failures do
+        expect(perform.data[:showcase][:flag]).to be(true)
+        expect(perform.data[:showcase][:example1]).to eq("Value 1")
       end
     end
 
@@ -314,10 +300,9 @@ RSpec.describe Showcase::DefaultTreaty do
       let(:params) do
         {
           showcase: {
-            example1: nil,
-            example2: nil,
-            example3: nil,
-            example4: nil
+            flag: true,
+            example1: "Value 1",
+            example2: "Value 2"
           }
         }
       end
@@ -328,91 +313,36 @@ RSpec.describe Showcase::DefaultTreaty do
       it { expect(perform.status).to eq(200) }
       it { expect(perform.version).to eq(Gem::Version.new("2")) }
 
-      it do
-        expect(perform.data).to match(
-          {
-            showcase: match(
-              {
-                example1: "Example 1",
-                example2: "Example 2",
-                example3: "Example 3",
-                example4: "Example 4"
-              }
-            )
-          }
-        )
+      it "returns expected values", :aggregate_failures do
+        expect(perform.data[:showcase][:flag]).to be(true)
+        expect(perform.data[:showcase][:example1]).to eq("Value 1")
       end
     end
 
     context "when version is 3" do
       let(:version) { "3" }
 
-      context "when data is valid" do
-        let(:params) do
-          {
-            showcase: {
-              example1: "Value 1",
-              example2: "Value 2"
+      let(:params) do
+        {
+          showcase: {
+            flag: true,
+            example1: "Value 1",
+            nested: {
+              value: "Nested Value"
             }
           }
-        end
-
-        it { expect { perform }.not_to raise_error }
-
-        it { expect(perform.data).to be_a(Hash) }
-        it { expect(perform.status).to eq(200) }
-        it { expect(perform.version).to eq(Gem::Version.new("3")) }
-
-        it do
-          expect(perform.data).to match(
-            {
-              showcase: match(
-                {
-                  example1: "Value 1",
-                  example2: "Value 2"
-                }
-              )
-            }
-          )
-        end
+        }
       end
 
-      context "when data is invalid with string message" do
-        let(:params) do
-          {
-            showcase: {
-              example1: nil,
-              example2: "Value 2"
-            }
-          }
-        end
+      it { expect { perform }.not_to raise_error }
 
-        it "raises error with custom string message", :aggregate_failures do
-          expect { perform }.to(
-            raise_error(Treaty::Exceptions::Validation) do |exception|
-              expect(exception.message).to include("Example1 is required")
-            end
-          )
-        end
-      end
+      it { expect(perform.data).to be_a(Hash) }
+      it { expect(perform.status).to eq(200) }
+      it { expect(perform.version).to eq(Gem::Version.new("3")) }
 
-      context "when data is invalid with lambda message" do
-        let(:params) do
-          {
-            showcase: {
-              example1: "Value 1",
-              example2: nil
-            }
-          }
-        end
-
-        it "raises error with custom lambda message", :aggregate_failures do
-          expect { perform }.to(
-            raise_error(Treaty::Exceptions::Validation) do |exception|
-              expect(exception.message).to include("example2 cannot be blank")
-            end
-          )
-        end
+      it "returns expected values", :aggregate_failures do
+        expect(perform.data[:showcase][:flag]).to be(true)
+        expect(perform.data[:showcase][:example1]).to eq("Value 1")
       end
     end
   end

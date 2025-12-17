@@ -358,10 +358,10 @@ end
 
 ```ruby
 version 1 do
-  deprecated lambda {
+  deprecated(lambda do
     Gem::Version.new(ENV.fetch("RELEASE_VERSION", "0.0.0")) >=
       Gem::Version.new("3.0.0")
-  }
+  end)
   # ... rest of definition
 end
 ```
@@ -412,7 +412,9 @@ class Posts::CreateTreaty < ApplicationTreaty
   # Version 2: Added validation and new fields
   version 2 do
     summary "Added validation and category support"
-    deprecated lambda { ENV["APP_VERSION"] >= "3.0" }
+    deprecated(lambda do
+      ENV["APP_VERSION"] >= "3.0"
+    end)
 
 
     request do
@@ -711,11 +713,11 @@ end
 
 ```ruby
 version 1 do
-  deprecated lambda {
+  deprecated(lambda do
     # Automatically deprecate when app version reaches 3.0
     Gem::Version.new(ENV.fetch("APP_VERSION", "0.0.0")) >=
       Gem::Version.new("3.0.0")
-  }
+  end)
 end
 ```
 

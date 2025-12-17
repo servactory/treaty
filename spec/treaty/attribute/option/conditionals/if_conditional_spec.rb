@@ -446,9 +446,9 @@ RSpec.describe Treaty::Attribute::Option::Conditionals::IfConditional do
 
     context "with complex nested data" do
       let(:option_schema) do
-        lambda do |**attrs|
-          attrs.dig(:post, :metadata, :tags)&.include?("published") &&
-            attrs.dig(:user, :permissions, :can_publish) == true
+        lambda do |**attributes|
+          attributes.dig(:post, :metadata, :tags)&.include?("published") &&
+            attributes.dig(:user, :permissions, :can_publish) == true
         end
       end
 

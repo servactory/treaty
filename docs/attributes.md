@@ -294,33 +294,33 @@ Computes attribute values from other attributes in the data. Unlike `transform` 
 
 ```ruby
 # Simple mode
-string :full_name, :optional, computed: ->(**attrs) {
-  "#{attrs.dig(:user, :first_name)} #{attrs.dig(:user, :last_name)}"
-}
+string :full_name, :optional, computed: (lambda do |**attributes|
+  "#{attributes.dig(:user, :first_name)} #{attributes.dig(:user, :last_name)}"
+end)
 
-integer :word_count, :optional, computed: ->(**attrs) {
-  attrs.dig(:post, :content).to_s.split.size
-}
+integer :word_count, :optional, computed: (lambda do |**attributes|
+  attributes.dig(:post, :content).to_s.split.size
+end)
 
-string :slug, :optional, computed: ->(**attrs) {
-  attrs.dig(:post, :title).to_s.downcase.gsub(/\s+/, "-")
-}
+string :slug, :optional, computed: (lambda do |**attributes|
+  attributes.dig(:post, :title).to_s.downcase.gsub(/\s+/, "-")
+end)
 
 # Advanced mode with custom error message
 integer :total, :optional, computed: {
-  is: ->(**attrs) { attrs.dig(:order, :quantity).to_i * attrs.dig(:order, :price).to_i },
+  is: ->(**attributes) { attributes.dig(:order, :quantity).to_i * attributes.dig(:order, :price).to_i },
   message: "Failed to calculate total"
 }
 
 # Lambda message for dynamic error
 string :formatted_total, :optional, computed: {
-  is: ->(**attrs) { "$#{attrs.dig(:order, :total)}" },
+  is: ->(**attributes) { "$#{attributes.dig(:order, :total)}" },
   message: ->(attribute:, error:) { "Computation failed for #{attribute}: #{error}" }
 }
 ```
 
 **Important:**
-- Lambda must accept keyword arguments (`**attrs`) to receive all raw data
+- Lambda must accept keyword arguments (`**attributes`) to receive all raw data
 - All exceptions raised in lambda are caught and converted to `Treaty::Exceptions::Validation`
 - Computed always executes, ignoring any existing value for the attribute
 - Computed attributes should be marked as `:optional` since the value comes from computation, not input
@@ -331,7 +331,7 @@ string :formatted_total, :optional, computed: {
 
 | Aspect | `computed:` | `transform:` |
 |--------|-------------|--------------|
-| **Input** | All raw data (`**attrs`) | Current attribute value (`value:`) |
+| **Input** | All raw data (`**attributes`) | Current attribute value (`value:`) |
 | **Purpose** | Derive value from other attributes | Transform the current value |
 | **Execution** | Always runs, ignores existing value | Only runs on non-nil values |
 | **Order** | First in modifier chain | After computed |
@@ -430,7 +430,7 @@ string :published_at, transform: ->(value:) { value.strip }, cast: :datetime, de
 
 # With computed (for derived values)
 string :slug, :optional,
-       computed: ->(**attrs) { attrs.dig(:post, :title) },
+       computed: ->(**attributes) { attributes.dig(:post, :title) },
        transform: ->(value:) { value.downcase.gsub(/\s+/, "-") }
 ```
 

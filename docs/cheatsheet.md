@@ -110,7 +110,9 @@ end
 
 # Deprecated with condition
 version 1 do
-  deprecated lambda { ENV["APP_VERSION"] >= "3.0.0" }
+  deprecated(lambda do
+    ENV["APP_VERSION"] >= "3.0.0"
+  end)
 end
 
 # Version with summary
@@ -177,12 +179,12 @@ time :created_at, cast: :integer        # Time to Unix timestamp
 boolean :active, cast: :integer         # Boolean to integer (1/0)
 
 # Computed values (derive from other attributes)
-string :full_name, :optional, computed: ->(**attrs) {
-  "#{attrs.dig(:user, :first_name)} #{attrs.dig(:user, :last_name)}"
-}
-integer :word_count, :optional, computed: ->(**attrs) {
-  attrs.dig(:post, :content).to_s.split.size
-}
+string :full_name, :optional, computed: (lambda do |**attributes|
+  "#{attributes.dig(:user, :first_name)} #{attributes.dig(:user, :last_name)}"
+end)
+integer :word_count, :optional, computed: (lambda do |**attributes|
+  attributes.dig(:post, :content).to_s.split.size
+end)
 
 # Conditional attributes
 string :published_at, if: ->(post:) { post[:status] == "published" }
@@ -412,9 +414,9 @@ end
 delegate_to Posts::CreateService
 
 # Lambda
-delegate_to lambda { |params:|
+delegate_to(lambda do |params:|
   { result: params[:a] + params[:b] }
-}
+end)
 
 # With options
 delegate_to Posts::CreateService, with: { user_id: :current_user_id }

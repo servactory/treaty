@@ -155,9 +155,9 @@ delegate_to Posts::CreateService => :call!
 
 # Lambda/Proc
 delegate_to ->(params:) { params }
-delegate_to lambda { |params:, inventory:|
+delegate_to(lambda do |params:, inventory:|
   { post: params[:post] }
-}
+end)
 
 # Path-style string (auto-constantized)
 delegate_to "posts/stable/create_service"  # → Posts::Stable::CreateService
@@ -221,7 +221,7 @@ string :email, required: {
 
 | Modifier | Purpose | Key | Example |
 |----------|---------|-----|---------|
-| `computed:` | Compute value from other attributes | `:is` | `string :slug, :optional, computed: ->(**attrs) { attrs.dig(:post, :title).downcase }` |
+| `computed:` | Compute value from other attributes | `:is` | `string :slug, :optional, computed: ->(**attributes) { attributes.dig(:post, :title).downcase }` |
 | `default:` | Set default value | `:is` | `integer :page, default: 1` |
 | `transform:` | Custom lambda transformation | `:is` | `string :title, transform: ->(value:) { value.strip }` |
 | `cast:` | Type conversion | `:to` | `string :date, cast: :datetime` |
@@ -229,12 +229,12 @@ string :email, required: {
 
 ```ruby
 # Computed (derive from other attributes)
-string :full_name, :optional, computed: ->(**attrs) {
-  "#{attrs.dig(:user, :first_name)} #{attrs.dig(:user, :last_name)}"
-}
-integer :word_count, :optional, computed: ->(**attrs) {
-  attrs.dig(:post, :content).to_s.split.size
-}
+string :full_name, :optional, computed: (lambda do |**attributes|
+  "#{attributes.dig(:user, :first_name)} #{attributes.dig(:user, :last_name)}"
+end)
+integer :word_count, :optional, computed: (lambda do |**attributes|
+  attributes.dig(:post, :content).to_s.split.size
+end)
 
 # Default values
 integer :page, default: 1

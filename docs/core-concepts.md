@@ -181,10 +181,10 @@ delegate_to "posts/create_service"
 
 **Lambda:**
 ```ruby
-delegate_to lambda { |params:|
+delegate_to(lambda do |params:|
   # Process locally
   params
-}
+end)
 ```
 
 **With options:**
@@ -237,7 +237,9 @@ version 1 do
   # or
   deprecated { Time.current > Time.zone.parse("2024-12-31") }
   # or
-  deprecated lambda { ENV["RELEASE_VERSION"] >= "2.0.0" }
+  deprecated(lambda do
+    ENV["RELEASE_VERSION"] >= "2.0.0"
+  end)
 end
 ```
 

@@ -73,10 +73,10 @@ end
 version 3 do
   summary "Added support for post categories and tags"
 
-  deprecated lambda {
+  deprecated(lambda do
     Gem::Version.new(ENV.fetch("RELEASE_VERSION", "0.0.0")) >=
       Gem::Version.new("4.0.0")
-  }
+  end)
 
 
   # ... rest of definition
@@ -161,11 +161,11 @@ request do
 
     # Computed: derive slug from title
     string :slug, :optional,
-           computed: ->(**attrs) { attrs.dig(:post, :title).to_s.downcase.gsub(/\s+/, "-") }
+           computed: ->(**attributes) { attributes.dig(:post, :title).to_s.downcase.gsub(/\s+/, "-") }
 
     # Computed: calculate word count from content
     integer :word_count, :optional,
-            computed: ->(**attrs) { attrs.dig(:post, :content).to_s.split.size }
+            computed: ->(**attributes) { attributes.dig(:post, :content).to_s.split.size }
 
     object :author do
       string :first_name
@@ -173,9 +173,9 @@ request do
 
       # Computed: combine first and last name
       string :full_name, :optional,
-             computed: ->(**attrs) {
-               "#{attrs.dig(:post, :author, :first_name)} #{attrs.dig(:post, :author, :last_name)}"
-             }
+             computed: (lambda do |**attributes|
+               "#{attributes.dig(:post, :author, :first_name)} #{attributes.dig(:post, :author, :last_name)}"
+             end)
     end
   end
 end
@@ -277,11 +277,11 @@ delegate_to "posts/create_service"
 ### Lambda Function
 
 ```ruby
-delegate_to lambda { |params:|
+delegate_to(lambda do |params:|
   # Process request directly
   post = Post.create!(params[:post])
   { post: post.as_json }
-}
+end)
 ```
 
 ### With Options
@@ -402,10 +402,10 @@ end
 version 1 do
   summary "Initial release - DEPRECATED"
 
-  deprecated lambda {
+  deprecated(lambda do
     # Will be removed in version 4.0.0
     Gem::Version.new(ENV["RELEASE_VERSION"]) >= Gem::Version.new("4.0.0")
-  }
+  end)
 
   # ... rest of definition
 end

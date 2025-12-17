@@ -9,11 +9,11 @@ module Showcase
         object :showcase do
           string :first_name, :optional
           string :last_name, :optional
-          string :full_name, :optional, computed: lambda { |**attrs|
-            first = attrs.dig(:showcase, :first_name)
-            last = attrs.dig(:showcase, :last_name)
+          string :full_name, :optional, computed: (lambda do |**attributes|
+            first = attributes.dig(:showcase, :first_name)
+            last = attributes.dig(:showcase, :last_name)
             [first, last].compact.join(" ")
-          }
+          end)
         end
       end
 
@@ -46,11 +46,11 @@ module Showcase
         object :showcase do
           string :first_name
           string :last_name
-          string :full_name, computed: lambda { |**attrs|
-            first = attrs.dig(:showcase, :first_name)
-            last = attrs.dig(:showcase, :last_name)
+          string :full_name, computed: (lambda do |**attributes|
+            first = attributes.dig(:showcase, :first_name)
+            last = attributes.dig(:showcase, :last_name)
             [first, last].compact.join(" ")
-          }
+          end)
         end
       end
 
@@ -69,11 +69,11 @@ module Showcase
           string :first_name, :optional
           string :last_name, :optional
           string :full_name, :optional, computed: {
-            is: lambda { |**attrs|
-              first = attrs.dig(:showcase, :first_name)
-              last = attrs.dig(:showcase, :last_name)
+            is: (lambda do |**attributes|
+              first = attributes.dig(:showcase, :first_name)
+              last = attributes.dig(:showcase, :last_name)
               [first, last].compact.join(" ")
-            },
+            end),
             message: nil
           }
         end
@@ -102,19 +102,19 @@ module Showcase
           string :first_name, :optional
           string :last_name, :optional
           string :full_name, :optional, computed: {
-            is: lambda { |**attrs|
-              first = attrs.dig(:showcase, :first_name)
-              last = attrs.dig(:showcase, :last_name)
+            is: (lambda do |**attributes|
+              first = attributes.dig(:showcase, :first_name)
+              last = attributes.dig(:showcase, :last_name)
               [first, last].compact.join(" ")
-            },
+            end),
             message: "Failed to compute full name"
           }
           string :initials, :optional, computed: {
-            is: lambda { |**attrs|
-              first = attrs.dig(:showcase, :first_name)
-              last = attrs.dig(:showcase, :last_name)
+            is: (lambda do |**attributes|
+              first = attributes.dig(:showcase, :first_name)
+              last = attributes.dig(:showcase, :last_name)
               "#{first&.chars&.first}#{last&.chars&.first}".upcase
-            },
+            end),
             message: ->(attribute:, **) { "#{attribute} computation failed" }
           }
         end

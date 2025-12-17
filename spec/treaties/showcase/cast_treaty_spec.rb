@@ -321,6 +321,72 @@ RSpec.describe Showcase::CastTreaty do
                           }
                         }
                       }
+                    },
+                    {
+                      version: "5",
+                      segments: [5],
+                      default: false,
+                      summary: "Showing custom message with cast option",
+                      deprecated: false,
+                      executor: {
+                        executor: Proc,
+                        method: :call
+                      },
+                      request: {
+                        attributes: {
+                          showcase: {
+                            type: :object,
+                            options: {
+                              required: { is: true, message: nil }
+                            },
+                            attributes: {
+                              example1: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil },
+                                  cast: { to: :datetime, message: "Invalid datetime format" }
+                                },
+                                attributes: {}
+                              },
+                              example2: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil },
+                                  cast: { to: :integer, message: Proc }
+                                },
+                                attributes: {}
+                              }
+                            }
+                          }
+                        }
+                      },
+                      response: {
+                        status: 200,
+                        attributes: {
+                          showcase: {
+                            type: :object,
+                            options: {
+                              required: { is: false, message: nil }
+                            },
+                            attributes: {
+                              example1: {
+                                type: :datetime,
+                                options: {
+                                  required: { is: false, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              example2: {
+                                type: :integer,
+                                options: {
+                                  required: { is: false, message: nil }
+                                },
+                                attributes: {}
+                              }
+                            }
+                          }
+                        }
+                      }
                     }
                   ]
 
@@ -432,6 +498,32 @@ RSpec.describe Showcase::CastTreaty do
       it do
         expect(perform.data[:showcase][:example1]).to be_a(DateTime)
         expect(perform.data[:showcase][:example2]).to eq(42)
+      end
+    end
+
+    context "when version is 5" do
+      let(:version) { "5" }
+
+      context "when data is valid" do
+        let(:params) do
+          {
+            showcase: {
+              example1: "2024-01-15T10:30:00Z",
+              example2: "42"
+            }
+          }
+        end
+
+        it { expect { perform }.not_to raise_error }
+
+        it { expect(perform.data).to be_a(Hash) }
+        it { expect(perform.status).to eq(200) }
+        it { expect(perform.version).to eq(Gem::Version.new("5")) }
+
+        it do
+          expect(perform.data[:showcase][:example1]).to be_a(DateTime)
+          expect(perform.data[:showcase][:example2]).to eq(42)
+        end
       end
     end
   end

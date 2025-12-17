@@ -101,5 +101,35 @@ module Showcase
         params
       end)
     end
+
+    version 5 do
+      summary "Showing custom message with format option"
+
+      request do
+        object :showcase do
+          string :example1, :optional, format: {
+            is: :email,
+            message: "Invalid email format"
+          }
+          string :example2, :optional, format: {
+            is: :uuid,
+            message: ->(attribute:, value:, **) { "#{attribute} is not a valid UUID (got: #{value})" }
+          }
+        end
+      end
+
+      response 200 do
+        object :showcase do
+          string :example1
+          string :example2
+        end
+      end
+
+      delegate_to(lambda do |params:|
+        # NOTE: To avoid using the service for any reason,
+        #       use Proc to work with params locally.
+        params
+      end)
+    end
   end
 end

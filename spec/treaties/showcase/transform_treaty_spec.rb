@@ -240,6 +240,72 @@ RSpec.describe Showcase::TransformTreaty do
                           }
                         }
                       }
+                    },
+                    {
+                      version: "4",
+                      segments: [4],
+                      default: false,
+                      summary: "Showing custom message with transform option",
+                      deprecated: false,
+                      executor: {
+                        executor: Proc,
+                        method: :call
+                      },
+                      request: {
+                        attributes: {
+                          showcase: {
+                            type: :object,
+                            options: {
+                              required: { is: true, message: nil }
+                            },
+                            attributes: {
+                              example1: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil },
+                                  transform: { is: Proc, message: "Transform to uppercase failed" }
+                                },
+                                attributes: {}
+                              },
+                              example2: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil },
+                                  transform: { is: Proc, message: Proc }
+                                },
+                                attributes: {}
+                              }
+                            }
+                          }
+                        }
+                      },
+                      response: {
+                        status: 200,
+                        attributes: {
+                          showcase: {
+                            type: :object,
+                            options: {
+                              required: { is: false, message: nil }
+                            },
+                            attributes: {
+                              example1: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              example2: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil }
+                                },
+                                attributes: {}
+                              }
+                            }
+                          }
+                        }
+                      }
                     }
                   ]
 
@@ -341,6 +407,40 @@ RSpec.describe Showcase::TransformTreaty do
             )
           }
         )
+      end
+    end
+
+    context "when version is 4" do
+      let(:version) { "4" }
+
+      context "when data is valid" do
+        let(:params) do
+          {
+            showcase: {
+              example1: "hello",
+              example2: "  world  "
+            }
+          }
+        end
+
+        it { expect { perform }.not_to raise_error }
+
+        it { expect(perform.data).to be_a(Hash) }
+        it { expect(perform.status).to eq(200) }
+        it { expect(perform.version).to eq(Gem::Version.new("4")) }
+
+        it do
+          expect(perform.data).to match(
+            {
+              showcase: match(
+                {
+                  example1: "HELLO",
+                  example2: "world"
+                }
+              )
+            }
+          )
+        end
       end
     end
   end

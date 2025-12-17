@@ -73,5 +73,35 @@ module Showcase
         params
       end)
     end
+
+    version 4 do
+      summary "Showing custom message with inclusion option"
+
+      request do
+        object :showcase do
+          string :example1, :optional, inclusion: {
+            in: %w[option1 option2 option3],
+            message: "Invalid option selected"
+          }
+          string :example2, :optional, inclusion: {
+            in: %w[alpha beta gamma],
+            message: ->(attribute:, value:, **) { "#{attribute} must be one of: alpha, beta, gamma (got: #{value})" }
+          }
+        end
+      end
+
+      response 200 do
+        object :showcase do
+          string :example1
+          string :example2
+        end
+      end
+
+      delegate_to(lambda do |params:|
+        # NOTE: To avoid using the service for any reason,
+        #       use Proc to work with params locally.
+        params
+      end)
+    end
   end
 end

@@ -306,6 +306,72 @@ RSpec.describe Showcase::FormatTreaty do
                           }
                         }
                       }
+                    },
+                    {
+                      version: "5",
+                      segments: [5],
+                      default: false,
+                      summary: "Showing custom message with format option",
+                      deprecated: false,
+                      executor: {
+                        executor: Proc,
+                        method: :call
+                      },
+                      request: {
+                        attributes: {
+                          showcase: {
+                            type: :object,
+                            options: {
+                              required: { is: true, message: nil }
+                            },
+                            attributes: {
+                              example1: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil },
+                                  format: { is: :email, message: "Invalid email format" }
+                                },
+                                attributes: {}
+                              },
+                              example2: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil },
+                                  format: { is: :uuid, message: Proc }
+                                },
+                                attributes: {}
+                              }
+                            }
+                          }
+                        }
+                      },
+                      response: {
+                        status: 200,
+                        attributes: {
+                          showcase: {
+                            type: :object,
+                            options: {
+                              required: { is: false, message: nil }
+                            },
+                            attributes: {
+                              example1: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              example2: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil }
+                                },
+                                attributes: {}
+                              }
+                            }
+                          }
+                        }
+                      }
                     }
                   ]
 
@@ -439,6 +505,74 @@ RSpec.describe Showcase::FormatTreaty do
             )
           }
         )
+      end
+    end
+
+    context "when version is 5" do
+      let(:version) { "5" }
+
+      context "when data is valid" do
+        let(:params) do
+          {
+            showcase: {
+              example1: "test@example.com",
+              example2: "550e8400-e29b-41d4-a716-446655440000"
+            }
+          }
+        end
+
+        it { expect { perform }.not_to raise_error }
+
+        it { expect(perform.data).to be_a(Hash) }
+        it { expect(perform.status).to eq(200) }
+        it { expect(perform.version).to eq(Gem::Version.new("5")) }
+
+        it do
+          expect(perform.data).to match(
+            {
+              showcase: match(
+                {
+                  example1: "test@example.com",
+                  example2: "550e8400-e29b-41d4-a716-446655440000"
+                }
+              )
+            }
+          )
+        end
+      end
+
+      context "when data is invalid with string message" do
+        let(:params) do
+          {
+            showcase: {
+              example1: "invalid-email",
+              example2: "550e8400-e29b-41d4-a716-446655440000"
+            }
+          }
+        end
+
+        it "raises error with custom string message" do
+          expect { perform }.to raise_error(Treaty::Exceptions::Validation) do |error|
+            expect(error.message).to include("Invalid email format")
+          end
+        end
+      end
+
+      context "when data is invalid with lambda message" do
+        let(:params) do
+          {
+            showcase: {
+              example1: "test@example.com",
+              example2: "invalid-uuid"
+            }
+          }
+        end
+
+        it "raises error with custom lambda message" do
+          expect { perform }.to raise_error(Treaty::Exceptions::Validation) do |error|
+            expect(error.message).to include("example2 is not a valid UUID")
+          end
+        end
       end
     end
   end

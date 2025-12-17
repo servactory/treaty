@@ -210,6 +210,72 @@ RSpec.describe Showcase::InclusionTreaty do
                           }
                         }
                       }
+                    },
+                    {
+                      version: "4",
+                      segments: [4],
+                      default: false,
+                      summary: "Showing custom message with inclusion option",
+                      deprecated: false,
+                      executor: {
+                        executor: Proc,
+                        method: :call
+                      },
+                      request: {
+                        attributes: {
+                          showcase: {
+                            type: :object,
+                            options: {
+                              required: { is: true, message: nil }
+                            },
+                            attributes: {
+                              example1: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil },
+                                  inclusion: { in: %w[option1 option2 option3], message: "Invalid option selected" }
+                                },
+                                attributes: {}
+                              },
+                              example2: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil },
+                                  inclusion: { in: %w[alpha beta gamma], message: Proc }
+                                },
+                                attributes: {}
+                              }
+                            }
+                          }
+                        }
+                      },
+                      response: {
+                        status: 200,
+                        attributes: {
+                          showcase: {
+                            type: :object,
+                            options: {
+                              required: { is: false, message: nil }
+                            },
+                            attributes: {
+                              example1: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              example2: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil }
+                                },
+                                attributes: {}
+                              }
+                            }
+                          }
+                        }
+                      }
                     }
                   ]
 
@@ -307,6 +373,74 @@ RSpec.describe Showcase::InclusionTreaty do
             )
           }
         )
+      end
+    end
+
+    context "when version is 4" do
+      let(:version) { "4" }
+
+      context "when data is valid" do
+        let(:params) do
+          {
+            showcase: {
+              example1: "option1",
+              example2: "alpha"
+            }
+          }
+        end
+
+        it { expect { perform }.not_to raise_error }
+
+        it { expect(perform.data).to be_a(Hash) }
+        it { expect(perform.status).to eq(200) }
+        it { expect(perform.version).to eq(Gem::Version.new("4")) }
+
+        it do
+          expect(perform.data).to match(
+            {
+              showcase: match(
+                {
+                  example1: "option1",
+                  example2: "alpha"
+                }
+              )
+            }
+          )
+        end
+      end
+
+      context "when data is invalid with string message" do
+        let(:params) do
+          {
+            showcase: {
+              example1: "invalid",
+              example2: "alpha"
+            }
+          }
+        end
+
+        it "raises error with custom string message" do
+          expect { perform }.to raise_error(Treaty::Exceptions::Validation) do |error|
+            expect(error.message).to include("Invalid option selected")
+          end
+        end
+      end
+
+      context "when data is invalid with lambda message" do
+        let(:params) do
+          {
+            showcase: {
+              example1: "option1",
+              example2: "invalid"
+            }
+          }
+        end
+
+        it "raises error with custom lambda message" do
+          expect { perform }.to raise_error(Treaty::Exceptions::Validation) do |error|
+            expect(error.message).to include("example2 must be one of: alpha, beta, gamma")
+          end
+        end
       end
     end
   end

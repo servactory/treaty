@@ -242,6 +242,100 @@ RSpec.describe Showcase::ComputedTreaty do
                           }
                         }
                       }
+                    },
+                    {
+                      version: "4",
+                      segments: [4],
+                      default: false,
+                      summary: "Showing custom message with computed option",
+                      deprecated: false,
+                      executor: {
+                        executor: Proc,
+                        method: :call
+                      },
+                      request: {
+                        attributes: {
+                          showcase: {
+                            type: :object,
+                            options: {
+                              required: { is: true, message: nil }
+                            },
+                            attributes: {
+                              first_name: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              last_name: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              full_name: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil },
+                                  computed: { is: Proc, message: "Failed to compute full name" }
+                                },
+                                attributes: {}
+                              },
+                              initials: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil },
+                                  computed: { is: Proc, message: Proc }
+                                },
+                                attributes: {}
+                              }
+                            }
+                          }
+                        }
+                      },
+                      response: {
+                        status: 200,
+                        attributes: {
+                          showcase: {
+                            type: :object,
+                            options: {
+                              required: { is: false, message: nil }
+                            },
+                            attributes: {
+                              first_name: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              last_name: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              full_name: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              initials: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil }
+                                },
+                                attributes: {}
+                              }
+                            }
+                          }
+                        }
+                      }
                     }
                   ]
 
@@ -344,6 +438,44 @@ RSpec.describe Showcase::ComputedTreaty do
             )
           }
         )
+      end
+    end
+
+    context "when version is 4" do
+      let(:version) { "4" }
+
+      context "when data is valid" do
+        let(:params) do
+          {
+            showcase: {
+              first_name: "Alice",
+              last_name: "Brown",
+              full_name: nil,
+              initials: nil
+            }
+          }
+        end
+
+        it { expect { perform }.not_to raise_error }
+
+        it { expect(perform.data).to be_a(Hash) }
+        it { expect(perform.status).to eq(200) }
+        it { expect(perform.version).to eq(Gem::Version.new("4")) }
+
+        it do
+          expect(perform.data).to match(
+            {
+              showcase: match(
+                {
+                  first_name: "Alice",
+                  last_name: "Brown",
+                  full_name: "Alice Brown",
+                  initials: "AB"
+                }
+              )
+            }
+          )
+        end
       end
     end
   end

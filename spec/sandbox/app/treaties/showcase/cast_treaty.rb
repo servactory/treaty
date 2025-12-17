@@ -103,5 +103,35 @@ module Showcase
         params
       end)
     end
+
+    version 5 do
+      summary "Showing custom message with cast option"
+
+      request do
+        object :showcase do
+          string :example1, :optional, cast: {
+            to: :datetime,
+            message: "Invalid datetime format"
+          }
+          string :example2, :optional, cast: {
+            to: :integer,
+            message: ->(attribute:, **) { "#{attribute} must be a valid integer" }
+          }
+        end
+      end
+
+      response 200 do
+        object :showcase do
+          datetime :example1
+          integer :example2
+        end
+      end
+
+      delegate_to(lambda do |params:|
+        # NOTE: To avoid using the service for any reason,
+        #       use Proc to work with params locally.
+        params
+      end)
+    end
   end
 end

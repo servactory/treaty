@@ -77,5 +77,35 @@ module Showcase
         params
       end)
     end
+
+    version 4 do
+      summary "Showing custom message with transform option"
+
+      request do
+        object :showcase do
+          string :example1, :optional, transform: {
+            is: ->(value:) { value&.upcase },
+            message: "Transform to uppercase failed"
+          }
+          string :example2, :optional, transform: {
+            is: ->(value:) { value&.strip },
+            message: ->(attribute:, **) { "#{attribute} transformation error" }
+          }
+        end
+      end
+
+      response 200 do
+        object :showcase do
+          string :example1
+          string :example2
+        end
+      end
+
+      delegate_to(lambda do |params:|
+        # NOTE: To avoid using the service for any reason,
+        #       use Proc to work with params locally.
+        params
+      end)
+    end
   end
 end

@@ -204,6 +204,70 @@ RSpec.describe Showcase::DefaultTreaty do
                           }
                         }
                       }
+                    },
+                    {
+                      version: "3",
+                      segments: [3],
+                      default: false,
+                      summary: "Showing custom message with required option",
+                      deprecated: false,
+                      executor: {
+                        executor: Proc,
+                        method: :call
+                      },
+                      request: {
+                        attributes: {
+                          showcase: {
+                            type: :object,
+                            options: {
+                              required: { is: true, message: nil }
+                            },
+                            attributes: {
+                              example1: {
+                                type: :string,
+                                options: {
+                                  required: { is: true, message: "Example1 is required" }
+                                },
+                                attributes: {}
+                              },
+                              example2: {
+                                type: :string,
+                                options: {
+                                  required: { is: true, message: Proc }
+                                },
+                                attributes: {}
+                              }
+                            }
+                          }
+                        }
+                      },
+                      response: {
+                        status: 200,
+                        attributes: {
+                          showcase: {
+                            type: :object,
+                            options: {
+                              required: { is: false, message: nil }
+                            },
+                            attributes: {
+                              example1: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              example2: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil }
+                                },
+                                attributes: {}
+                              }
+                            }
+                          }
+                        }
+                      }
                     }
                   ]
 
@@ -277,6 +341,74 @@ RSpec.describe Showcase::DefaultTreaty do
             )
           }
         )
+      end
+    end
+
+    context "when version is 3" do
+      let(:version) { "3" }
+
+      context "when data is valid" do
+        let(:params) do
+          {
+            showcase: {
+              example1: "Value 1",
+              example2: "Value 2"
+            }
+          }
+        end
+
+        it { expect { perform }.not_to raise_error }
+
+        it { expect(perform.data).to be_a(Hash) }
+        it { expect(perform.status).to eq(200) }
+        it { expect(perform.version).to eq(Gem::Version.new("3")) }
+
+        it do
+          expect(perform.data).to match(
+            {
+              showcase: match(
+                {
+                  example1: "Value 1",
+                  example2: "Value 2"
+                }
+              )
+            }
+          )
+        end
+      end
+
+      context "when data is invalid with string message" do
+        let(:params) do
+          {
+            showcase: {
+              example1: nil,
+              example2: "Value 2"
+            }
+          }
+        end
+
+        it "raises error with custom string message" do
+          expect { perform }.to raise_error(Treaty::Exceptions::Validation) do |error|
+            expect(error.message).to include("Example1 is required")
+          end
+        end
+      end
+
+      context "when data is invalid with lambda message" do
+        let(:params) do
+          {
+            showcase: {
+              example1: "Value 1",
+              example2: nil
+            }
+          }
+        end
+
+        it "raises error with custom lambda message" do
+          expect { perform }.to raise_error(Treaty::Exceptions::Validation) do |error|
+            expect(error.message).to include("example2 cannot be blank")
+          end
+        end
       end
     end
   end

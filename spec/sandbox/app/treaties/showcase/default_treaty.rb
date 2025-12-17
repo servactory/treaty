@@ -57,5 +57,32 @@ module Showcase
         params
       end)
     end
+
+    version 3 do
+      summary "Showing custom message with required option"
+
+      request do
+        object :showcase do
+          string :example1, required: { is: true, message: "Example1 is required" }
+          string :example2, required: {
+            is: true,
+            message: ->(attribute:, **) { "#{attribute} cannot be blank" }
+          }
+        end
+      end
+
+      response 200 do
+        object :showcase do
+          string :example1
+          string :example2
+        end
+      end
+
+      delegate_to(lambda do |params:|
+        # NOTE: To avoid using the service for any reason,
+        #       use Proc to work with params locally.
+        params
+      end)
+    end
   end
 end

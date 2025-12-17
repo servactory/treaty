@@ -183,9 +183,9 @@ request do
 
     string :password, format: {
       is: :password,
-      message: ->(attribute:, value:, **) {
+      message: (lambda do |attribute:, value:, **|
         "#{attribute.to_s.capitalize} must be 8-16 characters with at least one digit, lowercase, and uppercase letter"
-      }
+      end)
     }
 
     string :started_on, format: { is: :date, message: "Invalid date format" }

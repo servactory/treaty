@@ -14,13 +14,13 @@ module Treaty
         # ## Usage Examples
         #
         # Simple mode:
-        #   string :full_name, computed: ->(**attrs) {
-        #     "#{attrs.dig(:user, :first_name)} #{attrs.dig(:user, :last_name)}"
-        #   }
+        #   string :full_name, computed: (lambda do |**attributes|
+        #     "#{attributes.dig(:user, :first_name)} #{attributes.dig(:user, :last_name)}"
+        #   end)
         #
         # Advanced mode with custom error message:
         #   string :full_name, computed: {
-        #     is: ->(**attrs) { "#{attrs.dig(:user, :first_name)} #{attrs.dig(:user, :last_name)}" },
+        #     is: ->(**attributes) { "#{attributes.dig(:user, :first_name)} #{attributes.dig(:user, :last_name)}" },
         #     message: "Failed to compute full name"
         #   }
         #
@@ -32,9 +32,9 @@ module Treaty
         #      object :user do
         #        string :first_name
         #        string :last_name
-        #        string :full_name, computed: ->(**attrs) {
-        #          "#{attrs.dig(:user, :first_name)} #{attrs.dig(:user, :last_name)}"
-        #        }
+        #        string :full_name, computed: (lambda do |**attributes|
+        #          "#{attributes.dig(:user, :first_name)} #{attributes.dig(:user, :last_name)}"
+        #        end)
         #      end
         #    end
         #    ```
@@ -44,9 +44,9 @@ module Treaty
         #    response 200 do
         #      object :post do
         #        string :content
-        #        integer :word_count, computed: ->(**attrs) {
-        #          attrs.dig(:post, :content).to_s.split.size
-        #        }
+        #        integer :word_count, computed: (lambda do |**attributes|
+        #          attributes.dig(:post, :content).to_s.split.size
+        #        end)
         #      end
         #    end
         #    ```
@@ -57,9 +57,9 @@ module Treaty
         #      object :order do
         #        integer :quantity
         #        integer :unit_price
-        #        integer :total, computed: ->(**attrs) {
-        #          attrs.dig(:order, :quantity).to_i * attrs.dig(:order, :unit_price).to_i
-        #        }
+        #        integer :total, computed: (lambda do |**attributes|
+        #          attributes.dig(:order, :quantity).to_i * attributes.dig(:order, :unit_price).to_i
+        #        end)
         #      end
         #    end
         #    ```

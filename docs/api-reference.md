@@ -331,9 +331,9 @@ end
 
 # With lambda
 version 1 do
-  deprecated lambda {
+  deprecated(lambda do
     Gem::Version.new(ENV.fetch("APP_VERSION", "0.0.0")) >= Gem::Version.new("3.0.0")
-  }
+  end)
 end
 ```
 
@@ -980,28 +980,28 @@ Compute attribute values from other attributes in the data.
 
 ```ruby
 # Derive value from other attributes
-string :full_name, :optional, computed: ->(**attrs) {
-  "#{attrs.dig(:user, :first_name)} #{attrs.dig(:user, :last_name)}"
-}
+string :full_name, :optional, computed: (lambda do |**attributes|
+  "#{attributes.dig(:user, :first_name)} #{attributes.dig(:user, :last_name)}"
+end)
 
-integer :word_count, :optional, computed: ->(**attrs) {
-  attrs.dig(:post, :content).to_s.split.size
-}
+integer :word_count, :optional, computed: (lambda do |**attributes|
+  attributes.dig(:post, :content).to_s.split.size
+end)
 
-string :slug, :optional, computed: ->(**attrs) {
-  attrs.dig(:post, :title).to_s.downcase.gsub(/\s+/, "-")
-}
+string :slug, :optional, computed: (lambda do |**attributes|
+  attributes.dig(:post, :title).to_s.downcase.gsub(/\s+/, "-")
+end)
 ```
 
 **Requirements:**
-- Lambda must accept keyword arguments (`**attrs`) to receive all raw data
+- Lambda must accept keyword arguments (`**attributes`) to receive all raw data
 - All exceptions are caught and converted to `Treaty::Exceptions::Validation`
 - Always executes, generating a new value from raw data
 - Computed attributes should be marked as `:optional` since value comes from computation
 - Use `dig` to safely access nested values
 
 **Difference from transform:**
-- `computed:` receives ALL raw data (`**attrs`) and derives a new value
+- `computed:` receives ALL raw data (`**attributes`) and derives a new value
 - `transform:` receives only the current attribute's value (`value:`)
 
 #### `cast`

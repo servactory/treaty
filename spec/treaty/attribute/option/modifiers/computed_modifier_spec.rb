@@ -11,7 +11,7 @@ RSpec.describe Treaty::Attribute::Option::Modifiers::ComputedModifier do
 
   describe "#validate_schema!" do
     context "when computed is a lambda" do
-      let(:option_schema) { { is: ->(**attrs) { attrs.dig(:user, :name) }, message: nil } }
+      let(:option_schema) { { is: ->(**attributes) { attributes.dig(:user, :name) }, message: nil } }
 
       it "does not raise an error" do
         expect { modifier.validate_schema! }.not_to raise_error
@@ -19,7 +19,7 @@ RSpec.describe Treaty::Attribute::Option::Modifiers::ComputedModifier do
     end
 
     context "when computed is a Proc" do
-      let(:option_schema) { { is: proc { |**attrs| attrs.dig(:user, :name) }, message: nil } }
+      let(:option_schema) { { is: proc { |**attributes| attributes.dig(:user, :name) }, message: nil } }
 
       it "does not raise an error" do
         expect { modifier.validate_schema! }.not_to raise_error
@@ -45,7 +45,7 @@ RSpec.describe Treaty::Attribute::Option::Modifiers::ComputedModifier do
     context "when computing full name from parts" do
       let(:option_schema) do
         {
-          is: ->(**attrs) { "#{attrs.dig(:user, :first_name)} #{attrs.dig(:user, :last_name)}" },
+          is: ->(**attributes) { "#{attributes.dig(:user, :first_name)} #{attributes.dig(:user, :last_name)}" },
           message: nil
         }
       end
@@ -66,7 +66,7 @@ RSpec.describe Treaty::Attribute::Option::Modifiers::ComputedModifier do
     context "when computing word count from content" do
       let(:option_schema) do
         {
-          is: ->(**attrs) { attrs.dig(:post, :content).to_s.split.size },
+          is: ->(**attributes) { attributes.dig(:post, :content).to_s.split.size },
           message: nil
         }
       end
@@ -87,7 +87,7 @@ RSpec.describe Treaty::Attribute::Option::Modifiers::ComputedModifier do
     context "when computing total from quantity and price" do
       let(:option_schema) do
         {
-          is: ->(**attrs) { attrs.dig(:order, :quantity).to_i * attrs.dig(:order, :unit_price).to_i },
+          is: ->(**attributes) { attributes.dig(:order, :quantity).to_i * attributes.dig(:order, :unit_price).to_i },
           message: nil
         }
       end
@@ -100,7 +100,7 @@ RSpec.describe Treaty::Attribute::Option::Modifiers::ComputedModifier do
     end
 
     context "when lambda raises an error" do
-      let(:option_schema) { { is: ->(**attrs) { attrs.fetch(:missing_key) }, message: nil } }
+      let(:option_schema) { { is: ->(**attributes) { attributes.fetch(:missing_key) }, message: nil } }
 
       it "catches the error and raises Treaty::Exceptions::Validation", :aggregate_failures do
         expect { modifier.transform_value(nil, {}) }.to(
@@ -148,7 +148,7 @@ RSpec.describe Treaty::Attribute::Option::Modifiers::ComputedModifier do
     context "when accessing deeply nested data" do
       let(:option_schema) do
         {
-          is: ->(**attrs) { attrs.dig(:order, :customer, :address, :city) },
+          is: ->(**attributes) { attributes.dig(:order, :customer, :address, :city) },
           message: nil
         }
       end
@@ -169,7 +169,7 @@ RSpec.describe Treaty::Attribute::Option::Modifiers::ComputedModifier do
     context "when accessing array data" do
       let(:option_schema) do
         {
-          is: ->(**attrs) { attrs.dig(:post, :tags)&.join(", ") || "" },
+          is: ->(**attributes) { attributes.dig(:post, :tags)&.join(", ") || "" },
           message: nil
         }
       end
@@ -184,7 +184,7 @@ RSpec.describe Treaty::Attribute::Option::Modifiers::ComputedModifier do
     context "when value is already present" do
       let(:option_schema) do
         {
-          is: ->(**attrs) { "computed: #{attrs.dig(:data, :value)}" },
+          is: ->(**attributes) { "computed: #{attributes.dig(:data, :value)}" },
           message: nil
         }
       end
@@ -199,7 +199,7 @@ RSpec.describe Treaty::Attribute::Option::Modifiers::ComputedModifier do
     context "with empty context" do
       let(:option_schema) do
         {
-          is: ->(**attrs) { attrs.dig(:user, :name) || "default" },
+          is: ->(**attributes) { attributes.dig(:user, :name) || "default" },
           message: nil
         }
       end

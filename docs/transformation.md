@@ -269,23 +269,23 @@ request do
     string :content
 
     # Computed: slug derived from title
-    string :slug, :optional, computed: ->(**attrs) {
-      attrs.dig(:post, :title).to_s.downcase.gsub(/\s+/, "-").gsub(/[^a-z0-9\-]/, "")
-    }
+    string :slug, :optional, computed: (lambda do |**attributes|
+       attributes.dig(:post, :title).to_s.downcase.gsub(/\s+/, "-").gsub(/[^a-z0-9\-]/, "")
+    end)
 
     # Computed: word count derived from content
-    integer :word_count, :optional, computed: ->(**attrs) {
-      attrs.dig(:post, :content).to_s.split.size
-    }
+    integer :word_count, :optional, computed: (lambda do |**attributes|
+       attributes.dig(:post, :content).to_s.split.size
+    end)
 
     object :author do
       string :first_name
       string :last_name
 
       # Computed: full name from first_name and last_name
-      string :full_name, :optional, computed: ->(**attrs) {
-        "#{attrs.dig(:post, :author, :first_name)} #{attrs.dig(:post, :author, :last_name)}"
-      }
+      string :full_name, :optional, computed: (lambda do |**attributes|
+        "#{attributes.dig(:post, :author, :first_name)} #{attributes.dig(:post, :author, :last_name)}"
+      end)
     end
   end
 end
@@ -331,16 +331,16 @@ request do
     integer :unit_price
 
     integer :total, :optional, computed: {
-      is: ->(**attrs) { attrs.dig(:order, :quantity).to_i * attrs.dig(:order, :unit_price).to_i },
+      is: ->(**attributes) { attributes.dig(:order, :quantity).to_i * attributes.dig(:order, :unit_price).to_i },
       message: "Failed to calculate order total"
     }
 
     # Lambda message for dynamic error
     string :formatted_total, :optional, computed: {
-      is: ->(**attrs) {
-        total = attrs.dig(:order, :quantity).to_i * attrs.dig(:order, :unit_price).to_i
+      is: (lambda do |**attributes|
+        total = attributes.dig(:order, :quantity).to_i * attributes.dig(:order, :unit_price).to_i
         "$#{format('%.2f', total / 100.0)}"
-      },
+      end),
       message: ->(attribute:, error:) { "Computation failed for #{attribute}: #{error}" }
     }
   end
@@ -354,7 +354,7 @@ All exceptions raised within computed lambdas are caught and converted to `Treat
 ```ruby
 request do
   object :post do
-    string :data, :optional, computed: ->(**attrs) { attrs.fetch(:missing_key) }
+    string :data, :optional, computed: ->(**attributes) { attributes.fetch(:missing_key) }
   end
 end
 ```
@@ -375,7 +375,7 @@ Treaty::Exceptions::Validation: Computed failed for attribute 'data': key not fo
 
 | Aspect | `computed:` | `transform:` |
 |--------|-------------|--------------|
-| **Input** | All raw data (`**attrs`) | Current attribute value (`value:`) |
+| **Input** | All raw data (`**attributes`) | Current attribute value (`value:`) |
 | **Purpose** | Derive value from other attributes | Transform the current value |
 | **Execution** | Always runs, ignores existing value | Only runs on non-nil values |
 | **Order** | First in modifier chain | After computed |
@@ -388,7 +388,7 @@ request do
 
     # Compute initial slug from title, then transform to ensure lowercase
     string :slug, :optional,
-           computed: ->(**attrs) { attrs.dig(:post, :title).to_s.gsub(/\s+/, "-") },
+           computed: ->(**attributes) { attributes.dig(:post, :title).to_s.gsub(/\s+/, "-") },
            transform: ->(value:) { value.downcase }
   end
 end

@@ -406,9 +406,9 @@ module Gate
               end
 
               # SEO fields excluded for private and internal posts
-              string :meta_description, :optional, unless: lambda { |post:|
+              string :meta_description, :optional, unless: (lambda do |post:|
                 %w[private internal].include?(post[:visibility])
-              }
+              end)
 
               object :author do
                 string :name
@@ -495,9 +495,9 @@ module Gate
 
                 # Computed: full name derived from first_name and last_name
                 # Note: computed attributes should be :optional since value comes from computation
-                string :full_name, :optional, computed: lambda { |**attrs|
-                  "#{attrs.dig(:post, :author, :first_name)} #{attrs.dig(:post, :author, :last_name)}"
-                }
+                string :full_name, :optional, computed: (lambda do |**attributes|
+                  "#{attributes.dig(:post, :author, :first_name)} #{attributes.dig(:post, :author, :last_name)}"
+                end)
 
                 array :socials, :optional do
                   string :provider, in: %w[twitter linkedin github]
@@ -507,15 +507,15 @@ module Gate
 
               # Computed: word count derived from content
               # Note: computed attributes should be :optional since value comes from computation
-              integer :word_count, :optional, computed: lambda { |**attrs|
-                attrs.dig(:post, :content).to_s.split.size
-              }
+              integer :word_count, :optional, computed: (lambda do |**attributes|
+                attributes.dig(:post, :content).to_s.split.size
+              end)
 
               # Computed: slug derived from title
               # Note: computed attributes should be :optional since value comes from computation
-              string :slug, :optional, computed: lambda { |**attrs|
-                attrs.dig(:post, :title).to_s.downcase.gsub(/\s+/, "-").gsub(/[^a-z0-9-]/, "")
-              }
+              string :slug, :optional, computed: (lambda do |**attributes|
+                attributes.dig(:post, :title).to_s.downcase.gsub(/\s+/, "-").gsub(/[^a-z0-9-]/, "")
+              end)
             end
           end
 
@@ -546,9 +546,9 @@ module Gate
               end
 
               # Computed in response: derive slug from title
-              string :slug, computed: lambda { |**attrs|
-                attrs.dig(:post, :title).to_s.downcase.gsub(/\s+/, "-").gsub(/[^a-z0-9-]/, "")
-              }
+              string :slug, computed: (lambda do |**attributes|
+                attributes.dig(:post, :title).to_s.downcase.gsub(/\s+/, "-").gsub(/[^a-z0-9-]/, "")
+              end)
 
               integer :word_count
               integer :rating

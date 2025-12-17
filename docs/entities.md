@@ -343,9 +343,9 @@ class ProductEntity < Treaty::Entity
   string :category, in: %w[electronics clothing food]
 
   # Computed values (derive from other attributes)
-  string :display_name, :optional, computed: ->(**attrs) {
-    "#{attrs.dig(:name)} (#{attrs.dig(:sku) || 'N/A'})"
-  }
+  string :display_name, :optional, computed: (lambda do |**attributes|
+    "#{attributes.dig(:name)} (#{attributes.dig(:sku) || 'N/A'})"
+  end)
 
   # Nested with options
   object :price, :optional do
@@ -353,11 +353,11 @@ class ProductEntity < Treaty::Entity
     string :currency, default: "USD"
 
     # Computed formatted price
-    string :formatted, :optional, computed: ->(**attrs) {
-      amount = attrs.dig(:price, :amount) || 0
-      currency = attrs.dig(:price, :currency) || "USD"
+    string :formatted, :optional, computed: (lambda do |**attributes|
+      amount = attributes.dig(:price, :amount) || 0
+      currency = attributes.dig(:price, :currency) || "USD"
       "#{currency} #{format('%.2f', amount / 100.0)}"
-    }
+    end)
   end
 end
 ```

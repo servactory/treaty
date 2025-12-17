@@ -17,9 +17,9 @@ module Treaty
         #   integer :edit_count, unless: ->(post:) { post[:published_at].present? }
         #
         # Complex conditions:
-        #   string :internal_note, unless: ->(**attrs) {
-        #     attrs.dig(:user, :role) == "admin" && attrs.dig(:post, :flagged)
-        #   }
+        #   string :internal_note, unless: (lambda do |**attributes|
+        #     attributes.dig(:user, :role) == "admin" && attributes.dig(:post, :flagged)
+        #   end)
         #
         # ## Use Cases
         #
@@ -30,7 +30,7 @@ module Treaty
         #        string :id
         #        string :title
         #        datetime :published_at, :optional
-        #        integer :draft_views, unless: ->(**attrs) { attrs.dig(:post, :published_at).present? }
+        #        integer :draft_views, unless: ->(**attributes) { attributes.dig(:post, :published_at).present? }
         #      end
         #    end
         #    # If published_at is nil → draft_views is included in response
@@ -74,12 +74,12 @@ module Treaty
         #
         # ```ruby
         # # These are equivalent:
-        # integer :rating, if: ->(**attrs) { attrs.dig(:post, :published_at).present? }
-        # integer :rating, unless: ->(**attrs) { attrs.dig(:post, :published_at).blank? }
+        # integer :rating, if: ->(**attributes) { attributes.dig(:post, :published_at).present? }
+        # integer :rating, unless: ->(**attributes) { attributes.dig(:post, :published_at).blank? }
         #
         # # These are also equivalent:
-        # integer :draft_views, unless: ->(**attrs) { attrs.dig(:post, :published_at).present? }
-        # integer :draft_views, if: ->(**attrs) { attrs.dig(:post, :published_at).blank? }
+        # integer :draft_views, unless: ->(**attributes) { attributes.dig(:post, :published_at).present? }
+        # integer :draft_views, if: ->(**attributes) { attributes.dig(:post, :published_at).blank? }
         # ```
         #
         # ## Error Handling
@@ -96,7 +96,7 @@ module Treaty
         #
         # ```ruby
         # # For response with { post: { title: "...", published_at: "..." } }
-        # integer :draft_views, unless: ->(**attrs) { attrs.dig(:post, :published_at).present? }
+        # integer :draft_views, unless: ->(**attributes) { attributes.dig(:post, :published_at).present? }
         #
         # # Alternative: named argument pattern
         # integer :draft_views, unless: ->(post:) { post[:published_at].present? }

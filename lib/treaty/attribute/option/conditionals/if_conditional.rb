@@ -17,9 +17,9 @@ module Treaty
         #   integer :views, if: ->(post:) { post[:published_at].present? }
         #
         # Complex conditions:
-        #   string :admin_note, if: ->(**attrs) {
-        #     attrs.dig(:user, :role) == "admin" && attrs.dig(:post, :flagged)
-        #   }
+        #   string :admin_note, if: (lambda do |**attributes|
+        #     attributes.dig(:user, :role) == "admin" && attributes.dig(:post, :flagged)
+        #   end)
         #
         # ## Use Cases
         #
@@ -30,7 +30,7 @@ module Treaty
         #        string :id
         #        string :title
         #        datetime :published_at, :optional
-        #        integer :rating, if: ->(**attrs) { attrs.dig(:post, :published_at).present? }
+        #        integer :rating, if: ->(**attributes) { attributes.dig(:post, :published_at).present? }
         #      end
         #    end
         #    # If published_at is nil → rating is excluded from response
@@ -80,7 +80,7 @@ module Treaty
         #
         # ```ruby
         # # For response with { post: { title: "...", published_at: "..." } }
-        # integer :rating, if: ->(**attrs) { attrs.dig(:post, :published_at).present? }
+        # integer :rating, if: ->(**attributes) { attributes.dig(:post, :published_at).present? }
         #
         # # Alternative: named argument pattern
         # integer :rating, if: ->(post:) { post[:published_at].present? }

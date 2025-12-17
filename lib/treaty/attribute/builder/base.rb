@@ -245,19 +245,26 @@ module Treaty
         end
 
         # Deep copies options hash, preserving Proc references
+        # and recursively handling nested Hash/Array structures.
         #
         # @param options [Hash] Options to copy
         # @return [Hash] Copied options
         def deep_copy_options(options)
-          options.transform_values do |value|
-            case value
-            when Hash
-              deep_copy_options(value)
-            when Array
-              value.dup
-            else
-              value
-            end
+          options.transform_values { |value| deep_copy_value(value) }
+        end
+
+        # Deep copies a single value, handling nested structures.
+        # Immutable types (Proc, Symbol, Numeric, nil, true, false) are returned as-is.
+        # Hash and Array are recursively copied. Strings are duplicated if not frozen.
+        #
+        # @param value [Object] Value to copy
+        # @return [Object] Copied value
+        def deep_copy_value(value)
+          case value
+          when Hash  then value.transform_values { |v| deep_copy_value(v) }
+          when Array then value.map { |v| deep_copy_value(v) }
+          when String then value.frozen? ? value : value.dup
+          else value
           end
         end
       end

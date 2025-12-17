@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Showcase
-  class CastTreaty < ApplicationTreaty
+  class CastTreaty < ApplicationTreaty # rubocop:disable Metrics/ClassLength
     version 1 do
       summary "Showing cast option with string to datetime in request"
 

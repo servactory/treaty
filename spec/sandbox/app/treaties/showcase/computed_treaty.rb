@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Showcase
-  class ComputedTreaty < ApplicationTreaty
+  class ComputedTreaty < ApplicationTreaty # rubocop:disable Metrics/ClassLength
     version 1 do
       summary "Showing computed option in request"
 

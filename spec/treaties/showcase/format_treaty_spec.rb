@@ -551,10 +551,12 @@ RSpec.describe Showcase::FormatTreaty do
           }
         end
 
-        it "raises error with custom string message" do
-          expect { perform }.to raise_error(Treaty::Exceptions::Validation) do |error|
-            expect(error.message).to include("Invalid email format")
-          end
+        it "raises error with custom string message", :aggregate_failures do
+          expect { perform }.to(
+            raise_error(Treaty::Exceptions::Validation) do |exception|
+              expect(exception.message).to include("Invalid email format")
+            end
+          )
         end
       end
 
@@ -568,10 +570,12 @@ RSpec.describe Showcase::FormatTreaty do
           }
         end
 
-        it "raises error with custom lambda message" do
-          expect { perform }.to raise_error(Treaty::Exceptions::Validation) do |error|
-            expect(error.message).to include("example2 is not a valid UUID")
-          end
+        it "raises error with custom lambda message", :aggregate_failures do
+          expect { perform }.to(
+            raise_error(Treaty::Exceptions::Validation) do |exception|
+              expect(exception.message).to include("example2 is not a valid UUID")
+            end
+          )
         end
       end
     end

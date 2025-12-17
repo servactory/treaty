@@ -288,8 +288,8 @@ RSpec.describe Showcase::IfTreaty do
       it { expect(perform.status).to eq(200) }
       it { expect(perform.version).to eq(Gem::Version.new("1")) }
 
-      it do
-        expect(perform.data[:showcase][:flag]).to eq(true)
+      it "returns expected values", :aggregate_failures do
+        expect(perform.data[:showcase][:flag]).to be(true)
         expect(perform.data[:showcase][:example1]).to eq("Value 1")
       end
     end
@@ -313,8 +313,8 @@ RSpec.describe Showcase::IfTreaty do
       it { expect(perform.status).to eq(200) }
       it { expect(perform.version).to eq(Gem::Version.new("2")) }
 
-      it do
-        expect(perform.data[:showcase][:flag]).to eq(true)
+      it "returns expected values", :aggregate_failures do
+        expect(perform.data[:showcase][:flag]).to be(true)
         expect(perform.data[:showcase][:example1]).to eq("Value 1")
       end
     end
@@ -340,8 +340,8 @@ RSpec.describe Showcase::IfTreaty do
       it { expect(perform.status).to eq(200) }
       it { expect(perform.version).to eq(Gem::Version.new("3")) }
 
-      it do
-        expect(perform.data[:showcase][:flag]).to eq(true)
+      it "returns expected values", :aggregate_failures do
+        expect(perform.data[:showcase][:flag]).to be(true)
         expect(perform.data[:showcase][:example1]).to eq("Value 1")
       end
     end

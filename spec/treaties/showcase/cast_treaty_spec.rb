@@ -410,7 +410,7 @@ RSpec.describe Showcase::CastTreaty do
       it { expect(perform.status).to eq(200) }
       it { expect(perform.version).to eq(Gem::Version.new("1")) }
 
-      it do
+      it "returns cast values", :aggregate_failures do
         expect(perform.data[:showcase][:example1]).to be_a(DateTime)
         expect(perform.data[:showcase][:example2]).to be_a(Date)
         expect(perform.data[:showcase][:example3]).to be_a(Time)
@@ -436,7 +436,7 @@ RSpec.describe Showcase::CastTreaty do
       it { expect(perform.status).to eq(200) }
       it { expect(perform.version).to eq(Gem::Version.new("2")) }
 
-      it do
+      it "returns string values", :aggregate_failures do
         expect(perform.data[:showcase][:example1]).to be_a(String)
         expect(perform.data[:showcase][:example2]).to be_a(String)
         expect(perform.data[:showcase][:example3]).to be_a(String)
@@ -495,7 +495,7 @@ RSpec.describe Showcase::CastTreaty do
       it { expect(perform.status).to eq(200) }
       it { expect(perform.version).to eq(Gem::Version.new("4")) }
 
-      it do
+      it "returns cast values", :aggregate_failures do
         expect(perform.data[:showcase][:example1]).to be_a(DateTime)
         expect(perform.data[:showcase][:example2]).to eq(42)
       end
@@ -520,7 +520,7 @@ RSpec.describe Showcase::CastTreaty do
         it { expect(perform.status).to eq(200) }
         it { expect(perform.version).to eq(Gem::Version.new("5")) }
 
-        it do
+        it "returns cast values", :aggregate_failures do
           expect(perform.data[:showcase][:example1]).to be_a(DateTime)
           expect(perform.data[:showcase][:example2]).to eq(42)
         end

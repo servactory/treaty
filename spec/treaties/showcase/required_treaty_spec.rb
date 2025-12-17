@@ -411,10 +411,12 @@ RSpec.describe Showcase::RequiredTreaty do
           }
         end
 
-        it "raises error with custom string message" do
-          expect { perform }.to raise_error(Treaty::Exceptions::Validation) do |error|
-            expect(error.message).to include("Example1 field is required")
-          end
+        it "raises error with custom string message", :aggregate_failures do
+          expect { perform }.to(
+            raise_error(Treaty::Exceptions::Validation) do |exception|
+              expect(exception.message).to include("Example1 field is required")
+            end
+          )
         end
       end
 
@@ -428,10 +430,12 @@ RSpec.describe Showcase::RequiredTreaty do
           }
         end
 
-        it "raises error with custom lambda message" do
-          expect { perform }.to raise_error(Treaty::Exceptions::Validation) do |error|
-            expect(error.message).to include("example2 must be provided")
-          end
+        it "raises error with custom lambda message", :aggregate_failures do
+          expect { perform }.to(
+            raise_error(Treaty::Exceptions::Validation) do |exception|
+              expect(exception.message).to include("example2 must be provided")
+            end
+          )
         end
       end
     end

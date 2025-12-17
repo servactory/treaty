@@ -419,10 +419,12 @@ RSpec.describe Showcase::InclusionTreaty do
           }
         end
 
-        it "raises error with custom string message" do
-          expect { perform }.to raise_error(Treaty::Exceptions::Validation) do |error|
-            expect(error.message).to include("Invalid option selected")
-          end
+        it "raises error with custom string message", :aggregate_failures do
+          expect { perform }.to(
+            raise_error(Treaty::Exceptions::Validation) do |exception|
+              expect(exception.message).to include("Invalid option selected")
+            end
+          )
         end
       end
 
@@ -436,10 +438,12 @@ RSpec.describe Showcase::InclusionTreaty do
           }
         end
 
-        it "raises error with custom lambda message" do
-          expect { perform }.to raise_error(Treaty::Exceptions::Validation) do |error|
-            expect(error.message).to include("example2 must be one of: alpha, beta, gamma")
-          end
+        it "raises error with custom lambda message", :aggregate_failures do
+          expect { perform }.to(
+            raise_error(Treaty::Exceptions::Validation) do |exception|
+              expect(exception.message).to include("example2 must be one of: alpha, beta, gamma")
+            end
+          )
         end
       end
     end

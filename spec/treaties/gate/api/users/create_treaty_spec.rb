@@ -332,7 +332,7 @@ RSpec.describe Gate::API::Users::CreateTreaty do
                           user: {
                             type: :object,
                             options: {
-                              required: { is: true, message: nil }
+                              required: { is: false, message: nil }
                             },
                             attributes: {
                               id: {
@@ -345,7 +345,7 @@ RSpec.describe Gate::API::Users::CreateTreaty do
                               email: {
                                 type: :string,
                                 options: {
-                                  required: { is: true, message: nil },
+                                  required: { is: false, message: nil },
                                   format: { is: :email, message: nil }
                                 },
                                 attributes: {}
@@ -368,7 +368,7 @@ RSpec.describe Gate::API::Users::CreateTreaty do
                               password: {
                                 type: :string,
                                 options: {
-                                  required: { is: true, message: nil },
+                                  required: { is: false, message: nil },
                                   format: { is: :password, message: Proc }
                                 },
                                 attributes: {}

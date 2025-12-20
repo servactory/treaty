@@ -26,6 +26,14 @@ module Treaty
     class Factory
       attr_reader :status, :entity_class
 
+      # Preset options to apply for info generation.
+      # Response uses required: false by default for all attributes.
+      #
+      # @return [Hash] Preset options
+      def preset_options
+        { required: false }
+      end
+
       def initialize(status)
         @status = status
       end

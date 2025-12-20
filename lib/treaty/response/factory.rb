@@ -68,26 +68,13 @@ module Treaty
 
       private
 
-      # Creates an anonymous Entity class with required: false as default.
-      # This matches the documented behavior for response blocks.
+      # Creates an anonymous Entity class for response definitions.
+      # Entity attributes are required by default (required: true).
+      # Response::Validator uses .preset(required: false) to make all fields optional.
       #
       # @return [Class] Anonymous Entity class
       def create_anonymous_entity_class
-        attribute_creator = response_attribute_creator
-        Class.new(Treaty::Entity) do
-          define_singleton_method(:create_attribute, &attribute_creator)
-        end
-      end
-
-      # Returns a proc that creates attributes with required: false default
-      #
-      # @return [Proc] Attribute creator proc
-      def response_attribute_creator
-        proc do |name, type, *helpers, nesting_level:, **options, &block|
-          Treaty::Entity::Attribute::Attribute.new(
-            name, type, *helpers, nesting_level:, default_required: false, **options, &block
-          )
-        end
+        Class.new(Treaty::Entity)
       end
 
       # Validates that the provided entity_class is a valid Treaty::Entity subclass

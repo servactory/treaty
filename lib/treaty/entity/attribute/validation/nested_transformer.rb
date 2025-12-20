@@ -10,13 +10,15 @@ module Treaty
           SELF_OBJECT = :_self
           private_constant :SELF_OBJECT
 
-          attr_reader :attribute
+          attr_reader :attribute, :preset
 
           # Creates a new nested transformer
           #
           # @param attribute [Attribute::Base] The attribute with nested structure
-          def initialize(attribute)
+          # @param preset [Treaty::Entity::Context::Preset, nil] Preset with default options
+          def initialize(attribute, preset: nil)
             @attribute = attribute
+            @preset = preset
           end
 
           # Transforms nested attribute value (object or array)
@@ -48,7 +50,7 @@ module Treaty
           def transform_object(value, root_data = {})
             return value unless attribute.nested?
 
-            transformer = ObjectTransformer.new(attribute)
+            transformer = ObjectTransformer.new(attribute, preset:)
             transformer.transform(value, root_data)
           end
 
@@ -60,19 +62,21 @@ module Treaty
           def transform_array(value, root_data = {})
             return value unless attribute.nested?
 
-            transformer = ArrayTransformer.new(attribute)
+            transformer = ArrayTransformer.new(attribute, preset:)
             transformer.transform(value, root_data)
           end
 
           # Transforms object (hash) with nested attributes
           class ObjectTransformer
-            attr_reader :attribute
+            attr_reader :attribute, :preset
 
             # Creates a new object transformer
             #
             # @param attribute [Attribute::Base] The object-type attribute
-            def initialize(attribute)
+            # @param preset [Treaty::Entity::Context::Preset, nil] Preset with default options
+            def initialize(attribute, preset: nil)
               @attribute = attribute
+              @preset = preset
             end
 
             # Transforms hash by processing all nested attributes
@@ -184,25 +188,31 @@ module Treaty
             # @param target_hash [Hash] Target hash to populate
             # @param root_data [Hash] Full raw data from root level (for computed modifier)
             # @return [void]
-            def process_attribute(nested_attribute, source_hash, target_hash, root_data = {}) # rubocop:disable Metrics/MethodLength
-              source_name = nested_attribute.name
-              nested_value = source_hash.fetch(source_name, nil)
-
-              validator = AttributeValidator.new(nested_attribute)
+            def process_attribute(nested_attribute, source_hash, target_hash, root_data = {})
+              nested_value = source_hash.fetch(nested_attribute.name, nil)
+              validator = AttributeValidator.new(nested_attribute, preset:)
               validator.validate_schema!
 
-              transformed_value = if nested_attribute.nested?
-                                    nested_transformer = NestedTransformer.new(nested_attribute)
-                                    validator.validate_type!(nested_value) unless nested_value.nil?
-                                    validator.validate_required!(nested_value)
-                                    nested_transformer.transform(nested_value, root_data)
-                                  else
-                                    validator.validate_value!(nested_value)
-                                    validator.transform_value(nested_value, root_data)
-                                  end
+              transformed_value = validate_and_transform(nested_attribute, nested_value, validator, root_data)
+              target_hash[validator.target_name] = transformed_value
+            end
 
-              target_name = validator.target_name
-              target_hash[target_name] = transformed_value
+            # Validates and transforms attribute value
+            #
+            # @param nested_attribute [Attribute::Base] Attribute to process
+            # @param value [Object] Value to validate and transform
+            # @param validator [AttributeValidator] Validator instance
+            # @param root_data [Hash] Full raw data from root level
+            # @return [Object] Transformed value
+            def validate_and_transform(nested_attribute, value, validator, root_data)
+              if nested_attribute.nested?
+                validator.validate_type!(value) unless value.nil?
+                validator.validate_required!(value)
+                NestedTransformer.new(nested_attribute, preset:).transform(value, root_data)
+              else
+                validator.validate_value!(value)
+                validator.transform_value(value, root_data)
+              end
             end
           end
 
@@ -211,13 +221,15 @@ module Treaty
             SELF_OBJECT = :_self
             private_constant :SELF_OBJECT
 
-            attr_reader :attribute
+            attr_reader :attribute, :preset
 
             # Creates a new array transformer
             #
             # @param attribute [Attribute::Base] The array-type attribute
-            def initialize(attribute)
+            # @param preset [Treaty::Entity::Context::Preset, nil] Preset with default options
+            def initialize(attribute, preset: nil)
               @attribute = attribute
+              @preset = preset
             end
 
             # Transforms array by processing each element
@@ -337,7 +349,7 @@ module Treaty
             # @return [Object] Transformed element value
             def transform_simple_element(item, index, root_data = {}) # rubocop:disable Metrics/MethodLength
               self_attribute = attribute.collection_of_attributes.first
-              validator = AttributeValidator.new(self_attribute)
+              validator = AttributeValidator.new(self_attribute, preset:)
               validator.validate_schema!
 
               begin
@@ -398,12 +410,12 @@ module Treaty
               source_name = nested_attribute.name
               nested_value = source_hash.fetch(source_name, nil)
 
-              validator = AttributeValidator.new(nested_attribute)
+              validator = AttributeValidator.new(nested_attribute, preset:)
               validator.validate_schema!
 
               begin
                 transformed_value = if nested_attribute.nested?
-                                      nested_transformer = NestedTransformer.new(nested_attribute)
+                                      nested_transformer = NestedTransformer.new(nested_attribute, preset:)
                                       validator.validate_type!(nested_value) unless nested_value.nil?
                                       validator.validate_required!(nested_value)
                                       nested_transformer.transform(nested_value, root_data)

@@ -72,18 +72,15 @@ module Treaty
         # - Response::Builder - For response attribute definitions
         class Base
           attr_reader :nesting_level,
-                      :collection_of_attributes,
-                      :default_required
+                      :collection_of_attributes
 
           # Creates a new builder instance
           #
           # @param collection_of_attributes [Collection] Collection to add attributes to
           # @param nesting_level [Integer] Current nesting depth
-          # @param default_required [Boolean] Default value for required option (default: true)
-          def initialize(collection_of_attributes, nesting_level, default_required: true)
+          def initialize(collection_of_attributes, nesting_level)
             @collection_of_attributes = collection_of_attributes
             @nesting_level = nesting_level
-            @default_required = default_required
           end
 
           # Defines an attribute with explicit type
@@ -140,26 +137,6 @@ module Treaty
             # Must be implemented in subclasses
             raise Treaty::Exceptions::NotImplemented,
                   I18n.t("treaty.attributes.builder.not_implemented", class: self.class)
-          end
-        end
-
-        # Default builder implementation for Entity context.
-        # Creates Attribute instances with configurable required default.
-        class Default < Base
-          private
-
-          def create_attribute(name, type, *helpers, nesting_level:, **options, &block)
-            # Pass default_required to Attribute, which will use it in apply_defaults!
-            # if required is not set explicitly or via helpers
-            Attribute.new(
-              name,
-              type,
-              *helpers,
-              nesting_level:,
-              default_required: @default_required,
-              **options,
-              &block
-            )
           end
         end
       end

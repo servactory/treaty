@@ -46,8 +46,7 @@ module Treaty
         attr_reader :name,
                     :type,
                     :options,
-                    :nesting_level,
-                    :default_required
+                    :nesting_level
 
         # Set of option names that were explicitly set by user
         # before apply_defaults! was called.
@@ -62,14 +61,12 @@ module Treaty
         # @param type [Symbol] The attribute type (:string, :integer, :object, :array, etc.)
         # @param helpers [Array<Symbol>] Helper symbols (:required, :optional)
         # @param nesting_level [Integer] Current nesting depth (default: 0)
-        # @param default_required [Boolean] Default value for required option (default: true)
         # @param options [Hash] Attribute options (required, default, as, etc.)
         # @param block [Proc] Block for defining nested attributes (for object/array types)
-        def initialize(name, type, *helpers, nesting_level: 0, default_required: true, **options, &block)
+        def initialize(name, type, *helpers, nesting_level: 0, **options, &block)
           @name = name
           @type = type
           @nesting_level = nesting_level
-          @default_required = default_required
 
           validate_nesting_level!
           process_options!(helpers, options)

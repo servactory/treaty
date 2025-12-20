@@ -90,9 +90,7 @@ module Treaty
         result = attribute_options.dup
 
         # Only apply default if attribute doesn't have explicit required
-        unless result.key?(:required)
-          result[:required] = required_default if required_default
-        end
+        result[:required] = required_default if !result.key?(:required) && required_default
 
         result
       end
@@ -123,9 +121,7 @@ module Treaty
       def normalize_options(options)
         result = {}
 
-        if options.key?(:required)
-          result[:required] = normalize_required(options[:required])
-        end
+        result[:required] = normalize_required(options[:required]) if options.key?(:required)
 
         result
       end

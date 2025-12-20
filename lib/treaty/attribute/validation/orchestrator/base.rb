@@ -221,7 +221,7 @@ module Treaty
               validate_and_transform_nested(attribute, value, validator)
             else
               # Pass configuration for required: false override support
-              validator.validate_value!(value, configuration: configuration)
+              validator.validate_value!(value, configuration:)
               validator.transform_value(value, data)
             end
           end
@@ -245,7 +245,7 @@ module Treaty
             # Step 2: Validate required constraint
             # This will raise an exception if attribute is required and value is nil
             # Pass configuration for required: false override support
-            validator.validate_required!(value, configuration: configuration)
+            validator.validate_required!(value, configuration:)
 
             # Step 3: Early return for nil values
             # Only reaches here if attribute is optional and value is nil

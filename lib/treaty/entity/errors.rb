@@ -113,7 +113,7 @@ module Treaty
       # For nested paths: `{ user: { email: ["is invalid"] } }`
       #
       # @return [Hash] Nested hash of errors
-      def to_h
+      def to_h # rubocop:disable Metrics/MethodLength
         result = {}
 
         @messages.each do |path, messages|
@@ -138,7 +138,7 @@ module Treaty
       # @return [Array<Hash>] Array of `{ attribute:, messages: }` hashes
       def to_a
         @messages.map do |attribute, messages|
-          { attribute: attribute, messages: messages.dup }
+          { attribute:, messages: messages.dup }
         end
       end
 

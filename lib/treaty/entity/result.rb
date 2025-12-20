@@ -46,7 +46,7 @@ module Treaty
     # ```
     class Result
       # @return [Hash] The processed data (empty hash if validation failed)
-      attr_reader :data
+      attr_accessor :data
 
       # @return [Errors] Collection of validation errors
       attr_reader :errors
@@ -103,9 +103,6 @@ module Treaty
       # @param value [Hash] The processed data
       # @return [Hash]
       # @api private
-      def data=(value)
-        @data = value
-      end
     end
   end
 end

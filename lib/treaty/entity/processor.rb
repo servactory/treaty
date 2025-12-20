@@ -94,7 +94,7 @@ module Treaty
       #
       # @param data [Hash] The data to validate and transform
       # @return [Attribute::Validation::Orchestrator::Base] Orchestrator instance
-      def build_orchestrator(data)
+      def build_orchestrator(data) # rubocop:disable Metrics/MethodLength
         entity = entity_class
         config = configuration
 
@@ -110,7 +110,7 @@ module Treaty
 
         # Create orchestrator with nil version_factory (not needed for Entity processing)
         # Pass configuration for default options handling
-        orchestrator_class.new(version_factory: nil, data: data, configuration: config)
+        orchestrator_class.new(version_factory: nil, data:, configuration: config)
       end
 
       # Handles validation errors by adding them to the result.

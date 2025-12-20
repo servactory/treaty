@@ -120,9 +120,7 @@ module Treaty
           # Skip validation if:
           # 1. Configuration says skip default required (required: false)
           # 2. AND attribute has default required (not explicit)
-          if configuration&.skip_default_required? && !attribute.required_explicit?
-            return
-          end
+          return if configuration&.skip_default_required? && !attribute.required_explicit?
 
           required_processor = option_orchestrator.processor_for(:required)
           required_processor&.validate_value!(value)

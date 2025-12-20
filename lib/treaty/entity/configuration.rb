@@ -71,6 +71,16 @@ module Treaty
         @options.dig(:required, :is) == true
       end
 
+      # Checks if configuration should skip default required validation.
+      # Returns true if configuration explicitly sets required: false.
+      # This is used to determine if non-explicit required attributes should
+      # be treated as optional.
+      #
+      # @return [Boolean]
+      def skip_default_required?
+        @options.key?(:required) && @options.dig(:required, :is) == false
+      end
+
       # Merges configuration options with attribute options.
       # Attribute options take precedence over configuration defaults.
       #

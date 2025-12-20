@@ -47,6 +47,13 @@ module Treaty
                   :options,
                   :nesting_level
 
+      # Indicates whether required option was explicitly set by user
+      # or applied as default by apply_defaults!
+      # Used by Configuration to override default required behavior
+      #
+      # @return [Boolean] True if required was set explicitly
+      attr_reader :required_explicit
+
       # Creates a new attribute instance
       #
       # @param name [Symbol] The attribute name
@@ -70,6 +77,9 @@ module Treaty
 
         # Normalize all options to advanced mode.
         @options = OptionNormalizer.normalize(merged_options)
+
+        # Track if required was explicitly set before apply_defaults!
+        @required_explicit = @options.key?(:required)
 
         apply_defaults!
 
@@ -110,6 +120,14 @@ module Treaty
       # @return [Boolean] True if type is :array
       def array?
         @type == :array
+      end
+
+      # Checks if required option was explicitly set by user
+      # Returns false if required was only set by apply_defaults!
+      #
+      # @return [Boolean] True if required was explicitly set
+      def required_explicit?
+        @required_explicit == true
       end
 
       private

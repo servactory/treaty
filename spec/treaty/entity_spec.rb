@@ -96,14 +96,13 @@ RSpec.describe Treaty::Entity do
     end
 
     context "with required: false option" do
-      # TODO: Configuration default options need to be applied during validation
-      # This requires modifying RequiredValidator to check orchestrator.configuration
-      it "treats missing required fields as optional", pending: "Configuration default options not yet applied" do
+      it "treats missing required fields as optional" do
         data = { title: "Hello" }
         result = simple_entity.call(data, required: false)
 
         expect(result).to be_valid
-        expect(result.data).to eq(title: "Hello")
+        # Missing fields are included with nil value
+        expect(result.data).to eq(title: "Hello", content: nil)
       end
     end
   end
@@ -164,8 +163,7 @@ RSpec.describe Treaty::Entity do
     end
 
     context "with required: false option" do
-      # TODO: Configuration default options need to be applied during validation
-      it "returns true for partial data", pending: "Configuration default options not yet applied" do
+      it "returns true for partial data" do
         data = { title: "Hello" }
         result = simple_entity.valid?(data, required: false)
 

@@ -9,9 +9,15 @@ module Treaty
         end
 
         module ClassMethods
-          def info
+          # Returns info about entity attributes with optional preset applied
+          #
+          # @param preset [Hash, nil] Preset options to apply to non-explicit attribute options
+          # @return [Result] Info result wrapper
+          def info(preset: nil)
             builder = Builder.build(
-              collection_of_attributes:
+              collection_of_attributes:,
+              entity_class: self,
+              preset:
             )
 
             Result.new(builder)

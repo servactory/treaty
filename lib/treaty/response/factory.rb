@@ -26,14 +26,6 @@ module Treaty
     class Factory
       attr_reader :status, :entity_class
 
-      # Preset options to apply for info generation.
-      # Response uses required: false by default for all attributes.
-      #
-      # @return [Hash] Preset options
-      def preset_options
-        { required: false }
-      end
-
       def initialize(status)
         @status = status
       end
@@ -55,6 +47,18 @@ module Treaty
         return Treaty::Entity::Attribute::Collection.new if @entity_class.nil?
 
         @entity_class.collection_of_attributes
+      end
+
+      # Returns info about response attributes with preset applied
+      #
+      # Reads preset_options from Validator class method (single source of truth)
+      #
+      # @return [Hash] Info structure with attributes
+      def info
+        return { attributes: {} } if @entity_class.nil?
+
+        result = @entity_class.info(preset: Treaty::Response::Validator.preset_options)
+        { attributes: result.attributes }
       end
 
       # Handles DSL methods for defining attributes

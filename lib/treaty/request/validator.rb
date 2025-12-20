@@ -13,6 +13,14 @@ module Treaty
         def validate!(params:, version_factory:)
           new(params:, version_factory:).validate!
         end
+
+        # Preset options for Request context
+        # Request uses Entity defaults (no override)
+        #
+        # @return [Hash] Preset options (empty)
+        def preset_options
+          {}
+        end
       end
 
       def initialize(params:, version_factory:)

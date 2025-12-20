@@ -98,7 +98,7 @@ module Treaty
   # - `array` - Array values (with nested type definition)
   # - `object` - Object values (with nested attributes)
   class Entity
-    include Info::Entity::DSL
+    include Treaty::Info::Entity::DSL
     include Attribute::DSL
     include Context::DSL
     include Processing::DSL

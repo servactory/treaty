@@ -45,6 +45,18 @@ module Treaty
         @entity_class.collection_of_attributes
       end
 
+      # Returns info about request attributes with preset applied
+      #
+      # Reads preset_options from Validator class method (single source of truth)
+      #
+      # @return [Hash] Info structure with attributes
+      def info
+        return { attributes: {} } if @entity_class.nil?
+
+        result = @entity_class.info(preset: Treaty::Request::Validator.preset_options)
+        { attributes: result.attributes }
+      end
+
       # Handles DSL methods for defining attributes
       #
       # This allows the factory to be used with method_missing

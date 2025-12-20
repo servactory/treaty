@@ -9,20 +9,43 @@ module Treaty
   # that can be used in both request and response definitions. This allows
   # for better code organization and reusability of common data structures.
   #
-  # ## Usage
+  # ## Standalone Usage
   #
-  # Create a DTO class by inheriting from Treaty::Entity:
+  # Entity classes can be used independently for data validation and transformation:
   #
   # ```ruby
-  # class PostEntity < Treaty::Entity
-  #   string :id
-  #   string :title
-  #   string :content
-  #   datetime :created_at
+  # class UserEntity < Treaty::Entity
+  #   object :user do
+  #     string :name
+  #     string :email, format: :email
+  #   end
   # end
+  #
+  # # Validate and transform data
+  # result = UserEntity.call(params)
+  # result.valid?     # => true/false
+  # result.data       # => { user: { name: "John", email: "john@test.com" } }
+  # result.errors     # => Errors collection
+  #
+  # # With exception on validation errors
+  # result = UserEntity.call!(params)  # raises Treaty::Exceptions::Validation
+  #
+  # # Check validity only (predicate)
+  # UserEntity.valid?(params)  # => true/false
   # ```
   #
-  # Then use it in your treaty definitions:
+  # ## Options
+  #
+  # The `required:` option controls default required behavior for all attributes:
+  #
+  # ```ruby
+  # UserEntity.call(data, required: true)   # strict validation (default)
+  # UserEntity.call(data, required: false)  # lenient validation
+  # ```
+  #
+  # ## Usage with Treaty Class
+  #
+  # Entity classes can also be used in Treaty definitions:
   #
   # ```ruby
   # class CreateTreaty < ApplicationTreaty
@@ -64,6 +87,89 @@ module Treaty
     include Attribute::DSL
 
     class << self
+      # Validates and transforms data according to Entity definition.
+      # Returns a Result object containing processed data and any validation errors.
+      #
+      # @param data [Hash] Data to validate and transform
+      # @param options [Hash] Options for processing
+      # @option options [Boolean] :required Default required value for attributes (default: true)
+      # @return [Treaty::Entity::Result] Result object with data and errors
+      #
+      # @example Basic usage
+      #   result = UserEntity.call(params)
+      #   if result.valid?
+      #     UserService.create(result.to_h)
+      #   else
+      #     render json: { errors: result.errors.to_h }, status: 422
+      #   end
+      #
+      # @example With options
+      #   result = UserEntity.call(data, required: false)  # lenient validation
+      def call(data, **options)
+        configuration = Entity::Configuration.new(options)
+        processor = Entity::Processor.new(self, configuration)
+        processor.call(data)
+      end
+
+      # Validates and transforms data, raising an exception on validation errors.
+      # Returns a Result object if validation succeeds.
+      #
+      # @param data [Hash] Data to validate and transform
+      # @param options [Hash] Options for processing
+      # @option options [Boolean] :required Default required value for attributes (default: true)
+      # @return [Treaty::Entity::Result] Result object with validated data
+      # @raise [Treaty::Exceptions::Validation] If validation fails
+      #
+      # @example
+      #   result = UserEntity.call!(params)
+      #   UserService.create(result.to_h)
+      def call!(data, **options)
+        configuration = Entity::Configuration.new(options)
+        processor = Entity::Processor.new(self, configuration)
+        processor.call!(data)
+      end
+
+      # Predicate method that checks if data is valid according to Entity definition.
+      # Does not perform transformation, only validation.
+      #
+      # @param data [Hash] Data to validate
+      # @param options [Hash] Options for validation
+      # @option options [Boolean] :required Default required value for attributes (default: true)
+      # @return [Boolean] true if data is valid, false otherwise
+      #
+      # @example
+      #   if UserEntity.valid?(params)
+      #     # proceed with processing
+      #   end
+      def valid?(data, **options)
+        call(data, **options).valid?
+      end
+
+      # Creates an anonymous Entity class from a block.
+      # Useful for creating inline Entity definitions without explicit class.
+      #
+      # @param options [Hash] Default options for the Entity
+      # @option options [Boolean] :required Default required value for attributes
+      # @yield Block containing attribute definitions
+      # @return [Class] Anonymous class inheriting from Treaty::Entity
+      #
+      # @example
+      #   entity_class = Treaty::Entity.from_block(required: true) do
+      #     object :user do
+      #       string :name
+      #     end
+      #   end
+      #
+      #   result = entity_class.call(data)
+      def from_block(**options, &block)
+        Class.new(self) do
+          class_eval(&block) if block_given?
+
+          # Store default options for this anonymous Entity
+          define_singleton_method(:default_options) { options }
+        end
+      end
+
       private
 
       # Creates an Attribute::Entity::Attribute for this Entity class

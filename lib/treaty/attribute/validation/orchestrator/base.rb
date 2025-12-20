@@ -48,7 +48,7 @@ module Treaty
           SELF_OBJECT = :_self
           private_constant :SELF_OBJECT
 
-          attr_reader :version_factory, :data
+          attr_reader :version_factory, :data, :configuration
 
           # Class-level factory method for validation
           # Creates instance and calls validate!
@@ -61,11 +61,13 @@ module Treaty
 
           # Creates a new orchestrator instance
           #
-          # @param version_factory [VersionFactory] Factory containing version info
+          # @param version_factory [VersionFactory] Factory containing version info (can be nil for Entity)
           # @param data [Hash] Data to validate and transform (default: {})
-          def initialize(version_factory:, data: {})
+          # @param configuration [Treaty::Entity::Configuration, nil] Configuration with default options
+          def initialize(version_factory:, data: {}, configuration: nil)
             @version_factory = version_factory
             @data = data
+            @configuration = configuration
           end
 
           # Validates and transforms all attributes

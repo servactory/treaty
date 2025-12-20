@@ -40,7 +40,7 @@ module Treaty
         # Creates a new attribute validator instance
         #
         # @param attribute [Attribute::Base] The attribute to validate
-        # @param preset [Treaty::Entity::Preset, nil] Preset with default options
+        # @param preset [Treaty::Entity::Context::Preset, nil] Preset with default options
         def initialize(attribute, preset: nil)
           @attribute = attribute
           @option_orchestrator = OptionOrchestrator.new(attribute, preset:)

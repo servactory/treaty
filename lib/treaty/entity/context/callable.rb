@@ -32,7 +32,7 @@ module Treaty
         # Returns a Preset wrapper with pre-configured options.
         # Preset delegates to private _process/_process! methods.
         def preset(**options)
-          Entity::Preset.new(self, **options)
+          Preset.new(self, **options)
         end
 
         # Validates and transforms data, catching validation errors.

@@ -63,7 +63,7 @@ module Treaty
           #
           # @param version_factory [VersionFactory] Factory containing version info (can be nil for Entity)
           # @param data [Hash] Data to validate and transform (default: {})
-          # @param preset [Treaty::Entity::Preset, nil] Preset with default options
+          # @param preset [Treaty::Entity::Context::Preset, nil] Preset with default options
           def initialize(version_factory:, data: {}, preset: nil)
             @version_factory = version_factory
             @data = data

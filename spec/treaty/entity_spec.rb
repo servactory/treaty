@@ -222,7 +222,7 @@ RSpec.describe Treaty::Entity do
     it "returns a Preset instance" do
       preset = user_entity.preset(required: false)
 
-      expect(preset).to be_a(Treaty::Entity::Preset)
+      expect(preset).to be_a(Treaty::Entity::Context::Preset)
     end
 
     it "Preset can call, call!, and valid?", :aggregate_failures do

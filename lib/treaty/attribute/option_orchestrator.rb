@@ -71,7 +71,7 @@ module Treaty
       # Creates a new orchestrator instance
       #
       # @param attribute [Attribute::Base] The attribute to orchestrate options for
-      # @param preset [Treaty::Entity::Preset, nil] Preset with default options
+      # @param preset [Treaty::Entity::Context::Preset, nil] Preset with default options
       def initialize(attribute, preset: nil)
         @attribute = attribute
         @preset = preset

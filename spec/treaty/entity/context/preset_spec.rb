@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Treaty::Entity::Preset do
+RSpec.describe Treaty::Entity::Context::Preset do
   # Test Entity class for specs
   let(:simple_entity) do
     Class.new(Treaty::Entity) do

@@ -625,6 +625,100 @@ Treaty::Engine.configure do |config|
 end
 ```
 
+## Use Entity Issues
+
+### "use_entity expects a Treaty::Entity subclass"
+
+**Problem:** Argument passed to `use_entity` is not a valid Entity class.
+
+**Solution:**
+1. Ensure the class inherits from `Treaty::Entity` (or `ApplicationDto`)
+2. Verify the class is loaded before the treaty definition
+3. Check class name spelling
+
+**Example:**
+```ruby
+# ✓ Correct: Class inherits from Treaty::Entity
+class AuthorDto < ApplicationDto
+  string :name
+end
+
+object :author do
+  use_entity(AuthorDto)  # Works
+end
+
+# ✗ Wrong: Regular class
+class AuthorData
+  attr_accessor :name
+end
+
+object :author do
+  use_entity(AuthorData)  # Error: not a Treaty::Entity subclass
+end
+```
+
+### "use_entity must be the only statement in the block"
+
+**Problem:** Attempting to define attributes alongside `use_entity`, or calling `use_entity` after defining other attributes.
+
+**Solution:**
+`use_entity` must be the sole statement within an object or array block. You cannot mix inline attribute definitions with Entity reuse.
+
+**Example:**
+```ruby
+# ✓ Correct: use_entity is the only statement
+object :author do
+  use_entity(AuthorDto)
+end
+
+# ✗ Wrong: Attributes defined before use_entity
+object :author do
+  string :name  # Error: Cannot call use_entity after defining attributes
+  use_entity(AuthorDto)
+end
+
+# ✗ Wrong: Attributes defined after use_entity
+object :author do
+  use_entity(AuthorDto)
+  string :extra_field  # Error: Cannot define attributes after use_entity
+end
+
+# ✓ Correct: If you need additional attributes, define them in the Entity
+class AuthorDto < ApplicationDto
+  string :name
+  string :extra_field  # Add attributes here instead
+end
+
+object :author do
+  use_entity(AuthorDto)
+end
+```
+
+### Wrapper options with use_entity
+
+**Problem:** Confusion about how `:optional`, `if:`, or `unless:` work with `use_entity`.
+
+**Solution:**
+Options like `:optional` apply to the wrapper object/array, not to the Entity's internal attributes. The Entity's attribute definitions (required/optional) are preserved.
+
+**Example:**
+```ruby
+class AuthorDto < ApplicationDto
+  string :name           # required (Entity default)
+  string :bio, :optional # optional
+end
+
+# :optional applies to the wrapper object, not AuthorDto's attributes
+object :author, :optional do
+  use_entity(AuthorDto)
+end
+
+# Conditional applies to wrapper
+object :author, if: ->(post:) { post[:has_author] } do
+  use_entity(AuthorDto)
+end
+```
+
 ## Transformation Issues
 
 ### Default value has wrong type

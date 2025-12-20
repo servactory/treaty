@@ -97,6 +97,14 @@ treaty:
           element_type_error: "Error in array '%{attribute}' at index %{index}: Expected Hash but got %{actual}"
           attribute_error: "Error in array '%{attribute}' at index %{index}: %{message}"
 
+      builder:
+        not_implemented: "%{class} must implement #create_attribute"
+        create_attribute_not_implemented: "Subclass %{class} must implement #create_attribute method"
+        deep_copy_not_implemented: "%{class} must implement #deep_copy_attribute"
+        invalid_entity_class: "use_entity expects a Treaty::Entity subclass, got %{type}: %{value}"
+        use_entity_after_attributes: "use_entity must be the only statement in the block. Cannot call use_entity after defining other attributes."
+        attributes_after_use_entity: "use_entity must be the only statement in the block. Cannot define attributes after calling use_entity."
+
   request:
     factory:
       unknown_method: "Unknown method '%{method}' in request definition. Use 'object :name do ... end' to define request structure"
@@ -266,6 +274,10 @@ de:
       builder:
         not_implemented: "%{class} muss #create_attribute implementieren"
         create_attribute_not_implemented: "Unterklasse %{class} muss die Methode #create_attribute implementieren"
+        deep_copy_not_implemented: "%{class} muss #deep_copy_attribute implementieren"
+        invalid_entity_class: "use_entity erwartet eine Treaty::Entity-Unterklasse, erhalten: %{type}: %{value}"
+        use_entity_after_attributes: "use_entity muss die einzige Anweisung im Block sein. use_entity kann nicht nach der Definition anderer Attribute aufgerufen werden."
+        attributes_after_use_entity: "use_entity muss die einzige Anweisung im Block sein. Nach dem Aufruf von use_entity können keine Attribute definiert werden."
 
       errors:
         nesting_level_exceeded: "Verschachtelungsebene %{level} überschreitet die maximal erlaubte Ebene von %{max_level}"
@@ -532,6 +544,11 @@ Different validators provide different interpolation variables:
 - `%{unknown}` - comma-separated list of unknown options
 - `%{known}` - comma-separated list of known options
 - `%{error}` - the error message from custom message lambda execution (for message_evaluation_error)
+
+**Builder:**
+- `%{class}` - the class name that must implement the method
+- `%{type}` - the actual type of the invalid argument
+- `%{value}` - the value that was provided instead of a Treaty::Entity subclass
 
 ### Example: German Customization
 

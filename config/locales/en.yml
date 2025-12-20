@@ -83,6 +83,10 @@ en:
       builder:
         not_implemented: "%{class} must implement #create_attribute"
         create_attribute_not_implemented: "Subclass %{class} must implement #create_attribute method"
+        deep_copy_not_implemented: "%{class} must implement #deep_copy_attribute"
+        invalid_entity_class: "use_entity expects a Treaty::Entity subclass, got %{type}: %{value}"
+        use_entity_after_attributes: "use_entity must be the only statement in the block. Cannot call use_entity after defining other attributes."
+        attributes_after_use_entity: "use_entity must be the only statement in the block. Cannot define attributes after calling use_entity."
 
       # Attribute-level errors
       errors:

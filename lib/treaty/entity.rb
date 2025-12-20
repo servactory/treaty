@@ -34,13 +34,28 @@ module Treaty
   # UserEntity.valid?(params)  # => true/false
   # ```
   #
-  # ## Options
+  # ## Options via .options()
   #
-  # The `required:` option controls default required behavior for all attributes:
+  # Use `.options()` method to configure validation behavior. This approach
+  # avoids name conflicts between attribute names and option names:
   #
   # ```ruby
-  # UserEntity.call(data, required: true)   # strict validation (default)
-  # UserEntity.call(data, required: false)  # lenient validation
+  # # With options
+  # UserEntity.options(required: false).call(data)  # lenient validation
+  # UserEntity.options(required: false, default: "N/A").call(data)  # multiple options
+  #
+  # # Reuse context
+  # context = UserEntity.options(required: false)
+  # result1 = context.call(data1)
+  # result2 = context.call(data2)
+  #
+  # # No conflict with attribute names!
+  # class PaymentEntity < Treaty::Entity
+  #   object :payment do
+  #     boolean :required  # Attribute named "required" - OK!
+  #   end
+  # end
+  # PaymentEntity.options(required: false).call({ payment: { required: true } })
   # ```
   #
   # ## Usage with Treaty Class
@@ -87,12 +102,33 @@ module Treaty
     include Attribute::DSL
 
     class << self
+      # Creates a Context wrapper with pre-configured options.
+      # Use this to configure validation behavior without conflicting
+      # with attribute names.
+      #
+      # @param opts [Hash] Configuration options to apply
+      # @return [Treaty::Entity::Context] Context wrapper with options
+      #
+      # @example Single option
+      #   context = UserEntity.options(required: false)
+      #   result = context.call(data)
+      #
+      # @example Multiple options
+      #   context = UserEntity.options(required: false, default: "N/A")
+      #   result = context.call(data)
+      #
+      # @example Reusable context
+      #   context = UserEntity.options(required: false)
+      #   result1 = context.call(data1)
+      #   result2 = context.call(data2)
+      def options(**opts)
+        Entity::Context.new(self, opts)
+      end
+
       # Validates and transforms data according to Entity definition.
       # Returns a Result object containing processed data and any validation errors.
       #
       # @param data [Hash] Data to validate and transform
-      # @param options [Hash] Options for processing
-      # @option options [Boolean] :required Default required value for attributes (default: true)
       # @return [Treaty::Entity::Result] Result object with data and errors
       #
       # @example Basic usage
@@ -103,11 +139,10 @@ module Treaty
       #     render json: { errors: result.errors.to_h }, status: 422
       #   end
       #
-      # @example With options
-      #   result = UserEntity.call(data, required: false)  # lenient validation
-      def call(data, **options)
-        configuration = Entity::Configuration.new(options)
-        processor = Entity::Processor.new(self, configuration)
+      # @example With options (use .options() method)
+      #   result = UserEntity.options(required: false).call(data)
+      def call(data)
+        processor = Entity::Processor.new(self, nil)
         processor.call(data)
       end
 
@@ -115,17 +150,17 @@ module Treaty
       # Returns a Result object if validation succeeds.
       #
       # @param data [Hash] Data to validate and transform
-      # @param options [Hash] Options for processing
-      # @option options [Boolean] :required Default required value for attributes (default: true)
       # @return [Treaty::Entity::Result] Result object with validated data
       # @raise [Treaty::Exceptions::Validation] If validation fails
       #
       # @example
       #   result = UserEntity.call!(params)
       #   UserService.create(result.to_h)
-      def call!(data, **options)
-        configuration = Entity::Configuration.new(options)
-        processor = Entity::Processor.new(self, configuration)
+      #
+      # @example With options (use .options() method)
+      #   result = UserEntity.options(required: false).call!(data)
+      def call!(data)
+        processor = Entity::Processor.new(self, nil)
         processor.call!(data)
       end
 
@@ -133,40 +168,44 @@ module Treaty
       # Does not perform transformation, only validation.
       #
       # @param data [Hash] Data to validate
-      # @param options [Hash] Options for validation
-      # @option options [Boolean] :required Default required value for attributes (default: true)
       # @return [Boolean] true if data is valid, false otherwise
       #
       # @example
       #   if UserEntity.valid?(params)
       #     # proceed with processing
       #   end
-      def valid?(data, **options)
-        call(data, **options).valid?
+      #
+      # @example With options (use .options() method)
+      #   UserEntity.options(required: false).valid?(params)
+      def valid?(data)
+        call(data).valid?
       end
 
       # Creates an anonymous Entity class from a block.
       # Useful for creating inline Entity definitions without explicit class.
       #
-      # @param options [Hash] Default options for the Entity
-      # @option options [Boolean] :required Default required value for attributes
       # @yield Block containing attribute definitions
       # @return [Class] Anonymous class inheriting from Treaty::Entity
       #
       # @example
-      #   entity_class = Treaty::Entity.from_block(required: true) do
+      #   entity_class = Treaty::Entity.from_block do
       #     object :user do
       #       string :name
       #     end
       #   end
       #
       #   result = entity_class.call(data)
-      def from_block(**options, &block)
+      #
+      # @example With options
+      #   entity_class = Treaty::Entity.from_block do
+      #     object :user do
+      #       string :name
+      #     end
+      #   end
+      #   result = entity_class.options(required: false).call(data)
+      def from_block(&block)
         Class.new(self) do
           class_eval(&block) if block_given?
-
-          # Store default options for this anonymous Entity
-          define_singleton_method(:default_options) { options }
         end
       end
 

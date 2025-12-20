@@ -47,12 +47,12 @@ module Treaty
                   :options,
                   :nesting_level
 
-      # Indicates whether required option was explicitly set by user
-      # or applied as default by apply_defaults!
-      # Used by Configuration to override default required behavior
+      # Set of option names that were explicitly set by user
+      # before apply_defaults! was called.
+      # Used by Context to determine if an option should be overridden.
       #
-      # @return [Boolean] True if required was set explicitly
-      attr_reader :required_explicit
+      # @return [Set<Symbol>] Set of explicitly set option names
+      attr_reader :explicit_options
 
       # Creates a new attribute instance
       #
@@ -78,8 +78,9 @@ module Treaty
         # Normalize all options to advanced mode.
         @options = OptionNormalizer.normalize(merged_options)
 
-        # Track if required was explicitly set before apply_defaults!
-        @required_explicit = @options.key?(:required)
+        # Track ALL explicitly set options BEFORE apply_defaults!
+        # This allows Context to know which options should not be overridden.
+        @explicit_options = Set.new(@options.keys)
 
         apply_defaults!
 
@@ -122,12 +123,13 @@ module Treaty
         @type == :array
       end
 
-      # Checks if required option was explicitly set by user
-      # Returns false if required was only set by apply_defaults!
+      # Checks if a specific option was explicitly set by user.
+      # Returns false if option was only set by apply_defaults!
       #
-      # @return [Boolean] True if required was explicitly set
-      def required_explicit?
-        @required_explicit == true
+      # @param option_name [Symbol] The option name to check
+      # @return [Boolean] True if option was explicitly set
+      def explicit?(option_name)
+        @explicit_options.include?(option_name.to_sym)
       end
 
       private

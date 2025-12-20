@@ -40,9 +40,10 @@ module Treaty
         # Creates a new attribute validator instance
         #
         # @param attribute [Attribute::Base] The attribute to validate
-        def initialize(attribute)
+        # @param configuration [Treaty::Entity::Context, nil] Context with default options
+        def initialize(attribute, configuration: nil)
           @attribute = attribute
-          @option_orchestrator = OptionOrchestrator.new(attribute)
+          @option_orchestrator = OptionOrchestrator.new(attribute, configuration:)
           @nested_object_validator = nil
           @nested_array_validator = nil
         end
@@ -58,18 +59,10 @@ module Treaty
         # Validates attribute value against all constraints
         #
         # @param value [Object] The value to validate
-        # @param configuration [Treaty::Entity::Configuration, nil] Configuration with default options
         # @raise [Treaty::Exceptions::Validation] If validation fails
         # @return [void]
-        def validate_value!(value, configuration: nil)
-          # If configuration overrides default required for non-explicit attributes,
-          # validate options except required, then handle required separately
-          if should_skip_required_validation?(configuration)
-            validate_non_required_options!(value)
-          else
-            option_orchestrator.validate_value!(value)
-          end
-
+        def validate_value!(value)
+          option_orchestrator.validate_value!(value)
           validate_nested!(value) if attribute.nested? && !value.nil?
         end
 
@@ -111,48 +104,14 @@ module Treaty
         # Used by nested transformers to validate presence before nested validation
         #
         # @param value [Object] The value to validate
-        # @param configuration [Treaty::Entity::Configuration, nil] Configuration with default options
         # @raise [Treaty::Exceptions::Validation] If required validation fails
         # @return [void]
-        def validate_required!(value, configuration: nil)
-          return unless attribute.options.key?(:required)
-
-          # Skip validation if:
-          # 1. Configuration says skip default required (required: false)
-          # 2. AND attribute has default required (not explicit)
-          return if configuration&.skip_default_required? && !attribute.required_explicit?
-
+        def validate_required!(value)
           required_processor = option_orchestrator.processor_for(:required)
           required_processor&.validate_value!(value)
         end
 
         private
-
-        # Checks if required validation should be skipped based on configuration
-        #
-        # @param configuration [Treaty::Entity::Configuration, nil] Configuration
-        # @return [Boolean] True if should skip required validation
-        def should_skip_required_validation?(configuration)
-          return false if configuration.nil?
-          return false unless configuration.skip_default_required?
-          return false if attribute.required_explicit?
-
-          true
-        end
-
-        # Validates all options except required
-        # Used when configuration overrides default required for non-explicit attributes
-        #
-        # @param value [Object] The value to validate
-        # @raise [Treaty::Exceptions::Validation] If validation fails
-        # @return [void]
-        def validate_non_required_options!(value)
-          option_orchestrator.instance_variable_get(:@processors).each do |option_name, processor|
-            next if option_name == :required
-
-            processor.validate_value!(value)
-          end
-        end
 
         # Validates nested attributes for object/array types
         #

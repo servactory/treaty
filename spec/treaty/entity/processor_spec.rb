@@ -20,24 +20,23 @@ RSpec.describe Treaty::Entity::Processor do
   end
 
   describe "#initialize" do
-    it "accepts entity class and configuration" do
-      config = Treaty::Entity::Configuration.new(required: true)
-      processor = described_class.new(test_entity, config)
+    it "accepts entity class and context", :aggregate_failures do
+      context = Treaty::Entity::Context.new(test_entity, required: true)
+      processor = described_class.new(test_entity, context)
 
       expect(processor.entity_class).to eq(test_entity)
-      expect(processor.configuration).to eq(config)
+      expect(processor.configuration).to eq(context)
     end
 
-    it "creates default configuration if not provided" do
-      processor = described_class.new(test_entity)
+    it "accepts nil as configuration" do
+      processor = described_class.new(test_entity, nil)
 
-      expect(processor.configuration).to be_a(Treaty::Entity::Configuration)
+      expect(processor.configuration).to be_nil
     end
   end
 
   describe "#call" do
-    let(:configuration) { Treaty::Entity::Configuration.new }
-    let(:processor) { described_class.new(test_entity, configuration) }
+    let(:processor) { described_class.new(test_entity, nil) }
 
     context "with valid data" do
       let(:valid_data) { { user: { name: "John", email: "john@test.com" } } }
@@ -54,14 +53,14 @@ RSpec.describe Treaty::Entity::Processor do
         expect(result).to be_valid
       end
 
-      it "includes processed data" do
+      it "includes processed data", :aggregate_failures do
         result = processor.call(valid_data)
 
         expect(result.data[:user][:name]).to eq("John")
         expect(result.data[:user][:email]).to eq("john@test.com")
       end
 
-      it "includes optional fields with nil" do
+      it "includes optional fields with nil", :aggregate_failures do
         result = processor.call(valid_data)
 
         expect(result.data[:user]).to have_key(:age)
@@ -75,7 +74,7 @@ RSpec.describe Treaty::Entity::Processor do
       it "returns invalid result" do
         result = processor.call(invalid_data)
 
-        expect(result).to be_invalid
+        expect(result).not_to be_valid
       end
 
       it "includes errors" do
@@ -91,9 +90,9 @@ RSpec.describe Treaty::Entity::Processor do
       end
     end
 
-    context "with required: false configuration" do
-      let(:config) { Treaty::Entity::Configuration.new(required: false) }
-      let(:processor) { described_class.new(simple_entity, config) }
+    context "with required: false context" do
+      let(:context) { Treaty::Entity::Context.new(simple_entity, required: false) }
+      let(:processor) { described_class.new(simple_entity, context) }
 
       it "allows missing required fields" do
         result = processor.call({ title: "Hello" })
@@ -110,8 +109,7 @@ RSpec.describe Treaty::Entity::Processor do
   end
 
   describe "#call!" do
-    let(:configuration) { Treaty::Entity::Configuration.new }
-    let(:processor) { described_class.new(test_entity, configuration) }
+    let(:processor) { described_class.new(test_entity, nil) }
 
     context "with valid data" do
       let(:valid_data) { { user: { name: "John", email: "john@test.com" } } }

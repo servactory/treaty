@@ -63,7 +63,7 @@ module Treaty
           #
           # @param version_factory [VersionFactory] Factory containing version info (can be nil for Entity)
           # @param data [Hash] Data to validate and transform (default: {})
-          # @param configuration [Treaty::Entity::Configuration, nil] Configuration with default options
+          # @param configuration [Treaty::Entity::Context, nil] Context with default options
           def initialize(version_factory:, data: {}, configuration: nil)
             @version_factory = version_factory
             @data = data
@@ -162,7 +162,7 @@ module Treaty
           # @return [Hash] Hash of attribute => validator
           def build_validators_for_attributes
             collection_of_attributes.each_with_object({}) do |attribute, cache|
-              validator = AttributeValidator.new(attribute)
+              validator = AttributeValidator.new(attribute, configuration:)
               validator.validate_schema!
               cache[attribute] = validator
             end
@@ -220,8 +220,7 @@ module Treaty
             if attribute.nested?
               validate_and_transform_nested(attribute, value, validator)
             else
-              # Pass configuration for required: false override support
-              validator.validate_value!(value, configuration:)
+              validator.validate_value!(value)
               validator.transform_value(value, data)
             end
           end
@@ -244,8 +243,7 @@ module Treaty
 
             # Step 2: Validate required constraint
             # This will raise an exception if attribute is required and value is nil
-            # Pass configuration for required: false override support
-            validator.validate_required!(value, configuration:)
+            validator.validate_required!(value)
 
             # Step 3: Early return for nil values
             # Only reaches here if attribute is optional and value is nil

@@ -13,7 +13,13 @@ module Treaty
     # ## Usage
     #
     # ```ruby
-    # processor = Processor.new(UserEntity, Configuration.new(required: true))
+    # # Without options
+    # processor = Processor.new(UserEntity, nil)
+    # result = processor.call(params)
+    #
+    # # With options via Context
+    # context = Context.new(UserEntity, required: false)
+    # processor = Processor.new(UserEntity, context)
     # result = processor.call(params)
     #
     # result.valid?  # => true/false
@@ -37,16 +43,16 @@ module Treaty
       # @return [Class<Entity>] The Entity class to process with
       attr_reader :entity_class
 
-      # @return [Configuration] The configuration with default options
+      # @return [Context, nil] The context with options (nil if no options)
       attr_reader :configuration
 
       # Creates a new Processor instance.
       #
       # @param entity_class [Class<Entity>] The Entity class to process with
-      # @param configuration [Configuration] Configuration with default options
+      # @param configuration [Context, nil] Context with options (or nil)
       def initialize(entity_class, configuration = nil)
         @entity_class = entity_class
-        @configuration = configuration || Configuration.new
+        @configuration = configuration
       end
 
       # Processes data through the Entity's validation and transformation pipeline.

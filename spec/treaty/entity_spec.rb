@@ -29,7 +29,7 @@ RSpec.describe Treaty::Entity do
         expect(result).to be_a(Treaty::Entity::Result)
       end
 
-      it "returns valid result" do
+      it "returns valid result", :aggregate_failures do
         result = user_entity.call(valid_data)
 
         expect(result).to be_valid
@@ -65,11 +65,11 @@ RSpec.describe Treaty::Entity do
     end
 
     context "with invalid data" do
-      it "returns invalid result when required field is missing" do
+      it "returns invalid result when required field is missing", :aggregate_failures do
         data = { user: { email: "john@test.com" } }
         result = user_entity.call(data)
 
-        expect(result).to be_invalid
+        expect(result).not_to be_valid
         expect(result).not_to be_valid
       end
 
@@ -91,14 +91,14 @@ RSpec.describe Treaty::Entity do
         data = { user: { name: "John", email: "invalid-email" } }
         result = user_entity.call(data)
 
-        expect(result).to be_invalid
+        expect(result).not_to be_valid
       end
     end
 
-    context "with required: false option" do
-      it "treats missing required fields as optional" do
+    context "with required: false option via .options()" do
+      it "treats missing required fields as optional", :aggregate_failures do
         data = { title: "Hello" }
-        result = simple_entity.call(data, required: false)
+        result = simple_entity.options(required: false).call(data)
 
         expect(result).to be_valid
         # Missing fields are included with nil value
@@ -162,10 +162,10 @@ RSpec.describe Treaty::Entity do
       end
     end
 
-    context "with required: false option" do
+    context "with required: false option via .options()" do
       it "returns true for partial data" do
         data = { title: "Hello" }
-        result = simple_entity.valid?(data, required: false)
+        result = simple_entity.options(required: false).valid?(data)
 
         expect(result).to be true
       end
@@ -181,7 +181,7 @@ RSpec.describe Treaty::Entity do
       expect(entity_class).to be < described_class
     end
 
-    it "anonymous Entity can validate data" do
+    it "anonymous Entity can validate data", :aggregate_failures do
       entity_class = described_class.from_block do
         string :name
       end
@@ -193,15 +193,17 @@ RSpec.describe Treaty::Entity do
       expect(result.data).to eq(name: "John")
     end
 
-    it "stores default options" do
-      entity_class = described_class.from_block(required: false) do
+    it "works with .options() for inline entities" do
+      entity_class = described_class.from_block do
         string :name
       end
 
-      expect(entity_class.default_options).to eq(required: false)
+      # Use .options() method for validation options
+      result = entity_class.options(required: false).call({})
+      expect(result).to be_valid
     end
 
-    it "works with nested structures" do
+    it "works with nested structures", :aggregate_failures do
       entity_class = described_class.from_block do
         object :user do
           string :name
@@ -216,8 +218,77 @@ RSpec.describe Treaty::Entity do
     end
   end
 
+  describe ".options" do
+    it "returns a Context instance" do
+      context = user_entity.options(required: false)
+
+      expect(context).to be_a(Treaty::Entity::Context)
+    end
+
+    it "Context can call, call!, and valid?", :aggregate_failures do
+      context = simple_entity.options(required: false)
+
+      expect(context).to respond_to(:call)
+      expect(context).to respond_to(:call!)
+      expect(context).to respond_to(:valid?)
+    end
+
+    it "Context.call works correctly", :aggregate_failures do
+      result = simple_entity.options(required: false).call({ title: "Test" })
+
+      expect(result).to be_valid
+      expect(result.data).to eq(title: "Test", content: nil)
+    end
+
+    it "Context.call! works correctly", :aggregate_failures do
+      result = simple_entity.options(required: false).call!({ title: "Test" })
+
+      expect(result).to be_valid
+      expect(result.data).to eq(title: "Test", content: nil)
+    end
+
+    it "Context.valid? works correctly" do
+      result = simple_entity.options(required: false).valid?({ title: "Test" })
+
+      expect(result).to be true
+    end
+
+    it "allows multiple options" do
+      context = simple_entity.options(required: false)
+
+      result = context.call({})
+
+      expect(result).to be_valid
+    end
+
+    it "context can be reused", :aggregate_failures do
+      context = simple_entity.options(required: false)
+
+      result1 = context.call({ title: "First" })
+      result2 = context.call({ content: "Second" })
+
+      expect(result1).to be_valid
+      expect(result2).to be_valid
+    end
+
+    it "explicit attribute options take precedence over context", :aggregate_failures do
+      entity_with_explicit = Class.new(described_class) do
+        string :title
+        string :content, :optional # Explicitly optional
+      end
+
+      # Even with required: true in context, :content stays optional
+      result = entity_with_explicit.call({ title: "Test" })
+      expect(result).to be_valid
+
+      # And with required: false, :title can be missing
+      result = entity_with_explicit.options(required: false).call({ content: "Only content" })
+      expect(result).to be_valid
+    end
+  end
+
   describe "hash-like access on Result" do
-    it "provides [] accessor for data" do
+    it "provides [] accessor for data", :aggregate_failures do
       data = { user: { name: "John", email: "john@test.com" } }
       result = user_entity.call(data)
 

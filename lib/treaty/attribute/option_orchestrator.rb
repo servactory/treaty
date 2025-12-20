@@ -71,8 +71,11 @@ module Treaty
       # Creates a new orchestrator instance
       #
       # @param attribute [Attribute::Base] The attribute to orchestrate options for
-      def initialize(attribute)
+      # @param configuration [Treaty::Entity::Context, nil] Context with default options
+      def initialize(attribute, configuration: nil)
         @attribute = attribute
+        @configuration = configuration
+        @effective_options = compute_effective_options
         @processors = build_processors
       end
 
@@ -137,14 +140,24 @@ module Treaty
 
       private
 
-      # Builds processor instances for all defined options
+      # Computes effective options by merging attribute options with configuration defaults.
+      # Explicit attribute options take precedence over configuration defaults.
+      #
+      # @return [Hash] Effective options for this attribute
+      def compute_effective_options
+        return @attribute.options if @configuration.nil?
+
+        @configuration.merge_with(@attribute.options, @attribute.explicit_options)
+      end
+
+      # Builds processor instances for all effective options
       # Always includes TypeValidator even if not explicitly defined
       #
       # @return [Hash<Symbol, Option::Base>] Hash of option_name => processor
       def build_processors # rubocop:disable Metrics/MethodLength
         processors_hash = {}
 
-        @attribute.options.each do |option_name, option_schema|
+        @effective_options.each do |option_name, option_schema|
           processor_class = Option::Registry.processor_for(option_name)
 
           next if processor_class.nil?
@@ -173,7 +186,7 @@ module Treaty
       # @raise [Treaty::Exceptions::Validation] If unknown options found
       # @return [void]
       def validate_known_options!
-        unknown_options = @attribute.options.keys - Option::Registry.all_options
+        unknown_options = @effective_options.keys - Option::Registry.all_options
 
         return if unknown_options.empty?
 

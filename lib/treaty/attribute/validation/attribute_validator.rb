@@ -40,10 +40,10 @@ module Treaty
         # Creates a new attribute validator instance
         #
         # @param attribute [Attribute::Base] The attribute to validate
-        # @param configuration [Treaty::Entity::Context, nil] Context with default options
-        def initialize(attribute, configuration: nil)
+        # @param preset [Treaty::Entity::Preset, nil] Preset with default options
+        def initialize(attribute, preset: nil)
           @attribute = attribute
-          @option_orchestrator = OptionOrchestrator.new(attribute, configuration:)
+          @option_orchestrator = OptionOrchestrator.new(attribute, preset:)
           @nested_object_validator = nil
           @nested_array_validator = nil
         end

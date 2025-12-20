@@ -34,20 +34,20 @@ module Treaty
   # UserEntity.valid?(params)  # => true/false
   # ```
   #
-  # ## Options via .options()
+  # ## Options via .preset()
   #
-  # Use `.options()` method to configure validation behavior. This approach
+  # Use `.preset()` method to configure validation behavior. This approach
   # avoids name conflicts between attribute names and option names:
   #
   # ```ruby
   # # With options
-  # UserEntity.options(required: false).call(data)  # lenient validation
-  # UserEntity.options(required: false, default: "N/A").call(data)  # multiple options
+  # UserEntity.preset(required: false).call(data)  # lenient validation
+  # UserEntity.preset(required: false, default: "N/A").call(data)  # multiple options
   #
-  # # Reuse context
-  # context = UserEntity.options(required: false)
-  # result1 = context.call(data1)
-  # result2 = context.call(data2)
+  # # Reuse preset
+  # preset = UserEntity.preset(required: false)
+  # result1 = preset.call(data1)
+  # result2 = preset.call(data2)
   #
   # # No conflict with attribute names!
   # class PaymentEntity < Treaty::Entity
@@ -55,7 +55,7 @@ module Treaty
   #     boolean :required  # Attribute named "required" - OK!
   #   end
   # end
-  # PaymentEntity.options(required: false).call({ payment: { required: true } })
+  # PaymentEntity.preset(required: false).call({ payment: { required: true } })
   # ```
   #
   # ## Usage with Treaty Class
@@ -102,27 +102,27 @@ module Treaty
     include Attribute::DSL
 
     class << self
-      # Creates a Context wrapper with pre-configured options.
+      # Creates a Preset wrapper with pre-configured options.
       # Use this to configure validation behavior without conflicting
       # with attribute names.
       #
-      # @param opts [Hash] Configuration options to apply
-      # @return [Treaty::Entity::Context] Context wrapper with options
+      # @param options [Hash] Configuration options to apply
+      # @return [Treaty::Entity::Preset] Preset wrapper with options
       #
       # @example Single option
-      #   context = UserEntity.options(required: false)
-      #   result = context.call(data)
+      #   preset = UserEntity.preset(required: false)
+      #   result = preset.call(data)
       #
       # @example Multiple options
-      #   context = UserEntity.options(required: false, default: "N/A")
-      #   result = context.call(data)
+      #   preset = UserEntity.preset(required: false, default: "N/A")
+      #   result = preset.call(data)
       #
-      # @example Reusable context
-      #   context = UserEntity.options(required: false)
-      #   result1 = context.call(data1)
-      #   result2 = context.call(data2)
-      def options(**opts)
-        Entity::Context.new(self, opts)
+      # @example Reusable preset
+      #   preset = UserEntity.preset(required: false)
+      #   result1 = preset.call(data1)
+      #   result2 = preset.call(data2)
+      def preset(**options)
+        Entity::Preset.new(self, options)
       end
 
       # Validates and transforms data according to Entity definition.
@@ -139,8 +139,8 @@ module Treaty
       #     render json: { errors: result.errors.to_h }, status: 422
       #   end
       #
-      # @example With options (use .options() method)
-      #   result = UserEntity.options(required: false).call(data)
+      # @example With options (use .preset() method)
+      #   result = UserEntity.preset(required: false).call(data)
       def call(data)
         processor = Entity::Processor.new(self, nil)
         processor.call(data)
@@ -157,8 +157,8 @@ module Treaty
       #   result = UserEntity.call!(params)
       #   UserService.create(result.to_h)
       #
-      # @example With options (use .options() method)
-      #   result = UserEntity.options(required: false).call!(data)
+      # @example With options (use .preset() method)
+      #   result = UserEntity.preset(required: false).call!(data)
       def call!(data)
         processor = Entity::Processor.new(self, nil)
         processor.call!(data)
@@ -175,8 +175,8 @@ module Treaty
       #     # proceed with processing
       #   end
       #
-      # @example With options (use .options() method)
-      #   UserEntity.options(required: false).valid?(params)
+      # @example With options (use .preset() method)
+      #   UserEntity.preset(required: false).valid?(params)
       def valid?(data)
         call(data).valid?
       end
@@ -202,7 +202,7 @@ module Treaty
       #       string :name
       #     end
       #   end
-      #   result = entity_class.options(required: false).call(data)
+      #   result = entity_class.preset(required: false).call(data)
       def from_block(&block)
         Class.new(self) do
           class_eval(&block) if block_given?

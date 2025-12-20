@@ -20,18 +20,18 @@ RSpec.describe Treaty::Entity::Processor do
   end
 
   describe "#initialize" do
-    it "accepts entity class and context", :aggregate_failures do
-      context = Treaty::Entity::Context.new(test_entity, required: true)
-      processor = described_class.new(test_entity, context)
+    it "accepts entity class and preset", :aggregate_failures do
+      preset = Treaty::Entity::Preset.new(test_entity, required: true)
+      processor = described_class.new(test_entity, preset)
 
       expect(processor.entity_class).to eq(test_entity)
-      expect(processor.configuration).to eq(context)
+      expect(processor.preset).to eq(preset)
     end
 
-    it "accepts nil as configuration" do
+    it "accepts nil as preset" do
       processor = described_class.new(test_entity, nil)
 
-      expect(processor.configuration).to be_nil
+      expect(processor.preset).to be_nil
     end
   end
 
@@ -90,9 +90,9 @@ RSpec.describe Treaty::Entity::Processor do
       end
     end
 
-    context "with required: false context" do
-      let(:context) { Treaty::Entity::Context.new(simple_entity, required: false) }
-      let(:processor) { described_class.new(simple_entity, context) }
+    context "with required: false preset" do
+      let(:preset) { Treaty::Entity::Preset.new(simple_entity, required: false) }
+      let(:processor) { described_class.new(simple_entity, preset) }
 
       it "allows missing required fields" do
         result = processor.call({ title: "Hello" })

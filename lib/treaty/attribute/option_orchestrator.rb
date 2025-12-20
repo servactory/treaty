@@ -71,10 +71,10 @@ module Treaty
       # Creates a new orchestrator instance
       #
       # @param attribute [Attribute::Base] The attribute to orchestrate options for
-      # @param configuration [Treaty::Entity::Context, nil] Context with default options
-      def initialize(attribute, configuration: nil)
+      # @param preset [Treaty::Entity::Preset, nil] Preset with default options
+      def initialize(attribute, preset: nil)
         @attribute = attribute
-        @configuration = configuration
+        @preset = preset
         @effective_options = compute_effective_options
         @processors = build_processors
       end
@@ -140,14 +140,14 @@ module Treaty
 
       private
 
-      # Computes effective options by merging attribute options with configuration defaults.
-      # Explicit attribute options take precedence over configuration defaults.
+      # Computes effective options by merging attribute options with preset defaults.
+      # Explicit attribute options take precedence over preset defaults.
       #
       # @return [Hash] Effective options for this attribute
       def compute_effective_options
-        return @attribute.options if @configuration.nil?
+        return @attribute.options if @preset.nil?
 
-        @configuration.merge_with(@attribute.options, @attribute.explicit_options)
+        @preset.merge_with(@attribute.options, @attribute.explicit_options)
       end
 
       # Builds processor instances for all effective options

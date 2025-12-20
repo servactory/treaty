@@ -17,9 +17,9 @@ module Treaty
     # processor = Processor.new(UserEntity, nil)
     # result = processor.call(params)
     #
-    # # With options via Context
-    # context = Context.new(UserEntity, required: false)
-    # processor = Processor.new(UserEntity, context)
+    # # With options via Preset
+    # preset = Preset.new(UserEntity, required: false)
+    # processor = Processor.new(UserEntity, preset)
     # result = processor.call(params)
     #
     # result.valid?  # => true/false
@@ -43,16 +43,16 @@ module Treaty
       # @return [Class<Entity>] The Entity class to process with
       attr_reader :entity_class
 
-      # @return [Context, nil] The context with options (nil if no options)
-      attr_reader :configuration
+      # @return [Preset, nil] The preset with options (nil if no options)
+      attr_reader :preset
 
       # Creates a new Processor instance.
       #
       # @param entity_class [Class<Entity>] The Entity class to process with
-      # @param configuration [Context, nil] Context with options (or nil)
-      def initialize(entity_class, configuration = nil)
+      # @param preset [Preset, nil] Preset with options (or nil)
+      def initialize(entity_class, preset = nil)
         @entity_class = entity_class
-        @configuration = configuration
+        @preset = preset
       end
 
       # Processes data through the Entity's validation and transformation pipeline.
@@ -102,21 +102,21 @@ module Treaty
       # @return [Attribute::Validation::Orchestrator::Base] Orchestrator instance
       def build_orchestrator(data) # rubocop:disable Metrics/MethodLength
         entity = entity_class
-        config = configuration
+        current_preset = preset
 
         orchestrator_class = Class.new(Attribute::Validation::Orchestrator::Base) do
           define_method(:collection_of_attributes) do
             entity.collection_of_attributes
           end
 
-          define_method(:configuration) do
-            config
+          define_method(:preset) do
+            current_preset
           end
         end
 
         # Create orchestrator with nil version_factory (not needed for Entity processing)
-        # Pass configuration for default options handling
-        orchestrator_class.new(version_factory: nil, data:, configuration: config)
+        # Pass preset for default options handling
+        orchestrator_class.new(version_factory: nil, data:, preset: current_preset)
       end
 
       # Handles validation errors by adding them to the result.

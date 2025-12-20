@@ -3,42 +3,42 @@
 module Treaty
   class Entity
     # Wrapper for Entity with pre-configured options.
-    # Acts as both the API wrapper AND the configuration storage.
+    # Acts as both the API wrapper AND the options storage.
     #
     # ## Purpose
     #
     # Provides a way to pre-configure Entity validation options without
-    # conflicting with attribute names. Created by Entity.options() method.
+    # conflicting with attribute names. Created by Entity.preset() method.
     #
     # ## Usage
     #
     # ```ruby
-    # # Create context with options
-    # context = UserEntity.options(required: false)
-    # result = context.call(data)
-    # result = context.call!(data)
-    # context.valid?(data)
+    # # Create preset with options
+    # preset = UserEntity.preset(required: false)
+    # result = preset.call(data)
+    # result = preset.call!(data)
+    # preset.valid?(data)
     #
     # # Multiple options
-    # context = UserEntity.options(required: false, default: "N/A")
-    # result = context.call(data)
+    # preset = UserEntity.preset(required: false, default: "N/A")
+    # result = preset.call(data)
     #
-    # # Reuse context
-    # context = UserEntity.options(required: false)
-    # result1 = context.call(data1)
-    # result2 = context.call(data2)
+    # # Reuse preset
+    # preset = UserEntity.preset(required: false)
+    # result1 = preset.call(data1)
+    # result2 = preset.call(data2)
     # ```
     #
     # ## Option Precedence
     #
     # Options are applied with the following precedence (highest to lowest):
     # 1. Explicit attribute options (e.g., `string :name, required: false`)
-    # 2. Context options (e.g., `required: true` from .options())
+    # 2. Preset options (e.g., `required: true` from .preset())
     # 3. Entity class defaults (e.g., `required: true` for Entity base class)
     #
-    # ## Why Context Exists
+    # ## Why Preset Exists
     #
-    # Using `.options()` instead of passing options to `.call()` avoids
+    # Using `.preset()` instead of passing options to `.call()` avoids
     # name conflicts between attribute names and option names:
     #
     # ```ruby
@@ -50,15 +50,15 @@ module Treaty
     # end
     #
     # # Options are separate from data - no conflict!
-    # PaymentEntity.options(required: false).call({
+    # PaymentEntity.preset(required: false).call({
     #   payment: { required: true, default: "card" }
     # })
     # ```
-    class Context
+    class Preset
       # @return [Class<Entity>] The Entity class to process with
       attr_reader :entity_class
 
-      # Creates a new Context instance.
+      # Creates a new Preset instance.
       #
       # @param entity_class [Class<Entity>] The Entity class to process with
       # @param options [Hash] Configuration options (will be normalized)
@@ -101,8 +101,8 @@ module Treaty
         @options.any?
       end
 
-      # Merges context options with attribute options.
-      # Explicit attribute options take precedence over context defaults.
+      # Merges preset options with attribute options.
+      # Explicit attribute options take precedence over preset defaults.
       #
       # @param attribute_options [Hash] Options defined on the attribute
       # @param explicit_options [Set<Symbol>] Set of explicitly defined option names
@@ -120,7 +120,7 @@ module Treaty
         result
       end
 
-      # Returns the context as a Hash.
+      # Returns the preset as a Hash.
       #
       # @return [Hash]
       def to_h

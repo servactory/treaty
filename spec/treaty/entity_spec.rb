@@ -95,10 +95,10 @@ RSpec.describe Treaty::Entity do
       end
     end
 
-    context "with required: false option via .options()" do
+    context "with required: false option via .preset()" do
       it "treats missing required fields as optional", :aggregate_failures do
         data = { title: "Hello" }
-        result = simple_entity.options(required: false).call(data)
+        result = simple_entity.preset(required: false).call(data)
 
         expect(result).to be_valid
         # Missing fields are included with nil value
@@ -162,10 +162,10 @@ RSpec.describe Treaty::Entity do
       end
     end
 
-    context "with required: false option via .options()" do
+    context "with required: false option via .preset()" do
       it "returns true for partial data" do
         data = { title: "Hello" }
-        result = simple_entity.options(required: false).valid?(data)
+        result = simple_entity.preset(required: false).valid?(data)
 
         expect(result).to be true
       end
@@ -193,13 +193,13 @@ RSpec.describe Treaty::Entity do
       expect(result.data).to eq(name: "John")
     end
 
-    it "works with .options() for inline entities" do
+    it "works with .preset() for inline entities" do
       entity_class = described_class.from_block do
         string :name
       end
 
-      # Use .options() method for validation options
-      result = entity_class.options(required: false).call({})
+      # Use .preset() method for validation options
+      result = entity_class.preset(required: false).call({})
       expect(result).to be_valid
     end
 
@@ -218,71 +218,71 @@ RSpec.describe Treaty::Entity do
     end
   end
 
-  describe ".options" do
-    it "returns a Context instance" do
-      context = user_entity.options(required: false)
+  describe ".preset" do
+    it "returns a Preset instance" do
+      preset = user_entity.preset(required: false)
 
-      expect(context).to be_a(Treaty::Entity::Context)
+      expect(preset).to be_a(Treaty::Entity::Preset)
     end
 
-    it "Context can call, call!, and valid?", :aggregate_failures do
-      context = simple_entity.options(required: false)
+    it "Preset can call, call!, and valid?", :aggregate_failures do
+      preset = simple_entity.preset(required: false)
 
-      expect(context).to respond_to(:call)
-      expect(context).to respond_to(:call!)
-      expect(context).to respond_to(:valid?)
+      expect(preset).to respond_to(:call)
+      expect(preset).to respond_to(:call!)
+      expect(preset).to respond_to(:valid?)
     end
 
-    it "Context.call works correctly", :aggregate_failures do
-      result = simple_entity.options(required: false).call({ title: "Test" })
+    it "Preset.call works correctly", :aggregate_failures do
+      result = simple_entity.preset(required: false).call({ title: "Test" })
 
       expect(result).to be_valid
       expect(result.data).to eq(title: "Test", content: nil)
     end
 
-    it "Context.call! works correctly", :aggregate_failures do
-      result = simple_entity.options(required: false).call!({ title: "Test" })
+    it "Preset.call! works correctly", :aggregate_failures do
+      result = simple_entity.preset(required: false).call!({ title: "Test" })
 
       expect(result).to be_valid
       expect(result.data).to eq(title: "Test", content: nil)
     end
 
-    it "Context.valid? works correctly" do
-      result = simple_entity.options(required: false).valid?({ title: "Test" })
+    it "Preset.valid? works correctly" do
+      result = simple_entity.preset(required: false).valid?({ title: "Test" })
 
       expect(result).to be true
     end
 
     it "allows multiple options" do
-      context = simple_entity.options(required: false)
+      preset = simple_entity.preset(required: false)
 
-      result = context.call({})
+      result = preset.call({})
 
       expect(result).to be_valid
     end
 
-    it "context can be reused", :aggregate_failures do
-      context = simple_entity.options(required: false)
+    it "preset can be reused", :aggregate_failures do
+      preset = simple_entity.preset(required: false)
 
-      result1 = context.call({ title: "First" })
-      result2 = context.call({ content: "Second" })
+      result1 = preset.call({ title: "First" })
+      result2 = preset.call({ content: "Second" })
 
       expect(result1).to be_valid
       expect(result2).to be_valid
     end
 
-    it "explicit attribute options take precedence over context", :aggregate_failures do
+    it "explicit attribute options take precedence over preset", :aggregate_failures do
       entity_with_explicit = Class.new(described_class) do
         string :title
         string :content, :optional # Explicitly optional
       end
 
-      # Even with required: true in context, :content stays optional
+      # Even with required: true in preset, :content stays optional
       result = entity_with_explicit.call({ title: "Test" })
       expect(result).to be_valid
 
       # And with required: false, :title can be missing
-      result = entity_with_explicit.options(required: false).call({ content: "Only content" })
+      result = entity_with_explicit.preset(required: false).call({ content: "Only content" })
       expect(result).to be_valid
     end
   end

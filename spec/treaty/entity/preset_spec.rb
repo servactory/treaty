@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Treaty::Entity::Context do
+RSpec.describe Treaty::Entity::Preset do
   # Test Entity class for specs
   let(:simple_entity) do
     Class.new(Treaty::Entity) do
@@ -19,29 +19,29 @@ RSpec.describe Treaty::Entity::Context do
 
   describe "#initialize" do
     it "accepts entity class and options" do
-      context = described_class.new(simple_entity, required: false)
+      preset = described_class.new(simple_entity, required: false)
 
-      expect(context.entity_class).to eq(simple_entity)
+      expect(preset.entity_class).to eq(simple_entity)
     end
 
     it "accepts empty options" do
-      context = described_class.new(simple_entity)
+      preset = described_class.new(simple_entity)
 
-      expect(context.entity_class).to eq(simple_entity)
+      expect(preset.entity_class).to eq(simple_entity)
     end
 
     it "normalizes options through OptionNormalizer" do
-      context = described_class.new(simple_entity, required: false)
+      preset = described_class.new(simple_entity, required: false)
 
-      expect(context.any?).to be true
+      expect(preset.any?).to be true
     end
   end
 
   describe "#call" do
     context "without options" do
       it "validates with default required: true", :aggregate_failures do
-        context = described_class.new(simple_entity)
-        result = context.call({ title: "Test" })
+        preset = described_class.new(simple_entity)
+        result = preset.call({ title: "Test" })
 
         expect(result).not_to be_valid
         expect(result.errors).not_to be_empty
@@ -50,16 +50,16 @@ RSpec.describe Treaty::Entity::Context do
 
     context "with required: false" do
       it "allows missing required fields", :aggregate_failures do
-        context = described_class.new(simple_entity, required: false)
-        result = context.call({ title: "Test" })
+        preset = described_class.new(simple_entity, required: false)
+        result = preset.call({ title: "Test" })
 
         expect(result).to be_valid
         expect(result.data).to eq(title: "Test", content: nil)
       end
 
       it "allows completely empty data", :aggregate_failures do
-        context = described_class.new(simple_entity, required: false)
-        result = context.call({})
+        preset = described_class.new(simple_entity, required: false)
+        result = preset.call({})
 
         expect(result).to be_valid
         expect(result.data).to eq(title: nil, content: nil)
@@ -68,8 +68,8 @@ RSpec.describe Treaty::Entity::Context do
 
     context "with explicit attribute options" do
       it "does not override explicitly optional attributes", :aggregate_failures do
-        context = described_class.new(entity_with_explicit)
-        result = context.call({ name: "John", age: 25 })
+        preset = described_class.new(entity_with_explicit)
+        result = preset.call({ name: "John", age: 25 })
 
         # :bio is explicitly optional, so should be valid without it
         expect(result).to be_valid
@@ -77,8 +77,8 @@ RSpec.describe Treaty::Entity::Context do
       end
 
       it "does not override explicit default values" do
-        context = described_class.new(entity_with_explicit, required: false)
-        result = context.call({ name: "John" })
+        preset = described_class.new(entity_with_explicit, required: false)
+        result = preset.call({ name: "John" })
 
         # :age has explicit default: 0, should keep that
         expect(result.data[:age]).to eq(0)
@@ -89,8 +89,8 @@ RSpec.describe Treaty::Entity::Context do
   describe "#call!" do
     context "with valid data" do
       it "returns Result object" do
-        context = described_class.new(simple_entity)
-        result = context.call!({ title: "Test", content: "Content" })
+        preset = described_class.new(simple_entity)
+        result = preset.call!({ title: "Test", content: "Content" })
 
         expect(result).to be_a(Treaty::Entity::Result)
       end
@@ -98,18 +98,18 @@ RSpec.describe Treaty::Entity::Context do
 
     context "with invalid data" do
       it "raises Treaty::Exceptions::Validation" do
-        context = described_class.new(simple_entity)
+        preset = described_class.new(simple_entity)
 
         expect do
-          context.call!({ title: "Test" })
+          preset.call!({ title: "Test" })
         end.to raise_error(Treaty::Exceptions::Validation)
       end
     end
 
     context "with required: false" do
       it "allows missing fields" do
-        context = described_class.new(simple_entity, required: false)
-        result = context.call!({ title: "Test" })
+        preset = described_class.new(simple_entity, required: false)
+        result = preset.call!({ title: "Test" })
 
         expect(result).to be_valid
       end
@@ -119,8 +119,8 @@ RSpec.describe Treaty::Entity::Context do
   describe "#valid?" do
     context "with valid data" do
       it "returns true" do
-        context = described_class.new(simple_entity)
-        result = context.valid?({ title: "Test", content: "Content" })
+        preset = described_class.new(simple_entity)
+        result = preset.valid?({ title: "Test", content: "Content" })
 
         expect(result).to be true
       end
@@ -128,8 +128,8 @@ RSpec.describe Treaty::Entity::Context do
 
     context "with invalid data" do
       it "returns false" do
-        context = described_class.new(simple_entity)
-        result = context.valid?({ title: "Test" })
+        preset = described_class.new(simple_entity)
+        result = preset.valid?({ title: "Test" })
 
         expect(result).to be false
       end
@@ -137,8 +137,8 @@ RSpec.describe Treaty::Entity::Context do
 
     context "with required: false" do
       it "returns true for partial data" do
-        context = described_class.new(simple_entity, required: false)
-        result = context.valid?({ title: "Test" })
+        preset = described_class.new(simple_entity, required: false)
+        result = preset.valid?({ title: "Test" })
 
         expect(result).to be true
       end
@@ -147,67 +147,67 @@ RSpec.describe Treaty::Entity::Context do
 
   describe "#any?" do
     it "returns false for empty options" do
-      context = described_class.new(simple_entity)
+      preset = described_class.new(simple_entity)
 
-      expect(context.any?).to be false
+      expect(preset.any?).to be false
     end
 
     it "returns true for non-empty options" do
-      context = described_class.new(simple_entity, required: false)
+      preset = described_class.new(simple_entity, required: false)
 
-      expect(context.any?).to be true
+      expect(preset.any?).to be true
     end
   end
 
   describe "#merge_with" do
-    it "returns attribute options unchanged when no context options" do
-      context = described_class.new(simple_entity)
+    it "returns attribute options unchanged when no preset options" do
+      preset = described_class.new(simple_entity)
       attribute_options = { required: { is: true, message: nil } }
       explicit_options = Set.new([:required])
 
-      result = context.merge_with(attribute_options, explicit_options)
+      result = preset.merge_with(attribute_options, explicit_options)
 
       expect(result).to eq(attribute_options)
     end
 
     it "does not override explicit attribute options" do
-      context = described_class.new(simple_entity, required: false)
+      preset = described_class.new(simple_entity, required: false)
       attribute_options = { required: { is: true, message: nil } }
       explicit_options = Set.new([:required])
 
-      result = context.merge_with(attribute_options, explicit_options)
+      result = preset.merge_with(attribute_options, explicit_options)
 
       # Explicit required: true should be preserved
       expect(result[:required][:is]).to be(true)
     end
 
     it "overrides non-explicit attribute options" do
-      context = described_class.new(simple_entity, required: false)
+      preset = described_class.new(simple_entity, required: false)
       attribute_options = { required: { is: true, message: nil } }
       explicit_options = Set.new # Empty - required was not explicit
 
-      result = context.merge_with(attribute_options, explicit_options)
+      result = preset.merge_with(attribute_options, explicit_options)
 
       # Non-explicit required should be overridden to false
       expect(result[:required][:is]).to be(false)
     end
 
-    it "adds new options from context" do
-      context = described_class.new(simple_entity, required: false)
+    it "adds new options from preset" do
+      preset = described_class.new(simple_entity, required: false)
       attribute_options = {}
       explicit_options = Set.new
 
-      result = context.merge_with(attribute_options, explicit_options)
+      result = preset.merge_with(attribute_options, explicit_options)
 
-      # Should add required: false from context
+      # Should add required: false from preset
       expect(result[:required][:is]).to be(false)
     end
   end
 
   describe "#to_h" do
     it "returns copy of options hash", :aggregate_failures do
-      context = described_class.new(simple_entity, required: false)
-      hash = context.to_h
+      preset = described_class.new(simple_entity, required: false)
+      hash = preset.to_h
 
       expect(hash).to be_a(Hash)
       expect(hash).to have_key(:required)
@@ -216,10 +216,10 @@ RSpec.describe Treaty::Entity::Context do
 
   describe "#inspect" do
     it "returns readable representation", :aggregate_failures do
-      context = described_class.new(simple_entity, required: false)
+      preset = described_class.new(simple_entity, required: false)
 
-      expect(context.inspect).to include("Context")
-      expect(context.inspect).to include("required")
+      expect(preset.inspect).to include("Preset")
+      expect(preset.inspect).to include("required")
     end
   end
 end

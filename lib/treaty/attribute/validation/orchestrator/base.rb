@@ -48,7 +48,7 @@ module Treaty
           SELF_OBJECT = :_self
           private_constant :SELF_OBJECT
 
-          attr_reader :version_factory, :data, :configuration
+          attr_reader :version_factory, :data, :preset
 
           # Class-level factory method for validation
           # Creates instance and calls validate!
@@ -63,11 +63,11 @@ module Treaty
           #
           # @param version_factory [VersionFactory] Factory containing version info (can be nil for Entity)
           # @param data [Hash] Data to validate and transform (default: {})
-          # @param configuration [Treaty::Entity::Context, nil] Context with default options
-          def initialize(version_factory:, data: {}, configuration: nil)
+          # @param preset [Treaty::Entity::Preset, nil] Preset with default options
+          def initialize(version_factory:, data: {}, preset: nil)
             @version_factory = version_factory
             @data = data
-            @configuration = configuration
+            @preset = preset
           end
 
           # Validates and transforms all attributes
@@ -162,7 +162,7 @@ module Treaty
           # @return [Hash] Hash of attribute => validator
           def build_validators_for_attributes
             collection_of_attributes.each_with_object({}) do |attribute, cache|
-              validator = AttributeValidator.new(attribute, configuration:)
+              validator = AttributeValidator.new(attribute, preset:)
               validator.validate_schema!
               cache[attribute] = validator
             end

@@ -2,31 +2,30 @@
 
 module Treaty
   class Entity
-    # Wrapper for Entity with pre-configured options.
-    # Acts as both the API wrapper AND the options storage.
+    # Lightweight wrapper for Entity with pre-configured options.
+    # Delegates to Callable's private _process/_process! methods via send.
     #
-    # ## Purpose
+    # ## Design
     #
-    # Provides a way to pre-configure Entity validation options without
-    # conflicting with attribute names. Created by Entity.preset() method.
+    # - Stores only options (no processing logic)
+    # - Delegates to PRIVATE Callable methods via send
+    # - No duplication of Callable logic
+    # - preset: is never exposed in public API
+    #
+    # ## Why send to private methods?
+    #
+    # Public API methods (call, call!, valid?) don't accept preset:.
+    # This avoids confusion if Entity has an attribute named `preset`.
+    # Preset uses send to access private _process/_process! methods.
     #
     # ## Usage
     #
     # ```ruby
-    # # Create preset with options
+    # # Create preset
     # preset = UserEntity.preset(required: false)
-    # result = preset.call(data)
-    # result = preset.call!(data)
-    # preset.valid?(data)
     #
-    # # Multiple options
-    # preset = UserEntity.preset(required: false, default: "N/A")
+    # # Delegates to: entity_class.send(:_process, data, preset: self)
     # result = preset.call(data)
-    #
-    # # Reuse preset
-    # preset = UserEntity.preset(required: false)
-    # result1 = preset.call(data1)
-    # result2 = preset.call(data2)
     # ```
     #
     # ## Option Precedence
@@ -35,25 +34,6 @@ module Treaty
     # 1. Explicit attribute options (e.g., `string :name, required: false`)
     # 2. Preset options (e.g., `required: true` from .preset())
     # 3. Entity class defaults (e.g., `required: true` for Entity base class)
-    #
-    # ## Why Preset Exists
-    #
-    # Using `.preset()` instead of passing options to `.call()` avoids
-    # name conflicts between attribute names and option names:
-    #
-    # ```ruby
-    # class PaymentEntity < Treaty::Entity
-    #   object :payment do
-    #     boolean :required  # Attribute named "required" - OK!
-    #     string :default    # Attribute named "default" - OK!
-    #   end
-    # end
-    #
-    # # Options are separate from data - no conflict!
-    # PaymentEntity.preset(required: false).call({
-    #   payment: { required: true, default: "card" }
-    # })
-    # ```
     class Preset
       # @return [Class<Entity>] The Entity class to process with
       attr_reader :entity_class
@@ -62,36 +42,33 @@ module Treaty
       #
       # @param entity_class [Class<Entity>] The Entity class to process with
       # @param options [Hash] Configuration options (will be normalized)
-      def initialize(entity_class, options = {})
+      def initialize(entity_class, **options)
         @entity_class = entity_class
         @options = Attribute::OptionNormalizer.normalize(options)
       end
 
-      # Processes data through the Entity's validation and transformation pipeline.
-      #
-      # @param data [Hash] The data to validate and transform
-      # @return [Result] Result object with data and/or errors
-      def call(data)
-        processor = Processor.new(entity_class, self)
-        processor.call(data)
+      # Delegates to entity_class's private _process method.
+      # Uses send because _process is private.
+      # @param arguments [Hash] Data to validate (default: {})
+      # @return [Entity::Result] Result object
+      def call(arguments = {})
+        entity_class.send(:_process, arguments, preset: self)
       end
 
-      # Processes data and raises exception on validation errors.
-      #
-      # @param data [Hash] The data to validate and transform
-      # @return [Result] Result object with validated data
+      # Delegates to entity_class's private _process! method.
+      # Uses send because _process! is private.
+      # @param arguments [Hash] Data to validate (default: {})
+      # @return [Entity::Result] Result object
       # @raise [Treaty::Exceptions::Validation] If validation fails
-      def call!(data)
-        processor = Processor.new(entity_class, self)
-        processor.call!(data)
+      def call!(arguments = {})
+        entity_class.send(:_process!, arguments, preset: self)
       end
 
-      # Checks if data is valid according to Entity definition.
-      #
-      # @param data [Hash] The data to validate
-      # @return [Boolean] True if data is valid
-      def valid?(data)
-        call(data).valid?
+      # Checks if data is valid with preset options.
+      # @param arguments [Hash] Data to validate (default: {})
+      # @return [Boolean] True if valid
+      def valid?(arguments = {})
+        call(arguments).valid?
       end
 
       # Returns true if any options are configured.

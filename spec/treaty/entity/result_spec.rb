@@ -8,7 +8,7 @@ RSpec.describe Treaty::Entity::Result do
       expect(result.data).to eq({})
     end
 
-    it "creates result with empty errors by default" do
+    it "creates result with empty errors by default", :aggregate_failures do
       result = described_class.new
 
       expect(result.errors).to be_a(Treaty::Entity::Errors)
@@ -24,7 +24,7 @@ RSpec.describe Treaty::Entity::Result do
     it "accepts custom errors" do
       errors = Treaty::Entity::Errors.new
       errors.add(:email, "is invalid")
-      result = described_class.new(errors: errors)
+      result = described_class.new(errors:)
 
       expect(result.errors[:email]).to eq(["is invalid"])
     end
@@ -40,7 +40,7 @@ RSpec.describe Treaty::Entity::Result do
     it "returns false when errors exist" do
       errors = Treaty::Entity::Errors.new
       errors.add(:email, "is invalid")
-      result = described_class.new(errors: errors)
+      result = described_class.new(errors:)
 
       expect(result).not_to be_valid
     end
@@ -56,9 +56,9 @@ RSpec.describe Treaty::Entity::Result do
     it "returns true when errors exist" do
       errors = Treaty::Entity::Errors.new
       errors.add(:email, "is invalid")
-      result = described_class.new(errors: errors)
+      result = described_class.new(errors:)
 
-      expect(result).to be_invalid
+      expect(result).not_to be_valid
     end
   end
 
@@ -106,7 +106,7 @@ RSpec.describe Treaty::Entity::Result do
   end
 
   describe "#inspect" do
-    it "returns readable representation for valid result" do
+    it "returns readable representation for valid result", :aggregate_failures do
       result = described_class.new(data: { name: "John" })
 
       expect(result.inspect).to include("Treaty::Entity::Result")
@@ -117,7 +117,7 @@ RSpec.describe Treaty::Entity::Result do
     it "returns readable representation for invalid result" do
       errors = Treaty::Entity::Errors.new
       errors.add(:email, "is invalid")
-      result = described_class.new(errors: errors)
+      result = described_class.new(errors:)
 
       expect(result.inspect).to include("@valid=false")
     end

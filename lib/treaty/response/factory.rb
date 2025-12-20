@@ -5,7 +5,7 @@ module Treaty
     # Factory for creating response definitions.
     #
     # Supports two modes:
-    # 1. Block mode: Creates an anonymous Response::Entity class with the block
+    # 1. Block mode: Creates an anonymous Treaty::Entity class with the block
     # 2. Entity mode: Uses a provided Entity class directly
     #
     # ## Block Mode
@@ -24,7 +24,7 @@ module Treaty
     # response 200, PostResponseEntity
     # ```
     class Factory
-      attr_reader :status
+      attr_reader :status, :entity_class
 
       def initialize(status)
         @status = status
@@ -44,7 +44,7 @@ module Treaty
       #
       # @return [Collection] Collection of attributes
       def collection_of_attributes
-        return Treaty::Attribute::Collection.new if @entity_class.nil?
+        return Treaty::Entity::Attribute::Collection.new if @entity_class.nil?
 
         @entity_class.collection_of_attributes
       end
@@ -53,10 +53,10 @@ module Treaty
       #
       # This allows the factory to be used with method_missing
       # for backwards compatibility with direct method calls.
-      # Creates an anonymous Response::Entity class on first use.
+      # Creates an anonymous Treaty::Entity class on first use.
       def method_missing(type, *helpers, **options, &block)
-        # If no entity class yet, create one
-        @entity_class ||= Class.new(Entity)
+        # If no entity class yet, create an anonymous Treaty::Entity with required: false default
+        @entity_class ||= create_anonymous_entity_class
 
         # Call the method on the entity class
         @entity_class.public_send(type, *helpers, **options, &block)
@@ -67,6 +67,28 @@ module Treaty
       end
 
       private
+
+      # Creates an anonymous Entity class with required: false as default.
+      # This matches the documented behavior for response blocks.
+      #
+      # @return [Class] Anonymous Entity class
+      def create_anonymous_entity_class
+        attribute_creator = response_attribute_creator
+        Class.new(Treaty::Entity) do
+          define_singleton_method(:create_attribute, &attribute_creator)
+        end
+      end
+
+      # Returns a proc that creates attributes with required: false default
+      #
+      # @return [Proc] Attribute creator proc
+      def response_attribute_creator
+        proc do |name, type, *helpers, nesting_level:, **options, &block|
+          Treaty::Entity::Attribute::Attribute.new(
+            name, type, *helpers, nesting_level:, default_required: false, **options, &block
+          )
+        end
+      end
 
       # Validates that the provided entity_class is a valid Treaty::Entity subclass
       #

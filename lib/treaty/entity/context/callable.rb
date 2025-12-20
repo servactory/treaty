@@ -104,7 +104,7 @@ module Treaty
         # Factory method for creating Entity attributes.
         # Called by Attribute::DSL when defining attributes.
         def create_attribute(name, type, *helpers, nesting_level:, **options, &block)
-          Attribute::Entity::Attribute.new(
+          Attribute::Attribute.new(
             name, type, *helpers, nesting_level:, **options, &block
           )
         end

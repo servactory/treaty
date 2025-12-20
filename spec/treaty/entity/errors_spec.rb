@@ -83,8 +83,7 @@ RSpec.describe Treaty::Entity::Errors do
       errors.add(:email, "is invalid")
       errors.add(:name, "is required")
 
-      result = []
-      errors.each { |attr, msgs| result << [attr, msgs] }
+      result = errors.map { |attr, msgs| [attr, msgs] }
 
       expect(result).to contain_exactly(
         ["email", ["is invalid"]],
@@ -217,7 +216,7 @@ RSpec.describe Treaty::Entity::Errors do
   end
 
   describe "#inspect" do
-    it "returns readable representation" do
+    it "returns readable representation", :aggregate_failures do
       errors.add(:email, "is invalid")
 
       expect(errors.inspect).to include("Treaty::Entity::Errors")
@@ -226,7 +225,7 @@ RSpec.describe Treaty::Entity::Errors do
   end
 
   describe "#merge" do
-    it "merges errors from another instance" do
+    it "merges errors from another instance", :aggregate_failures do
       other = described_class.new
       other.add(:email, "is invalid")
 

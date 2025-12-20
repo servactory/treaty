@@ -5,7 +5,7 @@ module Treaty
     # Factory for creating request definitions.
     #
     # Supports two modes:
-    # 1. Block mode: Creates an anonymous Request::Entity class with the block
+    # 1. Block mode: Creates an anonymous Treaty::Entity class with the block
     # 2. Entity mode: Uses a provided Entity class directly
     #
     # ## Block Mode
@@ -24,6 +24,8 @@ module Treaty
     # request PostRequestEntity
     # ```
     class Factory
+      attr_reader :entity_class
+
       # Uses a provided Entity class
       #
       # @param entity_class [Class] Entity class to use
@@ -38,7 +40,7 @@ module Treaty
       #
       # @return [Collection] Collection of attributes
       def collection_of_attributes
-        return Treaty::Attribute::Collection.new if @entity_class.nil?
+        return Treaty::Entity::Attribute::Collection.new if @entity_class.nil?
 
         @entity_class.collection_of_attributes
       end
@@ -47,10 +49,10 @@ module Treaty
       #
       # This allows the factory to be used with method_missing
       # for backwards compatibility with direct method calls.
-      # Creates an anonymous Request::Entity class on first use.
+      # Creates an anonymous Treaty::Entity class on first use.
       def method_missing(type, *helpers, **options, &block)
-        # If no entity class yet, create one
-        @entity_class ||= Class.new(Entity)
+        # If no entity class yet, create an anonymous Treaty::Entity with required: false default
+        @entity_class ||= create_anonymous_entity_class
 
         # Call the method on the entity class
         @entity_class.public_send(type, *helpers, **options, &block)
@@ -61,6 +63,14 @@ module Treaty
       end
 
       private
+
+      # Creates an anonymous Entity class for request definitions.
+      # Request uses default_required: true (same as Entity).
+      #
+      # @return [Class] Anonymous Entity class
+      def create_anonymous_entity_class
+        Class.new(Treaty::Entity)
+      end
 
       # Validates that the provided entity_class is a valid Treaty::Entity subclass
       #

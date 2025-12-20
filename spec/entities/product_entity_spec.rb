@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-RSpec.describe Serialization::UserDto do
+RSpec.describe ProductEntity do
   it_behaves_like "check treaty entity info",
                   attributes: {
-                    user: {
+                    product: {
                       attributes: {
                         id: {
                           type: :string,
@@ -12,94 +12,122 @@ RSpec.describe Serialization::UserDto do
                           },
                           attributes: {}
                         },
-                        email: {
+                        name: {
+                          type: :string,
+                          options: {
+                            required: { is: true, message: nil }
+                          },
+                          attributes: {}
+                        },
+                        description: {
+                          type: :string,
+                          options: {
+                            required: { is: false, message: nil }
+                          },
+                          attributes: {}
+                        },
+                        price_cents: {
+                          type: :integer,
+                          options: {
+                            required: { is: true, message: nil }
+                          },
+                          attributes: {}
+                        },
+                        currency: {
                           type: :string,
                           options: {
                             required: { is: true, message: nil },
-                            format: { is: :email, message: nil }
+                            default: { is: "USD", message: nil }
                           },
                           attributes: {}
                         },
-                        username: {
-                          type: :string,
-                          options: {
-                            required: { is: true, message: "Username is required" }
-                          },
-                          attributes: {}
-                        },
-                        recovery_email: {
-                          type: :string,
-                          options: {
-                            required: { is: false, message: nil },
-                            format: { is: :email, message: "Recovery email must be a valid email address" }
-                          },
-                          attributes: {}
-                        },
-                        password: {
+                        status: {
                           type: :string,
                           options: {
                             required: { is: true, message: nil },
-                            format: { is: :password, message: Proc }
+                            inclusion: { in: %w[draft active discontinued], message: nil }
                           },
                           attributes: {}
                         },
-                        role: {
-                          type: :string,
+                        stock_count: {
+                          type: :integer,
                           options: {
-                            required: { is: false, message: nil },
-                            inclusion: { in: %w[admin user guest], message: nil },
-                            default: { is: "user", message: nil }
+                            required: { is: true, message: nil },
+                            if: { is: Proc, message: nil }
                           },
                           attributes: {}
                         },
-                        last_login_at: {
-                          type: :string,
+                        published_at: {
+                          type: :datetime,
                           options: {
                             required: { is: false, message: nil },
-                            format: { is: :datetime, message: nil }
+                            cast: { to: :string, message: nil },
+                            if: { is: Proc, message: nil }
                           },
                           attributes: {}
                         },
-                        birth_date: {
+                        sku: {
                           type: :string,
                           options: {
-                            required: { is: false, message: nil },
-                            format: { is: :date, message: nil }
+                            required: { is: true, message: nil },
+                            unless: { is: Proc, message: nil }
                           },
                           attributes: {}
                         },
-                        preferred_notification_time: {
+                        tags: {
+                          type: :array,
+                          options: {
+                            required: { is: false, message: nil },
+                            unless: { is: Proc, message: nil }
+                          },
+                          attributes: {
+                            _self: {
+                              type: :string,
+                              options: {
+                                required: { is: true, message: nil }
+                              },
+                              attributes: {}
+                            }
+                          }
+                        },
+                        admin_notes: {
                           type: :string,
                           options: {
                             required: { is: false, message: nil },
-                            format: { is: :time, message: nil }
+                            if: { is: Proc, message: nil }
                           },
                           attributes: {}
                         },
-                        email_verified: {
+                        discontinued_reason: {
                           type: :string,
                           options: {
                             required: { is: false, message: nil },
-                            format: { is: :boolean, message: nil },
-                            default: { is: "false", message: nil }
+                            if: { is: Proc, message: nil }
                           },
                           attributes: {}
                         },
-                        session_duration: {
-                          type: :string,
+                        manufacturer: {
+                          type: :object,
                           options: {
                             required: { is: false, message: nil },
-                            format: { is: :duration, message: nil }
+                            unless: { is: Proc, message: nil }
                           },
-                          attributes: {}
-                        },
-                        external_id: {
-                          type: :string,
-                          options: {
-                            required: { is: false, message: nil },
-                            format: { is: :uuid, message: nil }
-                          },
-                          attributes: {}
+                          attributes: {
+                            name: {
+                              type: :string,
+                              options: {
+                                required: { is: true, message: nil }
+                              },
+                              attributes: {}
+                            },
+                            country: {
+                              type: :string,
+                              options: {
+                                required: { is: false, message: nil }
+                              },
+                              attributes: {}
+                            }
+                          }
                         },
                         created_at: {
                           type: :time,

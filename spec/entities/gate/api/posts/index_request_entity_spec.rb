@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Deserialization::Gate::API::Posts::IndexDto do
+RSpec.describe Gate::API::Posts::IndexRequestEntity do
   it_behaves_like "check treaty entity info",
                   attributes: {
                     filters: {
@@ -9,10 +9,11 @@ RSpec.describe Deserialization::Gate::API::Posts::IndexDto do
                         required: { is: false, message: nil }
                       },
                       attributes: {
-                        description: {
+                        title: {
                           type: :string,
                           options: {
-                            required: { is: false, message: nil }
+                            required: { is: false, message: nil },
+                            transform: { is: Proc, message: nil }
                           },
                           attributes: {}
                         },
@@ -23,11 +24,10 @@ RSpec.describe Deserialization::Gate::API::Posts::IndexDto do
                           },
                           attributes: {}
                         },
-                        title: {
+                        description: {
                           type: :string,
                           options: {
-                            required: { is: false, message: nil },
-                            transform: { is: Proc, message: nil }
+                            required: { is: false, message: nil }
                           },
                           attributes: {}
                         }

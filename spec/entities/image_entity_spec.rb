@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Serialization::ImageDto do
+RSpec.describe ImageEntity do
   it_behaves_like "check treaty entity info",
                   attributes: {
                     image: {
@@ -22,7 +22,7 @@ RSpec.describe Serialization::ImageDto do
                         format: {
                           type: :string,
                           options: {
-                            required: { is: true, message: "Format must be specified" },
+                            required: { is: false, message: nil },
                             inclusion: { in: %w[jpg png gif webp], message: nil }
                           },
                           attributes: {}
@@ -30,11 +30,8 @@ RSpec.describe Serialization::ImageDto do
                         size: {
                           type: :string,
                           options: {
-                            required: { is: true, message: nil },
-                            inclusion: {
-                              in: %w[small medium large],
-                              message: Proc
-                            },
+                            required: { is: false, message: nil },
+                            inclusion: { in: %w[small medium large], message: Proc },
                             default: { is: "medium", message: nil }
                           },
                           attributes: {}

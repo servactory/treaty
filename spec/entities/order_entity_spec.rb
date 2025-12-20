@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Serialization::OrderDto do
+RSpec.describe OrderEntity do
   it_behaves_like "check treaty entity info",
                   attributes: {
                     order: {

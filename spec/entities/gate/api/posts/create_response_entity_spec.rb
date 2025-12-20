@@ -1,9 +1,13 @@
 # frozen_string_literal: true
 
-RSpec.describe Serialization::ProductDto do
+RSpec.describe Gate::API::Posts::CreateResponseEntity do
   it_behaves_like "check treaty entity info",
                   attributes: {
-                    product: {
+                    post: {
+                      type: :object,
+                      options: {
+                        required: { is: true, message: nil }
+                      },
                       attributes: {
                         id: {
                           type: :string,
@@ -12,7 +16,14 @@ RSpec.describe Serialization::ProductDto do
                           },
                           attributes: {}
                         },
-                        name: {
+                        title: {
+                          type: :string,
+                          options: {
+                            required: { is: true, message: nil }
+                          },
+                          attributes: {}
+                        },
+                        summary: {
                           type: :string,
                           options: {
                             required: { is: true, message: nil }
@@ -22,63 +33,37 @@ RSpec.describe Serialization::ProductDto do
                         description: {
                           type: :string,
                           options: {
-                            required: { is: false, message: nil }
-                          },
-                          attributes: {}
-                        },
-                        price_cents: {
-                          type: :integer,
-                          options: {
                             required: { is: true, message: nil }
                           },
                           attributes: {}
                         },
-                        currency: {
+                        content: {
                           type: :string,
                           options: {
-                            required: { is: true, message: nil },
-                            default: { is: "USD", message: nil }
-                          },
-                          attributes: {}
-                        },
-                        status: {
-                          type: :string,
-                          options: {
-                            required: { is: true, message: nil },
-                            inclusion: { in: %w[draft active discontinued], message: nil }
-                          },
-                          attributes: {}
-                        },
-                        stock_count: {
-                          type: :integer,
-                          options: {
-                            required: { is: true, message: nil },
-                            if: { is: Proc, message: nil }
+                            required: { is: true, message: nil }
                           },
                           attributes: {}
                         },
                         published_at: {
                           type: :datetime,
                           options: {
-                            required: { is: false, message: nil },
-                            cast: { to: :string, message: nil },
-                            if: { is: Proc, message: nil }
+                            required: { is: true, message: nil },
+                            cast: { to: :string, message: nil }
                           },
                           attributes: {}
                         },
-                        sku: {
-                          type: :string,
+                        featured: {
+                          type: :boolean,
                           options: {
                             required: { is: true, message: nil },
-                            unless: { is: Proc, message: nil }
+                            cast: { to: :integer, message: nil }
                           },
                           attributes: {}
                         },
                         tags: {
                           type: :array,
                           options: {
-                            required: { is: false, message: nil },
-                            unless: { is: Proc, message: nil }
+                            required: { is: true, message: nil }
                           },
                           attributes: {
                             _self: {
@@ -90,27 +75,10 @@ RSpec.describe Serialization::ProductDto do
                             }
                           }
                         },
-                        admin_notes: {
-                          type: :string,
-                          options: {
-                            required: { is: false, message: nil },
-                            if: { is: Proc, message: nil }
-                          },
-                          attributes: {}
-                        },
-                        discontinued_reason: {
-                          type: :string,
-                          options: {
-                            required: { is: false, message: nil },
-                            if: { is: Proc, message: nil }
-                          },
-                          attributes: {}
-                        },
-                        manufacturer: {
+                        author: {
                           type: :object,
                           options: {
-                            required: { is: false, message: nil },
-                            unless: { is: Proc, message: nil }
+                            required: { is: true, message: nil }
                           },
                           attributes: {
                             name: {
@@ -120,20 +88,57 @@ RSpec.describe Serialization::ProductDto do
                               },
                               attributes: {}
                             },
-                            country: {
+                            bio: {
                               type: :string,
                               options: {
-                                required: { is: false, message: nil }
+                                required: { is: true, message: nil }
                               },
                               attributes: {}
+                            },
+                            socials: {
+                              type: :array,
+                              options: {
+                                required: { is: true, message: nil }
+                              },
+                              attributes: {
+                                provider: {
+                                  type: :string,
+                                  options: {
+                                    required: { is: true, message: nil }
+                                  },
+                                  attributes: {}
+                                },
+                                value: {
+                                  type: :string,
+                                  options: {
+                                    required: { is: true, message: nil },
+                                    as: { is: :handle, message: nil }
+                                  },
+                                  attributes: {}
+                                }
+                              }
                             }
                           }
+                        },
+                        rating: {
+                          type: :integer,
+                          options: {
+                            required: { is: true, message: nil }
+                          },
+                          attributes: {}
+                        },
+                        views: {
+                          type: :integer,
+                          options: {
+                            required: { is: true, message: nil }
+                          },
+                          attributes: {}
                         },
                         created_at: {
                           type: :time,
                           options: {
                             required: { is: true, message: nil },
-                            cast: { to: :string, message: nil }
+                            cast: { to: :integer, message: nil }
                           },
                           attributes: {}
                         },
@@ -145,11 +150,7 @@ RSpec.describe Serialization::ProductDto do
                           },
                           attributes: {}
                         }
-                      },
-                      options: {
-                        required: { is: true, message: nil }
-                      },
-                      type: :object
+                      }
                     }
                   }
 end

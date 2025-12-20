@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Serialization::Gate::API::Posts::IndexDto do
+RSpec.describe Gate::API::Posts::IndexResponseEntity do
   it_behaves_like "check treaty entity info",
                   attributes: {
                     posts: {
@@ -16,14 +16,14 @@ RSpec.describe Serialization::Gate::API::Posts::IndexDto do
                           },
                           attributes: {}
                         },
-                        summary: {
+                        title: {
                           type: :string,
                           options: {
                             required: { is: true, message: nil }
                           },
                           attributes: {}
                         },
-                        title: {
+                        summary: {
                           type: :string,
                           options: {
                             required: { is: true, message: nil }

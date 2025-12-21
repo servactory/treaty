@@ -139,7 +139,7 @@ end
 
 Attributes from `:_self` are merged into parent level (root).
 
-### 6. Entity Classes (DTOs)
+### 6. Entity Classes
 
 Reusable data structure definitions that can be used across multiple treaties and versions.
 
@@ -166,7 +166,7 @@ end
 - Better code organization and maintainability
 - Support all attribute types and options
 
-See [Entity Classes (DTOs)](./entities.md) for detailed documentation.
+See [Entity Classes](./entities.md) for detailed documentation.
 
 ### 7. Delegate To
 
@@ -282,7 +282,7 @@ Understanding how Treaty works internally can help you use it more effectively.
 
 Treaty uses a unified entity-based architecture for all attribute definitions:
 
-1. **Treaty::Entity** - Base class for user-defined DTOs (required by default)
+1. **Treaty::Entity** - Base class for user-defined entities (required by default)
 2. **Treaty::RequestEntity** - Internal class for request blocks (required by default)
 3. **Treaty::ResponseEntity** - Internal class for response blocks (optional by default)
 
@@ -311,7 +311,7 @@ Treaty::Attribute::DSL
   ↓
 Treaty::Entity (required: true)
   ↓
-├── Your DTOs
+├── Your Entities
 ├── RequestEntity (for request blocks)
 └── ResponseEntity (for response blocks)
 ```

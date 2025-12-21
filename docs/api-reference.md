@@ -394,7 +394,7 @@ end
 
 **Using an Entity class:**
 ```ruby
-request Deserialization::Posts::CreateDto
+request Posts::CreateRequestEntity
 ```
 
 **Multiple request blocks (will be merged):**
@@ -462,8 +462,8 @@ end
 
 **Using an Entity class:**
 ```ruby
-response 200, Serialization::Posts::IndexDto
-response 201, Serialization::Posts::CreateDto
+response 200, Posts::IndexResponseEntity
+response 201, Posts::CreateResponseEntity
 ```
 
 **Note:** Attributes in response blocks are **optional by default**.
@@ -472,7 +472,7 @@ response 201, Serialization::Posts::CreateDto
 
 ### `Treaty::Entity`
 
-Base class for creating reusable DTO (Data Transfer Object) classes.
+Base class for creating reusable entity classes.
 
 **Syntax:**
 ```ruby
@@ -516,25 +516,23 @@ end
 - Reusable across multiple versions and treaties
 
 **Best Practices:**
-- Place entities in `app/entities/` or `app/dtos/` directory
-- Use descriptive names (e.g., `PostRequestEntity`, `UserResponseDto`)
+- Place entities in `app/entities/` directory
+- Use descriptive names (e.g., `PostRequestEntity`, `UserResponseEntity`)
 - Separate request and response entities
-- Use `ApplicationEntity` or `ApplicationDto` as base class
+- Use `ApplicationEntity` as base class
 
 **Example structure:**
 ```ruby
-# app/dtos/application_dto.rb
-class ApplicationDto < Treaty::Entity
+# app/entities/application_entity.rb
+class ApplicationEntity < Treaty::Entity
 end
 
-# app/dtos/deserialization/posts/create_dto.rb
-module Deserialization
-  module Posts
-    class CreateDto < ApplicationDto
-      object :post do
-        string :title
-        string :content
-      end
+# app/entities/posts/create_request_entity.rb
+module Posts
+  class CreateRequestEntity < ApplicationEntity
+    object :post do
+      string :title
+      string :content
     end
   end
 end
@@ -566,7 +564,7 @@ PostEntity.treaty?
 - Attribute metadata including type, options, and nested attributes
 - Useful for auto-generating documentation and introspection
 
-See [Entity Classes (DTOs)](./entities.md) for detailed documentation, including the [Introspection with .info Method](./entities.md#introspection-with-info-method) section.
+See [Entity Classes](./entities.md) for detailed documentation, including the [Introspection with .info Method](./entities.md#introspection-with-info-method) section.
 
 ## Object Definition
 

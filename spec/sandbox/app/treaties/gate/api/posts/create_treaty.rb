@@ -589,7 +589,7 @@ module Gate
 
               # Use shared Entity for author nested object
               object :author do
-                use_entity(Shared::AuthorDto)
+                use_entity(AuthorEntity)
               end
             end
           end
@@ -607,7 +607,7 @@ module Gate
 
               # Use shared Entity for author nested object
               object :author do
-                use_entity(Shared::AuthorDto)
+                use_entity(AuthorEntity)
               end
 
               time :created_at, cast: :string

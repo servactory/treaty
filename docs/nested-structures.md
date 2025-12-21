@@ -411,7 +411,7 @@ When the same nested structure appears in multiple places, you can use `use_enti
 
 ```ruby
 # Define a reusable entity
-class AuthorDto < ApplicationDto
+class AuthorEntity < ApplicationEntity
   string :name
   string :bio, :optional
 
@@ -427,7 +427,7 @@ request do
     string :title
 
     object :author do
-      use_entity(AuthorDto)
+      use_entity(AuthorEntity)
     end
   end
 end
@@ -439,7 +439,7 @@ response 201 do
     string :title
 
     object :author do
-      use_entity(AuthorDto)
+      use_entity(AuthorEntity)
     end
   end
 end

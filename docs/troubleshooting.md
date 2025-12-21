@@ -632,19 +632,19 @@ end
 **Problem:** Argument passed to `use_entity` is not a valid Entity class.
 
 **Solution:**
-1. Ensure the class inherits from `Treaty::Entity` (or `ApplicationDto`)
+1. Ensure the class inherits from `Treaty::Entity` (or `ApplicationEntity`)
 2. Verify the class is loaded before the treaty definition
 3. Check class name spelling
 
 **Example:**
 ```ruby
 # ✓ Correct: Class inherits from Treaty::Entity
-class AuthorDto < ApplicationDto
+class AuthorEntity < ApplicationEntity
   string :name
 end
 
 object :author do
-  use_entity(AuthorDto)  # Works
+  use_entity(AuthorEntity)  # Works
 end
 
 # ✗ Wrong: Regular class
@@ -668,29 +668,29 @@ end
 ```ruby
 # ✓ Correct: use_entity is the only statement
 object :author do
-  use_entity(AuthorDto)
+  use_entity(AuthorEntity)
 end
 
 # ✗ Wrong: Attributes defined before use_entity
 object :author do
   string :name  # Error: Cannot call use_entity after defining attributes
-  use_entity(AuthorDto)
+  use_entity(AuthorEntity)
 end
 
 # ✗ Wrong: Attributes defined after use_entity
 object :author do
-  use_entity(AuthorDto)
+  use_entity(AuthorEntity)
   string :extra_field  # Error: Cannot define attributes after use_entity
 end
 
 # ✓ Correct: If you need additional attributes, define them in the Entity
-class AuthorDto < ApplicationDto
+class AuthorEntity < ApplicationEntity
   string :name
   string :extra_field  # Add attributes here instead
 end
 
 object :author do
-  use_entity(AuthorDto)
+  use_entity(AuthorEntity)
 end
 ```
 
@@ -703,19 +703,19 @@ Options like `:optional` apply to the wrapper object/array, not to the Entity's 
 
 **Example:**
 ```ruby
-class AuthorDto < ApplicationDto
+class AuthorEntity < ApplicationEntity
   string :name           # required (Entity default)
   string :bio, :optional # optional
 end
 
-# :optional applies to the wrapper object, not AuthorDto's attributes
+# :optional applies to the wrapper object, not AuthorEntity's attributes
 object :author, :optional do
-  use_entity(AuthorDto)
+  use_entity(AuthorEntity)
 end
 
 # Conditional applies to wrapper
 object :author, if: ->(post:) { post[:has_author] } do
-  use_entity(AuthorDto)
+  use_entity(AuthorEntity)
 end
 ```
 

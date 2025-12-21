@@ -60,11 +60,11 @@ module Gate
           summary "Extended user creation with Entity-based definition"
 
           request do
-            use_entity Deserialization::UserDto
+            use_entity UserRequestEntity
           end
 
           response 201 do
-            use_entity Serialization::UserDto
+            use_entity UserResponseEntity
           end
 
           delegate_to "Users::CreateService"

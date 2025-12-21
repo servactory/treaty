@@ -150,9 +150,9 @@ module Gate
         end
 
         version 4, default: true do
-          request Deserialization::Gate::API::Posts::IndexDto
+          request Gate::API::Posts::FiltersEntity
 
-          response 200, Serialization::Gate::API::Posts::IndexDto
+          response 200, Gate::API::Posts::IndexEntity
 
           delegate_to ::Posts::Stable::IndexService
 

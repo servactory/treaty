@@ -1,17 +1,17 @@
 # frozen_string_literal: true
 
 module Treaty
-  # Base class for defining DTO (Data Transfer Object) entities in Treaty.
+  # Base class for defining reusable entity classes in Treaty.
   #
   # ## Purpose
   #
-  # Treaty::Entity provides a base class for creating reusable DTO classes
+  # Treaty::Entity provides a base class for creating reusable entity classes
   # that can be used in both request and response definitions. This allows
   # for better code organization and reusability of common data structures.
   #
   # ## Usage
   #
-  # Create a DTO class by inheriting from Treaty::Entity:
+  # Create an entity class by inheriting from Treaty::Entity:
   #
   # ```ruby
   # class PostEntity < Treaty::Entity

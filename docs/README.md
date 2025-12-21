@@ -31,7 +31,7 @@ Treaty allows you to:
 4. [Attributes](./attributes.md) - Attribute types and options
 5. [Nested Structures](./nested-structures.md) - Objects and arrays
 6. [Objects](./objects.md) - Organizing data with object attributes
-7. [Entity Classes (DTOs)](./entities.md) - Reusable data transfer objects
+7. [Entity Classes](./entities.md) - Reusable entity classes
 8. [Validation](./validation.md) - Data validation system
 9. [Transformation](./transformation.md) - Data transformation pipeline
 10. [Versioning](./versioning.md) - API version management

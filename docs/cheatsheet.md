@@ -29,7 +29,7 @@ class Posts::CreateTreaty < ApplicationTreaty
 end
 ```
 
-## Entity Classes (DTOs)
+## Entity Classes
 
 ### Define Entity
 
@@ -65,27 +65,25 @@ end
 ```ruby
 # Reuse entity inside nested object/array
 object :author do
-  use_entity(AuthorDto)
+  use_entity(AuthorEntity)
 end
 
 array :socials, :optional do
-  use_entity(SocialDto)
+  use_entity(SocialEntity)
 end
 ```
 
 ### Organize Entities
 
 ```
-app/dtos/
-├── application_dto.rb              # Base class
-├── deserialization/                # Request DTOs
-│   └── posts/
-│       ├── create_dto.rb
-│       └── update_dto.rb
-└── serialization/                  # Response DTOs
-    └── posts/
-        ├── index_dto.rb
-        └── show_dto.rb
+app/entities/
+├── application_entity.rb           # Base class
+├── author_entity.rb                # Reusable entities
+├── social_entity.rb
+└── posts/
+    ├── create_request_entity.rb    # Request entities
+    ├── create_response_entity.rb   # Response entities
+    └── index_entity.rb
 ```
 
 **Note:** Entity attributes are **required by default** (like request blocks).

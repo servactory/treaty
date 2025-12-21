@@ -18,7 +18,7 @@ module Users
       user_params[:created_at] ||= Time.current
       user_params[:updated_at] ||= Time.current
 
-      # Apply default for role if not present (already defined in DTO, but for safety)
+      # Apply default for role if not present (already defined in Entity, but for safety)
       user_params[:role] ||= "user"
 
       # Apply default for email_verified if not present

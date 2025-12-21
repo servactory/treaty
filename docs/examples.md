@@ -582,74 +582,70 @@ object :sort do
 end
 ```
 
-## Example 7: Using Entity Classes (DTOs)
+## Example 7: Using Entity Classes
 
 Demonstrates using reusable Entity classes for better code organization.
 
 ### Entity Definitions
 
 ```ruby
-# app/dtos/application_dto.rb
-class ApplicationDto < Treaty::Entity
+# app/entities/application_entity.rb
+class ApplicationEntity < Treaty::Entity
 end
 
-# app/dtos/deserialization/posts/create_dto.rb
-module Deserialization
-  module Posts
-    class CreateDto < ApplicationDto
-      object :post do
-        string :title
-        string :content
-        string :summary, :optional
-        boolean :published, :optional
+# app/entities/posts/create_request_entity.rb
+module Posts
+  class CreateRequestEntity < ApplicationEntity
+    object :post do
+      string :title
+      string :content
+      string :summary, :optional
+      boolean :published, :optional
 
-        object :author do
-          string :name
-          string :email
-        end
+      object :author do
+        string :name
+        string :email
+      end
 
-        array :tags, :optional do
-          string :_self  # Array of strings
-        end
+      array :tags, :optional do
+        string :_self  # Array of strings
       end
     end
   end
 end
 
-# app/dtos/serialization/posts/create_dto.rb
-module Serialization
-  module Posts
-    class CreateDto < ApplicationDto
-      object :post do
+# app/entities/posts/create_response_entity.rb
+module Posts
+  class CreateResponseEntity < ApplicationEntity
+    object :post do
+      string :id
+      string :title
+      string :content
+      string :summary
+      boolean :published
+      time :created_at
+      time :updated_at
+
+      # Computed: word count from content
+      integer :word_count, :optional, computed: (lambda do |**attributes|
+        attributes.dig(:post, :content).to_s.split.size
+      end)
+
+      object :author do
         string :id
-        string :title
-        string :content
-        string :summary
-        boolean :published
-        time :created_at
-        time :updated_at
+        string :name
+        string :email
 
-        # Computed: word count from content
-        integer :word_count, :optional, computed: (lambda do |**attributes|
-          attributes.dig(:post, :content).to_s.split.size
+        # Computed: display format
+        string :display, :optional, computed: (lambda do |**attributes|
+          name = attributes.dig(:post, :author, :name)
+          email = attributes.dig(:post, :author, :email)
+          "#{name} <#{email}>"
         end)
+      end
 
-        object :author do
-          string :id
-          string :name
-          string :email
-
-          # Computed: display format
-          string :display, :optional, computed: (lambda do |**attributes|
-            name = attributes.dig(:post, :author, :name)
-            email = attributes.dig(:post, :author, :email)
-            "#{name} <#{email}>"
-          end)
-        end
-
-        array :tags do
-          string :_self
-        end
+      array :tags do
+        string :_self
       end
     end
   end
@@ -664,8 +660,8 @@ module Posts
     version 1 do
 
       # Use Entity classes instead of inline blocks
-      request Deserialization::Posts::CreateDto
-      response 201, Serialization::Posts::CreateDto
+      request Posts::CreateRequestEntity
+      response 201, Posts::CreateResponseEntity
 
       delegate_to Posts::CreateService
     end
@@ -673,8 +669,8 @@ module Posts
     version 2 do
 
       # Reuse the same Entity classes across versions
-      request Deserialization::Posts::CreateDto
-      response 201, Serialization::Posts::CreateDto
+      request Posts::CreateRequestEntity
+      response 201, Posts::CreateResponseEntity
 
       delegate_to Posts::V2::CreateService
     end
@@ -690,8 +686,8 @@ class PostsController < ApplicationController
 
   def create
     # Treaty handles everything automatically
-    # Request validated against Deserialization::Posts::CreateDto
-    # Response validated against Serialization::Posts::CreateDto
+    # Request validated against Posts::CreateRequestEntity
+    # Response validated against Posts::CreateResponseEntity
   end
 end
 ```
@@ -789,7 +785,7 @@ POST /posts
 4. **Type Safety** - Consistent validation across all usages
 5. **Testability** - Test Entity classes independently
 
-See [Entity Classes (DTOs)](./entities.md) for detailed documentation.
+See [Entity Classes](./entities.md) for detailed documentation.
 
 ## Example 8: Format Validation for User Registration
 

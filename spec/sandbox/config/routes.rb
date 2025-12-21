@@ -14,12 +14,10 @@ Rails.application.routes.draw do
   # Defines the root path route ("/")
   # root "posts#index"
 
-  namespace :gate, path: "/" do
-    namespace :api, defaults: { format: :json } do
-      resources :posts, only: %i[index create] do
-        collection do
-          get :invalid_class
-        end
+  defaults format: :json do
+    resources :posts, only: %i[index create] do
+      collection do
+        get :invalid_class
       end
     end
   end

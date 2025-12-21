@@ -394,7 +394,7 @@ end
 
 **Using an Entity class:**
 ```ruby
-request Deserialization::Posts::CreateDto
+request Posts::Create::RequestEntity
 ```
 
 **Multiple request blocks (will be merged):**
@@ -462,8 +462,8 @@ end
 
 **Using an Entity class:**
 ```ruby
-response 200, Serialization::Posts::IndexDto
-response 201, Serialization::Posts::CreateDto
+response 200, Posts::Index::ResponseEntity
+response 201, Posts::Create::ResponseEntity
 ```
 
 **Note:** Attributes in response blocks are **optional by default**.
@@ -472,7 +472,7 @@ response 201, Serialization::Posts::CreateDto
 
 ### `Treaty::Entity`
 
-Base class for creating reusable DTO (Data Transfer Object) classes.
+Base class for creating reusable entity classes.
 
 **Syntax:**
 ```ruby
@@ -483,28 +483,34 @@ end
 
 **Example:**
 ```ruby
-class PostEntity < Treaty::Entity
-  string :id
-  string :title
-  string :content, :optional
-  time :created_at
+module Posts
+  module Create
+    class ResponseEntity < Treaty::Entity
+      string :id
+      string :title
+      string :content, :optional
+      time :created_at
 
-  object :author do
-    string :name
-    string :email
-  end
+      object :author do
+        string :name
+        string :email
+      end
 
-  array :tags, :optional do
-    string :_self
+      array :tags, :optional do
+        string :_self
+      end
+    end
   end
 end
 ```
 
 **Usage in treaties:**
 ```ruby
-version 1 do
-  request PostRequestEntity
-  response 201, PostResponseEntity
+class Posts::CreateTreaty < ApplicationTreaty
+  version 1 do
+    request Posts::Create::RequestEntity
+    response 201, Posts::Create::ResponseEntity
+  end
 end
 ```
 
@@ -516,26 +522,35 @@ end
 - Reusable across multiple versions and treaties
 
 **Best Practices:**
-- Place entities in `app/entities/` or `app/dtos/` directory
-- Use descriptive names (e.g., `PostRequestEntity`, `UserResponseDto`)
+- Place entities in `app/entities/` directory with domain-based structure
+- Use descriptive names (e.g., `Posts::Create::RequestEntity`, `Users::Create::ResponseEntity`)
 - Separate request and response entities
-- Use `ApplicationEntity` or `ApplicationDto` as base class
+- Use `ApplicationEntity` as base class
+- Place shared entities in `app/entities/shared/` directory
 
 **Example structure:**
 ```ruby
-# app/dtos/application_dto.rb
-class ApplicationDto < Treaty::Entity
+# app/entities/application_entity.rb
+class ApplicationEntity < Treaty::Entity
 end
 
-# app/dtos/deserialization/posts/create_dto.rb
-module Deserialization
-  module Posts
-    class CreateDto < ApplicationDto
+# app/entities/posts/create/request_entity.rb
+module Posts
+  module Create
+    class RequestEntity < ApplicationEntity
       object :post do
         string :title
         string :content
       end
     end
+  end
+end
+
+# app/entities/shared/author_entity.rb
+module Shared
+  class AuthorEntity < ApplicationEntity
+    string :name
+    string :bio, :optional
   end
 end
 ```
@@ -546,7 +561,7 @@ Entity classes provide class methods for introspection:
 
 ```ruby
 # Get entity metadata
-info = PostEntity.info
+info = Posts::Create::ResponseEntity.info
 # => #<Treaty::Info::Entity::Result>
 
 info.attributes
@@ -557,7 +572,7 @@ info.attributes
 # }
 
 # Check if class is a Treaty entity
-PostEntity.treaty?
+Posts::Create::ResponseEntity.treaty?
 # => true
 ```
 
@@ -566,7 +581,7 @@ PostEntity.treaty?
 - Attribute metadata including type, options, and nested attributes
 - Useful for auto-generating documentation and introspection
 
-See [Entity Classes (DTOs)](./entities.md) for detailed documentation, including the [Introspection with .info Method](./entities.md#introspection-with-info-method) section.
+See [Entity Classes](./entities.md) for detailed documentation, including the [Introspection with .info Method](./entities.md#introspection-with-info-method) section.
 
 ## Object Definition
 

@@ -582,21 +582,21 @@ object :sort do
 end
 ```
 
-## Example 7: Using Entity Classes (DTOs)
+## Example 7: Using Entity Classes
 
 Demonstrates using reusable Entity classes for better code organization.
 
 ### Entity Definitions
 
 ```ruby
-# app/dtos/application_dto.rb
-class ApplicationDto < Treaty::Entity
+# app/entities/application_entity.rb
+class ApplicationEntity < Treaty::Entity
 end
 
-# app/dtos/deserialization/posts/create_dto.rb
-module Deserialization
-  module Posts
-    class CreateDto < ApplicationDto
+# app/entities/posts/create/request_entity.rb
+module Posts
+  module Create
+    class RequestEntity < ApplicationEntity
       object :post do
         string :title
         string :content
@@ -616,10 +616,10 @@ module Deserialization
   end
 end
 
-# app/dtos/serialization/posts/create_dto.rb
-module Serialization
-  module Posts
-    class CreateDto < ApplicationDto
+# app/entities/posts/create/response_entity.rb
+module Posts
+  module Create
+    class ResponseEntity < ApplicationEntity
       object :post do
         string :id
         string :title
@@ -664,8 +664,8 @@ module Posts
     version 1 do
 
       # Use Entity classes instead of inline blocks
-      request Deserialization::Posts::CreateDto
-      response 201, Serialization::Posts::CreateDto
+      request Posts::Create::RequestEntity
+      response 201, Posts::Create::ResponseEntity
 
       delegate_to Posts::CreateService
     end
@@ -673,8 +673,8 @@ module Posts
     version 2 do
 
       # Reuse the same Entity classes across versions
-      request Deserialization::Posts::CreateDto
-      response 201, Serialization::Posts::CreateDto
+      request Posts::Create::RequestEntity
+      response 201, Posts::Create::ResponseEntity
 
       delegate_to Posts::V2::CreateService
     end
@@ -690,8 +690,8 @@ class PostsController < ApplicationController
 
   def create
     # Treaty handles everything automatically
-    # Request validated against Deserialization::Posts::CreateDto
-    # Response validated against Serialization::Posts::CreateDto
+    # Request validated against Posts::Create::RequestEntity
+    # Response validated against Posts::Create::ResponseEntity
   end
 end
 ```
@@ -789,7 +789,7 @@ POST /posts
 4. **Type Safety** - Consistent validation across all usages
 5. **Testability** - Test Entity classes independently
 
-See [Entity Classes (DTOs)](./entities.md) for detailed documentation.
+See [Entity Classes](./entities.md) for detailed documentation.
 
 ## Example 8: Format Validation for User Registration
 

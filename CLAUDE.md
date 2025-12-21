@@ -17,7 +17,7 @@
 1. **Type Safety** - Strict type checking for request/response data with 8 attribute types
 2. **API Versioning** - Manage multiple concurrent API versions with semantic versioning support
 3. **Unified Validation** - Same attribute system across requests, responses, and entities
-4. **Entity Classes (DTOs)** - Reusable data transfer objects with inheritance support
+4. **Entity Classes** - Reusable entity classes with inheritance support
 5. **Built-in Validation** - 4 validators (required, type, inclusion, format) with 8 format types
 6. **Data Transformation** - Transform data with computed values (`computed:`), custom lambdas (`transform:`), and automatic type casting (`cast:`)
 7. **Type Casting** - 26 predefined type conversions between scalar types
@@ -38,7 +38,7 @@ treaty/
 │   │   ├── option/         # Option processors (validators, modifiers)
 │   │   └── validators/     # Type validators
 │   ├── controller/         # Rails controller integration
-│   ├── entity/             # DTO/Entity classes
+│   ├── entity/             # Entity classes
 │   ├── request/            # Request handling
 │   ├── response/           # Response handling
 │   ├── versions/           # Version management
@@ -47,7 +47,7 @@ treaty/
 ├── spec/
 │   ├── sandbox/app/        # Example implementations
 │   │   ├── treaties/       # Treaty definitions (9 files)
-│   │   ├── dtos/           # DTO definitions (10 files)
+│   │   ├── entities/       # Entity definitions (10 files)
 │   │   └── services/       # Services (16 files)
 │   └── treaties/           # Treaty contract tests
 └── docs/                   # Documentation (18 files)
@@ -302,32 +302,38 @@ string :published_at, transform: ->(value:) { value.strip }, cast: :datetime
 **CRITICAL**: Attributes in Entity classes are **required by default** (opposite of request/response blocks).
 
 ```ruby
-class PostDto < Treaty::Entity
-  object :post do
-    string :id              # required by default
-    string :title           # required by default
-    string :bio, :optional  # explicitly optional
+module Posts
+  module Create
+    class ResponseEntity < Treaty::Entity
+      object :post do
+        string :id              # required by default
+        string :title           # required by default
+        string :bio, :optional  # explicitly optional
 
-    object :author do
-      string :name
-      string :email, format: :email
-    end
+        object :author do
+          string :name
+          string :email, format: :email
+        end
 
-    array :tags do
-      string :_self  # _self represents array elements
+        array :tags do
+          string :_self  # _self represents array elements
+        end
+      end
     end
   end
 end
 
 # Usage in treaty
-version 1 do
-  request PostDto
-  response 201, PostDto
+class Posts::CreateTreaty < ApplicationTreaty
+  version 1 do
+    request Posts::Create::RequestEntity
+    response 201, Posts::Create::ResponseEntity
+  end
 end
 
 # Reuse in nested blocks
 object :author do
-  use_entity(AuthorDto)
+  use_entity(Shared::AuthorEntity)
 end
 ```
 
@@ -383,7 +389,7 @@ end
 ```
 spec/
 ├── treaties/     # Treaty contract tests
-├── dtos/         # Entity/DTO tests
+├── entities/     # Entity tests
 ├── controllers/  # Controller integration tests
 └── support/      # Helpers, matchers, shared examples
 ```
@@ -393,7 +399,7 @@ spec/
 ```ruby
 # frozen_string_literal: true
 
-RSpec.describe Gate::API::Posts::CreateTreaty do
+RSpec.describe Posts::CreateTreaty do
   subject(:perform) { described_class.call!(context:, inventory:, version:, params:) }
 
   let(:context) { instance_double(ApplicationController) }
@@ -441,10 +447,14 @@ assign_json_headers_with(version: 1)
 
 ```ruby
 # Entity: required by default
-class UserDto < Treaty::Entity
-  object :user do
-    string :name       # required!
-    string :bio, :optional
+module Users
+  module Create
+    class ResponseEntity < Treaty::Entity
+      object :user do
+        string :name       # required!
+        string :bio, :optional
+      end
+    end
   end
 end
 

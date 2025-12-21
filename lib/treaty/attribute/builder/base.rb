@@ -40,7 +40,7 @@ module Treaty
       #
       # ```ruby
       # object :author do
-      #   use_entity(AuthorDto)
+      #   use_entity(AuthorEntity)
       # end
       # ```
       #
@@ -109,12 +109,12 @@ module Treaty
         #
         # @example Using an Entity in a nested object
         #   object :author do
-        #     use_entity(AuthorDto)
+        #     use_entity(AuthorEntity)
         #   end
         #
         # @example Using an Entity in a nested array
         #   array :items, :optional do
-        #     use_entity(ItemDto)
+        #     use_entity(ItemEntity)
         #   end
         def use_entity(entity_class)
           validate_use_entity_preconditions!

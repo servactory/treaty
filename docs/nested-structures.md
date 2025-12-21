@@ -410,14 +410,16 @@ end
 When the same nested structure appears in multiple places, you can use `use_entity` to reuse an Entity class:
 
 ```ruby
-# Define a reusable entity
-class AuthorDto < ApplicationDto
-  string :name
-  string :bio, :optional
+# Define a reusable entity in app/entities/shared/author_entity.rb
+module Shared
+  class AuthorEntity < ApplicationEntity
+    string :name
+    string :bio, :optional
 
-  array :socials, :optional do
-    string :provider
-    string :handle
+    array :socials, :optional do
+      string :provider
+      string :handle
+    end
   end
 end
 
@@ -427,7 +429,7 @@ request do
     string :title
 
     object :author do
-      use_entity(AuthorDto)
+      use_entity(Shared::AuthorEntity)
     end
   end
 end
@@ -439,7 +441,7 @@ response 201 do
     string :title
 
     object :author do
-      use_entity(AuthorDto)
+      use_entity(Shared::AuthorEntity)
     end
   end
 end

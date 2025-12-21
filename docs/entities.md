@@ -1,16 +1,16 @@
-# Entity Classes (DTOs)
+# Entity Classes
 
 [← Back to Documentation](./README.md)
 
 ## Overview
 
-Entity classes (DTOs - Data Transfer Objects) are reusable data structure definitions that can be used across multiple treaties and versions. This guide covers creating entities, organizing them, using the introspection `.info` method, and best practices for maintainable API design.
+Entity classes are reusable data structure definitions that can be used across multiple treaties and versions. This guide covers creating entities, organizing them, using the introspection `.info` method, and best practices for maintainable API design.
 
 **Important:** Entity classes and request/response blocks use the same underlying system. When you define a request or response with a block, Treaty creates an anonymous Entity class internally. This unified architecture ensures consistent behavior whether you use blocks or explicit Entity classes.
 
 ## What are Entity Classes?
 
-Entity classes (also known as DTOs - Data Transfer Objects) are reusable class definitions that can be used in multiple treaty definitions. They provide a way to define data structures once and reuse them across different versions and treaties.
+Entity classes are reusable class definitions that can be used in multiple treaty definitions. They provide a way to define data structures once and reuse them across different versions and treaties.
 
 ## Benefits of Entity Classes
 
@@ -25,15 +25,19 @@ Entity classes (also known as DTOs - Data Transfer Objects) are reusable class d
 Entity classes inherit from `Treaty::Entity`:
 
 ```ruby
-class PostEntity < Treaty::Entity
-  string :id
-  string :title
-  string :content
-  time :created_at
+module Posts
+  module Create
+    class ResponseEntity < Treaty::Entity
+      string :id
+      string :title
+      string :content
+      time :created_at
+    end
+  end
 end
 ```
 
-Place entity classes in `app/entities/` or `app/dtos/` directory.
+Place entity classes in `app/entities/` directory with domain-based structure.
 
 ## Attribute Defaults in Entities
 
@@ -44,10 +48,14 @@ Place entity classes in `app/entities/` or `app/dtos/` directory.
 - **Response blocks**: All attributes are **optional by default**
 
 ```ruby
-class UserEntity < Treaty::Entity
-  string :name        # required by default
-  string :email       # required by default
-  string :bio, :optional  # explicitly optional
+module Users
+  module Create
+    class ResponseEntity < Treaty::Entity
+      string :name        # required by default
+      string :email       # required by default
+      string :bio, :optional  # explicitly optional
+    end
+  end
 end
 ```
 
@@ -59,8 +67,8 @@ Entity classes can be used directly in request and response definitions:
 class Posts::CreateTreaty < ApplicationTreaty
   version 1 do
 
-    request PostRequestEntity
-    response 201, PostResponseEntity
+    request Posts::Create::RequestEntity
+    response 201, Posts::Create::ResponseEntity
 
     delegate_to Posts::CreateService
   end
@@ -72,47 +80,66 @@ end
 It's common to have separate entities for requests and responses:
 
 ```ruby
-# Request entity - what client sends
-class PostRequestEntity < Treaty::Entity
-  string :title
-  string :content
-  string :summary, :optional
+# app/entities/posts/create/request_entity.rb
+module Posts
+  module Create
+    class RequestEntity < Treaty::Entity
+      string :title
+      string :content
+      string :summary, :optional
+    end
+  end
 end
 
-# Response entity - what server returns
-class PostResponseEntity < Treaty::Entity
-  string :id
-  string :title
-  string :content
-  string :summary
-  time :created_at
-  time :updated_at
+# app/entities/posts/create/response_entity.rb
+module Posts
+  module Create
+    class ResponseEntity < Treaty::Entity
+      string :id
+      string :title
+      string :content
+      string :summary
+      time :created_at
+      time :updated_at
+    end
+  end
 end
 ```
 
 ## Organizing Entity Classes
 
-### By Direction (Recommended)
+### By Domain and Action (Recommended)
 
 ```
-app/dtos/
-├── serialization/         # Response DTOs (outgoing data)
-│   └── posts/
-│       ├── index_dto.rb
-│       └── show_dto.rb
-└── deserialization/       # Request DTOs (incoming data)
-    └── posts/
-        ├── create_dto.rb
-        └── update_dto.rb
+app/entities/
+├── application_entity.rb    # Base class
+├── shared/
+│   ├── author_entity.rb     # Shared entities
+│   └── social_entity.rb
+├── posts/
+│   ├── create/
+│   │   ├── request_entity.rb
+│   │   └── response_entity.rb
+│   └── index/
+│       ├── request_entity.rb
+│       └── response_entity.rb
+└── users/
+    └── create/
+        ├── request_entity.rb
+        └── response_entity.rb
 ```
 
 **Example:**
 
 ```ruby
-# app/dtos/deserialization/posts/create_dto.rb
-module Deserialization
-  module Posts
-    class CreateDto < ApplicationDto
+# app/entities/application_entity.rb
+class ApplicationEntity < Treaty::Entity
+end
+
+# app/entities/posts/create/request_entity.rb
+module Posts
+  module Create
+    class RequestEntity < ApplicationEntity
       object :post do
         string :title
         string :content
@@ -122,10 +149,10 @@ module Deserialization
   end
 end
 
-# app/dtos/serialization/posts/show_dto.rb
-module Serialization
-  module Posts
-    class ShowDto < ApplicationDto
+# app/entities/posts/create/response_entity.rb
+module Posts
+  module Create
+    class ResponseEntity < ApplicationEntity
       object :post do
         string :id
         string :title
@@ -136,19 +163,14 @@ module Serialization
     end
   end
 end
-```
 
-### By Domain
-
-```
-app/entities/
-├── posts/
-│   ├── post_entity.rb
-│   ├── comment_entity.rb
-│   └── author_entity.rb
-└── users/
-    ├── user_entity.rb
-    └── profile_entity.rb
+# app/entities/shared/author_entity.rb
+module Shared
+  class AuthorEntity < ApplicationEntity
+    string :name
+    string :bio, :optional
+  end
+end
 ```
 
 ## Nested Structures
@@ -156,23 +178,27 @@ app/entities/
 Entity classes support nested objects and arrays:
 
 ```ruby
-class PostEntity < Treaty::Entity
-  string :id
-  string :title
-  string :content
+module Posts
+  module Show
+    class ResponseEntity < Treaty::Entity
+      string :id
+      string :title
+      string :content
 
-  object :author do
-    string :name
-    string :bio
+      object :author do
+        string :name
+        string :bio
 
-    array :socials, :optional do
-      string :provider
-      string :url
+        array :socials, :optional do
+          string :provider
+          string :url
+        end
+      end
+
+      array :tags, :optional do
+        string :_self  # Simple array of strings
+      end
     end
-  end
-
-  array :tags, :optional do
-    string :_self  # Simple array of strings
   end
 end
 ```
@@ -182,20 +208,22 @@ end
 You can mix entity classes with inline block definitions:
 
 ```ruby
-version 1 do
+class Posts::CreateTreaty < ApplicationTreaty
+  version 1 do
 
-  # Use entity class for request
-  request PostRequestEntity
+    # Use entity class for request
+    request Posts::Create::RequestEntity
 
-  # Use block definition for response
-  response 201 do
-    object :post do
-      string :id
-      string :title
+    # Use block definition for response
+    response 201 do
+      object :post do
+        string :id
+        string :title
+      end
     end
-  end
 
-  delegate_to Posts::CreateService
+    delegate_to Posts::CreateService
+  end
 end
 ```
 
@@ -204,15 +232,21 @@ end
 You can reuse Entity classes within nested `object` or `array` blocks using `use_entity`:
 
 ```ruby
-# Define reusable entities
-class AuthorDto < ApplicationDto
-  string :name
-  string :bio, :optional
+# Define reusable entities in app/entities/shared/
+# app/entities/shared/author_entity.rb
+module Shared
+  class AuthorEntity < ApplicationEntity
+    string :name
+    string :bio, :optional
+  end
 end
 
-class SocialDto < ApplicationDto
-  string :provider, in: %w[twitter linkedin github]
-  string :handle
+# app/entities/shared/social_entity.rb
+module Shared
+  class SocialEntity < ApplicationEntity
+    string :provider, in: %w[twitter linkedin github]
+    string :handle
+  end
 end
 
 # Use entities in nested blocks
@@ -222,14 +256,14 @@ version 1 do
       string :title
       string :content
 
-      # Reuse AuthorDto inside the author object
+      # Reuse Shared::AuthorEntity inside the author object
       object :author do
-        use_entity(AuthorDto)
+        use_entity(Shared::AuthorEntity)
       end
 
-      # Reuse SocialDto inside the socials array
+      # Reuse Shared::SocialEntity inside the socials array
       array :socials, :optional do
-        use_entity(SocialDto)
+        use_entity(Shared::SocialEntity)
       end
     end
   end
@@ -240,7 +274,7 @@ version 1 do
       string :title
 
       object :author do
-        use_entity(AuthorDto)
+        use_entity(Shared::AuthorEntity)
       end
     end
   end
@@ -260,13 +294,13 @@ When using `use_entity` in nested blocks:
 ```ruby
 # WRONG: Cannot mix use_entity with other attributes
 object :author do
-  use_entity(AuthorDto)
+  use_entity(Shared::AuthorEntity)
   string :extra_field  # Error!
 end
 
 # CORRECT: Only use_entity in the block
 object :author do
-  use_entity(AuthorDto)
+  use_entity(Shared::AuthorEntity)
 end
 ```
 
@@ -311,7 +345,7 @@ Different entity types have different defaults:
 
 | Type | Default Required | Use Case |
 |------|-----------------|----------|
-| `Treaty::Entity` | `true` | User-defined DTOs |
+| `Treaty::Entity` | `true` | User-defined entities |
 | `Treaty::Request::Entity` | `true` | Request blocks |
 | `Treaty::Response::Entity` | `false` | Response blocks |
 
@@ -322,14 +356,14 @@ This is why request blocks default to required and response blocks default to op
 **Entity Definitions:**
 
 ```ruby
-# app/dtos/application_dto.rb
-class ApplicationDto < Treaty::Entity
+# app/entities/application_entity.rb
+class ApplicationEntity < Treaty::Entity
 end
 
-# app/dtos/deserialization/posts/create_dto.rb
-module Deserialization
-  module Posts
-    class CreateDto < ApplicationDto
+# app/entities/posts/create/request_entity.rb
+module Posts
+  module Create
+    class RequestEntity < ApplicationEntity
       object :post do
         string :title
         string :content
@@ -349,10 +383,10 @@ module Deserialization
   end
 end
 
-# app/dtos/serialization/posts/create_dto.rb
-module Serialization
-  module Posts
-    class CreateDto < ApplicationDto
+# app/entities/posts/create/response_entity.rb
+module Posts
+  module Create
+    class ResponseEntity < ApplicationEntity
       object :post do
         string :id
         string :title
@@ -384,17 +418,17 @@ end
 class Posts::CreateTreaty < ApplicationTreaty
   version 1 do
 
-    request Deserialization::Posts::CreateDto
-    response 201, Serialization::Posts::CreateDto
+    request Posts::Create::RequestEntity
+    response 201, Posts::Create::ResponseEntity
 
     delegate_to Posts::CreateService
   end
 
   version 2 do
 
-    # Reuse the same DTOs in multiple versions
-    request Deserialization::Posts::CreateDto
-    response 201, Serialization::Posts::CreateDto
+    # Reuse the same entities in multiple versions
+    request Posts::Create::RequestEntity
+    response 201, Posts::Create::ResponseEntity
 
     delegate_to Posts::V2::CreateService
   end
@@ -452,23 +486,27 @@ Entity classes provide a `.info` class method that returns metadata about the en
 ### Usage
 
 ```ruby
-class PostEntity < Treaty::Entity
-  string :id
-  string :title
-  string :content, :optional
+module Posts
+  module Show
+    class ResponseEntity < Treaty::Entity
+      string :id
+      string :title
+      string :content, :optional
 
-  object :author do
-    string :name
-    string :email
-  end
+      object :author do
+        string :name
+        string :email
+      end
 
-  array :tags, :optional do
-    string :_self
+      array :tags, :optional do
+        string :_self
+      end
+    end
   end
 end
 
 # Get entity information
-info = PostEntity.info
+info = Posts::Show::ResponseEntity.info
 # => #<Treaty::Info::Entity::Result>
 
 # Access attributes metadata
@@ -535,7 +573,7 @@ The `.info` method returns a `Treaty::Info::Entity::Result` object with:
 ### Check if Class is a Treaty Entity
 
 ```ruby
-PostEntity.treaty?
+Posts::Show::ResponseEntity.treaty?
 # => true
 
 String.respond_to?(:treaty?)
@@ -565,9 +603,9 @@ def document_entity(entity_class)
   end
 end
 
-document_entity(PostEntity)
+document_entity(Posts::Show::ResponseEntity)
 # Output:
-# Entity: PostEntity
+# Entity: Posts::Show::ResponseEntity
 # Attributes:
 #   - id (string, required)
 #   - title (string, required)
@@ -581,7 +619,7 @@ document_entity(PostEntity)
 **Example 2: Validate entity structure in tests**
 
 ```ruby
-RSpec.describe PostEntity do
+RSpec.describe Posts::Show::ResponseEntity do
   it "has expected structure" do
     info = described_class.info
 
@@ -617,7 +655,7 @@ def compare_entities(entity_a, entity_b)
   puts "Only in #{entity_b.name}: #{only_b.join(', ')}"
 end
 
-compare_entities(PostRequestEntity, PostResponseEntity)
+compare_entities(Posts::Create::RequestEntity, Posts::Create::ResponseEntity)
 ```
 
 ### Comparison with Treaty::Base.info
@@ -628,7 +666,7 @@ While `Treaty::Entity.info` returns entity attribute metadata, `Treaty::Base.inf
 |---------|---------------------|-------------------|
 | **Returns** | `Treaty::Info::Entity::Result` | `Treaty::Info::Rest::Result` |
 | **Primary attribute** | `.attributes` (Hash) | `.versions` (Array) |
-| **Use case** | DTO structure introspection | API version and contract details |
+| **Use case** | Entity structure introspection | API version and contract details |
 | **Contains** | Attribute types, options, nesting | Versions, executors, request/response specs |
 
 **Example of Treaty::Base.info:**
@@ -664,17 +702,19 @@ info.versions
 
 1. **One Entity Per File** - Keep entity definitions focused and manageable
 
-2. **Namespace by Domain** - Group related entities together
+2. **Namespace by Domain and Action** - Use domain-based structure
    ```ruby
    module Posts
-     class CreateRequestDto < ApplicationDto
+     module Create
+       class RequestEntity < ApplicationEntity
+       end
      end
    end
    ```
 
 3. **Use Descriptive Names** - Make entity purpose clear
-   - Good: `PostCreateRequestDto`, `UserProfileResponseDto`
-   - Avoid: `PostDto`, `Data`, `Params`
+   - Good: `Posts::Create::RequestEntity`, `Users::Profile::ResponseEntity`
+   - Avoid: `PostEntity`, `Data`, `Params`
 
 4. **Separate Request/Response** - Different entities for input and output
    - Request entities validate incoming data
@@ -683,34 +723,46 @@ info.versions
 5. **Keep Entities Simple** - Don't add business logic to entity classes
    ```ruby
    # Good - just structure
-   class PostEntity < Treaty::Entity
-     string :title
-     string :content
+   module Posts
+     module Create
+       class ResponseEntity < Treaty::Entity
+         string :title
+         string :content
+       end
+     end
    end
 
    # Bad - business logic in entity
-   class PostEntity < Treaty::Entity
-     string :title
+   module Posts
+     module Create
+       class ResponseEntity < Treaty::Entity
+         string :title
 
-     def formatted_title
-       title.upcase
+         def formatted_title
+           title.upcase
+         end
+       end
      end
    end
    ```
 
 6. **Document Complex Structures** - Add comments for nested or complex entities
    ```ruby
-   class OrderEntity < Treaty::Entity
-     # Customer information
-     object :customer do
-       string :email
-       string :name
-     end
+   module Orders
+     module Create
+       class ResponseEntity < Treaty::Entity
+         # Customer information
+         object :customer do
+           string :email
+           string :name
+         end
 
-     # Array of order items
-     array :items do
-       string :product_id
-       integer :quantity
+         # Array of order items
+         array :items do
+           string :product_id
+           integer :quantity
+         end
+       end
      end
    end
    ```
@@ -740,9 +792,11 @@ end
 
 **After (using entities):**
 ```ruby
-version 2 do
-  request Deserialization::Posts::CreateDto
-  response 201, Serialization::Posts::CreateDto
+class Posts::CreateTreaty < ApplicationTreaty
+  version 2 do
+    request Posts::Create::RequestEntity
+    response 201, Posts::Create::ResponseEntity
+  end
 end
 ```
 

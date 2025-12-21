@@ -67,8 +67,8 @@ Entity classes can be used directly in request and response definitions:
 class Posts::CreateTreaty < ApplicationTreaty
   version 1 do
 
-    request Create::RequestEntity
-    response 201, Create::ResponseEntity
+    request Posts::Create::RequestEntity
+    response 201, Posts::Create::ResponseEntity
 
     delegate_to Posts::CreateService
   end
@@ -212,7 +212,7 @@ class Posts::CreateTreaty < ApplicationTreaty
   version 1 do
 
     # Use entity class for request
-    request Create::RequestEntity
+    request Posts::Create::RequestEntity
 
     # Use block definition for response
     response 201 do
@@ -418,8 +418,8 @@ end
 class Posts::CreateTreaty < ApplicationTreaty
   version 1 do
 
-    request Create::RequestEntity
-    response 201, Create::ResponseEntity
+    request Posts::Create::RequestEntity
+    response 201, Posts::Create::ResponseEntity
 
     delegate_to Posts::CreateService
   end
@@ -427,8 +427,8 @@ class Posts::CreateTreaty < ApplicationTreaty
   version 2 do
 
     # Reuse the same entities in multiple versions
-    request Create::RequestEntity
-    response 201, Create::ResponseEntity
+    request Posts::Create::RequestEntity
+    response 201, Posts::Create::ResponseEntity
 
     delegate_to Posts::V2::CreateService
   end
@@ -794,8 +794,8 @@ end
 ```ruby
 class Posts::CreateTreaty < ApplicationTreaty
   version 2 do
-    request Create::RequestEntity
-    response 201, Create::ResponseEntity
+    request Posts::Create::RequestEntity
+    response 201, Posts::Create::ResponseEntity
   end
 end
 ```

@@ -60,8 +60,8 @@ end
 class Posts::CreateTreaty < ApplicationTreaty
   version 1 do
     # Use entity class instead of block
-    request Create::RequestEntity
-    response 201, Create::ResponseEntity
+    request Posts::Create::RequestEntity
+    response 201, Posts::Create::ResponseEntity
   end
 end
 ```

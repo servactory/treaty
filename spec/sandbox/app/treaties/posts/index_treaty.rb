@@ -148,9 +148,9 @@ module Posts
     end
 
     version 4, default: true do
-      request Index::RequestEntity
+      request Posts::Index::RequestEntity
 
-      response 200, Index::ResponseEntity
+      response 200, Posts::Index::ResponseEntity
 
       delegate_to ::Posts::Stable::IndexService
 

@@ -508,8 +508,8 @@ end
 ```ruby
 class Posts::CreateTreaty < ApplicationTreaty
   version 1 do
-    request Create::RequestEntity
-    response 201, Create::ResponseEntity
+    request Posts::Create::RequestEntity
+    response 201, Posts::Create::ResponseEntity
   end
 end
 ```

@@ -664,8 +664,8 @@ module Posts
     version 1 do
 
       # Use Entity classes instead of inline blocks
-      request Create::RequestEntity
-      response 201, Create::ResponseEntity
+      request Posts::Create::RequestEntity
+      response 201, Posts::Create::ResponseEntity
 
       delegate_to Posts::CreateService
     end
@@ -673,8 +673,8 @@ module Posts
     version 2 do
 
       # Reuse the same Entity classes across versions
-      request Create::RequestEntity
-      response 201, Create::ResponseEntity
+      request Posts::Create::RequestEntity
+      response 201, Posts::Create::ResponseEntity
 
       delegate_to Posts::V2::CreateService
     end

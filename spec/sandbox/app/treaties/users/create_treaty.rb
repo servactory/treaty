@@ -58,11 +58,11 @@ module Users
       summary "Extended user creation with Entity-based definition"
 
       request do
-        use_entity Create::RequestEntity
+        use_entity Users::Create::RequestEntity
       end
 
       response 201 do
-        use_entity Create::ResponseEntity
+        use_entity Users::Create::ResponseEntity
       end
 
       delegate_to "Users::CreateService"

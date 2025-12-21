@@ -324,9 +324,11 @@ module Posts
 end
 
 # Usage in treaty
-version 1 do
-  request Create::RequestEntity
-  response 201, Create::ResponseEntity
+class Posts::CreateTreaty < ApplicationTreaty
+  version 1 do
+    request Create::RequestEntity
+    response 201, Create::ResponseEntity
+  end
 end
 
 # Reuse in nested blocks

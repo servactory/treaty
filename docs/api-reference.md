@@ -394,7 +394,7 @@ end
 
 **Using an Entity class:**
 ```ruby
-request Create::RequestEntity
+request Posts::Create::RequestEntity
 ```
 
 **Multiple request blocks (will be merged):**
@@ -462,8 +462,8 @@ end
 
 **Using an Entity class:**
 ```ruby
-response 200, Index::ResponseEntity
-response 201, Create::ResponseEntity
+response 200, Posts::Index::ResponseEntity
+response 201, Posts::Create::ResponseEntity
 ```
 
 **Note:** Attributes in response blocks are **optional by default**.
@@ -506,9 +506,11 @@ end
 
 **Usage in treaties:**
 ```ruby
-version 1 do
-  request Create::RequestEntity
-  response 201, Create::ResponseEntity
+class Posts::CreateTreaty < ApplicationTreaty
+  version 1 do
+    request Create::RequestEntity
+    response 201, Create::ResponseEntity
+  end
 end
 ```
 

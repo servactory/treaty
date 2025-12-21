@@ -21,7 +21,7 @@ module Treaty
     # ## Entity Mode
     #
     # ```ruby
-    # request Create::RequestEntity
+    # request Posts::Create::RequestEntity
     # ```
     class Factory
       # Uses a provided Entity class

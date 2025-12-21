@@ -67,7 +67,7 @@ end
 
 **Using an Entity class:**
 ```ruby
-request Create::RequestEntity
+request Posts::Create::RequestEntity
 ```
 
 **Features:**
@@ -101,7 +101,7 @@ end
 
 **Using an Entity class:**
 ```ruby
-response 201, Create::ResponseEntity
+response 201, Posts::Create::ResponseEntity
 ```
 
 **Features:**
@@ -158,9 +158,11 @@ end
 
 **Use in treaties:**
 ```ruby
-version 1 do
-  request Create::RequestEntity
-  response 201, Create::ResponseEntity
+class Posts::CreateTreaty < ApplicationTreaty
+  version 1 do
+    request Create::RequestEntity
+    response 201, Create::ResponseEntity
+  end
 end
 ```
 

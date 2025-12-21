@@ -21,7 +21,7 @@ module Treaty
     # ## Entity Mode
     #
     # ```ruby
-    # response 200, Create::ResponseEntity
+    # response 200, Posts::Create::ResponseEntity
     # ```
     class Factory
       attr_reader :status

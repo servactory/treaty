@@ -208,20 +208,22 @@ end
 You can mix entity classes with inline block definitions:
 
 ```ruby
-version 1 do
+class Posts::CreateTreaty < ApplicationTreaty
+  version 1 do
 
-  # Use entity class for request
-  request Create::RequestEntity
+    # Use entity class for request
+    request Create::RequestEntity
 
-  # Use block definition for response
-  response 201 do
-    object :post do
-      string :id
-      string :title
+    # Use block definition for response
+    response 201 do
+      object :post do
+        string :id
+        string :title
+      end
     end
-  end
 
-  delegate_to Posts::CreateService
+    delegate_to Posts::CreateService
+  end
 end
 ```
 
@@ -790,9 +792,11 @@ end
 
 **After (using entities):**
 ```ruby
-version 2 do
-  request Create::RequestEntity
-  response 201, Create::ResponseEntity
+class Posts::CreateTreaty < ApplicationTreaty
+  version 2 do
+    request Create::RequestEntity
+    response 201, Create::ResponseEntity
+  end
 end
 ```
 

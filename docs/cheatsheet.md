@@ -57,10 +57,12 @@ end
 ### Use in Treaty
 
 ```ruby
-version 1 do
-  # Use entity class instead of block
-  request Create::RequestEntity
-  response 201, Create::ResponseEntity
+class Posts::CreateTreaty < ApplicationTreaty
+  version 1 do
+    # Use entity class instead of block
+    request Create::RequestEntity
+    response 201, Create::ResponseEntity
+  end
 end
 ```
 

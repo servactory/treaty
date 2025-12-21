@@ -92,12 +92,23 @@ module Treaty
               registry.dig(option_name, :category)
             end
 
-            # Get position for an option
+            # Get position for an option (uses cache for O(1) lookup)
             #
             # @param option_name [Symbol] The name of the option
-            # @return [Integer, nil] The execution order position or nil if not set
+            # @return [Integer] The execution order position or 0 if not set
             def position_for(option_name)
-              registry.dig(option_name, :position)
+              cached_positions[option_name] || 0
+            end
+
+            # Cached positions for faster sorting (computed once after registration)
+            #
+            # Thread-safety note: Cache initialization uses ||= which is not atomic.
+            # This is acceptable because Registry is populated during Rails boot
+            # (single-threaded phase) via RegistryInitializer before any requests.
+            #
+            # @return [Hash<Symbol, Integer>] Frozen hash of option_name => position
+            def cached_positions
+              @cached_positions ||= registry.transform_values { |info| info[:position] || 0 }.freeze
             end
 
             # Check if an option is registered
@@ -142,6 +153,7 @@ module Treaty
             # Reset registry (mainly for testing)
             def reset!
               @registry = nil
+              @cached_positions = nil
             end
 
             private

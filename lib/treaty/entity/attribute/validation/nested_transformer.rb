@@ -189,8 +189,10 @@ module Treaty
             # @param root_data [Hash] Full raw data from root level (for computed modifier)
             # @return [Array] Transformed array
             def transform(value, root_data = {})
+              is_simple = simple_array?
+
               value.each_with_index.map do |item, index|
-                if simple_array?
+                if is_simple
                   transform_simple_element(item, index, root_data)
                 else
                   transform_array_item(item, index, root_data)

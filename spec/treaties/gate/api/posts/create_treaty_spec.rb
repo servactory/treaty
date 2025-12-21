@@ -2238,7 +2238,7 @@ RSpec.describe Gate::API::Posts::CreateTreaty do
                                   name: {
                                     type: :string,
                                     options: {
-                                      required: { is: true, message: nil }
+                                      required: { is: false, message: nil }
                                     },
                                     attributes: {}
                                   },
@@ -2258,7 +2258,7 @@ RSpec.describe Gate::API::Posts::CreateTreaty do
                                       provider: {
                                         type: :string,
                                         options: {
-                                          required: { is: true, message: nil },
+                                          required: { is: false, message: nil },
                                           inclusion: { in: %w[twitter linkedin github], message: nil }
                                         },
                                         attributes: {}
@@ -2266,7 +2266,7 @@ RSpec.describe Gate::API::Posts::CreateTreaty do
                                       handle: {
                                         type: :string,
                                         options: {
-                                          required: { is: true, message: nil }
+                                          required: { is: false, message: nil }
                                         },
                                         attributes: {}
                                       }

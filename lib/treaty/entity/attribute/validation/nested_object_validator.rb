@@ -54,13 +54,15 @@ module Treaty
         # - `AttributeValidator` - Validates individual nested attributes
         # - Caches validators to avoid rebuilding on each validation
         class NestedObjectValidator
-          attr_reader :attribute
+          attr_reader :attribute, :preset
 
           # Creates a new nested object validator
           #
           # @param attribute [Attribute::Base] The object-type attribute with nested attributes
-          def initialize(attribute)
+          # @param preset [Treaty::Entity::Context::Preset, nil] Preset with default options
+          def initialize(attribute, preset: nil)
             @attribute = attribute
+            @preset = preset
             @validators_cache = nil
           end
 
@@ -89,11 +91,12 @@ module Treaty
           end
 
           # Builds validators for all nested attributes
+          # Passes preset to nested validators for consistent default behavior
           #
           # @return [Hash] Hash of nested_attribute => validator
           def build_validators
             attribute.collection_of_attributes.each_with_object({}) do |nested_attribute, cache|
-              validator = AttributeValidator.new(nested_attribute)
+              validator = AttributeValidator.new(nested_attribute, preset:)
               validator.validate_schema!
               cache[nested_attribute] = validator
             end

@@ -118,6 +118,30 @@ module Treaty
           @explicit_options.include?(option_name.to_sym)
         end
 
+        # Checks if this attribute has a conditional option (:if or :unless)
+        # Memoized for performance in hot paths.
+        #
+        # @return [Boolean] True if attribute has conditional
+        def conditional?
+          return @conditional if defined?(@conditional)
+
+          @conditional = @options.key?(:if) || @options.key?(:unless)
+        end
+
+        # Returns the conditional option type if present
+        # Memoized for performance. Used by ConditionalSupport module.
+        #
+        # @return [Symbol, nil] :if, :unless, or nil
+        def conditional_type
+          return @conditional_type if defined?(@conditional_type)
+
+          @conditional_type = if @options.key?(:if)
+                                :if
+                              elsif @options.key?(:unless)
+                                :unless
+                              end
+        end
+
         private
 
         # Validates that nesting level doesn't exceed maximum allowed depth

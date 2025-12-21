@@ -67,11 +67,15 @@ module Treaty
         # - Caches validators for performance
         # - Separates self validators from regular validators
         class NestedArrayValidator
+          attr_reader :preset
+
           # Creates a new nested array validator
           #
           # @param attribute [Attribute::Base] The array-type attribute with nested attributes
-          def initialize(attribute)
+          # @param preset [Treaty::Entity::Context::Preset, nil] Preset with default options
+          def initialize(attribute, preset: nil)
             @attribute = attribute
+            @preset = preset
             @self_validators = nil
             @regular_validators = nil
           end
@@ -176,26 +180,28 @@ module Treaty
           ########################################################################
 
           # Builds validators for :_self attributes (simple array elements)
+          # Passes preset to validators for consistent default behavior
           #
           # @return [Array<AttributeValidator>] Array of validators
           def build_self_validators
             @attribute.collection_of_attributes
                       .select { |attr| attr.name == :_self }
                       .map do |self_attribute|
-              validator = AttributeValidator.new(self_attribute)
+              validator = AttributeValidator.new(self_attribute, preset:)
               validator.validate_schema!
               validator
             end
           end
 
           # Builds validators for regular attributes (complex array elements)
+          # Passes preset to validators for consistent default behavior
           #
           # @return [Hash] Hash of nested_attribute => validator
           def build_regular_validators
             @attribute.collection_of_attributes
                       .reject { |attr| attr.name == :_self }
                       .each_with_object({}) do |nested_attribute, cache|
-              validator = AttributeValidator.new(nested_attribute)
+              validator = AttributeValidator.new(nested_attribute, preset:)
               validator.validate_schema!
               cache[nested_attribute] = validator
             end

@@ -36,7 +36,7 @@ module Treaty
         # - `NestedObjectValidator` - Validates nested object structures
         # - `NestedArrayValidator` - Validates nested array structures
         class AttributeValidator
-          attr_reader :attribute, :option_orchestrator
+          attr_reader :attribute, :option_orchestrator, :preset
 
           # Creates a new attribute validator instance
           #
@@ -44,6 +44,7 @@ module Treaty
           # @param preset [Treaty::Entity::Context::Preset, nil] Preset with default options
           def initialize(attribute, preset: nil)
             @attribute = attribute
+            @preset = preset
             @option_orchestrator = OptionOrchestrator.new(attribute, preset:)
             @nested_object_validator = nil
             @nested_array_validator = nil
@@ -129,17 +130,19 @@ module Treaty
           end
 
           # Gets or creates nested object validator
+          # Passes preset for consistent default behavior in nested structures
           #
           # @return [NestedObjectValidator] Validator for nested objects
           def nested_object_validator
-            @nested_object_validator ||= NestedObjectValidator.new(attribute)
+            @nested_object_validator ||= NestedObjectValidator.new(attribute, preset:)
           end
 
           # Gets or creates nested array validator
+          # Passes preset for consistent default behavior in nested structures
           #
           # @return [NestedArrayValidator] Validator for nested arrays
           def nested_array_validator
-            @nested_array_validator ||= NestedArrayValidator.new(attribute)
+            @nested_array_validator ||= NestedArrayValidator.new(attribute, preset:)
           end
         end
       end

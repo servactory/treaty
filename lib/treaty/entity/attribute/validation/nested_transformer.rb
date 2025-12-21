@@ -10,15 +10,17 @@ module Treaty
           SELF_OBJECT = :_self
           private_constant :SELF_OBJECT
 
-          attr_reader :attribute, :preset
+          attr_reader :attribute, :preset, :validator_cache
 
           # Creates a new nested transformer
           #
           # @param attribute [Attribute::Base] The attribute with nested structure
           # @param preset [Treaty::Entity::Context::Preset, nil] Preset with default options
-          def initialize(attribute, preset: nil)
+          # @param validator_cache [ValidatorCache, nil] Shared validator cache for performance
+          def initialize(attribute, preset: nil, validator_cache: nil)
             @attribute = attribute
             @preset = preset
+            @validator_cache = validator_cache || ValidatorCache.new
           end
 
           # Transforms nested attribute value (object or array)
@@ -50,7 +52,7 @@ module Treaty
           def transform_object(value, root_data = {})
             return value unless attribute.nested?
 
-            transformer = ObjectTransformer.new(attribute, preset:)
+            transformer = ObjectTransformer.new(attribute, preset:, validator_cache:)
             transformer.transform(value, root_data)
           end
 
@@ -62,21 +64,26 @@ module Treaty
           def transform_array(value, root_data = {})
             return value unless attribute.nested?
 
-            transformer = ArrayTransformer.new(attribute, preset:)
+            transformer = ArrayTransformer.new(attribute, preset:, validator_cache:)
             transformer.transform(value, root_data)
           end
 
           # Transforms object (hash) with nested attributes
           class ObjectTransformer
-            attr_reader :attribute, :preset
+            include Concerns::ConditionalSupport
+
+            attr_reader :attribute, :preset, :validator_cache
 
             # Creates a new object transformer
             #
             # @param attribute [Attribute::Base] The object-type attribute
             # @param preset [Treaty::Entity::Context::Preset, nil] Preset with default options
-            def initialize(attribute, preset: nil)
+            # @param validator_cache [ValidatorCache, nil] Shared validator cache for performance
+            def initialize(attribute, preset: nil, validator_cache: nil)
               @attribute = attribute
               @preset = preset
+              @validator_cache = validator_cache || ValidatorCache.new
+              @current_source_hash = nil
             end
 
             # Transforms hash by processing all nested attributes
@@ -86,6 +93,7 @@ module Treaty
             # @return [Hash] Transformed hash with processed attributes
             def transform(value, root_data = {})
               transformed = {}
+              @current_source_hash = value
 
               attribute.collection_of_attributes.each do |nested_attribute|
                 # Check if conditional (if/unless option) - skip attribute if condition evaluates to skip
@@ -99,85 +107,21 @@ module Treaty
 
             private
 
-            # Returns the conditional option name if present (:if or :unless)
-            # Raises error if both are present (mutual exclusivity)
-            #
-            # @param nested_attribute [Attribute::Base] The attribute to check
-            # @raise [Treaty::Exceptions::Validation] If both :if and :unless are present
-            # @return [Symbol, nil] :if, :unless, or nil
-            def conditional_option_for(nested_attribute) # rubocop:disable Metrics/MethodLength
-              has_if = nested_attribute.options.key?(:if)
-              has_unless = nested_attribute.options.key?(:unless)
-
-              if has_if && has_unless
-                raise Treaty::Exceptions::Validation,
-                      I18n.t(
-                        "treaty.attributes.conditionals.mutual_exclusivity_error",
-                        attribute: nested_attribute.name
-                      )
-              end
-
-              return :if if has_if
-              return :unless if has_unless
-
-              nil
-            end
-
-            # Gets cached conditional processors for attributes or builds them
+            # Returns cached conditional processors (implements ConditionalSupport interface)
             #
             # @return [Hash] Hash of attribute => conditional processor
-            def conditionals_for_attributes
-              @conditionals_for_attributes ||= build_conditionals_for_attributes
+            def conditionals_cache
+              @conditionals_cache ||= build_conditionals_cache(attribute.collection_of_attributes)
             end
 
-            # Builds conditional processors for attributes with :if or :unless option
-            # Validates schema at definition time for performance
+            # Wraps source data with parent attribute name for conditional evaluation
+            # (implements ConditionalSupport interface)
             #
-            # @return [Hash] Hash of attribute => conditional processor
-            def build_conditionals_for_attributes # rubocop:disable Metrics/MethodLength
-              attribute.collection_of_attributes.each_with_object({}) do |nested_attribute, cache|
-                # Get conditional option name (:if or :unless)
-                conditional_type = conditional_option_for(nested_attribute)
-                next if conditional_type.nil?
-
-                processor_class = Option::Registry.processor_for(conditional_type)
-                next if processor_class.nil?
-
-                # Create processor instance
-                conditional = processor_class.new(
-                  attribute_name: nested_attribute.name,
-                  attribute_type: nested_attribute.type,
-                  option_schema: nested_attribute.options.fetch(conditional_type)
-                )
-
-                # Validate schema at definition time (not runtime)
-                conditional.validate_schema!
-
-                cache[nested_attribute] = conditional
-              end
-            end
-
-            # Checks if an attribute should be processed based on its conditional (if/unless option)
-            # Returns true if no conditional is defined or if conditional evaluates appropriately
-            #
-            # @param nested_attribute [Attribute::Base] The attribute to check
-            # @param source_hash [Hash] Source data to pass to conditional
-            # @return [Boolean] True if attribute should be processed, false to skip it
-            def should_process_attribute?(nested_attribute, source_hash)
-              # Check if attribute has a conditional option
-              conditional_type = conditional_option_for(nested_attribute)
-              return true if conditional_type.nil?
-
-              # Get cached conditional processor
-              conditional = conditionals_for_attributes[nested_attribute]
-              return true if conditional.nil?
-
-              # Evaluate condition with source hash data wrapped with parent object name
-              wrapped_data = { attribute.name => source_hash }
-              conditional.evaluate_condition(wrapped_data)
-            rescue StandardError
-              # If conditional evaluation fails, skip the attribute
-              false
+            # @param source_data [Hash] Source hash from transform
+            # @return [Hash] Wrapped data for conditional evaluation
+            def conditional_evaluation_data(source_data)
+              data = source_data || @current_source_hash
+              { attribute.name => data }
             end
 
             # Processes a single nested attribute
@@ -190,8 +134,8 @@ module Treaty
             # @return [void]
             def process_attribute(nested_attribute, source_hash, target_hash, root_data = {})
               nested_value = source_hash.fetch(nested_attribute.name, nil)
-              validator = AttributeValidator.new(nested_attribute, preset:)
-              validator.validate_schema!
+              # Use cached validator (schema already validated on first access)
+              validator = validator_cache.fetch(nested_attribute, preset:)
 
               transformed_value = validate_and_transform(nested_attribute, nested_value, validator, root_data)
               target_hash[validator.target_name] = transformed_value
@@ -208,7 +152,8 @@ module Treaty
               if nested_attribute.nested?
                 validator.validate_type!(value) unless value.nil?
                 validator.validate_required!(value)
-                NestedTransformer.new(nested_attribute, preset:).transform(value, root_data)
+                # Pass validator cache for deep nesting performance
+                NestedTransformer.new(nested_attribute, preset:, validator_cache:).transform(value, root_data)
               else
                 validator.validate_value!(value)
                 validator.transform_value(value, root_data)
@@ -217,19 +162,24 @@ module Treaty
           end
 
           # Transforms array with nested attributes
-          class ArrayTransformer # rubocop:disable Metrics/ClassLength
+          class ArrayTransformer
+            include Concerns::ConditionalSupport
+
             SELF_OBJECT = :_self
             private_constant :SELF_OBJECT
 
-            attr_reader :attribute, :preset
+            attr_reader :attribute, :preset, :validator_cache
 
             # Creates a new array transformer
             #
             # @param attribute [Attribute::Base] The array-type attribute
             # @param preset [Treaty::Entity::Context::Preset, nil] Preset with default options
-            def initialize(attribute, preset: nil)
+            # @param validator_cache [ValidatorCache, nil] Shared validator cache for performance
+            def initialize(attribute, preset: nil, validator_cache: nil)
               @attribute = attribute
               @preset = preset
+              @validator_cache = validator_cache || ValidatorCache.new
+              @current_source_hash = nil
             end
 
             # Transforms array by processing each element
@@ -250,85 +200,21 @@ module Treaty
 
             private
 
-            # Returns the conditional option name if present (:if or :unless)
-            # Raises error if both are present (mutual exclusivity)
-            #
-            # @param nested_attribute [Attribute::Base] The attribute to check
-            # @raise [Treaty::Exceptions::Validation] If both :if and :unless are present
-            # @return [Symbol, nil] :if, :unless, or nil
-            def conditional_option_for(nested_attribute) # rubocop:disable Metrics/MethodLength
-              has_if = nested_attribute.options.key?(:if)
-              has_unless = nested_attribute.options.key?(:unless)
-
-              if has_if && has_unless
-                raise Treaty::Exceptions::Validation,
-                      I18n.t(
-                        "treaty.attributes.conditionals.mutual_exclusivity_error",
-                        attribute: nested_attribute.name
-                      )
-              end
-
-              return :if if has_if
-              return :unless if has_unless
-
-              nil
-            end
-
-            # Gets cached conditional processors for attributes or builds them
+            # Returns cached conditional processors (implements ConditionalSupport interface)
             #
             # @return [Hash] Hash of attribute => conditional processor
-            def conditionals_for_attributes
-              @conditionals_for_attributes ||= build_conditionals_for_attributes
+            def conditionals_cache
+              @conditionals_cache ||= build_conditionals_cache(attribute.collection_of_attributes)
             end
 
-            # Builds conditional processors for attributes with :if or :unless option
-            # Validates schema at definition time for performance
+            # Wraps source data with parent attribute name for conditional evaluation
+            # (implements ConditionalSupport interface)
             #
-            # @return [Hash] Hash of attribute => conditional processor
-            def build_conditionals_for_attributes # rubocop:disable Metrics/MethodLength
-              attribute.collection_of_attributes.each_with_object({}) do |nested_attribute, cache|
-                # Get conditional option name (:if or :unless)
-                conditional_type = conditional_option_for(nested_attribute)
-                next if conditional_type.nil?
-
-                processor_class = Option::Registry.processor_for(conditional_type)
-                next if processor_class.nil?
-
-                # Create processor instance
-                conditional = processor_class.new(
-                  attribute_name: nested_attribute.name,
-                  attribute_type: nested_attribute.type,
-                  option_schema: nested_attribute.options.fetch(conditional_type)
-                )
-
-                # Validate schema at definition time (not runtime)
-                conditional.validate_schema!
-
-                cache[nested_attribute] = conditional
-              end
-            end
-
-            # Checks if an attribute should be processed based on its conditional (if/unless option)
-            # Returns true if no conditional is defined or if conditional evaluates appropriately
-            #
-            # @param nested_attribute [Attribute::Base] The attribute to check
-            # @param source_hash [Hash] Source data to pass to conditional
-            # @return [Boolean] True if attribute should be processed, false to skip it
-            def should_process_attribute?(nested_attribute, source_hash)
-              # Check if attribute has a conditional option
-              conditional_type = conditional_option_for(nested_attribute)
-              return true if conditional_type.nil?
-
-              # Get cached conditional processor
-              conditional = conditionals_for_attributes[nested_attribute]
-              return true if conditional.nil?
-
-              # Evaluate condition with source hash data wrapped with parent array attribute name
-              wrapped_data = { attribute.name => source_hash }
-              conditional.evaluate_condition(wrapped_data)
-            rescue StandardError
-              # If conditional evaluation fails, skip the attribute
-              false
+            # @param source_data [Hash] Source hash from transform_array_item
+            # @return [Hash] Wrapped data for conditional evaluation
+            def conditional_evaluation_data(source_data)
+              data = source_data || @current_source_hash
+              { attribute.name => data }
             end
 
             # Checks if this is a simple array (primitive values)
@@ -349,8 +235,8 @@ module Treaty
             # @return [Object] Transformed element value
             def transform_simple_element(item, index, root_data = {}) # rubocop:disable Metrics/MethodLength
               self_attribute = attribute.collection_of_attributes.first
-              validator = AttributeValidator.new(self_attribute, preset:)
-              validator.validate_schema!
+              # Use cached validator (schema already validated on first access)
+              validator = validator_cache.fetch(self_attribute, preset:)
 
               begin
                 validator.validate_value!(item)
@@ -385,6 +271,7 @@ module Treaty
               end
 
               transformed = {}
+              @current_source_hash = item
 
               attribute.collection_of_attributes.each do |nested_attribute|
                 # Check if conditional (if/unless option) - skip attribute if condition evaluates to skip
@@ -410,12 +297,14 @@ module Treaty
               source_name = nested_attribute.name
               nested_value = source_hash.fetch(source_name, nil)
 
-              validator = AttributeValidator.new(nested_attribute, preset:)
-              validator.validate_schema!
+              # Use cached validator (schema already validated on first access)
+              validator = validator_cache.fetch(nested_attribute, preset:)
 
               begin
                 transformed_value = if nested_attribute.nested?
-                                      nested_transformer = NestedTransformer.new(nested_attribute, preset:)
+                                      # Pass validator cache for deep nesting performance
+                                      nested_transformer = NestedTransformer.new(nested_attribute, preset:,
+                                                                                                   validator_cache:)
                                       validator.validate_type!(nested_value) unless nested_value.nil?
                                       validator.validate_required!(nested_value)
                                       nested_transformer.transform(nested_value, root_data)

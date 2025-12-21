@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
-require_relative "builder/base"
-require_relative "builder/default"
-
 module Treaty
   class Entity
     module Attribute

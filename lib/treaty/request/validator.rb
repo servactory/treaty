@@ -13,6 +13,14 @@ module Treaty
         def validate!(params:, version_factory:)
           new(params:, version_factory:).validate!
         end
+
+        # Preset options for Request context
+        # Request uses Entity defaults (no override)
+        #
+        # @return [Hash] Preset options (empty)
+        def preset_options
+          {}
+        end
       end
 
       def initialize(params:, version_factory:)
@@ -37,17 +45,11 @@ module Treaty
       def validate_request_attributes!
         return request_data unless request_attributes_exist?
 
-        # Validate request attributes with orchestrator:
-        orchestrator_class = Class.new(Treaty::Attribute::Validation::Orchestrator::Base) do
-          define_method(:collection_of_attributes) do
-            @version_factory.request_factory.collection_of_attributes
-          end
-        end
-
-        orchestrator_class.validate!(
-          version_factory: @version_factory,
-          data: request_data
-        )
+        # Use Entity.call! for validation
+        # Request uses same default as Entity (required: true)
+        entity_class = @version_factory.request_factory.entity_class
+        result = entity_class.call!(request_data)
+        result.data
       end
 
       def request_attributes_exist?

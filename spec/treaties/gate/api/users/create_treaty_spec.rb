@@ -210,111 +210,10 @@ RSpec.describe Gate::API::Users::CreateTreaty do
                               required: { is: true, message: nil }
                             },
                             attributes: {
-                              email: {
-                                type: :string,
-                                options: {
-                                  required: { is: true, message: nil },
-                                  format: { is: :email, message: nil }
-                                },
-                                attributes: {}
-                              },
-                              username: {
-                                type: :string,
-                                options: {
-                                  required: { is: true, message: "Username is required" }
-                                },
-                                attributes: {}
-                              },
-                              recovery_email: {
-                                type: :string,
-                                options: {
-                                  required: { is: false, message: nil },
-                                  format: { is: :email, message: "Recovery email must be a valid email address" }
-                                },
-                                attributes: {}
-                              },
-                              password: {
-                                type: :string,
-                                options: {
-                                  required: { is: true, message: nil },
-                                  format: { is: :password, message: Proc }
-                                },
-                                attributes: {}
-                              },
-                              role: {
-                                type: :string,
-                                options: {
-                                  required: { is: false, message: nil },
-                                  inclusion: { in: %w[admin user guest], message: nil },
-                                  default: { is: "user", message: nil }
-                                },
-                                attributes: {}
-                              },
-                              last_login_at: {
-                                type: :string,
-                                options: {
-                                  required: { is: false, message: nil },
-                                  format: { is: :datetime, message: nil }
-                                },
-                                attributes: {}
-                              },
-                              birth_date: {
-                                type: :string,
-                                options: {
-                                  required: { is: false, message: nil },
-                                  format: { is: :date, message: nil }
-                                },
-                                attributes: {}
-                              },
-                              preferred_notification_time: {
-                                type: :string,
-                                options: {
-                                  required: { is: false, message: nil },
-                                  format: { is: :time, message: nil }
-                                },
-                                attributes: {}
-                              },
-                              email_verified: {
-                                type: :string,
-                                options: {
-                                  required: { is: false, message: nil },
-                                  format: { is: :boolean, message: nil }
-                                },
-                                attributes: {}
-                              },
-                              session_duration: {
-                                type: :string,
-                                options: {
-                                  required: { is: false, message: nil },
-                                  format: { is: :duration, message: nil }
-                                },
-                                attributes: {}
-                              },
-                              external_id: {
-                                type: :string,
-                                options: {
-                                  required: { is: false, message: nil },
-                                  format: { is: :uuid, message: nil }
-                                },
-                                attributes: {}
-                              }
-                            }
-                          }
-                        }
-                      },
-                      response: {
-                        status: 201,
-                        attributes: {
-                          user: {
-                            type: :object,
-                            options: {
-                              required: { is: true, message: nil }
-                            },
-                            attributes: {
                               id: {
                                 type: :string,
                                 options: {
-                                  required: { is: true, message: nil }
+                                  required: { is: false, message: nil }
                                 },
                                 attributes: {}
                               },
@@ -410,7 +309,7 @@ RSpec.describe Gate::API::Users::CreateTreaty do
                               created_at: {
                                 type: :time,
                                 options: {
-                                  required: { is: true, message: nil },
+                                  required: { is: false, message: nil },
                                   cast: { to: :string, message: nil }
                                 },
                                 attributes: {}
@@ -418,7 +317,132 @@ RSpec.describe Gate::API::Users::CreateTreaty do
                               updated_at: {
                                 type: :time,
                                 options: {
-                                  required: { is: true, message: nil },
+                                  required: { is: false, message: nil },
+                                  cast: { to: :string, message: nil }
+                                },
+                                attributes: {}
+                              }
+                            }
+                          }
+                        }
+                      },
+                      response: {
+                        status: 201,
+                        attributes: {
+                          user: {
+                            type: :object,
+                            options: {
+                              required: { is: false, message: nil }
+                            },
+                            attributes: {
+                              id: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              email: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil },
+                                  format: { is: :email, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              username: {
+                                type: :string,
+                                options: {
+                                  required: { is: true, message: "Username is required" }
+                                },
+                                attributes: {}
+                              },
+                              recovery_email: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil },
+                                  format: { is: :email, message: "Recovery email must be a valid email address" }
+                                },
+                                attributes: {}
+                              },
+                              password: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil },
+                                  format: { is: :password, message: Proc }
+                                },
+                                attributes: {}
+                              },
+                              role: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil },
+                                  inclusion: { in: %w[admin user guest], message: nil },
+                                  default: { is: "user", message: nil }
+                                },
+                                attributes: {}
+                              },
+                              last_login_at: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil },
+                                  format: { is: :datetime, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              birth_date: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil },
+                                  format: { is: :date, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              preferred_notification_time: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil },
+                                  format: { is: :time, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              email_verified: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil },
+                                  format: { is: :boolean, message: nil },
+                                  default: { is: "false", message: nil }
+                                },
+                                attributes: {}
+                              },
+                              session_duration: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil },
+                                  format: { is: :duration, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              external_id: {
+                                type: :string,
+                                options: {
+                                  required: { is: false, message: nil },
+                                  format: { is: :uuid, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              created_at: {
+                                type: :time,
+                                options: {
+                                  required: { is: false, message: nil },
+                                  cast: { to: :string, message: nil }
+                                },
+                                attributes: {}
+                              },
+                              updated_at: {
+                                type: :time,
+                                options: {
+                                  required: { is: false, message: nil },
                                   cast: { to: :string, message: nil }
                                 },
                                 attributes: {}

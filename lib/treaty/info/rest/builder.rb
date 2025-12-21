@@ -56,53 +56,15 @@ module Treaty
         ##########################################################################
 
         def build_request_with(version)
-          build_attributes_structure(version.request_factory)
+          version.request_factory.info
         end
 
         def build_response_with(version)
           response_factory = version.response_factory
           {
             status: response_factory.status
-          }.merge(build_attributes_structure(response_factory))
+          }.merge(response_factory.info)
         end
-
-        ##########################################################################
-
-        def build_attributes_structure(factory)
-          {
-            attributes: build_attributes_hash(factory.collection_of_attributes)
-          }
-        end
-
-        def build_attributes_hash(collection, current_level = 0)
-          # validate_nesting_level!(current_level)
-
-          collection.to_h do |attribute|
-            [
-              attribute.name,
-              {
-                type: attribute.type,
-                options: attribute.options,
-                attributes: build_nested_attributes(attribute, current_level)
-              }
-            ]
-          end
-        end
-
-        def build_nested_attributes(attribute, current_level)
-          return {} unless attribute.nested?
-
-          build_attributes_hash(attribute.collection_of_attributes, current_level + 1)
-        end
-
-        # def validate_nesting_level!(level)
-        #   return unless level > Treaty::Engine.config.treaty.attribute_nesting_level
-        #
-        #   raise Treaty::Exceptions::NestedAttributes,
-        #         I18n.t("treaty.attributes.errors.nesting_level_exceeded",
-        #                level:,
-        #                max_level: Treaty::Engine.config.treaty.attribute_nesting_level)
-        # end
       end
     end
   end

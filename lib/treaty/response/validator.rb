@@ -13,6 +13,14 @@ module Treaty
         def validate!(version_factory:, response_data: {})
           new(version_factory:, response_data:).validate!
         end
+
+        # Preset options for Response context
+        # Response attributes are optional by default
+        #
+        # @return [Hash] Preset options
+        def preset_options
+          { required: false }
+        end
       end
 
       def initialize(version_factory:, response_data: {})
@@ -29,18 +37,11 @@ module Treaty
       def validate_response_attributes!
         return @response_data unless response_attributes_exist?
 
-        # Create orchestrator for response validation
-        # Orchestrator filters data by attributes and performs transformation
-        orchestrator_class = Class.new(Treaty::Attribute::Validation::Orchestrator::Base) do
-          define_method(:collection_of_attributes) do
-            @version_factory.response_factory.collection_of_attributes
-          end
-        end
-
-        orchestrator_class.validate!(
-          version_factory: @version_factory,
-          data: @response_data
-        )
+        # Use Entity.preset with options from class method
+        # Response uses required: false by default to make all fields optional
+        entity_class = @version_factory.response_factory.entity_class
+        result = entity_class.preset(**self.class.preset_options).call!(@response_data)
+        result.data
       end
 
       def response_attributes_exist?

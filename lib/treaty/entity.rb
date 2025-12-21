@@ -9,20 +9,58 @@ module Treaty
   # that can be used in both request and response definitions. This allows
   # for better code organization and reusability of common data structures.
   #
-  # ## Usage
+  # ## Standalone Usage
   #
-  # Create a DTO class by inheriting from Treaty::Entity:
+  # Entity classes can be used independently for data validation and transformation:
   #
   # ```ruby
-  # class PostEntity < Treaty::Entity
-  #   string :id
-  #   string :title
-  #   string :content
-  #   datetime :created_at
+  # class UserEntity < Treaty::Entity
+  #   object :user do
+  #     string :name
+  #     string :email, format: :email
+  #   end
   # end
+  #
+  # # Validate and transform data
+  # result = UserEntity.call(params)
+  # result.valid?     # => true/false
+  # result.data       # => { user: { name: "John", email: "john@test.com" } }
+  # result.errors     # => Errors collection
+  #
+  # # With exception on validation errors
+  # result = UserEntity.call!(params)  # raises Treaty::Exceptions::Validation
+  #
+  # # Check validity only (predicate)
+  # UserEntity.valid?(params)  # => true/false
   # ```
   #
-  # Then use it in your treaty definitions:
+  # ## Options via .preset()
+  #
+  # Use `.preset()` method to configure validation behavior. This approach
+  # avoids name conflicts between attribute names and option names:
+  #
+  # ```ruby
+  # # With options
+  # UserEntity.preset(required: false).call(data)  # lenient validation
+  # UserEntity.preset(required: false, default: "N/A").call(data)  # multiple options
+  #
+  # # Reuse preset
+  # preset = UserEntity.preset(required: false)
+  # result1 = preset.call(data1)
+  # result2 = preset.call(data2)
+  #
+  # # No conflict with attribute names!
+  # class PaymentEntity < Treaty::Entity
+  #   object :payment do
+  #     boolean :required  # Attribute named "required" - OK!
+  #   end
+  # end
+  # PaymentEntity.preset(required: false).call({ payment: { required: true } })
+  # ```
+  #
+  # ## Usage with Treaty Class
+  #
+  # Entity classes can also be used in Treaty definitions:
   #
   # ```ruby
   # class CreateTreaty < ApplicationTreaty
@@ -60,25 +98,9 @@ module Treaty
   # - `array` - Array values (with nested type definition)
   # - `object` - Object values (with nested attributes)
   class Entity
-    include Info::Entity::DSL
+    include Treaty::Info::Entity::DSL
     include Attribute::DSL
-
-    class << self
-      private
-
-      # Creates an Attribute::Entity::Attribute for this Entity class
-      #
-      # @return [Attribute::Entity::Attribute] Created attribute instance
-      def create_attribute(name, type, *helpers, nesting_level:, **options, &block)
-        Attribute::Entity::Attribute.new(
-          name,
-          type,
-          *helpers,
-          nesting_level:,
-          **options,
-          &block
-        )
-      end
-    end
+    include Context::DSL
+    include Processing::DSL
   end
 end

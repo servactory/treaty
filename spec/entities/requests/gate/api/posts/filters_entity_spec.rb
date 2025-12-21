@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Gate::API::Posts::FiltersEntity do
+RSpec.describe Requests::Gate::API::Posts::FiltersEntity do
   it_behaves_like "check treaty entity info",
                   attributes: {
                     filters: {

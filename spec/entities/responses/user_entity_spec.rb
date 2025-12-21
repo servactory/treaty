@@ -1,10 +1,17 @@
 # frozen_string_literal: true
 
-RSpec.describe UserRequestEntity do
+RSpec.describe Responses::UserEntity do
   it_behaves_like "check treaty entity info",
                   attributes: {
                     user: {
                       attributes: {
+                        id: {
+                          type: :string,
+                          options: {
+                            required: { is: true, message: nil }
+                          },
+                          attributes: {}
+                        },
                         email: {
                           type: :string,
                           options: {
@@ -73,7 +80,8 @@ RSpec.describe UserRequestEntity do
                           type: :string,
                           options: {
                             required: { is: false, message: nil },
-                            format: { is: :boolean, message: nil }
+                            format: { is: :boolean, message: nil },
+                            default: { is: "false", message: nil }
                           },
                           attributes: {}
                         },
@@ -90,6 +98,22 @@ RSpec.describe UserRequestEntity do
                           options: {
                             required: { is: false, message: nil },
                             format: { is: :uuid, message: nil }
+                          },
+                          attributes: {}
+                        },
+                        created_at: {
+                          type: :time,
+                          options: {
+                            required: { is: true, message: nil },
+                            cast: { to: :string, message: nil }
+                          },
+                          attributes: {}
+                        },
+                        updated_at: {
+                          type: :time,
+                          options: {
+                            required: { is: true, message: nil },
+                            cast: { to: :string, message: nil }
                           },
                           attributes: {}
                         }

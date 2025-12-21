@@ -150,9 +150,9 @@ module Gate
         end
 
         version 4, default: true do
-          request Gate::API::Posts::FiltersEntity
+          request Requests::Gate::API::Posts::FiltersEntity
 
-          response 200, Gate::API::Posts::IndexEntity
+          response 200, Responses::Gate::API::Posts::IndexEntity
 
           delegate_to ::Posts::Stable::IndexService
 

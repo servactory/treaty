@@ -81,7 +81,7 @@ jobs:
             - Contract versioning support
             - Attribute types: string, integer, boolean, datetime, object, array
             - Request (incoming data) and Response (outgoing data)
-            - Request/Response defined via inline blocks or Entity classes (reusable DTOs)
+            - Request/Response defined via inline blocks or Entity classes
             - Objects for grouping attributes (special :_self merges to parent)
             - Inventory for passing controller-specific data to services with lazy evaluation
             - Transformation pipeline: validation → transformation → delegation → response

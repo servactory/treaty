@@ -60,6 +60,19 @@ version 1 do
 end
 ```
 
+### Use Entity in Nested Blocks
+
+```ruby
+# Reuse entity inside nested object/array
+object :author do
+  use_entity(AuthorDto)
+end
+
+array :socials, :optional do
+  use_entity(SocialDto)
+end
+```
+
 ### Organize Entities
 
 ```

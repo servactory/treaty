@@ -199,6 +199,85 @@ version 1 do
 end
 ```
 
+## Using Entities in Nested Blocks
+
+You can reuse Entity classes within nested `object` or `array` blocks using `use_entity`:
+
+```ruby
+# Define reusable entities
+class AuthorDto < ApplicationDto
+  string :name
+  string :bio, :optional
+end
+
+class SocialDto < ApplicationDto
+  string :provider, in: %w[twitter linkedin github]
+  string :handle
+end
+
+# Use entities in nested blocks
+version 1 do
+  request do
+    object :post do
+      string :title
+      string :content
+
+      # Reuse AuthorDto inside the author object
+      object :author do
+        use_entity(AuthorDto)
+      end
+
+      # Reuse SocialDto inside the socials array
+      array :socials, :optional do
+        use_entity(SocialDto)
+      end
+    end
+  end
+
+  response 201 do
+    object :post do
+      string :id
+      string :title
+
+      object :author do
+        use_entity(AuthorDto)
+      end
+    end
+  end
+
+  delegate_to Posts::CreateService
+end
+```
+
+### Constraints
+
+When using `use_entity` in nested blocks:
+
+1. **Must be the only statement** - You cannot mix `use_entity` with other attribute definitions in the same block
+2. **Entity class only** - The argument must be a `Treaty::Entity` subclass
+3. **Options preserved** - All attribute options from the Entity (validation, transformation) are preserved
+
+```ruby
+# WRONG: Cannot mix use_entity with other attributes
+object :author do
+  use_entity(AuthorDto)
+  string :extra_field  # Error!
+end
+
+# CORRECT: Only use_entity in the block
+object :author do
+  use_entity(AuthorDto)
+end
+```
+
+### When to Use
+
+Use `use_entity` in nested blocks when:
+
+- The same nested structure appears in multiple places
+- You want to maintain a single source of truth for the structure
+- The nested structure is complex enough to warrant its own class
+
 ## Internal Architecture
 
 Understanding how Entity classes work internally:

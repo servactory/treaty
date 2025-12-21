@@ -561,6 +561,62 @@ module Gate
 
           delegate_to "posts/stable/create_service"
         end
+
+        # Version 9: Demonstrates use_entity for nested structures
+        #
+        # This version shows how to reuse Entity classes within nested object
+        # and array blocks using the use_entity method. This approach allows
+        # for better code organization and reusability when the same nested
+        # structure is used across multiple versions or treaties.
+        version 9 do
+          summary "Demonstrates use_entity for nested structures"
+
+          request do
+            object :_self do
+              string :signature
+            end
+          end
+
+          request do
+            object :post do
+              string :title, transform: ->(value:) { value.strip }
+              string :summary
+              string :content
+
+              array :tags, :optional do
+                string :_self
+              end
+
+              # Use shared Entity for author nested object
+              object :author do
+                use_entity(Shared::AuthorEntity)
+              end
+            end
+          end
+
+          response 201 do
+            object :post do
+              string :id
+              string :title
+              string :summary
+              string :content
+
+              array :tags do
+                string :_self
+              end
+
+              # Use shared Entity for author nested object
+              object :author do
+                use_entity(Shared::AuthorEntity)
+              end
+
+              time :created_at, cast: :string
+              time :updated_at, cast: :string
+            end
+          end
+
+          delegate_to "posts/stable/create_service"
+        end
       end
     end
   end

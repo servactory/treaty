@@ -67,7 +67,7 @@ end
 
 **Using an Entity class:**
 ```ruby
-request PostRequestEntity
+request Create::RequestEntity
 ```
 
 **Features:**
@@ -101,7 +101,7 @@ end
 
 **Using an Entity class:**
 ```ruby
-response 201, PostResponseEntity
+response 201, Create::ResponseEntity
 ```
 
 **Features:**
@@ -144,19 +144,23 @@ Attributes from `:_self` are merged into parent level (root).
 Reusable data structure definitions that can be used across multiple treaties and versions.
 
 ```ruby
-class PostEntity < Treaty::Entity
-  string :id
-  string :title
-  string :content
-  time :created_at
+module Posts
+  module Create
+    class ResponseEntity < Treaty::Entity
+      string :id
+      string :title
+      string :content
+      time :created_at
+    end
+  end
 end
 ```
 
 **Use in treaties:**
 ```ruby
 version 1 do
-  request PostRequestEntity
-  response 201, PostResponseEntity
+  request Create::RequestEntity
+  response 201, Create::ResponseEntity
 end
 ```
 

@@ -394,7 +394,7 @@ end
 
 **Using an Entity class:**
 ```ruby
-request Posts::CreateRequestEntity
+request Create::RequestEntity
 ```
 
 **Multiple request blocks (will be merged):**
@@ -462,8 +462,8 @@ end
 
 **Using an Entity class:**
 ```ruby
-response 200, Posts::IndexResponseEntity
-response 201, Posts::CreateResponseEntity
+response 200, Index::ResponseEntity
+response 201, Create::ResponseEntity
 ```
 
 **Note:** Attributes in response blocks are **optional by default**.
@@ -483,19 +483,23 @@ end
 
 **Example:**
 ```ruby
-class PostEntity < Treaty::Entity
-  string :id
-  string :title
-  string :content, :optional
-  time :created_at
+module Posts
+  module Create
+    class ResponseEntity < Treaty::Entity
+      string :id
+      string :title
+      string :content, :optional
+      time :created_at
 
-  object :author do
-    string :name
-    string :email
-  end
+      object :author do
+        string :name
+        string :email
+      end
 
-  array :tags, :optional do
-    string :_self
+      array :tags, :optional do
+        string :_self
+      end
+    end
   end
 end
 ```
@@ -503,8 +507,8 @@ end
 **Usage in treaties:**
 ```ruby
 version 1 do
-  request PostRequestEntity
-  response 201, PostResponseEntity
+  request Create::RequestEntity
+  response 201, Create::ResponseEntity
 end
 ```
 
@@ -516,10 +520,11 @@ end
 - Reusable across multiple versions and treaties
 
 **Best Practices:**
-- Place entities in `app/entities/` directory
-- Use descriptive names (e.g., `PostRequestEntity`, `UserResponseEntity`)
+- Place entities in `app/entities/` directory with domain-based structure
+- Use descriptive names (e.g., `Posts::Create::RequestEntity`, `Users::Create::ResponseEntity`)
 - Separate request and response entities
 - Use `ApplicationEntity` as base class
+- Place shared entities in `app/entities/shared/` directory
 
 **Example structure:**
 ```ruby
@@ -527,13 +532,23 @@ end
 class ApplicationEntity < Treaty::Entity
 end
 
-# app/entities/posts/create_request_entity.rb
+# app/entities/posts/create/request_entity.rb
 module Posts
-  class CreateRequestEntity < ApplicationEntity
-    object :post do
-      string :title
-      string :content
+  module Create
+    class RequestEntity < ApplicationEntity
+      object :post do
+        string :title
+        string :content
+      end
     end
+  end
+end
+
+# app/entities/shared/author_entity.rb
+module Shared
+  class AuthorEntity < ApplicationEntity
+    string :name
+    string :bio, :optional
   end
 end
 ```
@@ -544,7 +559,7 @@ Entity classes provide class methods for introspection:
 
 ```ruby
 # Get entity metadata
-info = PostEntity.info
+info = Posts::Create::ResponseEntity.info
 # => #<Treaty::Info::Entity::Result>
 
 info.attributes
@@ -555,7 +570,7 @@ info.attributes
 # }
 
 # Check if class is a Treaty entity
-PostEntity.treaty?
+Posts::Create::ResponseEntity.treaty?
 # => true
 ```
 

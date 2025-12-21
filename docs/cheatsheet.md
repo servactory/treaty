@@ -34,18 +34,22 @@ end
 ### Define Entity
 
 ```ruby
-class PostEntity < Treaty::Entity
-  string :id
-  string :title
-  string :content, :optional
+module Posts
+  module Create
+    class ResponseEntity < Treaty::Entity
+      string :id
+      string :title
+      string :content, :optional
 
-  object :author do
-    string :name
-    string :email
-  end
+      object :author do
+        string :name
+        string :email
+      end
 
-  array :tags, :optional do
-    string :_self
+      array :tags, :optional do
+        string :_self
+      end
+    end
   end
 end
 ```
@@ -55,8 +59,8 @@ end
 ```ruby
 version 1 do
   # Use entity class instead of block
-  request PostRequestEntity
-  response 201, PostResponseEntity
+  request Create::RequestEntity
+  response 201, Create::ResponseEntity
 end
 ```
 
@@ -65,11 +69,11 @@ end
 ```ruby
 # Reuse entity inside nested object/array
 object :author do
-  use_entity(AuthorEntity)
+  use_entity(Shared::AuthorEntity)
 end
 
 array :socials, :optional do
-  use_entity(SocialEntity)
+  use_entity(Shared::SocialEntity)
 end
 ```
 
@@ -78,12 +82,20 @@ end
 ```
 app/entities/
 ├── application_entity.rb           # Base class
-├── author_entity.rb                # Reusable entities
-├── social_entity.rb
-└── posts/
-    ├── create_request_entity.rb    # Request entities
-    ├── create_response_entity.rb   # Response entities
-    └── index_entity.rb
+├── shared/
+│   ├── author_entity.rb            # Shared entities
+│   └── social_entity.rb
+├── posts/
+│   ├── create/
+│   │   ├── request_entity.rb       # Request entities
+│   │   └── response_entity.rb      # Response entities
+│   └── index/
+│       ├── request_entity.rb
+│       └── response_entity.rb
+└── users/
+    └── create/
+        ├── request_entity.rb
+        └── response_entity.rb
 ```
 
 **Note:** Entity attributes are **required by default** (like request blocks).

@@ -302,32 +302,36 @@ string :published_at, transform: ->(value:) { value.strip }, cast: :datetime
 **CRITICAL**: Attributes in Entity classes are **required by default** (opposite of request/response blocks).
 
 ```ruby
-class PostEntity < Treaty::Entity
-  object :post do
-    string :id              # required by default
-    string :title           # required by default
-    string :bio, :optional  # explicitly optional
+module Posts
+  module Create
+    class ResponseEntity < Treaty::Entity
+      object :post do
+        string :id              # required by default
+        string :title           # required by default
+        string :bio, :optional  # explicitly optional
 
-    object :author do
-      string :name
-      string :email, format: :email
-    end
+        object :author do
+          string :name
+          string :email, format: :email
+        end
 
-    array :tags do
-      string :_self  # _self represents array elements
+        array :tags do
+          string :_self  # _self represents array elements
+        end
+      end
     end
   end
 end
 
 # Usage in treaty
 version 1 do
-  request PostRequestEntity
-  response 201, PostResponseEntity
+  request Create::RequestEntity
+  response 201, Create::ResponseEntity
 end
 
 # Reuse in nested blocks
 object :author do
-  use_entity(AuthorEntity)
+  use_entity(Shared::AuthorEntity)
 end
 ```
 
@@ -393,7 +397,7 @@ spec/
 ```ruby
 # frozen_string_literal: true
 
-RSpec.describe Gate::API::Posts::CreateTreaty do
+RSpec.describe Posts::CreateTreaty do
   subject(:perform) { described_class.call!(context:, inventory:, version:, params:) }
 
   let(:context) { instance_double(ApplicationController) }
@@ -441,10 +445,14 @@ assign_json_headers_with(version: 1)
 
 ```ruby
 # Entity: required by default
-class UserEntity < Treaty::Entity
-  object :user do
-    string :name       # required!
-    string :bio, :optional
+module Users
+  module Create
+    class ResponseEntity < Treaty::Entity
+      object :user do
+        string :name       # required!
+        string :bio, :optional
+      end
+    end
   end
 end
 

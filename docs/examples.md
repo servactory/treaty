@@ -593,59 +593,63 @@ Demonstrates using reusable Entity classes for better code organization.
 class ApplicationEntity < Treaty::Entity
 end
 
-# app/entities/posts/create_request_entity.rb
+# app/entities/posts/create/request_entity.rb
 module Posts
-  class CreateRequestEntity < ApplicationEntity
-    object :post do
-      string :title
-      string :content
-      string :summary, :optional
-      boolean :published, :optional
+  module Create
+    class RequestEntity < ApplicationEntity
+      object :post do
+        string :title
+        string :content
+        string :summary, :optional
+        boolean :published, :optional
 
-      object :author do
-        string :name
-        string :email
-      end
+        object :author do
+          string :name
+          string :email
+        end
 
-      array :tags, :optional do
-        string :_self  # Array of strings
+        array :tags, :optional do
+          string :_self  # Array of strings
+        end
       end
     end
   end
 end
 
-# app/entities/posts/create_response_entity.rb
+# app/entities/posts/create/response_entity.rb
 module Posts
-  class CreateResponseEntity < ApplicationEntity
-    object :post do
-      string :id
-      string :title
-      string :content
-      string :summary
-      boolean :published
-      time :created_at
-      time :updated_at
-
-      # Computed: word count from content
-      integer :word_count, :optional, computed: (lambda do |**attributes|
-        attributes.dig(:post, :content).to_s.split.size
-      end)
-
-      object :author do
+  module Create
+    class ResponseEntity < ApplicationEntity
+      object :post do
         string :id
-        string :name
-        string :email
+        string :title
+        string :content
+        string :summary
+        boolean :published
+        time :created_at
+        time :updated_at
 
-        # Computed: display format
-        string :display, :optional, computed: (lambda do |**attributes|
-          name = attributes.dig(:post, :author, :name)
-          email = attributes.dig(:post, :author, :email)
-          "#{name} <#{email}>"
+        # Computed: word count from content
+        integer :word_count, :optional, computed: (lambda do |**attributes|
+          attributes.dig(:post, :content).to_s.split.size
         end)
-      end
 
-      array :tags do
-        string :_self
+        object :author do
+          string :id
+          string :name
+          string :email
+
+          # Computed: display format
+          string :display, :optional, computed: (lambda do |**attributes|
+            name = attributes.dig(:post, :author, :name)
+            email = attributes.dig(:post, :author, :email)
+            "#{name} <#{email}>"
+          end)
+        end
+
+        array :tags do
+          string :_self
+        end
       end
     end
   end
@@ -660,8 +664,8 @@ module Posts
     version 1 do
 
       # Use Entity classes instead of inline blocks
-      request Posts::CreateRequestEntity
-      response 201, Posts::CreateResponseEntity
+      request Create::RequestEntity
+      response 201, Create::ResponseEntity
 
       delegate_to Posts::CreateService
     end
@@ -669,8 +673,8 @@ module Posts
     version 2 do
 
       # Reuse the same Entity classes across versions
-      request Posts::CreateRequestEntity
-      response 201, Posts::CreateResponseEntity
+      request Create::RequestEntity
+      response 201, Create::ResponseEntity
 
       delegate_to Posts::V2::CreateService
     end
@@ -686,8 +690,8 @@ class PostsController < ApplicationController
 
   def create
     # Treaty handles everything automatically
-    # Request validated against Posts::CreateRequestEntity
-    # Response validated against Posts::CreateResponseEntity
+    # Request validated against Posts::Create::RequestEntity
+    # Response validated against Posts::Create::ResponseEntity
   end
 end
 ```

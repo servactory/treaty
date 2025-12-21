@@ -639,12 +639,14 @@ end
 **Example:**
 ```ruby
 # ✓ Correct: Class inherits from Treaty::Entity
-class AuthorEntity < ApplicationEntity
-  string :name
+module Shared
+  class AuthorEntity < ApplicationEntity
+    string :name
+  end
 end
 
 object :author do
-  use_entity(AuthorEntity)  # Works
+  use_entity(Shared::AuthorEntity)  # Works
 end
 
 # ✗ Wrong: Regular class
@@ -668,29 +670,31 @@ end
 ```ruby
 # ✓ Correct: use_entity is the only statement
 object :author do
-  use_entity(AuthorEntity)
+  use_entity(Shared::AuthorEntity)
 end
 
 # ✗ Wrong: Attributes defined before use_entity
 object :author do
   string :name  # Error: Cannot call use_entity after defining attributes
-  use_entity(AuthorEntity)
+  use_entity(Shared::AuthorEntity)
 end
 
 # ✗ Wrong: Attributes defined after use_entity
 object :author do
-  use_entity(AuthorEntity)
+  use_entity(Shared::AuthorEntity)
   string :extra_field  # Error: Cannot define attributes after use_entity
 end
 
 # ✓ Correct: If you need additional attributes, define them in the Entity
-class AuthorEntity < ApplicationEntity
-  string :name
-  string :extra_field  # Add attributes here instead
+module Shared
+  class AuthorEntity < ApplicationEntity
+    string :name
+    string :extra_field  # Add attributes here instead
+  end
 end
 
 object :author do
-  use_entity(AuthorEntity)
+  use_entity(Shared::AuthorEntity)
 end
 ```
 

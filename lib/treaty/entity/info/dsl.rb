@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 module Treaty
-  module Info
-    module Entity
+  module Entity
+    module Info
       module DSL
         def self.included(base)
           base.extend(ClassMethods)

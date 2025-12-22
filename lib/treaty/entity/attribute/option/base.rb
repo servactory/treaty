@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Treaty
-  class Entity
+  module Entity
     module Attribute
       module Option
         # Base class for all option processors (validators and modifiers).

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Treaty
-  class Entity
+  module Entity
     module Attribute
       # Normalizes options from simple mode to advanced mode.
       #

@@ -22,12 +22,12 @@ Entity classes are reusable class definitions that can be used in multiple treat
 
 ## Creating Entity Classes
 
-Entity classes inherit from `Treaty::Entity`:
+Entity classes inherit from `Treaty::Entity::Base`:
 
 ```ruby
 module Posts
   module Create
-    class ResponseEntity < Treaty::Entity
+    class ResponseEntity < Treaty::Entity::Base
       string :id
       string :title
       string :content
@@ -50,7 +50,7 @@ Place entity classes in `app/entities/` directory with domain-based structure.
 ```ruby
 module Users
   module Create
-    class ResponseEntity < Treaty::Entity
+    class ResponseEntity < Treaty::Entity::Base
       string :name        # required by default
       string :email       # required by default
       string :bio, :optional  # explicitly optional
@@ -83,7 +83,7 @@ It's common to have separate entities for requests and responses:
 # app/entities/posts/create/request_entity.rb
 module Posts
   module Create
-    class RequestEntity < Treaty::Entity
+    class RequestEntity < Treaty::Entity::Base
       string :title
       string :content
       string :summary, :optional
@@ -94,7 +94,7 @@ end
 # app/entities/posts/create/response_entity.rb
 module Posts
   module Create
-    class ResponseEntity < Treaty::Entity
+    class ResponseEntity < Treaty::Entity::Base
       string :id
       string :title
       string :content
@@ -133,7 +133,7 @@ app/entities/
 
 ```ruby
 # app/entities/application_entity.rb
-class ApplicationEntity < Treaty::Entity
+class ApplicationEntity < Treaty::Entity::Base
 end
 
 # app/entities/posts/create/request_entity.rb
@@ -180,7 +180,7 @@ Entity classes support nested objects and arrays:
 ```ruby
 module Posts
   module Show
-    class ResponseEntity < Treaty::Entity
+    class ResponseEntity < Treaty::Entity::Base
       string :id
       string :title
       string :content
@@ -288,7 +288,7 @@ end
 When using `use_entity` in nested blocks:
 
 1. **Must be the only statement** - You cannot mix `use_entity` with other attribute definitions in the same block
-2. **Entity class only** - The argument must be a `Treaty::Entity` subclass
+2. **Entity class only** - The argument must be a `Treaty::Entity::Base` subclass
 3. **Options preserved** - All attribute options from the Entity (validation, transformation) are preserved
 
 ```ruby
@@ -345,7 +345,7 @@ Different entity types have different defaults:
 
 | Type | Default Required | Use Case |
 |------|-----------------|----------|
-| `Treaty::Entity` | `true` | User-defined entities |
+| `Treaty::Entity::Base` | `true` | User-defined entities |
 | `Treaty::Request::Entity` | `true` | Request blocks |
 | `Treaty::Response::Entity` | `false` | Response blocks |
 
@@ -357,7 +357,7 @@ This is why request blocks default to required and response blocks default to op
 
 ```ruby
 # app/entities/application_entity.rb
-class ApplicationEntity < Treaty::Entity
+class ApplicationEntity < Treaty::Entity::Base
 end
 
 # app/entities/posts/create/request_entity.rb
@@ -440,7 +440,7 @@ end
 Entity classes support all standard attribute options:
 
 ```ruby
-class ProductEntity < Treaty::Entity
+class ProductEntity < Treaty::Entity::Base
   string :id
   string :name
   string :sku, :optional
@@ -488,7 +488,7 @@ Entity classes provide a `.info` class method that returns metadata about the en
 ```ruby
 module Posts
   module Show
-    class ResponseEntity < Treaty::Entity
+    class ResponseEntity < Treaty::Entity::Base
       string :id
       string :title
       string :content, :optional
@@ -660,9 +660,9 @@ compare_entities(Posts::Create::RequestEntity, Posts::Create::ResponseEntity)
 
 ### Comparison with Treaty::Base.info
 
-While `Treaty::Entity.info` returns entity attribute metadata, `Treaty::Base.info` (for REST API treaties) returns version-based contract information:
+While `Treaty::Entity::Base.info` returns entity attribute metadata, `Treaty::Base.info` (for REST API treaties) returns version-based contract information:
 
-| Feature | Treaty::Entity.info | Treaty::Base.info |
+| Feature | Treaty::Entity::Base.info | Treaty::Base.info |
 |---------|---------------------|-------------------|
 | **Returns** | `Treaty::Info::Entity::Result` | `Treaty::Info::Rest::Result` |
 | **Primary attribute** | `.attributes` (Hash) | `.versions` (Array) |
@@ -725,7 +725,7 @@ info.versions
    # Good - just structure
    module Posts
      module Create
-       class ResponseEntity < Treaty::Entity
+       class ResponseEntity < Treaty::Entity::Base
          string :title
          string :content
        end
@@ -735,7 +735,7 @@ info.versions
    # Bad - business logic in entity
    module Posts
      module Create
-       class ResponseEntity < Treaty::Entity
+       class ResponseEntity < Treaty::Entity::Base
          string :title
 
          def formatted_title
@@ -750,7 +750,7 @@ info.versions
    ```ruby
    module Orders
      module Create
-       class ResponseEntity < Treaty::Entity
+       class ResponseEntity < Treaty::Entity::Base
          # Customer information
          object :customer do
            string :email

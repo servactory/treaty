@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 module Treaty
-  module Info
-    module Entity
+  module Entity
+    module Info
       class Builder
         attr_reader :attributes
 
@@ -26,6 +26,12 @@ module Treaty
 
         ##########################################################################
 
+        def build_nested_attributes(attribute, current_level)
+          return {} unless attribute.nested?
+
+          build_versions_with(attribute.collection_of_attributes, current_level + 1)
+        end
+
         def build_versions_with(collection, current_level = 0)
           collection.to_h do |attribute|
             [
@@ -37,12 +43,6 @@ module Treaty
               }
             ]
           end
-        end
-
-        def build_nested_attributes(attribute, current_level)
-          return {} unless attribute.nested?
-
-          build_versions_with(attribute.collection_of_attributes, current_level + 1)
         end
       end
     end

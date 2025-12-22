@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Treaty
-  class Entity
+  module Entity
     module Attribute
       # Base class for all attribute definitions in Treaty DSL.
       #

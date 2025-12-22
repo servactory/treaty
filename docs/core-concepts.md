@@ -146,7 +146,7 @@ Reusable data structure definitions that can be used across multiple treaties an
 ```ruby
 module Posts
   module Create
-    class ResponseEntity < Treaty::Entity
+    class ResponseEntity < Treaty::Entity::Base
       string :id
       string :title
       string :content
@@ -288,7 +288,7 @@ Understanding how Treaty works internally can help you use it more effectively.
 
 Treaty uses a unified entity-based architecture for all attribute definitions:
 
-1. **Treaty::Entity** - Base class for user-defined entities (required by default)
+1. **Treaty::Entity::Base** - Base class for user-defined entities (required by default)
 2. **Treaty::RequestEntity** - Internal class for request blocks (required by default)
 3. **Treaty::ResponseEntity** - Internal class for response blocks (optional by default)
 
@@ -315,7 +315,7 @@ This means blocks and Entity classes are equivalent under the hood!
 ```
 Treaty::Entity::Attribute::DSL
   ↓
-Treaty::Entity (required: true)
+Treaty::Entity::Base (required: true)
   ↓
 ├── Your Entities
 ├── RequestEntity (for request blocks)

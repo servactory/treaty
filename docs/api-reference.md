@@ -470,13 +470,13 @@ response 201, Posts::Create::ResponseEntity
 
 ## Entity Class Definition
 
-### `Treaty::Entity`
+### `Treaty::Entity::Base`
 
 Base class for creating reusable entity classes.
 
 **Syntax:**
 ```ruby
-class MyEntity < Treaty::Entity
+class MyEntity < Treaty::Entity::Base
   # Attribute definitions
 end
 ```
@@ -485,7 +485,7 @@ end
 ```ruby
 module Posts
   module Create
-    class ResponseEntity < Treaty::Entity
+    class ResponseEntity < Treaty::Entity::Base
       string :id
       string :title
       string :content, :optional
@@ -531,7 +531,7 @@ end
 **Example structure:**
 ```ruby
 # app/entities/application_entity.rb
-class ApplicationEntity < Treaty::Entity
+class ApplicationEntity < Treaty::Entity::Base
 end
 
 # app/entities/posts/create/request_entity.rb

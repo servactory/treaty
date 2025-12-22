@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Treaty
-  class Entity
+  module Entity
     module Attribute
       module Option
         # Initializes and registers all built-in option processors with the Registry.

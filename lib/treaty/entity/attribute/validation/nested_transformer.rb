@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Treaty
-  class Entity
+  module Entity
     module Attribute
       module Validation
         # Handles transformation of nested attributes (objects and arrays).

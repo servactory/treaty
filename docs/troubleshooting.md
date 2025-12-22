@@ -627,18 +627,18 @@ end
 
 ## Use Entity Issues
 
-### "use_entity expects a Treaty::Entity subclass"
+### "use_entity expects a Treaty::Entity::Base subclass"
 
 **Problem:** Argument passed to `use_entity` is not a valid Entity class.
 
 **Solution:**
-1. Ensure the class inherits from `Treaty::Entity` (or `ApplicationEntity`)
+1. Ensure the class inherits from `Treaty::Entity::Base` (or `ApplicationEntity`)
 2. Verify the class is loaded before the treaty definition
 3. Check class name spelling
 
 **Example:**
 ```ruby
-# ✓ Correct: Class inherits from Treaty::Entity
+# ✓ Correct: Class inherits from Treaty::Entity::Base
 module Shared
   class AuthorEntity < ApplicationEntity
     string :name
@@ -655,7 +655,7 @@ class AuthorData
 end
 
 object :author do
-  use_entity(AuthorData)  # Error: not a Treaty::Entity subclass
+  use_entity(AuthorData)  # Error: not a Treaty::Entity::Base subclass
 end
 ```
 

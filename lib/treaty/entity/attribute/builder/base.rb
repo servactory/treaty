@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Treaty
-  class Entity
+  module Entity
     module Attribute
       module Builder
         # Base DSL builder for defining attributes in request/response definitions.
@@ -103,7 +103,7 @@ module Treaty
           # Uses an Entity class to copy its attributes into this builder's collection.
           # Must be the ONLY statement in the block - no other attributes allowed.
           #
-          # @param entity_class [Class] Entity class (must be Treaty::Entity subclass)
+          # @param entity_class [Class] Entity class (must be Treaty::Entity::Base subclass)
           # @raise [Treaty::Exceptions::Validation] if entity_class is invalid
           # @raise [Treaty::Exceptions::Validation] if mixed with other attributes
           # @return [void]
@@ -205,12 +205,12 @@ module Treaty
                   I18n.t("treaty.attributes.builder.attributes_after_use_entity")
           end
 
-          # Validates that entity_class is a valid Treaty::Entity subclass
+          # Validates that entity_class is a valid Treaty::Entity::Base subclass
           #
           # @param entity_class [Class] Entity class to validate
           # @raise [Treaty::Exceptions::Validation] if entity_class is not valid
           def validate_entity_class!(entity_class)
-            return if entity_class.is_a?(Class) && entity_class < Treaty::Entity
+            return if entity_class.is_a?(Class) && entity_class < Treaty::Entity::Base
 
             raise Treaty::Exceptions::Validation,
                   I18n.t(

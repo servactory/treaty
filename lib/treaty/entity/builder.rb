@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Treaty
-  class Entity
+  module Entity
     # Entity-specific attribute builder
     class Builder < Treaty::Entity::Attribute::Builder::Base
       private

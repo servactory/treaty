@@ -304,7 +304,7 @@ string :published_at, transform: ->(value:) { value.strip }, cast: :datetime
 ```ruby
 module Posts
   module Create
-    class ResponseEntity < Treaty::Entity
+    class ResponseEntity < Treaty::Entity::Base
       object :post do
         string :id              # required by default
         string :title           # required by default
@@ -449,7 +449,7 @@ assign_json_headers_with(version: 1)
 # Entity: required by default
 module Users
   module Create
-    class ResponseEntity < Treaty::Entity
+    class ResponseEntity < Treaty::Entity::Base
       object :user do
         string :name       # required!
         string :bio, :optional

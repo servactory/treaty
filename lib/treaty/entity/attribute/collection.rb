@@ -3,7 +3,7 @@
 require "forwardable"
 
 module Treaty
-  class Entity
+  module Entity
     module Attribute
       # Collection wrapper for sets of attributes.
       #

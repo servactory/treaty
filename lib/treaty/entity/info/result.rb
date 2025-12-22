@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 module Treaty
-  module Info
-    module Entity
+  module Entity
+    module Info
       class Result
         attr_reader :attributes
 

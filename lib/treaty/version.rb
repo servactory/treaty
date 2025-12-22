@@ -3,7 +3,7 @@
 module Treaty
   module VERSION
     MAJOR = 0
-    MINOR = 18
+    MINOR = 19
     PATCH = 0
     PRE = nil
 

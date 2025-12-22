@@ -59,7 +59,7 @@ module Treaty
         # and returns a Result object.
         #
         # @param context [Object] Controller instance
-        # @param inventory [Inventory::Collection] Controller data
+        # @param inventory [Treaty::Action::Inventory::Collection] Controller data
         # @param version [String, nil] Requested version or nil for default
         # @param params [Hash] Request parameters
         # @return [Treaty::Action::Result] Execution result

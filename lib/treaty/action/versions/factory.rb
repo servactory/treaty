@@ -59,7 +59,7 @@ module Treaty
       # - `default` must be boolean or Proc
       # - Cannot be both default and deprecated
       class Factory
-        # @return [Semantic] Semantic version wrapper
+        # @return [Treaty::Action::Versions::Semantic] Semantic version wrapper
         attr_reader :version
 
         # @return [Boolean] Whether this is the default version
@@ -71,13 +71,13 @@ module Treaty
         # @return [Boolean] Whether version is deprecated
         attr_reader :deprecated_result
 
-        # @return [Executor, nil] Executor configuration
+        # @return [Treaty::Action::Versions::Executor, nil] Executor configuration
         attr_reader :executor
 
-        # @return [Request::Factory, nil] Request schema factory
+        # @return [Treaty::Action::Request::Factory, nil] Request schema factory
         attr_reader :request_factory
 
-        # @return [Response::Factory, nil] Response schema factory
+        # @return [Treaty::Action::Response::Factory, nil] Response schema factory
         attr_reader :response_factory
 
         # Creates a new version factory

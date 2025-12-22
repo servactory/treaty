@@ -51,10 +51,10 @@ module Treaty
         # class methods and instance methods.
         #
         # @param context [Object, nil] Controller context
-        # @param inventory [Inventory::Collection, nil] Inventory items
+        # @param inventory [Treaty::Action::Inventory::Collection, nil] Inventory items
         # @param version [String, nil] Requested version
         # @param params [Hash] Request parameters
-        # @param collection_of_versions [Collection] Version factories
+        # @param collection_of_versions [Treaty::Action::Versions::Collection] Version factories
         # @return [Treaty::Action::Result] Execution result
         def _call!(
           context:,
@@ -78,7 +78,7 @@ module Treaty
         # then calls super which invokes Versions::Workspace.call!
         # for actual treaty execution.
         #
-        # @param collection_of_versions [Collection] Version factories
+        # @param collection_of_versions [Treaty::Action::Versions::Collection] Version factories
         # @return [Treaty::Action::Result] Execution result (from super)
         def call!(
           collection_of_versions:,

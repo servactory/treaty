@@ -49,8 +49,8 @@ module Treaty
         # Resolves version factory (class method shortcut)
         #
         # @param specified_version [String, nil] Requested version or nil for default
-        # @param collection_of_versions [Collection] Available versions
-        # @return [Factory] Resolved version factory
+        # @param collection_of_versions [Treaty::Action::Versions::Collection] Available versions
+        # @return [Treaty::Action::Versions::Factory] Resolved version factory
         # @raise [Treaty::Exceptions::VersionNotFound] If version doesn't exist
         # @raise [Treaty::Exceptions::SpecifiedVersionNotFound] If no default available
         # @raise [Treaty::Exceptions::Deprecated] If version is deprecated
@@ -61,7 +61,7 @@ module Treaty
         # Creates a new resolver instance
         #
         # @param specified_version [String, nil] Requested version
-        # @param collection_of_versions [Collection] Available versions
+        # @param collection_of_versions [Treaty::Action::Versions::Collection] Available versions
         def initialize(specified_version:, collection_of_versions:)
           @specified_version = specified_version
           @collection_of_versions = collection_of_versions
@@ -69,7 +69,7 @@ module Treaty
 
         # Resolves and returns the appropriate version factory
         #
-        # @return [Factory] Resolved version factory
+        # @return [Treaty::Action::Versions::Factory] Resolved version factory
         # @raise [Treaty::Exceptions::VersionNotFound] If version doesn't exist
         # @raise [Treaty::Exceptions::SpecifiedVersionNotFound] If no default available
         # @raise [Treaty::Exceptions::Deprecated] If version is deprecated

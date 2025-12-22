@@ -52,9 +52,9 @@ module Treaty
         class Request # rubocop:disable Metrics/ClassLength
           # Executes service with validated parameters (class method shortcut)
           #
-          # @param version_factory [Factory] Version configuration
+          # @param version_factory [Treaty::Action::Versions::Factory] Version configuration
           # @param validated_params [Hash] Validated request parameters
-          # @param inventory [Inventory::Collection, nil] Optional inventory
+          # @param inventory [Treaty::Action::Inventory::Collection, nil] Optional inventory
           # @param context [Object, nil] Controller context for inventory
           # @return [Hash] Service execution result
           # @raise [Treaty::Exceptions::Execution] If execution fails
@@ -64,9 +64,9 @@ module Treaty
 
           # Creates a new execution request instance
           #
-          # @param version_factory [Factory] Version with executor configuration
+          # @param version_factory [Treaty::Action::Versions::Factory] Version with executor configuration
           # @param validated_params [Hash] Validated request parameters
-          # @param inventory [Inventory::Collection, nil] Optional inventory
+          # @param inventory [Treaty::Action::Inventory::Collection, nil] Optional inventory
           # @param context [Object, nil] Controller context for inventory evaluation
           def initialize(version_factory:, validated_params:, inventory: nil, context: nil)
             @inventory = inventory

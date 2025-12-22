@@ -47,7 +47,7 @@ module Treaty
         class << self
           # Validates response data
           #
-          # @param version_factory [Versions::Factory] Version with response schema
+          # @param version_factory [Treaty::Action::Versions::Factory] Version with response schema
           # @param response_data [Hash] Response data from service
           # @return [Hash] Validated and transformed response
           # @raise [Treaty::Exceptions::Validation] If validation fails
@@ -58,7 +58,7 @@ module Treaty
 
         # Creates new validator instance
         #
-        # @param version_factory [Versions::Factory] Version with response schema
+        # @param version_factory [Treaty::Action::Versions::Factory] Version with response schema
         # @param response_data [Hash] Response data to validate
         def initialize(version_factory:, response_data: {})
           @version_factory = version_factory

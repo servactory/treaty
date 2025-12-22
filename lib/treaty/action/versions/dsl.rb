@@ -92,7 +92,7 @@ module Treaty
 
           # Returns collection of all defined versions
           #
-          # @return [Collection] Collection of version factories
+          # @return [Treaty::Action::Versions::Collection] Collection of version factories
           def collection_of_versions
             @collection_of_versions ||= Collection.new
           end

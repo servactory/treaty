@@ -61,7 +61,7 @@ module Treaty
           # @param nesting_level [Integer] Current nesting depth
           # @param options [Hash] Attribute options
           # @param block [Proc] Block for nested attributes
-          # @return [Response::Attribute::Attribute] Created attribute
+          # @return [Treaty::Action::Response::Attribute::Attribute] Created attribute
           def create_attribute(name, type, *helpers, nesting_level:, **options, &block)
             Attribute::Attribute.new(
               name,

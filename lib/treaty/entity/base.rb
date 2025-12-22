@@ -73,7 +73,7 @@ module Treaty
 
         # Creates an Entity::Attribute for this Entity class
         #
-        # @return [Entity::Attribute::Attribute] Created attribute instance
+        # @return [Treaty::Entity::Attribute::Attribute] Created attribute instance
         def create_attribute(name, type, *helpers, nesting_level:, **options, &block)
           Attribute::Attribute.new(
             name,

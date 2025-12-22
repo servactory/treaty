@@ -43,7 +43,7 @@ module Treaty
           # Validates request parameters
           #
           # @param params [Hash, ActionController::Parameters] Request params
-          # @param version_factory [Versions::Factory] Version with request schema
+          # @param version_factory [Treaty::Action::Versions::Factory] Version with request schema
           # @return [Hash] Validated and transformed parameters
           # @raise [Treaty::Exceptions::Validation] If validation fails
           def validate!(params:, version_factory:)
@@ -54,7 +54,7 @@ module Treaty
         # Creates new validator instance
         #
         # @param params [Hash, ActionController::Parameters] Request params
-        # @param version_factory [Versions::Factory] Version with request schema
+        # @param version_factory [Treaty::Action::Versions::Factory] Version with request schema
         def initialize(params:, version_factory:)
           @params = params
           @version_factory = version_factory

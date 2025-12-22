@@ -50,7 +50,7 @@ module Treaty
         # @param version [String, nil] Requested API version (nil uses default)
         # @param params [Hash] Request parameters
         # @param context [Object, nil] Controller context (for inventory evaluation)
-        # @param inventory [Inventory::Collection, nil] Inventory items
+        # @param inventory [Treaty::Action::Inventory::Collection, nil] Inventory items
         # @return [Treaty::Action::Result] Execution result
         # @raise [Treaty::Exceptions::VersionNotFound] If version not found
         # @raise [Treaty::Exceptions::Validation] If validation fails
@@ -70,7 +70,7 @@ module Treaty
         #
         # @param treaty_instance [Object] Treaty instance
         # @param context [Object, nil] Controller context
-        # @param inventory [Inventory::Collection, nil] Inventory items
+        # @param inventory [Treaty::Action::Inventory::Collection, nil] Inventory items
         # @param version [String, nil] Requested version
         # @param params [Hash] Request parameters
         # @return [Treaty::Action::Result] Execution result

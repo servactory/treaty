@@ -42,7 +42,7 @@ module Treaty
       #   factory.provide :posts, from: :load_posts
       #   factory.collection  # => Collection with 2 items
       class Factory
-        # @return [Collection] Collection of inventory items
+        # @return [Treaty::Action::Inventory::Collection] Collection of inventory items
         attr_reader :collection
 
         # Creates a new factory instance
@@ -63,7 +63,7 @@ module Treaty
         # @param options [Hash] Options (:from for source)
         # @raise [Treaty::Exceptions::Inventory] If method is not `provide`
         # @raise [Treaty::Exceptions::Inventory] If name is not a Symbol
-        # @return [Collection] Updated collection
+        # @return [Treaty::Action::Inventory::Collection] Updated collection
         def method_missing(method_name, *args, **options, &_block) # rubocop:disable Metrics/MethodLength
           unless method_name == :provide
             raise Treaty::Exceptions::Inventory,

@@ -54,7 +54,7 @@ module Treaty
           # @param nesting_level [Integer] Current nesting depth
           # @param options [Hash] Attribute options (default:, format:, etc.)
           # @param block [Proc] Block for nested attributes (object/array)
-          # @return [Request::Attribute::Attribute] Created attribute instance
+          # @return [Treaty::Action::Request::Attribute::Attribute] Created attribute instance
           def create_attribute(name, type, *helpers, nesting_level:, **options, &block)
             Attribute.new(
               name,
@@ -71,9 +71,9 @@ module Treaty
           # Used when copying attributes from Entity classes via use_entity.
           # Recursively copies nested attributes for object/array types.
           #
-          # @param source_attribute [Attribute::Base] Source attribute to copy
+          # @param source_attribute [Treaty::Entity::Attribute::Base] Source attribute to copy
           # @param new_nesting_level [Integer] Nesting level for copied attribute
-          # @return [Request::Attribute::Attribute] Deep copied attribute
+          # @return [Treaty::Action::Request::Attribute::Attribute] Deep copied attribute
           def deep_copy_attribute(source_attribute, new_nesting_level) # rubocop:disable Metrics/MethodLength
             copied = Attribute.new(
               source_attribute.name,

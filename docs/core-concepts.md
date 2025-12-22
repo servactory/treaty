@@ -292,7 +292,7 @@ Treaty uses a unified entity-based architecture for all attribute definitions:
 2. **Treaty::RequestEntity** - Internal class for request blocks (required by default)
 3. **Treaty::ResponseEntity** - Internal class for response blocks (optional by default)
 
-All three share the same DSL (`Treaty::Attribute::DSL`) and attribute system, ensuring consistent behavior.
+All three share the same DSL (`Treaty::Entity::Attribute::DSL`) and attribute system, ensuring consistent behavior.
 
 ### Request/Response Blocks
 
@@ -313,7 +313,7 @@ This means blocks and Entity classes are equivalent under the hood!
 ### Attribute System
 
 ```
-Treaty::Attribute::DSL
+Treaty::Entity::Attribute::DSL
   ↓
 Treaty::Entity (required: true)
   ↓

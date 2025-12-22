@@ -31,7 +31,7 @@ module Treaty
 
         # Create orchestrator for response validation
         # Orchestrator filters data by attributes and performs transformation
-        orchestrator_class = Class.new(Treaty::Attribute::Validation::Orchestrator::Base) do
+        orchestrator_class = Class.new(Treaty::Entity::Attribute::Validation::Orchestrator::Base) do
           define_method(:collection_of_attributes) do
             @version_factory.response_factory.collection_of_attributes
           end

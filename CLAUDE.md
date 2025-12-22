@@ -34,11 +34,11 @@
 ```
 treaty/
 ├── lib/treaty/
-│   ├── attribute/          # Core attribute system (DSL, validation)
-│   │   ├── option/         # Option processors (validators, modifiers)
-│   │   └── validators/     # Type validators
 │   ├── controller/         # Rails controller integration
-│   ├── entity/             # Entity classes
+│   ├── entity/             # Entity classes and core attribute system
+│   │   └── attribute/      # Core attribute system (DSL, validation)
+│   │       ├── option/     # Option processors (validators, modifiers)
+│   │       └── validation/ # Attribute validation
 │   ├── request/            # Request handling
 │   ├── response/           # Response handling
 │   ├── versions/           # Version management
@@ -76,7 +76,7 @@ bundle exec appraisal rspec          # Test all Rails versions
   - Methods/Variables: `snake_case`
   - Constants: `SCREAMING_SNAKE_CASE`
   - Files: `snake_case.rb`
-- **Module structure mirrors file structure**: `lib/treaty/attribute/dsl.rb` → `Treaty::Attribute::DSL`
+- **Module structure mirrors file structure**: `lib/treaty/entity/attribute/dsl.rb` → `Treaty::Entity::Attribute::DSL`
 
 ## Core Architecture
 

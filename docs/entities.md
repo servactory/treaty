@@ -318,7 +318,7 @@ Understanding how Entity classes work internally:
 
 ### The DSL Module
 
-All entity-like classes (Entity, Request::Entity, Response::Entity) include `Treaty::Attribute::DSL`, which provides:
+All entity-like classes (Entity, Request::Entity, Response::Entity) include `Treaty::Entity::Attribute::DSL`, which provides:
 - `attribute(name, type, *helpers, **options, &block)` - Define attributes
 - `collection_of_attributes` - Access defined attributes
 - `method_missing` - Support type-first syntax (`string :name`)

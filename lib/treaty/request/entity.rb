@@ -9,7 +9,7 @@ module Treaty
     # When you write a request block, Treaty creates an anonymous
     # class based on Request::Entity.
     class Entity
-      include Treaty::Attribute::DSL
+      include Treaty::Entity::Attribute::DSL
 
       class << self
         private

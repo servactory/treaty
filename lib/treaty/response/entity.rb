@@ -9,7 +9,7 @@ module Treaty
     # When you write a response block, Treaty creates an anonymous
     # class based on Response::Entity.
     class Entity
-      include Treaty::Attribute::DSL
+      include Treaty::Entity::Attribute::DSL
 
       class << self
         private

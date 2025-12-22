@@ -44,7 +44,7 @@ module Treaty
       #
       # @return [Collection] Collection of attributes
       def collection_of_attributes
-        return Treaty::Attribute::Collection.new if @entity_class.nil?
+        return Treaty::Entity::Attribute::Collection.new if @entity_class.nil?
 
         @entity_class.collection_of_attributes
       end

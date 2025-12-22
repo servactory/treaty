@@ -65,16 +65,16 @@ module Treaty
   # - `object` - Object values (with nested attributes)
   class Entity
     include Info::Entity::DSL
-    include Attribute::DSL
+    include Entity::Attribute::DSL
 
     class << self
       private
 
-      # Creates an Attribute::Entity::Attribute for this Entity class
+      # Creates an Entity::Attribute for this Entity class
       #
-      # @return [Attribute::Entity::Attribute] Created attribute instance
+      # @return [Entity::Attribute] Created attribute instance
       def create_attribute(name, type, *helpers, nesting_level:, **options, &block)
-        Attribute::Entity::Attribute.new(
+        Entity::Attribute::Attribute.new(
           name,
           type,
           *helpers,

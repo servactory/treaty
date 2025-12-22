@@ -3,7 +3,7 @@
 module Treaty
   module Action
     class Base
-      include Info::Rest::DSL
+      include Info::DSL
       include Context::DSL
       include Versions::DSL
     end

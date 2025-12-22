@@ -38,7 +38,7 @@ module Treaty
         return request_data unless request_attributes_exist?
 
         # Validate request attributes with orchestrator:
-        orchestrator_class = Class.new(Treaty::Attribute::Validation::Orchestrator::Base) do
+        orchestrator_class = Class.new(Treaty::Entity::Attribute::Validation::Orchestrator::Base) do
           define_method(:collection_of_attributes) do
             @version_factory.request_factory.collection_of_attributes
           end

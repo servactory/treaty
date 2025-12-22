@@ -34,7 +34,7 @@ module Treaty
       #
       # @param entity_class [Class] Entity class to use
       # @return [void]
-      # @raise [Treaty::Exceptions::Validation] if entity_class is not a valid Treaty::Entity subclass
+      # @raise [Treaty::Exceptions::Validation] if entity_class is not a valid Treaty::Entity::Base subclass
       def use_entity(entity_class)
         validate_entity_class!(entity_class)
         @entity_class = entity_class
@@ -44,7 +44,7 @@ module Treaty
       #
       # @return [Collection] Collection of attributes
       def collection_of_attributes
-        return Treaty::Attribute::Collection.new if @entity_class.nil?
+        return Treaty::Entity::Attribute::Collection.new if @entity_class.nil?
 
         @entity_class.collection_of_attributes
       end
@@ -68,12 +68,12 @@ module Treaty
 
       private
 
-      # Validates that the provided entity_class is a valid Treaty::Entity subclass
+      # Validates that the provided entity_class is a valid Treaty::Entity::Base subclass
       #
       # @param entity_class [Class] Entity class to validate
-      # @raise [Treaty::Exceptions::Validation] if entity_class is not a valid Treaty::Entity subclass
+      # @raise [Treaty::Exceptions::Validation] if entity_class is not a valid Treaty::Entity::Base subclass
       def validate_entity_class!(entity_class)
-        return if entity_class.is_a?(Class) && entity_class < Treaty::Entity
+        return if entity_class.is_a?(Class) && entity_class < Treaty::Entity::Base
 
         raise Treaty::Exceptions::Validation,
               I18n.t(

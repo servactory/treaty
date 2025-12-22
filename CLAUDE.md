@@ -34,11 +34,11 @@
 ```
 treaty/
 ├── lib/treaty/
-│   ├── attribute/          # Core attribute system (DSL, validation)
-│   │   ├── option/         # Option processors (validators, modifiers)
-│   │   └── validators/     # Type validators
 │   ├── controller/         # Rails controller integration
-│   ├── entity/             # Entity classes
+│   ├── entity/             # Entity classes and core attribute system
+│   │   └── attribute/      # Core attribute system (DSL, validation)
+│   │       ├── option/     # Option processors (validators, modifiers)
+│   │       └── validation/ # Attribute validation
 │   ├── request/            # Request handling
 │   ├── response/           # Response handling
 │   ├── versions/           # Version management
@@ -76,7 +76,7 @@ bundle exec appraisal rspec          # Test all Rails versions
   - Methods/Variables: `snake_case`
   - Constants: `SCREAMING_SNAKE_CASE`
   - Files: `snake_case.rb`
-- **Module structure mirrors file structure**: `lib/treaty/attribute/dsl.rb` → `Treaty::Attribute::DSL`
+- **Module structure mirrors file structure**: `lib/treaty/entity/attribute/dsl.rb` → `Treaty::Entity::Attribute::DSL`
 
 ## Core Architecture
 
@@ -304,7 +304,7 @@ string :published_at, transform: ->(value:) { value.strip }, cast: :datetime
 ```ruby
 module Posts
   module Create
-    class ResponseEntity < Treaty::Entity
+    class ResponseEntity < Treaty::Entity::Base
       object :post do
         string :id              # required by default
         string :title           # required by default
@@ -449,7 +449,7 @@ assign_json_headers_with(version: 1)
 # Entity: required by default
 module Users
   module Create
-    class ResponseEntity < Treaty::Entity
+    class ResponseEntity < Treaty::Entity::Base
       object :user do
         string :name       # required!
         string :bio, :optional

@@ -36,7 +36,7 @@ end
 ```ruby
 module Posts
   module Create
-    class ResponseEntity < Treaty::Entity
+    class ResponseEntity < Treaty::Entity::Base
       string :id
       string :title
       string :content, :optional

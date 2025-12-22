@@ -101,19 +101,19 @@ treaty:
         not_implemented: "%{class} must implement #create_attribute"
         create_attribute_not_implemented: "Subclass %{class} must implement #create_attribute method"
         deep_copy_not_implemented: "%{class} must implement #deep_copy_attribute"
-        invalid_entity_class: "use_entity expects a Treaty::Entity subclass, got %{type}: %{value}"
+        invalid_entity_class: "use_entity expects a Treaty::Entity::Base subclass, got %{type}: %{value}"
         use_entity_after_attributes: "use_entity must be the only statement in the block. Cannot call use_entity after defining other attributes."
         attributes_after_use_entity: "use_entity must be the only statement in the block. Cannot define attributes after calling use_entity."
 
   request:
     factory:
       unknown_method: "Unknown method '%{method}' in request definition. Use 'object :name do ... end' to define request structure"
-      invalid_entity_class: "Request expects a Treaty::Entity subclass, got %{type}: %{value}"
+      invalid_entity_class: "Request expects a Treaty::Entity::Base subclass, got %{type}: %{value}"
 
   response:
     factory:
       unknown_method: "Unknown method '%{method}' in response definition. Use 'object :name do ... end' to define response structure"
-      invalid_entity_class: "Response expects a Treaty::Entity subclass, got %{type}: %{value}"
+      invalid_entity_class: "Response expects a Treaty::Entity::Base subclass, got %{type}: %{value}"
 
   inventory:
     unknown_method: "Unknown method '%{method}' in treaty block for action '%{action}'. Only 'provide' method is supported. Use: provide :name, from: :source OR provide :name"
@@ -275,7 +275,7 @@ de:
         not_implemented: "%{class} muss #create_attribute implementieren"
         create_attribute_not_implemented: "Unterklasse %{class} muss die Methode #create_attribute implementieren"
         deep_copy_not_implemented: "%{class} muss #deep_copy_attribute implementieren"
-        invalid_entity_class: "use_entity erwartet eine Treaty::Entity-Unterklasse, erhalten: %{type}: %{value}"
+        invalid_entity_class: "use_entity erwartet eine Treaty::Entity::Base-Unterklasse, erhalten: %{type}: %{value}"
         use_entity_after_attributes: "use_entity muss die einzige Anweisung im Block sein. use_entity kann nicht nach der Definition anderer Attribute aufgerufen werden."
         attributes_after_use_entity: "use_entity muss die einzige Anweisung im Block sein. Nach dem Aufruf von use_entity können keine Attribute definiert werden."
 
@@ -287,12 +287,12 @@ de:
     request:
       factory:
         unknown_method: "Unbekannte Methode '%{method}' in Request-Definition. Verwenden Sie 'object :name do ... end', um die Request-Struktur zu definieren"
-        invalid_entity_class: "Request erwartet eine Treaty::Entity-Unterklasse, erhalten: %{type}: %{value}"
+        invalid_entity_class: "Request erwartet eine Treaty::Entity::Base-Unterklasse, erhalten: %{type}: %{value}"
 
     response:
       factory:
         unknown_method: "Unbekannte Methode '%{method}' in Response-Definition. Verwenden Sie 'object :name do ... end', um die Response-Struktur zu definieren"
-        invalid_entity_class: "Response erwartet eine Treaty::Entity-Unterklasse, erhalten: %{type}: %{value}"
+        invalid_entity_class: "Response erwartet eine Treaty::Entity::Base-Unterklasse, erhalten: %{type}: %{value}"
 
     versioning:
       resolver:
@@ -498,7 +498,7 @@ Different validators provide different interpolation variables:
 **Request/Response Factory:**
 - `%{method}` - the unknown method name that was called
 - `%{type}` - the actual class type of the invalid entity
-- `%{value}` - the value that was provided instead of a Treaty::Entity subclass
+- `%{value}` - the value that was provided instead of a Treaty::Entity::Base subclass
 
 **Version/Execution:**
 - `%{version}` - version number
@@ -548,7 +548,7 @@ Different validators provide different interpolation variables:
 **Builder:**
 - `%{class}` - the class name that must implement the method
 - `%{type}` - the actual type of the invalid argument
-- `%{value}` - the value that was provided instead of a Treaty::Entity subclass
+- `%{value}` - the value that was provided instead of a Treaty::Entity::Base subclass
 
 ### Example: German Customization
 

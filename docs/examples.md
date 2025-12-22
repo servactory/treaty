@@ -590,7 +590,7 @@ Demonstrates using reusable Entity classes for better code organization.
 
 ```ruby
 # app/entities/application_entity.rb
-class ApplicationEntity < Treaty::Entity
+class ApplicationEntity < Treaty::Entity::Base
 end
 
 # app/entities/posts/create/request_entity.rb

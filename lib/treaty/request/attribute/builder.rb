@@ -4,7 +4,7 @@ module Treaty
   module Request
     module Attribute
       # Request-specific attribute builder
-      class Builder < Treaty::Attribute::Builder::Base
+      class Builder < Treaty::Entity::Attribute::Builder::Base
         private
 
         def create_attribute(name, type, *helpers, nesting_level:, **options, &block)
@@ -20,7 +20,7 @@ module Treaty
 
         # Deep copies an attribute with adjusted nesting level for Request context.
         #
-        # @param source_attribute [Treaty::Attribute::Base] Attribute to copy
+        # @param source_attribute [Treaty::Entity::Attribute::Base] Attribute to copy
         # @param new_nesting_level [Integer] New nesting level
         # @return [Request::Attribute::Attribute] Copied attribute
         def deep_copy_attribute(source_attribute, new_nesting_level) # rubocop:disable Metrics/MethodLength

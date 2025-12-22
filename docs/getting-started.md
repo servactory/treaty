@@ -46,7 +46,7 @@ end
 Create `app/treaties/application_treaty.rb`:
 
 ```ruby
-class ApplicationTreaty < Treaty::Base
+class ApplicationTreaty < Treaty::Action::Base
 end
 ```
 

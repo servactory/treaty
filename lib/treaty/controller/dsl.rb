@@ -57,7 +57,7 @@ module Treaty
         def treaty_build_inventory_for(action_name, block)
           return nil unless block
 
-          factory = Treaty::Inventory::Factory.new(action_name)
+          factory = Treaty::Action::Inventory::Factory.new(action_name)
           factory.instance_eval(&block)
           factory.collection
         end

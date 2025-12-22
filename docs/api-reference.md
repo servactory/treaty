@@ -18,16 +18,16 @@ class MyTreaty < ApplicationTreaty
 end
 ```
 
-## Treaty::Result Class
+## Treaty::Action::Result Class
 
 ### Overview
 
-Every successful treaty execution returns a `Treaty::Result` object containing the validated data, HTTP status code, and version information.
+Every successful treaty execution returns a `Treaty::Action::Result` object containing the validated data, HTTP status code, and version information.
 
 **Structure:**
 
 ```ruby
-class Treaty::Result
+class Treaty::Action::Result
   attr_reader :data, :status, :version
 end
 ```
@@ -105,7 +105,7 @@ RSpec.describe Posts::CreateTreaty do
     let(:params) { { post: { title: "Test" } } }
 
     it "returns expected result structure" do
-      expect(perform).to be_a(Treaty::Result)
+      expect(perform).to be_a(Treaty::Action::Result)
       expect(perform.data).to include(:post)
       expect(perform.status).to eq(201)
       expect(perform.version).to eq(Gem::Version.new("1"))
@@ -150,7 +150,7 @@ end
 result = Posts::CreateTreaty.call!(version: "1", params: params)
 
 result.inspect
-# => "#<Treaty::Result @data={...}, @status=201, @version=#<Gem::Version \"1\">>"
+# => "#<Treaty::Action::Result @data={...}, @status=201, @version=#<Gem::Version \"1\">>"
 ```
 
 ### Introspection Methods

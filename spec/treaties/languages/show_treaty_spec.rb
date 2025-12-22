@@ -3,10 +3,10 @@
 RSpec.describe Languages::ShowTreaty do
   subject(:perform) { described_class.call!(inventory:, version:, params:) }
 
-  let(:inventory_collection) { Treaty::Inventory::Collection.new }
+  let(:inventory_collection) { Treaty::Action::Inventory::Collection.new }
   let(:context) { instance_double(ApplicationController) }
   let(:inventory) do
-    Treaty::Executor::Inventory.new(inventory_collection, context).tap do |inventory|
+    Treaty::Action::Executor::Inventory.new(inventory_collection, context).tap do |inventory|
       allow(inventory).to receive(:exists?).and_return(inventory_collection.exists?)
     end
   end

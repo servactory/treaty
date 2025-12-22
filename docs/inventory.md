@@ -106,7 +106,7 @@ The inventory system uses **lazy evaluation** to optimize performance. Inventory
 
 **How it works:**
 
-1. When a treaty executes, a `Treaty::Executor::Inventory` instance is created with:
+1. When a treaty executes, a `Treaty::Action::Executor::Inventory` instance is created with:
    - The inventory collection (definitions from your `provide` calls)
    - The controller context (for method calls and proc evaluation)
 
@@ -152,7 +152,7 @@ end
 
 ## Accessing Inventory in Services
 
-Inventory is passed to services as a `Treaty::Executor::Inventory` instance, which provides both **method-based** and **hash-based** access to inventory items.
+Inventory is passed to services as a `Treaty::Action::Executor::Inventory` instance, which provides both **method-based** and **hash-based** access to inventory items.
 
 ### Method-Based Access (Recommended)
 
@@ -207,7 +207,7 @@ class Posts::IndexService < ApplicationService::Base
 end
 ```
 
-The `inventory` input receives a `Treaty::Executor::Inventory` instance providing method-based access to evaluated inventory items.
+The `inventory` input receives a `Treaty::Action::Executor::Inventory` instance providing method-based access to evaluated inventory items.
 
 ### Proc Executors
 
@@ -422,7 +422,7 @@ input :inventory, required: false
 input :inventory
 ```
 
-**Note**: The inventory is a `Treaty::Executor::Inventory` instance. Servactory's type checking is flexible and will accept it.
+**Note**: The inventory is a `Treaty::Action::Executor::Inventory` instance. Servactory's type checking is flexible and will accept it.
 
 If a Servactory service receives inventory but hasn't declared the input, Servactory will raise `Servactory::Exceptions::Input` error.
 

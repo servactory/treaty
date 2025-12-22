@@ -34,15 +34,19 @@
 ```
 treaty/
 ├── lib/treaty/
+│   ├── action/             # Treaty Action classes
+│   │   ├── context/        # Execution context and callable mechanism
+│   │   ├── executor/       # Executor wrapper for inventory
+│   │   ├── info/rest/      # REST API information generation
+│   │   ├── inventory/      # Inventory system
+│   │   ├── request/        # Request handling
+│   │   ├── response/       # Response handling
+│   │   └── versions/       # Version management
 │   ├── controller/         # Rails controller integration
 │   ├── entity/             # Entity classes and core attribute system
 │   │   └── attribute/      # Core attribute system (DSL, validation)
 │   │       ├── option/     # Option processors (validators, modifiers)
 │   │       └── validation/ # Attribute validation
-│   ├── request/            # Request handling
-│   ├── response/           # Response handling
-│   ├── versions/           # Version management
-│   ├── inventory/          # Inventory system
 │   └── exceptions/         # Exception classes
 ├── spec/
 │   ├── sandbox/app/        # Example implementations
@@ -403,8 +407,8 @@ RSpec.describe Posts::CreateTreaty do
   subject(:perform) { described_class.call!(context:, inventory:, version:, params:) }
 
   let(:context) { instance_double(ApplicationController) }
-  let(:inventory) { Treaty::Executor::Inventory.new(collection, context) }
-  let(:collection) { Treaty::Inventory::Collection.new }
+  let(:inventory) { Treaty::Action::Executor::Inventory.new(collection, context) }
+  let(:collection) { Treaty::Action::Inventory::Collection.new }
 
   context "when valid params" do
     let(:version) { "1" }

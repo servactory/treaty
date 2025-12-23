@@ -19,7 +19,7 @@ A Treaty (contract) is a formal definition of the data structure for an API endp
 
 ### 1. Treaty Class
 
-Inherits from `Treaty::Base` and defines the contract for a specific action.
+Inherits from `Treaty::Action::Base` and defines the contract for a specific action.
 
 ```ruby
 class Posts::CreateTreaty < ApplicationTreaty

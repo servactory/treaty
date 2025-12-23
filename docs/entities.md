@@ -658,18 +658,18 @@ end
 compare_entities(Posts::Create::RequestEntity, Posts::Create::ResponseEntity)
 ```
 
-### Comparison with Treaty::Base.info
+### Comparison with Treaty::Action::Base.info
 
-While `Treaty::Entity::Base.info` returns entity attribute metadata, `Treaty::Base.info` (for REST API treaties) returns version-based contract information:
+While `Treaty::Entity::Base.info` returns entity attribute metadata, `Treaty::Action::Base.info` (for REST API treaties) returns version-based contract information:
 
-| Feature | Treaty::Entity::Base.info | Treaty::Base.info |
+| Feature | Treaty::Entity::Base.info | Treaty::Action::Base.info |
 |---------|---------------------|-------------------|
 | **Returns** | `Treaty::Info::Entity::Result` | `Treaty::Info::Rest::Result` |
 | **Primary attribute** | `.attributes` (Hash) | `.versions` (Array) |
 | **Use case** | Entity structure introspection | API version and contract details |
 | **Contains** | Attribute types, options, nesting | Versions, executors, request/response specs |
 
-**Example of Treaty::Base.info:**
+**Example of Treaty::Action::Base.info:**
 
 ```ruby
 class Posts::IndexTreaty < ApplicationTreaty

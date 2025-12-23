@@ -91,7 +91,7 @@ module Treaty
 
           # Creates a new builder instance
           #
-          # @param collection_of_attributes [Collection] Collection to add attributes to
+          # @param collection_of_attributes [Treaty::Entity::Attribute::Collection] Collection to add attributes to
           # @param nesting_level [Integer] Current nesting depth
           def initialize(collection_of_attributes, nesting_level)
             @collection_of_attributes = collection_of_attributes

@@ -80,7 +80,7 @@ module Treaty
 
         # Returns collection of nested attributes for this attribute
         #
-        # @return [Collection] Collection of nested attributes
+        # @return [Treaty::Entity::Attribute::Collection] Collection of nested attributes
         def collection_of_attributes
           @collection_of_attributes ||= Collection.new
         end

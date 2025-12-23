@@ -45,7 +45,7 @@ module Treaty
 
           # Returns collection of attributes for this class
           #
-          # @return [Collection] Collection of attributes
+          # @return [Treaty::Entity::Attribute::Collection] Collection of attributes
           def collection_of_attributes
             @collection_of_attributes ||= Treaty::Entity::Attribute::Collection.new
           end

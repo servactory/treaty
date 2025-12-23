@@ -10,7 +10,7 @@ Learn how to define Treaty contracts, including request and response definitions
 
 A Treaty contract consists of:
 
-1. **Class definition** - inheriting from `Treaty::Base`
+1. **Class definition** - inheriting from `Treaty::Action::Base`
 2. **Version blocks** - one or more version definitions
 3. **Request definition** - what data comes in
 4. **Response definition(s)** - what data goes out

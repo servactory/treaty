@@ -1,4 +1,4 @@
 # frozen_string_literal: true
 
-class ApplicationTreaty < Treaty::Base
+class ApplicationTreaty < Treaty::Action::Base
 end

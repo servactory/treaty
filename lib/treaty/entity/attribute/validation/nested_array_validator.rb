@@ -182,9 +182,9 @@ module Treaty
             @attribute.collection_of_attributes
                       .select { |attr| attr.name == :_self }
                       .map do |self_attribute|
-              validator = AttributeValidator.new(self_attribute)
-              validator.validate_schema!
-              validator
+                        validator = AttributeValidator.new(self_attribute)
+                        validator.validate_schema!
+                        validator
             end
           end
 
@@ -195,9 +195,9 @@ module Treaty
             @attribute.collection_of_attributes
                       .reject { |attr| attr.name == :_self }
                       .each_with_object({}) do |nested_attribute, cache|
-              validator = AttributeValidator.new(nested_attribute)
-              validator.validate_schema!
-              cache[nested_attribute] = validator
+                        validator = AttributeValidator.new(nested_attribute)
+                        validator.validate_schema!
+                        cache[nested_attribute] = validator
             end
           end
         end

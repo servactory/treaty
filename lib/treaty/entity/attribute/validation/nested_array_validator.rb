@@ -145,8 +145,8 @@ module Treaty
           #
           # @return [Attribute::Base, nil] Self-object attribute or nil
           def find_self_object_attribute
-            @attribute.collection_of_attributes.find do |attr|
-              attr.name == :_self && attr.type == :object
+            @attribute.collection_of_attributes.find do |nested_attribute|
+              nested_attribute.name == :_self && nested_attribute.type == :object
             end
           end
 
@@ -154,26 +154,26 @@ module Treaty
           #
           # @param array_item [Hash, Object] Item from array
           # @param index [Integer] Array index for error messages
-          # @param self_attr [Attribute::Base] The object :_self attribute
+          # @param self_object_attribute [Attribute::Base] The object :_self attribute
           # @raise [Treaty::Exceptions::Validation] If validation fails
           # @return [void]
-          def validate_self_object_item!(array_item, index, self_attr)
-            validate_self_object_type!(array_item, index, self_attr)
+          def validate_self_object_item!(array_item, index, self_object_attribute)
+            validate_self_object_type!(array_item, index, self_object_attribute)
 
-            return unless self_attr.nested?
+            return unless self_object_attribute.nested?
 
-            validate_self_object_attributes!(array_item, index, self_attr)
+            validate_self_object_attributes!(array_item, index, self_object_attribute)
           end
 
           # Validates type of self-object array item
           #
           # @param array_item [Hash, Object] Item from array
           # @param index [Integer] Array index for error messages
-          # @param self_attr [Attribute::Base] The object :_self attribute
+          # @param self_object_attribute [Attribute::Base] The object :_self attribute
           # @raise [Treaty::Exceptions::Validation] If type doesn't match
           # @return [void]
-          def validate_self_object_type!(array_item, index, self_attr)
-            expected_type = self_attr.custom_type || Hash
+          def validate_self_object_type!(array_item, index, self_object_attribute)
+            expected_type = self_object_attribute.custom_type || Hash
 
             return if array_item.is_a?(expected_type)
 
@@ -190,13 +190,13 @@ module Treaty
           #
           # @param array_item [Hash, Object] Item from array
           # @param index [Integer] Array index for error messages
-          # @param self_attr [Attribute::Base] The object :_self attribute
+          # @param self_object_attribute [Attribute::Base] The object :_self attribute
           # @raise [Treaty::Exceptions::Validation] If nested validation fails
           # @return [void]
-          def validate_self_object_attributes!(array_item, index, self_attr) # rubocop:disable Metrics/MethodLength
-            self_attr.collection_of_attributes.each do |nested_attr|
-              nested_value = ValueExtractor.extract(array_item, nested_attr.name)
-              validator = AttributeValidator.new(nested_attr)
+          def validate_self_object_attributes!(array_item, index, self_object_attribute) # rubocop:disable Metrics/MethodLength
+            self_object_attribute.collection_of_attributes.each do |nested_attribute|
+              nested_value = ValueExtractor.extract(array_item, nested_attribute.name)
+              validator = AttributeValidator.new(nested_attribute)
               validator.validate_schema!
 
               begin
@@ -267,7 +267,7 @@ module Treaty
           # @return [Array<AttributeValidator>] Array of validators
           def build_self_validators
             @attribute.collection_of_attributes
-                      .select { |attr| attr.name == :_self }
+                      .select { |nested_attribute| nested_attribute.name == :_self }
                       .map do |self_attribute|
                         validator = AttributeValidator.new(self_attribute)
                         validator.validate_schema!
@@ -280,7 +280,7 @@ module Treaty
           # @return [Hash] Hash of nested_attribute => validator
           def build_regular_validators
             @attribute.collection_of_attributes
-                      .reject { |attr| attr.name == :_self }
+                      .reject { |nested_attribute| nested_attribute.name == :_self }
                       .each_with_object({}) do |nested_attribute, cache|
                         validator = AttributeValidator.new(nested_attribute)
                         validator.validate_schema!

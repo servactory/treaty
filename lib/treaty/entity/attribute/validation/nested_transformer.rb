@@ -353,8 +353,8 @@ module Treaty
             # @raise [Treaty::Exceptions::Validation] If item type doesn't match expected
             # @return [Hash] Transformed hash
             def transform_self_object_element(item, index, root_data = {}) # rubocop:disable Metrics/MethodLength
-              self_attr = attribute.collection_of_attributes.first
-              expected_type = self_attr.custom_type || Hash
+              self_object_attribute = attribute.collection_of_attributes.first
+              expected_type = self_object_attribute.custom_type || Hash
 
               unless item.is_a?(expected_type)
                 raise Treaty::Exceptions::Validation,
@@ -366,11 +366,11 @@ module Treaty
                       )
               end
 
-              return item unless self_attr.nested?
+              return item unless self_object_attribute.nested?
 
               transformed = {}
 
-              self_attr.collection_of_attributes.each do |nested_attribute|
+              self_object_attribute.collection_of_attributes.each do |nested_attribute|
                 next unless should_process_attribute?(nested_attribute, item)
 
                 process_self_object_attribute(nested_attribute, item, transformed, index, root_data)

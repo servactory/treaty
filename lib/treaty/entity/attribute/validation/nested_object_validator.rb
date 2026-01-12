@@ -52,6 +52,7 @@ module Treaty
         #
         # Uses:
         # - `AttributeValidator` - Validates individual nested attributes
+        # - `ValueExtractor` - Extracts values from Hash or PORO polymorphically
         # - Caches validators to avoid rebuilding on each validation
         class NestedObjectValidator
           attr_reader :attribute
@@ -64,17 +65,18 @@ module Treaty
             @validators_cache = nil
           end
 
-          # Validates all nested attributes in a hash
-          # Skips validation if value is not a Hash
+          # Validates all nested attributes in a hash or custom type object
+          # Skips validation if value type doesn't match expected type
           #
-          # @param hash [Hash] The hash to validate
+          # @param value [Hash, Object] The value to validate (Hash or PORO)
           # @raise [Treaty::Exceptions::Validation] If any nested validation fails
           # @return [void]
-          def validate!(hash)
-            return unless hash.is_a?(Hash)
+          def validate!(value)
+            expected_type = attribute.custom_type || Hash
+            return unless value.is_a?(expected_type)
 
             validators.each do |nested_attribute, nested_validator|
-              nested_value = hash.fetch(nested_attribute.name, nil)
+              nested_value = ValueExtractor.extract(value, nested_attribute.name)
               nested_validator.validate_value!(nested_value)
             end
           end

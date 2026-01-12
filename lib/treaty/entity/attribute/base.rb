@@ -113,7 +113,34 @@ module Treaty
           @type == :array
         end
 
+        # Returns the custom type class if specified via type: option
+        # Returns nil if no custom type or type option contains non-class value
+        #
+        # @return [Class, nil] Custom type class or nil
+        def custom_type
+          @custom_type ||= extract_custom_type
+        end
+
+        # Checks if this attribute has a custom type specified
+        #
+        # @return [Boolean] True if custom type is defined
+        def custom_type?
+          !custom_type.nil?
+        end
+
         private
+
+        # Extracts custom type from options
+        # After OptionNormalizer, type: is always in advanced mode:
+        # - type: { is: User, message: nil } -> User
+        #
+        # @return [Class, nil] Custom type class or nil
+        def extract_custom_type
+          return nil unless options.key?(:type)
+
+          type_value = options[:type].fetch(:is, nil)
+          type_value.is_a?(Class) ? type_value : nil
+        end
 
         # Validates that nesting level doesn't exceed maximum allowed depth
         #

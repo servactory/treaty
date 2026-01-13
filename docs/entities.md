@@ -461,6 +461,14 @@ class ProductEntity < Treaty::Entity::Base
     string :email
   end
 
+  # Array of typed instances
+  array :collaborators, :optional do
+    object :_self, type: Collaborator do
+      string :name
+      string :role
+    end
+  end
+
   # Computed values (derive from other attributes)
   string :display_name, :optional, computed: (lambda do |**attributes|
     "#{attributes.dig(:name)} (#{attributes.dig(:sku) || 'N/A'})"

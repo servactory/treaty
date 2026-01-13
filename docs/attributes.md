@@ -250,6 +250,14 @@ object :author, type: { is: User, message: "Expected a User instance" } do
   string :name
   string :email
 end
+
+# With :_self in arrays (array of typed instances)
+array :users do
+  object :_self, type: User do
+    string :name
+    string :email
+  end
+end
 ```
 
 **Validation:**

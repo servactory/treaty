@@ -366,6 +366,14 @@ end
 array :tags, :optional do
   string :_self
 end
+
+# Array of typed instances
+array :users do
+  object :_self, type: User do
+    string :name
+  end
+end
+# Data: [User.new(name: "John"), User.new(name: "Jane")]
 ```
 
 ## Request Definition

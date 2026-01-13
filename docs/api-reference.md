@@ -838,6 +838,14 @@ array :posts do
   end
 end
 
+# Array of typed instances
+array :users do
+  object :_self, type: User do
+    string :name
+    string :email
+  end
+end
+
 # Empty array
 array :items, :optional
 ```

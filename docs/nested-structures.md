@@ -171,6 +171,49 @@ end
 
 **Each array item must be a hash** with the defined structure.
 
+### Self-object Arrays (Typed Instances)
+
+Arrays where each item must be an instance of a specific class. Use `object :_self` with the `type:` option.
+
+```ruby
+array :users do
+  object :_self, type: User do
+    string :name
+    string :email
+  end
+end
+```
+
+**Expected data:**
+```ruby
+# Array of User instances
+{
+  users: [
+    User.new(name: "John", email: "john@example.com"),
+    User.new(name: "Jane", email: "jane@example.com")
+  ]
+}
+
+# Hash is also accepted (polymorphic validation)
+{
+  users: [
+    { name: "John", email: "john@example.com" },
+    { name: "Jane", email: "jane@example.com" }
+  ]
+}
+```
+
+**The `object :_self, type:` pattern:**
+- `object :_self` indicates each array item is an object (not a primitive)
+- `type: ClassName` specifies the expected class for validation
+- Nested attributes define the structure for validation and transformation
+- Both class instances AND Hashes are accepted
+
+**When to use:**
+- Working with ActiveRecord models or POROs in arrays
+- Service layer returns arrays of typed objects
+- Need polymorphic acceptance of both instances and hashes
+
 ### Required vs Optional Arrays
 
 ```ruby

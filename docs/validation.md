@@ -171,6 +171,28 @@ object :author, type: { is: Author, message: "Author must be an Author instance"
 end
 ```
 
+#### In Arrays with `object :_self`
+
+Custom types work with `object :_self` in arrays:
+
+```ruby
+array :authors do
+  object :_self, type: Author do
+    string :name
+    string :email
+  end
+end
+```
+
+**Valid data:**
+```ruby
+# Array of Author instances
+{ authors: [Author.new(name: "John", email: "john@example.com")] }
+
+# Array of Hashes (also accepted)
+{ authors: [{ name: "John", email: "john@example.com" }] }
+```
+
 ### Inclusion Validation
 
 Restricts values to a predefined list.

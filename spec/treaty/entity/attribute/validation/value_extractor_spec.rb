@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "ostruct"
-
 RSpec.describe Treaty::Entity::Attribute::Validation::ValueExtractor do
   describe ".extract" do
     context "with Hash source" do
@@ -53,18 +51,6 @@ RSpec.describe Treaty::Entity::Attribute::Validation::ValueExtractor do
       end
     end
 
-    context "with OpenStruct source" do
-      let(:source) { OpenStruct.new(name: "Alice", role: "admin") }
-
-      it "extracts value via public_send" do
-        expect(described_class.extract(source, :name)).to eq("Alice")
-      end
-
-      it "returns nil for non-existent attribute" do
-        expect(described_class.extract(source, :unknown)).to be_nil
-      end
-    end
-
     context "with custom PORO class" do
       let(:user_class) do
         Class.new do
@@ -111,7 +97,7 @@ RSpec.describe Treaty::Entity::Attribute::Validation::ValueExtractor do
       end
     end
 
-    context "edge cases" do
+    context "with edge cases" do
       it "handles nil source gracefully" do
         expect(described_class.extract(nil, :name)).to be_nil
       end

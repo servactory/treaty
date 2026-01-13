@@ -526,7 +526,7 @@ RSpec.describe Treaty::Entity::Attribute::Option::Validators::TypeValidator do
             raise_error(Treaty::Exceptions::Validation) do |exception|
               expect(exception.message).to include("author")
               expect(exception.message).to include("User")
-              # Note: For anonymous classes, actual class shows as #<Class:0x...>
+              # NOTE: For anonymous classes, actual class shows as #<Class:0x...>
               # because Class#name returns nil for anonymous classes
             end
           )
@@ -587,7 +587,7 @@ RSpec.describe Treaty::Entity::Attribute::Option::Validators::TypeValidator do
           expect { validator.validate_value!(instance) }.not_to raise_error
         end
 
-        it "rejects different type with meaningful error" do
+        it "rejects different type with meaningful error", :aggregate_failures do
           expect { validator.validate_value!("test") }.to(
             raise_error(Treaty::Exceptions::Validation) do |exception|
               expect(exception.message).to include("author")

@@ -124,6 +124,53 @@ end
 { published_at: "2024-01-01" } ✗  # Must be DateTime/Time, got String
 ```
 
+### Custom Type for Objects
+
+Object attributes can validate against a custom class instead of Hash:
+
+```ruby
+# Define a class
+class Author
+  attr_accessor :name, :email
+
+  def initialize(name:, email:)
+    @name = name
+    @email = email
+  end
+end
+
+# Use in treaty definition
+request do
+  object :author, type: Author do
+    string :name
+    string :email
+  end
+end
+```
+
+**Valid data:**
+```ruby
+# Hash (always accepted)
+{ author: { name: "John", email: "john@example.com" } }
+
+# Instance of specified class
+author = Author.new(name: "John", email: "john@example.com")
+{ author: author }
+```
+
+**Invalid data:**
+```ruby
+{ author: "John Doe" }
+# Error: Attribute 'author' must be Author, got String
+```
+
+**With custom error message:**
+```ruby
+object :author, type: { is: Author, message: "Author must be an Author instance" } do
+  string :name
+end
+```
+
 ### Inclusion Validation
 
 Restricts values to a predefined list.

@@ -602,6 +602,7 @@ object :name
 **Parameters:**
 - `:name` - Symbol representing the object name
 - Special object: `:_self` - Merges attributes to parent level
+- `type:` (Optional) - Class that value must be an instance of. Without this option, value must be a Hash.
 
 **Examples:**
 ```ruby
@@ -618,6 +619,12 @@ end
 
 # Empty object
 object :metadata
+
+# Object with custom type validation
+object :author, type: User do
+  string :name
+  string :email
+end
 ```
 
 ## Attribute Types

@@ -309,6 +309,11 @@ object :settings, :optional do
   string :theme
 end
 
+# Object with custom type
+object :author, type: User do
+  string :name
+end
+
 # Deeply nested
 object :post do
   object :author do

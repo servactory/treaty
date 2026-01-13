@@ -455,6 +455,12 @@ class ProductEntity < Treaty::Entity::Base
   # Validation
   string :category, in: %w[electronics clothing food]
 
+  # Custom type validation (only for objects)
+  object :author, type: Author do
+    string :name
+    string :email
+  end
+
   # Computed values (derive from other attributes)
   string :display_name, :optional, computed: (lambda do |**attributes|
     "#{attributes.dig(:name)} (#{attributes.dig(:sku) || 'N/A'})"

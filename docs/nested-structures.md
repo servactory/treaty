@@ -272,7 +272,7 @@ end
 ### Object Validation
 
 For objects:
-1. Value must be a Hash
+1. Value must be a Hash, or an instance of the class specified via `type:` option
 2. All required attributes must be present
 3. All attributes must match their types
 4. Nested structures are validated recursively

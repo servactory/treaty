@@ -75,6 +75,7 @@ module Treaty
             @attribute = attribute
             @self_validators = nil
             @regular_validators = nil
+            @self_object_attribute = nil
           end
 
           # Validates all items in an array
@@ -132,13 +133,21 @@ module Treaty
           # @raise [Treaty::Exceptions::Validation] If validation fails
           # @return [void]
           def validate_regular_array_item!(array_item, index)
-            self_object_attr = find_self_object_attribute
-
-            if self_object_attr
-              validate_self_object_item!(array_item, index, self_object_attr)
+            if self_object_attribute
+              validate_self_object_item!(array_item, index, self_object_attribute)
             else
               validate_hash_array_item!(array_item, index)
             end
+          end
+
+          # Gets cached self-object attribute or finds it
+          #
+          # @return [Attribute::Base, nil] Self-object attribute or nil
+          def self_object_attribute
+            return @self_object_attribute if defined?(@self_object_attribute_loaded)
+
+            @self_object_attribute_loaded = true
+            @self_object_attribute = find_self_object_attribute
           end
 
           # Finds object :_self attribute if present

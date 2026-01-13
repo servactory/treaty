@@ -240,7 +240,7 @@ module Treaty
               attributes = {
                 attribute: @attribute_name,
                 value:,
-                type: expected_class.name,
+                type: expected_class.name || expected_class.inspect,
                 actual: value.class
               }
 

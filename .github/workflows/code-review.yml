@@ -23,8 +23,10 @@ jobs:
 
     strategy:
       matrix:
-        ruby-version: ['3.2']
-        rails-version: ['7.1']
+        ruby-version:
+          - "3.2"
+        rails-version:
+          - "7.1"
 
     steps:
       - name: Check maintainer permissions
@@ -220,7 +222,7 @@ jobs:
             - Evaluation errors caught
             - Clear error messages for missing items
 
-            ### 9. Rails ${{ matrix.rails-version }} Integration
+            ### 9. Rails ${{ matrix.rails-version }}+ Integration
             **Engine Compatibility:**
             - Rails ${{ matrix.rails-version }}+ API compatibility
             - Proper engine initialization
@@ -392,7 +394,7 @@ jobs:
 
             ### 🛤️ Rails ${{ matrix.rails-version }}+ Integration
             **Engine Compatibility:**
-            - [✅/⚠️/❌] Rails ${{ matrix.rails-version }} APIs
+            - [✅/⚠️/❌] Rails ${{ matrix.rails-version }}+ APIs
             - [✅/⚠️/❌] Engine initialization
             - [✅/⚠️/❌] Dependencies up-to-date
 

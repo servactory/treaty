@@ -79,6 +79,26 @@ array :socials, :optional do
 end
 ```
 
+### Combine use_entity with type:
+
+```ruby
+# Type-safe entity reuse (only Author instances accepted)
+object :author, type: Author do
+  use_entity(Shared::AuthorEntity)
+end
+# Data: Author.new(name: "John", email: "john@example.com")
+
+# In arrays
+array :authors do
+  object :_self, type: Author do
+    use_entity(Shared::AuthorEntity)
+  end
+end
+# Data: [Author.new(name: "John"), Author.new(name: "Jane")]
+```
+
+**Note:** When `type:` is specified, Hash is NOT accepted.
+
 ### Organize Entities
 
 ```

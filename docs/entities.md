@@ -312,6 +312,59 @@ Use `use_entity` in nested blocks when:
 - You want to maintain a single source of truth for the structure
 - The nested structure is complex enough to warrant its own class
 
+### Entity Reuse with Custom Types
+
+Combine `use_entity` with `type:` option for type-safe entity reuse:
+
+```ruby
+module Posts
+  module Create
+    class ResponseEntity < ApplicationEntity
+      object :post do
+        string :id
+        string :title
+
+        # Reuse entity with type validation
+        object :author, type: Author do
+          use_entity(Shared::AuthorEntity)
+        end
+
+        # In arrays
+        array :collaborators, :optional do
+          object :_self, type: Collaborator do
+            use_entity(Shared::CollaboratorEntity)
+          end
+        end
+      end
+    end
+  end
+end
+```
+
+**How it works:**
+- `type: Author` — validates that value is an `Author` instance
+- `use_entity(Entity)` — copies attribute definitions for nested validation
+- Values extracted via `author.name` (not `hash[:name]`)
+
+**Note:** When `type:` is specified, the value must be an instance of that class.
+Hashes are NOT accepted. Use `type:` only when your service returns typed objects.
+
+**Expected data:**
+```ruby
+# Only Author/Collaborator instances accepted
+{
+  post: {
+    id: "123",
+    title: "Hello",
+    author: Author.new(name: "John", bio: "Developer"),
+    collaborators: [
+      Collaborator.new(name: "Jane", role: "Editor"),
+      Collaborator.new(name: "Bob", role: "Reviewer")
+    ]
+  }
+}
+```
+
 ## Internal Architecture
 
 Understanding how Entity classes work internally:

@@ -193,26 +193,64 @@ end
     User.new(name: "Jane", email: "jane@example.com")
   ]
 }
-
-# Hash is also accepted (polymorphic validation)
-{
-  users: [
-    { name: "John", email: "john@example.com" },
-    { name: "Jane", email: "jane@example.com" }
-  ]
-}
 ```
 
 **The `object :_self, type:` pattern:**
 - `object :_self` indicates each array item is an object (not a primitive)
 - `type: ClassName` specifies the expected class for validation
 - Nested attributes define the structure for validation and transformation
-- Both class instances AND Hashes are accepted
+
+**Note:** When `type:` is specified, ONLY instances of that class are accepted.
+Hash is NOT accepted. Without `type:`, only Hash is accepted.
 
 **When to use:**
 - Working with ActiveRecord models or POROs in arrays
 - Service layer returns arrays of typed objects
-- Need polymorphic acceptance of both instances and hashes
+- Need type-safe validation of class instances
+
+### Combining type: with use_entity
+
+You can combine `type:` validation with `use_entity` for entity reuse:
+
+```ruby
+# Object with custom type and entity reuse
+object :author, type: Author do
+  use_entity(Shared::AuthorEntity)
+end
+
+# In array context
+array :authors do
+  object :_self, type: Author do
+    use_entity(Shared::AuthorEntity)
+  end
+end
+```
+
+**How it works:**
+- `type: Author` — validates that value is `Author` instance
+- `use_entity(Entity)` — copies attribute definitions for nested validation
+- Values are extracted via `author.name` (not `hash[:name]`)
+
+**When to use:**
+- Services return typed PORO objects
+- Need entity attribute reuse with type safety
+- Working with ActiveRecord models
+
+**Expected data:**
+```ruby
+# Only Author instances accepted (NOT Hashes!)
+{
+  author: Author.new(name: "John", email: "john@example.com")
+}
+
+# For arrays
+{
+  authors: [
+    Author.new(name: "John", email: "john@example.com"),
+    Author.new(name: "Jane", email: "jane@example.com")
+  ]
+}
+```
 
 ### Required vs Optional Arrays
 

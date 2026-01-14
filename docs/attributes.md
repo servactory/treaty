@@ -262,9 +262,20 @@ end
 
 **Validation:**
 - Without `type:` — value must be a `Hash`
-- With `type: SomeClass` — value must be an instance of `SomeClass` (Hash also accepted)
+- With `type: SomeClass` — value must be an instance of `SomeClass`
+
+**Note:** When `type:` is specified, ONLY instances of that class are accepted. Hash is NOT accepted.
 
 **Important:** Can only be used with `object` attribute type. Using `type:` on strings, integers, arrays, etc. raises a schema validation error.
+
+**With `use_entity` (typed object with entity reuse):**
+```ruby
+# Combine type: with use_entity for type-safe entity reuse
+object :author, type: Author do
+  use_entity(Shared::AuthorEntity)
+end
+# Value must be Author instance, attributes copied from entity
+```
 
 **See:** [Validation: Type Validation](./validation.md#type-validation) for detailed examples
 

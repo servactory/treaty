@@ -625,6 +625,12 @@ object :author, type: User do
   string :name
   string :email
 end
+
+# Object with type: and use_entity (type-safe entity reuse)
+object :author, type: Author do
+  use_entity(Shared::AuthorEntity)
+end
+# Value must be Author instance, attributes copied from entity
 ```
 
 ## Attribute Types
@@ -845,6 +851,14 @@ array :users do
     string :email
   end
 end
+
+# Array with type: and use_entity (type-safe entity reuse)
+array :authors do
+  object :_self, type: Author do
+    use_entity(Shared::AuthorEntity)
+  end
+end
+# Each item must be Author instance, attributes copied from entity
 
 # Empty array
 array :items, :optional

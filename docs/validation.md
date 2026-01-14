@@ -150,13 +150,13 @@ end
 
 **Valid data:**
 ```ruby
-# Hash (always accepted)
-{ author: { name: "John", email: "john@example.com" } }
-
-# Instance of specified class
+# Only Author instances accepted when type: is specified
 author = Author.new(name: "John", email: "john@example.com")
 { author: author }
 ```
+
+**Note:** When `type:` is specified, ONLY instances of that class are accepted.
+Hash is NOT accepted. Without `type:`, only Hash is accepted.
 
 **Invalid data:**
 ```ruby
@@ -186,11 +186,36 @@ end
 
 **Valid data:**
 ```ruby
-# Array of Author instances
+# Only Author instances accepted when type: is specified
 { authors: [Author.new(name: "John", email: "john@example.com")] }
+```
 
-# Array of Hashes (also accepted)
-{ authors: [{ name: "John", email: "john@example.com" }] }
+**Note:** When `type:` is specified, ONLY instances of that class are accepted.
+Hash is NOT accepted in the array.
+
+#### Combining type: with use_entity
+
+Custom types work with entity reuse:
+
+```ruby
+object :author, type: Author do
+  use_entity(Shared::AuthorEntity)  # Copies: string :name, string :email
+end
+```
+
+**Validation flow:**
+1. Type check: `value.is_a?(Author)` — must pass!
+2. Nested attributes: extracted via `author.name`, `author.email`
+3. Each attribute validated against entity definition
+
+**Important:** Hash is NOT accepted when `type:` is specified.
+
+```ruby
+# ✅ Valid
+{ author: Author.new(name: "John", email: "john@example.com") }
+
+# ❌ Invalid (raises validation error)
+{ author: { name: "John", email: "john@example.com" } }
 ```
 
 ### Inclusion Validation

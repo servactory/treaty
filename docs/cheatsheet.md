@@ -79,6 +79,26 @@ array :socials, :optional do
 end
 ```
 
+### Combine use_entity with type:
+
+```ruby
+# Type-safe entity reuse (only Author instances accepted)
+object :author, type: Author do
+  use_entity(Shared::AuthorEntity)
+end
+# Data: Author.new(name: "John", email: "john@example.com")
+
+# In arrays
+array :authors do
+  object :_self, type: Author do
+    use_entity(Shared::AuthorEntity)
+  end
+end
+# Data: [Author.new(name: "John"), Author.new(name: "Jane")]
+```
+
+**Note:** When `type:` is specified, Hash is NOT accepted.
+
 ### Organize Entities
 
 ```
@@ -309,6 +329,11 @@ object :settings, :optional do
   string :theme
 end
 
+# Object with custom type
+object :author, type: User do
+  string :name
+end
+
 # Deeply nested
 object :post do
   object :author do
@@ -361,6 +386,14 @@ end
 array :tags, :optional do
   string :_self
 end
+
+# Array of typed instances
+array :users do
+  object :_self, type: User do
+    string :name
+  end
+end
+# Data: [User.new(name: "John"), User.new(name: "Jane")]
 ```
 
 ## Request Definition

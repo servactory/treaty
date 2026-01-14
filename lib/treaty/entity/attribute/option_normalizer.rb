@@ -72,7 +72,8 @@ module Treaty
           in: { advanced_key: :inclusion, value_key: :in },
           as: { advanced_key: :as, value_key: :is },
           default: { advanced_key: :default, value_key: :is },
-          cast: { advanced_key: :cast, value_key: :to }
+          cast: { advanced_key: :cast, value_key: :to },
+          type: { advanced_key: :type, value_key: :is }
         }.freeze
         private_constant :OPTION_KEY_MAPPING
 

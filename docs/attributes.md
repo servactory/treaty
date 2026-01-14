@@ -86,7 +86,7 @@ object :author do
 end
 ```
 
-**Type validation:** Value must be a Ruby `Hash`
+**Type validation:** Value must be a Ruby `Hash`, or an instance of a custom class if specified via `type:` option
 
 **See:** [Nested Structures](./nested-structures.md) for detailed information
 
@@ -233,6 +233,51 @@ integer :rating, in: [1, 2, 3, 4, 5]
 ```
 
 **Validation:** Value must be one of the specified values.
+
+#### type
+
+Specifies a custom class that object values must be instances of. **Only works with `object` attribute type.**
+
+```ruby
+# Simple mode
+object :author, type: User do
+  string :name
+  string :email
+end
+
+# Advanced mode with custom message
+object :author, type: { is: User, message: "Expected a User instance" } do
+  string :name
+  string :email
+end
+
+# With :_self in arrays (array of typed instances)
+array :users do
+  object :_self, type: User do
+    string :name
+    string :email
+  end
+end
+```
+
+**Validation:**
+- Without `type:` — value must be a `Hash`
+- With `type: SomeClass` — value must be an instance of `SomeClass`
+
+**Note:** When `type:` is specified, ONLY instances of that class are accepted. Hash is NOT accepted.
+
+**Important:** Can only be used with `object` attribute type. Using `type:` on strings, integers, arrays, etc. raises a schema validation error.
+
+**With `use_entity` (typed object with entity reuse):**
+```ruby
+# Combine type: with use_entity for type-safe entity reuse
+object :author, type: Author do
+  use_entity(Shared::AuthorEntity)
+end
+# Value must be Author instance, attributes copied from entity
+```
+
+**See:** [Validation: Type Validation](./validation.md#type-validation) for detailed examples
 
 #### format
 

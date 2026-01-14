@@ -216,6 +216,71 @@ end
 { "authors" => ["John Doe", "John Doe"] }  # ✗ Strings instead of objects
 ```
 
+### "Option 'type:' can only be used with 'object' attribute type"
+
+**Problem:** Trying to use `type:` option on non-object attribute.
+
+**Solution:**
+The `type:` option is only valid for `object` attributes. Remove it from other attribute types.
+
+**Example:**
+```ruby
+# Correct:
+object :author, type: User do  # ✓ type: works with object
+  string :name
+end
+
+# Incorrect:
+string :name, type: String  # ✗ type: doesn't work with string
+array :items, type: Array   # ✗ type: doesn't work with array
+```
+
+### "Option 'type:' for attribute 'X' must be a Class"
+
+**Problem:** The value provided to `type:` option is not a Class.
+
+**Solution:**
+Ensure the `type:` option receives a Class constant, not a string, symbol, or instance.
+
+**Example:**
+```ruby
+# Correct:
+object :author, type: User do  # ✓ User is a Class
+  string :name
+end
+
+# Incorrect:
+object :author, type: "User" do  # ✗ String, not Class
+  string :name
+end
+
+object :author, type: :user do  # ✗ Symbol, not Class
+  string :name
+end
+```
+
+### "Attribute 'X' must be CLASS, got TYPE"
+
+**Problem:** Object value is not an instance of the expected class.
+
+**Solution:**
+Provide either a Hash or an instance of the specified class.
+
+**Example:**
+```ruby
+# Treaty expects:
+object :author, type: User do
+  string :name
+end
+
+# Send:
+{ "author" => User.new(name: "John") }  # ✓ User instance
+{ "author" => { "name" => "John" } }    # ✓ Hash also works
+
+# Not:
+{ "author" => "John" }  # ✗ String instead of User or Hash
+```
+
 ## Version Issues
 
 ### Treaty not using expected version

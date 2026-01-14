@@ -11,6 +11,8 @@ en:
 
         type:
           unknown_type: "Unknown type '%{type}' for attribute '%{attribute}'. Allowed types: %{allowed}"
+          option_type_mismatch: "Option 'type:' can only be used with 'object' attribute type, got '%{type}' for '%{attribute}'"
+          invalid_class: "Option 'type:' for attribute '%{attribute}' must be a Class, got %{value}"
           mismatch:
             integer: "Attribute '%{attribute}' must be an Integer, got %{actual}"
             string: "Attribute '%{attribute}' must be a String, got %{actual}"
@@ -20,6 +22,7 @@ en:
             date: "Attribute '%{attribute}' must be a Date, got %{actual}"
             time: "Attribute '%{attribute}' must be a Time, got %{actual}"
             datetime: "Attribute '%{attribute}' must be a DateTime, got %{actual}"
+            class: "Attribute '%{attribute}' must be %{type}, got %{actual}"
 
         inclusion:
           invalid_schema: "Option 'inclusion' for attribute '%{attribute}' must have a non-empty array of allowed values"

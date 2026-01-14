@@ -70,6 +70,8 @@ treaty:
 
       type:
         unknown_type: "Unknown type '%{type}' for attribute '%{attribute}'. Allowed types: %{allowed}"
+        option_type_mismatch: "Option 'type:' can only be used with 'object' attribute type, got '%{type}' for '%{attribute}'"
+        invalid_class: "Option 'type:' for attribute '%{attribute}' must be a Class, got %{value}"
         mismatch:
           integer: "Attribute '%{attribute}' must be an Integer, got %{actual}"
           string: "Attribute '%{attribute}' must be a String, got %{actual}"
@@ -79,6 +81,7 @@ treaty:
           date: "Attribute '%{attribute}' must be a Date, got %{actual}"
           time: "Attribute '%{attribute}' must be a Time, got %{actual}"
           datetime: "Attribute '%{attribute}' must be a DateTime, got %{actual}"
+          class: "Attribute '%{attribute}' must be %{type}, got %{actual}"
 
       inclusion:
         invalid_schema: "Option 'inclusion' for attribute '%{attribute}' must have a non-empty array of allowed values"
@@ -213,6 +216,8 @@ de:
 
         type:
           unknown_type: "Unbekannter Typ '%{type}' für Attribut '%{attribute}'. Erlaubte Typen: %{allowed}"
+          option_type_mismatch: "Option 'type:' kann nur mit 'object' Attributtyp verwendet werden, '%{type}' für '%{attribute}' erhalten"
+          invalid_class: "Option 'type:' für Attribut '%{attribute}' muss eine Klasse sein, %{value} erhalten"
           mismatch:
             integer: "Attribut '%{attribute}' muss ein Integer sein, aber %{actual} erhalten"
             string: "Attribut '%{attribute}' muss ein String sein, aber %{actual} erhalten"
@@ -222,6 +227,7 @@ de:
             date: "Attribut '%{attribute}' muss ein Date sein, aber %{actual} erhalten"
             time: "Attribut '%{attribute}' muss ein Time sein, aber %{actual} erhalten"
             datetime: "Attribut '%{attribute}' muss ein DateTime sein, aber %{actual} erhalten"
+            class: "Attribut '%{attribute}' muss %{type} sein, aber %{actual} erhalten"
 
         inclusion:
           invalid_schema: "Option 'inclusion' für Attribut '%{attribute}' muss ein nicht-leeres Array von erlaubten Werten haben"
@@ -473,8 +479,9 @@ Different validators provide different interpolation variables:
 **Type validator:**
 - `%{attribute}` - the attribute name
 - `%{actual}` - the actual type received
-- `%{type}` - the expected type
+- `%{type}` - the expected type (or attribute type for option_type_mismatch)
 - `%{allowed}` - list of allowed types (for unknown_type)
+- `%{value}` - the invalid value provided (for invalid_class)
 
 **Inclusion validator:**
 - `%{attribute}` - the attribute name

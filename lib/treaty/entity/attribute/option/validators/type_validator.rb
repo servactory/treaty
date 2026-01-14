@@ -49,22 +49,58 @@ module Treaty
           #
           # TypeValidator doesn't use option_schema - it validates based on attribute_type.
           # This validator is always active for all attributes.
-          class TypeValidator < Treaty::Entity::Attribute::Option::Base
+          class TypeValidator < Treaty::Entity::Attribute::Option::Base # rubocop:disable Metrics/ClassLength
             ALLOWED_TYPES = %i[integer string boolean object array date time datetime].freeze
 
             # Validates that the attribute type is one of the allowed types
+            # and validates type: option if present
             #
             # @raise [Treaty::Exceptions::Validation] If type is not allowed
+            # @raise [Treaty::Exceptions::Validation] If type: option is invalid
             # @return [void]
             def validate_schema!
-              return if ALLOWED_TYPES.include?(@attribute_type)
+              unless ALLOWED_TYPES.include?(@attribute_type)
+                raise Treaty::Exceptions::Validation,
+                      I18n.t(
+                        "treaty.attributes.validators.type.unknown_type",
+                        type: @attribute_type,
+                        attribute: @attribute_name,
+                        allowed: ALLOWED_TYPES.join(", ")
+                      )
+              end
+
+              validate_custom_type_schema!
+            end
+
+            # Validates that type: option is used correctly
+            # Called during schema validation phase
+            #
+            # @raise [Treaty::Exceptions::Validation] If type: used with non-object attribute
+            # @raise [Treaty::Exceptions::Validation] If type: value is not a Class
+            # @return [void]
+            def validate_custom_type_schema! # rubocop:disable Metrics/MethodLength
+              return unless @option_schema
+
+              # type: option only works with object type
+              unless @attribute_type == :object
+                raise Treaty::Exceptions::Validation,
+                      I18n.t(
+                        "treaty.attributes.validators.type.option_type_mismatch",
+                        attribute: @attribute_name,
+                        type: @attribute_type
+                      )
+              end
+
+              # Validate that value is a Class
+              type_value = @option_schema.fetch(:is, nil)
+              return if type_value.nil? # No custom type, Hash expected
+              return if type_value.is_a?(Class)
 
               raise Treaty::Exceptions::Validation,
                     I18n.t(
-                      "treaty.attributes.validators.type.unknown_type",
-                      type: @attribute_type,
+                      "treaty.attributes.validators.type.invalid_class",
                       attribute: @attribute_name,
-                      allowed: ALLOWED_TYPES.join(", ")
+                      value: type_value.inspect
                     )
             end
 
@@ -165,13 +201,67 @@ module Treaty
               validate_type!(value, :boolean) { |v| v.is_a?(TrueClass) || v.is_a?(FalseClass) }
             end
 
-            # Validates that value is a Hash (object type)
+            # Validates that value is a Hash or custom type class
             #
             # @param value [Object] The value to validate
-            # @raise [Treaty::Exceptions::Validation] If value is not a Hash
+            # @raise [Treaty::Exceptions::Validation] If value is not expected type
             # @return [void]
             def validate_object!(value)
-              validate_type!(value, :object) { |v| v.is_a?(Hash) }
+              custom_type_class = extract_custom_type_from_schema
+
+              if custom_type_class
+                validate_custom_type!(value, custom_type_class)
+              else
+                validate_type!(value, :object) { |v| v.is_a?(Hash) }
+              end
+            end
+
+            # Extracts custom type class from option_schema
+            # After OptionNormalizer, option_schema is always in advanced mode:
+            # { is: User, message: nil }
+            #
+            # @return [Class, nil] Custom type class or nil
+            def extract_custom_type_from_schema
+              return nil if @option_schema.nil?
+
+              type_value = @option_schema.fetch(:is, nil)
+              type_value.is_a?(Class) ? type_value : nil
+            end
+
+            # Validates that value is an instance of custom type class
+            #
+            # @param value [Object] The value to validate
+            # @param expected_class [Class] Expected class
+            # @raise [Treaty::Exceptions::Validation] If value is not expected class
+            # @return [void]
+            def validate_custom_type!(value, expected_class)
+              return if value.is_a?(expected_class)
+
+              attributes = {
+                attribute: @attribute_name,
+                value:,
+                type: expected_class.name || expected_class.inspect,
+                actual: value.class
+              }
+
+              message = resolve_custom_message(**attributes) || default_class_message(**attributes)
+
+              raise Treaty::Exceptions::Validation, message
+            end
+
+            # Generates default error message for class type mismatch using I18n
+            #
+            # @param attribute [Symbol] The attribute name
+            # @param type [String] The expected class name
+            # @param actual [Class] The actual class of the value
+            # @return [String] Default error message
+            def default_class_message(attribute:, type:, actual:, **)
+              I18n.t(
+                "treaty.attributes.validators.type.mismatch.class",
+                attribute:,
+                type:,
+                actual:
+              )
             end
 
             # Validates that value is an Array

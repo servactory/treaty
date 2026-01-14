@@ -124,6 +124,100 @@ end
 { published_at: "2024-01-01" } ✗  # Must be DateTime/Time, got String
 ```
 
+### Custom Type for Objects
+
+Object attributes can validate against a custom class instead of Hash:
+
+```ruby
+# Define a class
+class Author
+  attr_accessor :name, :email
+
+  def initialize(name:, email:)
+    @name = name
+    @email = email
+  end
+end
+
+# Use in treaty definition
+request do
+  object :author, type: Author do
+    string :name
+    string :email
+  end
+end
+```
+
+**Valid data:**
+```ruby
+# Only Author instances accepted when type: is specified
+author = Author.new(name: "John", email: "john@example.com")
+{ author: author }
+```
+
+**Note:** When `type:` is specified, ONLY instances of that class are accepted.
+Hash is NOT accepted. Without `type:`, only Hash is accepted.
+
+**Invalid data:**
+```ruby
+{ author: "John Doe" }
+# Error: Attribute 'author' must be Author, got String
+```
+
+**With custom error message:**
+```ruby
+object :author, type: { is: Author, message: "Author must be an Author instance" } do
+  string :name
+end
+```
+
+#### In Arrays with `object :_self`
+
+Custom types work with `object :_self` in arrays:
+
+```ruby
+array :authors do
+  object :_self, type: Author do
+    string :name
+    string :email
+  end
+end
+```
+
+**Valid data:**
+```ruby
+# Only Author instances accepted when type: is specified
+{ authors: [Author.new(name: "John", email: "john@example.com")] }
+```
+
+**Note:** When `type:` is specified, ONLY instances of that class are accepted.
+Hash is NOT accepted in the array.
+
+#### Combining type: with use_entity
+
+Custom types work with entity reuse:
+
+```ruby
+object :author, type: Author do
+  use_entity(Shared::AuthorEntity)  # Copies: string :name, string :email
+end
+```
+
+**Validation flow:**
+1. Type check: `value.is_a?(Author)` — must pass!
+2. Nested attributes: extracted via `author.name`, `author.email`
+3. Each attribute validated against entity definition
+
+**Important:** Hash is NOT accepted when `type:` is specified.
+
+```ruby
+# ✅ Valid
+{ author: Author.new(name: "John", email: "john@example.com") }
+
+# ❌ Invalid (raises validation error)
+{ author: { name: "John", email: "john@example.com" } }
+```
+
 ### Inclusion Validation
 
 Restricts values to a predefined list.

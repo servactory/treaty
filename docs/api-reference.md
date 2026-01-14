@@ -602,6 +602,7 @@ object :name
 **Parameters:**
 - `:name` - Symbol representing the object name
 - Special object: `:_self` - Merges attributes to parent level
+- `type:` (Optional) - Class that value must be an instance of. Without this option, value must be a Hash.
 
 **Examples:**
 ```ruby
@@ -618,6 +619,18 @@ end
 
 # Empty object
 object :metadata
+
+# Object with custom type validation
+object :author, type: User do
+  string :name
+  string :email
+end
+
+# Object with type: and use_entity (type-safe entity reuse)
+object :author, type: Author do
+  use_entity(Shared::AuthorEntity)
+end
+# Value must be Author instance, attributes copied from entity
 ```
 
 ## Attribute Types
@@ -830,6 +843,22 @@ array :posts do
     string :author_name
   end
 end
+
+# Array of typed instances
+array :users do
+  object :_self, type: User do
+    string :name
+    string :email
+  end
+end
+
+# Array with type: and use_entity (type-safe entity reuse)
+array :authors do
+  object :_self, type: Author do
+    use_entity(Shared::AuthorEntity)
+  end
+end
+# Each item must be Author instance, attributes copied from entity
 
 # Empty array
 array :items, :optional

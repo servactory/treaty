@@ -64,9 +64,10 @@ module Treaty
         #
         # Uses:
         # - `AttributeValidator` - Validates individual elements
+        # - `ValueExtractor` - Extracts values from Hash or PORO polymorphically
         # - Caches validators for performance
         # - Separates self validators from regular validators
-        class NestedArrayValidator
+        class NestedArrayValidator # rubocop:disable Metrics/ClassLength
           # Creates a new nested array validator
           #
           # @param attribute [Attribute::Base] The array-type attribute with nested attributes
@@ -74,6 +75,7 @@ module Treaty
             @attribute = attribute
             @self_validators = nil
             @regular_validators = nil
+            @self_object_attribute = nil
           end
 
           # Validates all items in an array
@@ -124,15 +126,109 @@ module Treaty
                   )
           end
 
-          # Validates array item for complex arrays (with regular attributes)
-          # Complex array contains hash objects with defined structure
-          # Example: [{ name: "Alice", email: "alice@example.com" }, ...] where each item is a Hash
+          # Validates array item for complex arrays (with regular attributes or object :_self)
           #
-          # @param array_item [Hash] Hash object from complex array
+          # @param array_item [Hash, Object] Item from array
           # @param index [Integer] Array index for error messages
-          # @raise [Treaty::Exceptions::Validation] If item is not Hash or nested validation fails
+          # @raise [Treaty::Exceptions::Validation] If validation fails
           # @return [void]
-          def validate_regular_array_item!(array_item, index) # rubocop:disable Metrics/MethodLength
+          def validate_regular_array_item!(array_item, index)
+            if self_object_attribute
+              validate_self_object_item!(array_item, index, self_object_attribute)
+            else
+              validate_hash_array_item!(array_item, index)
+            end
+          end
+
+          # Gets cached self-object attribute or finds it
+          #
+          # @return [Attribute::Base, nil] Self-object attribute or nil
+          def self_object_attribute
+            return @self_object_attribute if defined?(@self_object_attribute_loaded)
+
+            @self_object_attribute_loaded = true
+            @self_object_attribute = find_self_object_attribute
+          end
+
+          # Finds object :_self attribute if present
+          #
+          # @return [Attribute::Base, nil] Self-object attribute or nil
+          def find_self_object_attribute
+            @attribute.collection_of_attributes.find do |nested_attribute|
+              nested_attribute.name == :_self && nested_attribute.type == :object
+            end
+          end
+
+          # Validates array item against object :_self definition
+          #
+          # @param array_item [Hash, Object] Item from array
+          # @param index [Integer] Array index for error messages
+          # @param self_object_attribute [Attribute::Base] The object :_self attribute
+          # @raise [Treaty::Exceptions::Validation] If validation fails
+          # @return [void]
+          def validate_self_object_item!(array_item, index, self_object_attribute)
+            validate_self_object_type!(array_item, index, self_object_attribute)
+
+            return unless self_object_attribute.nested?
+
+            validate_self_object_attributes!(array_item, index, self_object_attribute)
+          end
+
+          # Validates type of self-object array item
+          #
+          # @param array_item [Hash, Object] Item from array
+          # @param index [Integer] Array index for error messages
+          # @param self_object_attribute [Attribute::Base] The object :_self attribute
+          # @raise [Treaty::Exceptions::Validation] If type doesn't match
+          # @return [void]
+          def validate_self_object_type!(array_item, index, self_object_attribute)
+            expected_type = self_object_attribute.custom_type || Hash
+
+            return if array_item.is_a?(expected_type)
+
+            raise Treaty::Exceptions::Validation,
+                  I18n.t(
+                    "treaty.attributes.validators.nested.array.element_type_error",
+                    attribute: @attribute.name,
+                    index:,
+                    actual: array_item.class
+                  )
+          end
+
+          # Validates nested attributes of self-object array item
+          #
+          # @param array_item [Hash, Object] Item from array
+          # @param index [Integer] Array index for error messages
+          # @param self_object_attribute [Attribute::Base] The object :_self attribute
+          # @raise [Treaty::Exceptions::Validation] If nested validation fails
+          # @return [void]
+          def validate_self_object_attributes!(array_item, index, self_object_attribute) # rubocop:disable Metrics/MethodLength
+            self_object_attribute.collection_of_attributes.each do |nested_attribute|
+              nested_value = ValueExtractor.extract(array_item, nested_attribute.name)
+              validator = AttributeValidator.new(nested_attribute)
+              validator.validate_schema!
+
+              begin
+                validator.validate_value!(nested_value)
+              rescue Treaty::Exceptions::Validation => e
+                raise Treaty::Exceptions::Validation,
+                      I18n.t(
+                        "treaty.attributes.validators.nested.array.attribute_error",
+                        attribute: @attribute.name,
+                        index:,
+                        message: e.message
+                      )
+              end
+            end
+          end
+
+          # Validates array item as Hash (original behavior)
+          #
+          # @param array_item [Hash] Hash object from array
+          # @param index [Integer] Array index for error messages
+          # @raise [Treaty::Exceptions::Validation] If item is not Hash or validation fails
+          # @return [void]
+          def validate_hash_array_item!(array_item, index) # rubocop:disable Metrics/MethodLength
             unless array_item.is_a?(Hash)
               raise Treaty::Exceptions::Validation,
                     I18n.t(
@@ -180,7 +276,7 @@ module Treaty
           # @return [Array<AttributeValidator>] Array of validators
           def build_self_validators
             @attribute.collection_of_attributes
-                      .select { |attr| attr.name == :_self }
+                      .select { |nested_attribute| nested_attribute.name == :_self }
                       .map do |self_attribute|
                         validator = AttributeValidator.new(self_attribute)
                         validator.validate_schema!
@@ -193,7 +289,7 @@ module Treaty
           # @return [Hash] Hash of nested_attribute => validator
           def build_regular_validators
             @attribute.collection_of_attributes
-                      .reject { |attr| attr.name == :_self }
+                      .reject { |nested_attribute| nested_attribute.name == :_self }
                       .each_with_object({}) do |nested_attribute, cache|
                         validator = AttributeValidator.new(nested_attribute)
                         validator.validate_schema!

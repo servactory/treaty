@@ -8,7 +8,7 @@ Objects group related attributes together, creating nested structures in your re
 
 ## What are Objects?
 
-Objects group related attributes together, creating nested structures in your request and response data. Use the `object` attribute type to organize your API data into logical hierarchies.
+Objects group related attributes together, creating nested structures in your request and response data. Use the `object` attribute type to organize your API data into logical hierarchies. By default, object values must be Ruby Hashes, but you can specify a custom class using the `type:` option (see [Attributes: type option](./attributes.md#type)).
 
 ## Basic Object Grouping
 
